@@ -75,7 +75,8 @@ public class Running
                 isMultiPlayer = false;
             }
 
-            MusicPlayer mp = new MusicPlayer( "background music.mid" );
+            if ( Settings.musicOn )
+                new MusicPlayer( "background music.mid" );
 
             aF = new AsteroidsFrame( isPlayerOne, isMultiPlayer );
             aF.setSize( 800, 800 );

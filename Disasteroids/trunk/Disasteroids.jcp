@@ -21,7 +21,7 @@
 			<applet_ref/>
 			<debugger_ref/>
 			<param/>
-			<run/>
+			<run>Running</run>
 			<verify>true</verify>
 		</runtime>
 	</runtimes>
@@ -96,10 +96,6 @@
 				<folder>src</folder>
 			</fileitem>
 			<fileitem>
-				<path>src\Driver_Sound.java</path>
-				<folder>src</folder>
-			</fileitem>
-			<fileitem>
 				<path>src\InternalSpeaker.java</path>
 				<folder>src</folder>
 			</fileitem>
@@ -141,6 +137,10 @@
 			</fileitem>
 			<fileitem>
 				<path>src\Ship.java</path>
+				<folder>src</folder>
+			</fileitem>
+			<fileitem>
+				<path>src\Sound.java</path>
 				<folder>src</folder>
 			</fileitem>
 			<fileitem>

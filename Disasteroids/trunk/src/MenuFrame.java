@@ -159,21 +159,30 @@ public class MenuFrame extends Frame implements KeyListener
                 System.exit( 0 );
             else
                 Running.exitMenu( choice );
-        else
-            // Changing a setting?
-            if ( key == KeyEvent.VK_M )
-                Settings.musicOn = !Settings.musicOn;
-            else if ( key == KeyEvent.VK_S )
-                Settings.soundOn = !Settings.soundOn;
-        
-            // Scrolling?
-            else if ( key == KeyEvent.VK_UP )
-            {
-                this.choice -= 1;
-                if ( choice < 0 )
-                    choice = 3;
-            }
-            else if ( key == KeyEvent.VK_DOWN )
-                this.choice = ( choice + 1 ) % 4;
+        else // Changing a setting?
+        if ( key == KeyEvent.VK_M )
+            Settings.musicOn = !Settings.musicOn;
+        else if ( key == KeyEvent.VK_S )
+            Settings.soundOn = !Settings.soundOn;
+        // Scrolling?
+        else if ( key == KeyEvent.VK_UP )
+        {
+            this.choice -= 1;
+            if ( choice < 0 )
+                choice = 3;
+        }
+        else if ( key == KeyEvent.VK_DOWN )
+            this.choice = ( choice + 1 ) % 4;
+    }
+
+    public void repaint( Graphics g )
+    {
+        paint( g );
+    }
+
+    public void update( Graphics g )
+    {
+        //System.out.println(timeStep);
+        paint( g );
     }
 }

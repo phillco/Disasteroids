@@ -285,7 +285,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 	{
 		paused=true;
 		g.setFont(new Font("Tahoma", Font.BOLD, 32));
-		Driver_Sound.wheeeargh();
+		Sound.wheeeargh();
 		for(float sat=0; sat<=1; sat+=.00005)
 		{
 			g.setColor(Color.getHSBColor(sat,sat,sat));

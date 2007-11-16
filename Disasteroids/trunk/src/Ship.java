@@ -239,7 +239,7 @@ public class Ship
 		manager.addMisile((int)x+10,(int)y+10,angle,dx,dy, myColor);
 		
 		if(useSound)
-		Driver_Sound.click();
+		Sound.click();
 	}
 	
 	public void setMaxShots(int newMax)
@@ -264,7 +264,7 @@ public class Ship
 	//	berserk();
 		livesLeft--;
 		setInvincibilityCount(300);
-		Driver_Sound.bleargh();
+		Sound.bleargh();
 		// Disabled, very sensitiuve to lag --> desync
 //		x = origin_x;
 //		y = origin_y;
@@ -310,7 +310,7 @@ for(int i = 0; i < 80; i++)
 		if(!canShoot())
 			return;
 		double angleBefore=angle;
-		Driver_Sound.kablooie();
+		Sound.kablooie();
 		for(double ang=0; ang<=2*Math.PI; ang+=Math.PI/10)
 		{
 			shoot(false);

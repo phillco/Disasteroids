@@ -7,7 +7,7 @@
  *
  * Run Running.class to start
  */
-public class Driver_Sound {
+public class Sound {
 	
 	/*==============================
 	 * Static class for makin' sound

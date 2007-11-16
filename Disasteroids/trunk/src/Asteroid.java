@@ -162,7 +162,7 @@ public class Asteroid
 			Misile m = iter.next();
 			if (Math.pow(x-m.getX(),2)+Math.pow(y-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
 				{	
-					Driver_Sound.bloomph();
+					Sound.bloomph();
 					m.explode();
 					split(AsteroidsFrame.getShip());
 					return;
@@ -197,7 +197,7 @@ public class Asteroid
 				Misile m = iter2.next();
 				if (Math.pow(x-m.getX(),2)+Math.pow(y-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
 					{
-						Driver_Sound.bloomph();
+						Sound.bloomph();
 						m.explode();
 						split(AsteroidsFrame.getShip2());
 						return;

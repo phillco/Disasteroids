@@ -83,6 +83,10 @@ class InternalSpeaker
     */
 	public synchronized void play(int frequency, int duration)
 	{
+            // If sound is disabled, exit!
+            if ( ! Settings.soundOn )
+                return;
+            
 		 InternalSpeaker.beepPCSpeaker( frequency , duration);
 		 try {
 			 Thread.sleep(duration);

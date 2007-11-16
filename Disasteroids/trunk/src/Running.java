@@ -1,17 +1,16 @@
 /*
  * DISASTEROIDS
- * by Phillip Cohen and Andy Kooiman
- * 
- * APCS 1, 2006 to 2007, Period 3
- * Version - 1.0 Final (exam release)
- *
- * Run Running.class to start
+ * Running.java
  */
 
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.JOptionPane;
 
+/**
+ * Main startup-related code.
+ * @author Andy Kooiman
+ */
 public class Running
 {
     private static AsteroidsFrame aF;
@@ -74,12 +73,9 @@ public class Running
                 isPlayerOne = true;
                 isMultiPlayer = false;
             }
-
-            if ( Settings.musicOn )
-                new MusicPlayer( "background music.mid" );
-
+            Sound.updateMusic();
             aF = new AsteroidsFrame( isPlayerOne, isMultiPlayer );
-            aF.setSize( 800, 800 );
+            aF.setSize( AsteroidsFrame.WINDOW_WIDTH, AsteroidsFrame.WINDOW_HEIGHT );
             aF.addWindowListener( new WindowAdapter()
                           {
                               @Override

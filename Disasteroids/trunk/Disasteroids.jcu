@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml?>
 <workspace_user>
 	<active_project>
 		<label>Disasteroids</label>
@@ -25,7 +24,6 @@
 	<build_files>
 		<builditem>
 			<path>build.xml</path>
-			<hidden>false</hidden>
 			<showtargets>true</showtargets>
 			<hidden_targets/>
 		</builditem>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml?>
 <project>
 	<settings>
 		<label>Disasteroids</label>
@@ -10,10 +9,6 @@
 		<compiler_ref/>
 		<ant_ref/>
 	</settings>
-	<ant_events/>
-	<run_items>
-		<item run="Running"/>
-	</run_items>
 	<runtimes>
 		<runtime>
 			<label>&lt;Default&gt;</label>
@@ -22,7 +17,6 @@
 			<debugger_ref/>
 			<param/>
 			<run>Running</run>
-			<verify>true</verify>
 		</runtime>
 	</runtimes>
 	<libraries/>
@@ -42,118 +36,127 @@
 			</folderitem>
 			<fileitem>
 				<path>build.xml</path>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>dist\Disasteroids.jar</path>
-				<folder>dist</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>nbproject\build-impl.xml</path>
-				<folder>nbproject</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>nbproject\genfiles.properties</path>
-				<folder>nbproject</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>nbproject\project.properties</path>
-				<folder>nbproject</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>nbproject\project.xml</path>
-				<folder>nbproject</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>nbproject\private\private.properties</path>
-				<folder>nbproject\private</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Action.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\ActionManager.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Asteroid.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\AsteroidManager.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\AsteroidsFrame.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\AsteroidsServer.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\BonusAsteroid.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\InternalSpeaker.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
-				<path>src\MenuFrame.java</path>
-				<folder>src</folder>
+				<path>src\MainMenu.java</path>
+				<source>true</source>
+			</fileitem>
+			<fileitem>
+				<path>src\MenuOption.java</path>
+				<source>true</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Misile.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\MisileManager.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\MusicPlayer.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Particle.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\ParticleManager.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\RandNumGen.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Running.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\ServerListenerThread.java</path>
-				<folder>src</folder>
+				<source>false</source>
+			</fileitem>
+			<fileitem>
+				<path>src\Settings.java</path>
+				<source>true</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Ship.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Sound.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\SpeakerThread.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\Tone.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 			<fileitem>
 				<path>src\UnsynchronizedException.java</path>
-				<folder>src</folder>
+				<source>false</source>
 			</fileitem>
 		</include>
 	</files>

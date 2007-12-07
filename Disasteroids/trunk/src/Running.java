@@ -14,85 +14,71 @@ import javax.swing.JOptionPane;
 public class Running
 {
     private static AsteroidsFrame aF;
-    private static MenuFrame mF;
+    private static MainMenu mF;
 
     /**
      * Application entry point.
      * @param args Command line arguments. Ignored.
      */
-    public static void main( String[] args )
+    public static void main ( String[] args )
     {
-        mF = new MenuFrame();
+        mF = new MainMenu();
     }
 
     /**
      * Called from within <code>MenuFrame</code> when the user selects an option.
-     * @param option The magic number option.
+     * @param option The selected menu choice.
      */
-    public static void exitMenu( int option )
+    public static void exitMenu ( MenuOption option )
     {
-        mF.hide();
-        mF = null;
+        mF.dispose();
         startGame( option );
     }
 
     /**
-     * Method that starts the game (host, slve, or single player).
-     * @param option The magic number option.
+     * Method that starts the game (host, slave, or single player).
+     * @param option The selected menu choice.
      */
-    private static void startGame( int option )
+    private static void startGame ( MenuOption option )
     {
         try
         {
-            boolean isPlayerOne;
+            boolean isPlayerOne = true;
             boolean isMultiPlayer = true;
             int seed = 0;
 
-            if ( option == 1 ) // Server
+            switch ( option )
             {
-                AsteroidsServer.master();
-                isPlayerOne = true;
-                seed = (int) ( Math.random() * 10000 );
-                AsteroidsServer.send( "Seed" + String.valueOf( seed ) );
-                RandNumGen.init( seed );
+                case MULTIHOST:
+                    AsteroidsServer.master();
+                    isPlayerOne = true;
+                    seed = (int) ( Math.random() * 10000 );
+                    AsteroidsServer.send( "Seed" + String.valueOf( seed ) );
+                    RandNumGen.init( seed );
+                    break;
 
-            }
-            else if ( option == 2 ) // Client
-            {
-                // String address=JOptionPane.showInputDialog("Enter the IP address of the host computer.");
-                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", "165.199.176.51" );
+                case MULTIJOIN:
+                    // String address=JOptionPane.showInputDialog("Enter the IP address of the host computer.");
+                    String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", "165.199.176.51" );
+                    AsteroidsServer.slave( address );
+                    isPlayerOne = false;
+                    while ( !RandNumGen.isInitialized() )
+                        ;
+                    break;
 
-                AsteroidsServer.slave( address );
-                isPlayerOne = false;
-                while ( !RandNumGen.isInitialized() )
-                    ;
+                case SINGLEPLAYER:
+                    RandNumGen.init( seed );
+                    isPlayerOne = true;
+                    isMultiPlayer = false;
+                    break;
+
+                default:
+                    System.exit( 0 );
             }
-            else
-            {
-                RandNumGen.init( seed );
-                isPlayerOne = true;
-                isMultiPlayer = false;
-            }
+
+            // Start the music.
             Sound.updateMusic();
-            aF = new AsteroidsFrame( isPlayerOne, isMultiPlayer );
-            aF.setSize( AsteroidsFrame.WINDOW_WIDTH, AsteroidsFrame.WINDOW_HEIGHT );
-            aF.addWindowListener( new WindowAdapter()
-                          {
-                              @Override
-                              public void windowClosing( WindowEvent e )
-                              {
-                                  try
-                                  {
-                                      AsteroidsServer.send( "exit" );
-                                      AsteroidsServer.close();
-                                  }
-                                  catch ( NullPointerException ex )
-                                  {
-                                  }
-                                  System.exit( 0 );
-                              }
-                          } );
-            aF.setVisible( true );
+            aF = new AsteroidsFrame( isPlayerOne, isMultiPlayer );            
         }
         catch ( Exception e )
         {
@@ -101,7 +87,7 @@ public class Running
         }
     }
 
-    public static AsteroidsFrame environment()
+    public static AsteroidsFrame environment ()
     {
         return aF;
     }

@@ -18,10 +18,10 @@ this README should be updated - but people forget. :)
 Known bugs
 ==========
 
-- Sound and music does not work when run with NetBeans, only JCreator.
 - If you place the files in a package, the midi file must be placed in the folder
   above the .class files, and the sound (beep.dll) won't work at all.
-- The game runs very slowly with lots of asteroids (we assume it's the collision code).
+- The game runs very slowly with lots of asteroids (software rendering).
+- Collision code is also pretty bad.
 - Ships seem to collide with asteroids whenenever they enter their bounding "box"...sometimes.
 - Occasionally net games will go to a blank screen on one computer. We believe this occurs
   when the client accepts their messages before the server.

@@ -507,12 +507,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void toggleMusic ()
     {
-        writeOnBackground( "Music " + ( Sound.toggleMusic() ? " on." : "off." ), WINDOW_WIDTH / 2 - 10, WINDOW_HEIGHT / 2, Color.green );
+        writeOnBackground( "Music " + ( Sound.toggleMusic() ? " on." : "off." ), getWidth() / 2 - 10, getHeight() / 2, Color.green );
     }
 
     public void toggleSound ()
     {
-        writeOnBackground( "Sound " + ( Sound.toggleSound() ? " on." : "off." ), WINDOW_WIDTH / 2 - 10, WINDOW_HEIGHT / 2, Color.green );
+        writeOnBackground( "Sound " + ( Sound.toggleSound() ? " on." : "off." ), getWidth() / 2 - 10, getHeight() / 2, Color.green );
     }
 
     public void setOtherPlayerTimeStep ( int step )
@@ -589,5 +589,5 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         highScoreName = name;
     }
+   
 }
-

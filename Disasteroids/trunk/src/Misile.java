@@ -82,22 +82,22 @@ public class Misile
 	
 	private synchronized void checkBounce()
 	{
-		if(x<0)
-			x+=Running.environment().getWidth()-1;
-		if(y<0)
-			y+=Running.environment().getHeight()-1;
-		if(x>Running.environment().getWidth())
-			x-=Running.environment().getWidth()-1;
-		if(y>Running.environment().getHeight())
-			y-=Running.environment().getHeight()-1;
-
+            // Wrap to stay inside the level.
+            if ( x < 0 )
+                x += Running.environment().getWidth() - 1;
+            if ( y < 0 )
+                y += Running.environment().getHeight() - 1;
+            if ( x > Running.environment().getWidth() )
+                x -= Running.environment().getWidth() - 1;
+            if ( y > Running.environment().getHeight() )
+                y -= Running.environment().getHeight() - 1;
 	}
+        
 	private synchronized void checkLeave()
 	{
-		if(age>life)        //(x<0||y<0||x>800||y>800)
+		if(age>life)
 			explode();
-	}
-	
+	}	
 	
 	public synchronized void explode()
 	{

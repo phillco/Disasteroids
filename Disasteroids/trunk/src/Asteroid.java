@@ -95,24 +95,15 @@ public class Asteroid
 	
 	private void checkBounce()
 	{
-/*		if (x>=800)
-			x-=799;
-		if (x<=0)
-			x+=799;
-		if (y>=800)
-			y-=799;
-		if (y<=0)
-			y+=799;*/
-		
-		if(x<0)
-			x+=Running.environment().getWidth()-1;
-		if(y<0)
-			y+=Running.environment().getHeight()-1;
-		if(x>Running.environment().getWidth())
-			x-=Running.environment().getWidth()-1;
-		if(y>Running.environment().getHeight())
-			y-=Running.environment().getHeight()-1;
-
+            // Wrap to stay inside the level.
+            if ( x < 0 )
+                x += Running.environment().getWidth() - 1;
+            if ( y < 0 )
+                y += Running.environment().getHeight() - 1;
+            if ( x > Running.environment().getWidth() )
+                x -= Running.environment().getWidth() - 1;
+            if ( y > Running.environment().getHeight() )
+                y -= Running.environment().getHeight() - 1;
 	}
 	
 	protected void split(Ship killer)

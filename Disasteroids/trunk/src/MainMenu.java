@@ -50,12 +50,12 @@ public class MainMenu extends Frame implements KeyListener
                        {
                            try
                            {
-                               System.exit( 0 );
+                               Running.quit( );
                            }
                            catch ( NullPointerException ex )
                            {
                            }
-                           System.exit( 0 );
+                           Running.quit( );
                        }
                    } );
 

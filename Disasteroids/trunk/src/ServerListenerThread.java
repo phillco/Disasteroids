@@ -68,7 +68,7 @@ public class ServerListenerThread extends Thread
 		}
 		else if(command.equalsIgnoreCase("exit"))
 		{
-			System.exit(0);
+			Running.quit( );
 		}else if(command.equals("PING"))
 		{
 			AsteroidsServer.send("PONG");

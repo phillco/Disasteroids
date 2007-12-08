@@ -22,7 +22,20 @@ public class Running
      */
     public static void main ( String[] args )
     {
+        // Read in our stored settings.
+        Settings.loadFromStorage();
+        
+        // Start the menu.
         mF = new MainMenu();
+    }
+    
+    public static void quit ()
+    {
+        // Write our settings.
+        Settings.saveToStorage();
+        
+        // Daisy.....daisy....
+        System.exit(0);
     }
 
     /**
@@ -73,7 +86,7 @@ public class Running
                     break;
 
                 default:
-                    System.exit( 0 );
+                    Running.quit( );
             }
 
             // Start the music.
@@ -83,7 +96,7 @@ public class Running
         catch ( Exception e )
         {
             JOptionPane.showMessageDialog( null, "There has been a fatal error:\n" + e.toString() + "\nThe system is down." );
-            System.exit( 0 );
+            Running.quit( );
         }
     }
 

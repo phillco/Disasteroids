@@ -66,7 +66,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                            catch ( NullPointerException ex )
                            {
                            }
-                           System.exit( 0 );
+                           Running.quit( );
                        }
                    } );
 
@@ -207,7 +207,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         catch ( UnsynchronizedException e )
         {
             JOptionPane.showMessageDialog( null, "A fatal error has occured:\n" + e );
-            System.exit( 0 );
+            Running.quit( );
         }
         ParticleManager.drawParticles( gBuff );
         asteroidManager.act();
@@ -432,7 +432,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         switch ( action )
         {
             case KeyEvent.VK_ESCAPE:
-                System.exit( 0 );
+                Running.quit( );
             case KeyEvent.VK_SPACE:
                 if ( actor.canShoot() )
                     actor.shoot( true );

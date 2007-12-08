@@ -46,7 +46,6 @@ public class Settings
      * Writes settings to <code>Disasteroids.prop</code>.
      * @return Whether settings were saved.
      */
-
     public static boolean saveToStorage()
     {
         Properties p = new Properties();
@@ -55,7 +54,7 @@ public class Settings
             p.put( "musicOn", String.valueOf( musicOn ) );
             p.put( "soundOn", String.valueOf( soundOn ) );
             p.put( "fullscreen", String.valueOf( useFullscreen ) );
-            p.store( new FileOutputStream( "Disasteroids.props" ), "" );
+            p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );
         }
         catch ( IOException ex )
         {

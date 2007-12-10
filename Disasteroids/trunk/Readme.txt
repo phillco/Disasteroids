@@ -23,8 +23,6 @@ Known bugs
 - The game runs very slowly with lots of asteroids (software rendering).
 - Collision code is also pretty bad.
 - Ships seem to collide with asteroids whenenever they enter their bounding "box"...sometimes.
-- Occasionally net games will go to a blank screen on one computer. We believe this occurs
-  when the client accepts their messages before the server.
 - The code sucks! Seriously, what kind of smoke were we *cracking*?
 
 Thanks all, folks!

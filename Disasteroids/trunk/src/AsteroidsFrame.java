@@ -61,7 +61,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                            try
                            {
                                AsteroidsServer.send( "exit" );
-                               AsteroidsServer.close();
+                               AsteroidsServer.dispose();
                            }
                            catch ( NullPointerException ex )
                            {

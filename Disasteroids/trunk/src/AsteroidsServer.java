@@ -1,147 +1,171 @@
 /*
  * DISASTEROIDS
- * by Phillip Cohen and Andy Kooiman
- * 
- * APCS 1, 2006 to 2007, Period 3
- * Version - 1.0 Final (exam release)
- *
- * Run Running.class to start
+ * AsteroidsServer.java
  */
 
-/* Adapted from the Shockit program by Phillip Cohen
- * for use with the Disasteroids Project.
- * only uses a single client and host*/
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
-
-
-import java.net.*;
-import java.io.*;
-import javax.swing.JOptionPane;
-
-
-
-
-
+/**
+ * The TCP networking class.
+ * @since Spring 2007
+ * @author Phillip Cohen, Andy Kooiman
+ */
 public class AsteroidsServer
 {
-    private static boolean 			net_ishosting 		= false;					// If true, we have clients to talk to.
-    private static int				net_targetclients	= 0; 						// User specified amount of clients
-    private static String			net_myIP			= null;
-    private static int				net_myPort			= 3344; 					// This default is used unless the user runs the PORT command.
-	private static ServerSocket		serverSocket 		= null;
-	private static Socket 			clientSocket;
-	private static PrintWriter		serverOutStream;
-	private static boolean			isMaster			= false;					//stores whether this computer is the master
-    private static PrintWriter		out;
-    private static BufferedReader	in;
-    private static Socket			kkSocket; 
-    
-    public static void slave(String address) {
-        
-        JOptionPane.showMessageDialog(null,"\nConnecting to " + address + "...");
+    /**
+     * Our little status window.
+     */
+    private static NetworkStatus statusFrame;
+    /**
+     * This computer's IP address.
+     */
+    private static String localIP = null;
+    private static final int DEFAULT_PORT = 3344;
+    private static int net_myPort = DEFAULT_PORT;
+    private static ServerSocket serverSocket = null;
+    private static Socket clientSocket;
+    private static PrintWriter out;
+    private static BufferedReader in;
+    private static Socket kkSocket;
 
-        try {
-            kkSocket = new Socket(address, 3344);
-            out = new PrintWriter(kkSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(kkSocket.getInputStream()));
-        } catch (UnknownHostException e) {
-            JOptionPane.showMessageDialog(null,"Don't know about host: " + address);
-            return;
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Couldn't get I/O for the connection to: " + address);
-            return;
+    /**
+     * Connects to a server and runs the game as a client.
+     * @param address The IP address to connect to.
+     */
+    public static void slave( String address ) throws ConnectException
+    {
+        // Popup the status screen while the user waits.
+        statusFrame = new NetworkStatus( NetworkStatus.StatusState.CLIENT, address );
+
+        // Connect.
+        try
+        {
+            kkSocket = new Socket( address, 3344 );
+            out = new PrintWriter( kkSocket.getOutputStream(), true );
+            in = new BufferedReader( new InputStreamReader( kkSocket.getInputStream() ) );
+        }
+        catch ( UnknownHostException e )
+        {
+            connectionError( e.toString(), "Disasteroids couldn't look up the host at " + address + "." );
+            throw new ConnectException();
+        }
+        catch ( IOException e )
+        {
+            connectionError( e.toString(), "Couldn't get an I/O connection to " + address + "." );
+            throw new ConnectException();
         }
 
-        String fromServer;
-        String fromUser;
-       
-        
-        (new ServerListenerThread(in)).start();
+        // Success!
+        statusFrame.dispose();
+        ( new ServerListenerThread( in ) ).start();
     }
-    
-    
-    public static void master() {
-    		isMaster=true;
-    	// Did the user already start a server?
-	    	if(net_ishosting) {
-	    		JOptionPane.showMessageDialog(null,
-	    		  "A server is already running, at IP " + net_myIP + ":" + net_myPort + "." );
-	    		return;
-	    	}
-    	
-    		//there is only one client
-	   		net_targetclients =1;
-	   
-	    // Now actually start the server.    	
-	        try {
-	            serverSocket = new ServerSocket(net_myPort);
-	        } catch (IOException e) {
-	            JOptionPane.showMessageDialog(null,"Could not listen on port: " + net_myPort+".\nAnother server may already be running.");
-	            return;
-	        }
-	        
-        // The server is running. Tell the user his IP address.
-	        net_myIP =  myIP();
-	    	JOptionPane.showMessageDialog(null,"Server ready!\nYour IP address is:\n" + net_myIP + "\nPress ok...");
-	    	safeSleep(500);
-    	
-    	// Now we hang while we wait for everyone to hook up.
-	        clientSocket = null;
-		    try {
-		        	clientSocket = serverSocket.accept(); // Stop here until the client connects.
-		        	out = new PrintWriter(clientSocket.getOutputStream(), true);
-		        	in=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		     //   	JOptionPane.showMessageDialog(null,"Other computer has connected.");
-		       } catch (IOException e) {
-		        JOptionPane.showMessageDialog(null,"Accept failed.");
-		          return;
-		   }   	          
-        net_ishosting = true;
-        (new ServerListenerThread(in)).start();
-    }
-    
-    
-    public static void send(String message)
+
+    /**
+     * Creates a server and starts the game once a client connects.
+     * @return Whether the connection was made.
+     */
+    public static void master() throws ConnectException
     {
-    	try{
-   		out.println(message);
-//  	System.out.println("SENT: "+message);
-		out.flush();
-   		}catch(NullPointerException e){}
+        // Popup the status screen while the user waits.
+        statusFrame = new NetworkStatus( NetworkStatus.StatusState.SERVER, myIP() );
+
+        // Start the server.    	
+        try
+        {
+            serverSocket = new ServerSocket( net_myPort );
+        }
+        catch ( IOException e )
+        {
+            connectionError( "Could not listen on port " + net_myPort + ".", "Another server may already be running at this port." );
+            throw new ConnectException();
+        }
+
+        // Now we hang while we wait for everyone to hook up.
+        clientSocket = null;
+        try
+        {
+            clientSocket = serverSocket.accept(); // Stop here until the client connects.
+            out = new PrintWriter( clientSocket.getOutputStream(), true );
+            in = new BufferedReader( new InputStreamReader( clientSocket.getInputStream() ) );
+        }
+        catch ( IOException e )
+        {
+            connectionError( "Accept failed.", "Could not accept client connection." );
+            throw new ConnectException();
+        }
+
+        // Success!
+        statusFrame.dispose();
+        ( new ServerListenerThread( in ) ).start();
     }
-    
+
+    public static void send( String message )
+    {
+        try
+        {
+            out.println( message );
+            out.flush();
+        }
+        catch ( NullPointerException e )
+        {
+        }
+    }
+
+    private static void connectionError( String title, String body )
+    {
+        // Show the status window.
+        if ( statusFrame == null )
+            statusFrame = new NetworkStatus();
+
+        // Display the error message.
+        statusFrame.setError( title, body );
+
+        // Close our streams.
+        dispose();
+    }
+
     public static void flush()
     {
-    	out.flush();
+        out.flush();
     }
-    
-    public static String myIP() {
-    	try {
-	    	InetAddress localHost = InetAddress.getLocalHost();
-			InetAddress[] all_IPs = InetAddress.getAllByName(localHost.getHostName());
-			return (all_IPs[0].toString().split("/"))[1];
-    	}
-    	catch (UnknownHostException e) { return "Could not detect IP."; }
-    }
-	
-	
-	
-    public static void safeSleep(int duration) 
+
+    public static String myIP()
     {
-	   	try 
-	   	{
-			 Thread.sleep(duration);
-		}
-		 catch(InterruptedException interruptedexception) {}    	
-
+        try
+        {
+            InetAddress localHost = InetAddress.getLocalHost();
+            InetAddress[] all_IPs = InetAddress.getAllByName( localHost.getHostName() );
+            return ( all_IPs[0].toString().split( "/" ) )[1];
+        }
+        catch ( UnknownHostException e )
+        {
+            return "Could not detect IP.";
+        }
     }
 
-	public static void close()
-	{
-		try{
-			out.close();
-			in.close();
-			kkSocket.close();			
-		}catch(IOException e){}
-	}
+    public static void dispose()
+    {
+        try
+        {
+            if ( out != null )
+                out.close();
+
+            if ( in != null )
+                in.close();
+
+            if ( kkSocket != null )
+                kkSocket.close();
+        }
+        catch ( IOException e )
+        {
+        }
+    }
 }

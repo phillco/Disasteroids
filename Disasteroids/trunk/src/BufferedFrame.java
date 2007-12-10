@@ -14,7 +14,7 @@ import java.awt.Rectangle;
  * @since Dec 7, 2007
  */
 public abstract class BufferedFrame extends Frame
-{
+{    
     @Override
     public void update( Graphics g )
     {

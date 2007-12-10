@@ -4,63 +4,43 @@
  */
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * The new main menu.
  * @author Phillip Cohen
  * @since Nov 16, 2007
  */
-public class MainMenu extends BufferedFrame implements KeyListener
+public class MainMenu extends AsteroidsMenu implements KeyListener
 {
-    public static final int WINDOW_WIDTH = 400;
-    public static final int WINDOW_HEIGHT = 250;
     private static final String title = "DISASTEROIDS!";
     private int choice = 0;
 
     public MainMenu()
     {
-        // Center on the screen.
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation( screenSize.width / 2, screenSize.height / 2 );
-        setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
-
-        // Allow us to be closed and keyed.
-        addWindowListener( new CloseAdapter() );
+        // Receive key events.
         addKeyListener( this );
-
-        setTitle("Disasteroids!");
-        
-        // Show the form.
-        setVisible( true );
     }
 
     @Override
     public void paint( Graphics g )
     {
+        // Draw background and shared elements.
+        super.paint(g);
+        
         // Some positioning.
-        int y = 75;
+        int y = 0;
 
         Font normal = new Font( "Tahoma", Font.PLAIN, 14 );
-        Font accent = new Font( "Tahoma", Font.BOLD, 14 );
-
-        // Draw the background.
-        Graphics2D g2d = (Graphics2D) g;
-        GradientPaint gradient = new GradientPaint( 0, 0, Color.darkGray, WINDOW_WIDTH, WINDOW_HEIGHT, Color.lightGray );
-        g2d.setPaint( gradient );
-        g2d.fillRect( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
+        Font accent = new Font( "Tahoma", Font.BOLD, 14 );      
 
         // Draw the title.
+        y += 75;
         g.setColor( Color.BLACK );
         g.setFont( new Font( "Tahoma", Font.BOLD, 36 ) );
         g.drawString( title, 60, 75 );
@@ -157,14 +137,5 @@ public class MainMenu extends BufferedFrame implements KeyListener
                 Running.quit();
         }
         repaint();
-    }
-
-    private static class CloseAdapter extends WindowAdapter
-    {
-        @Override
-        public void windowClosing( WindowEvent e )
-        {
-            Running.quit();
-        }
     }
 }

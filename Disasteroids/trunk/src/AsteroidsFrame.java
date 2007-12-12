@@ -47,7 +47,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private AsteroidManager asteroidManager = new AsteroidManager();
     private ActionManager actionManager = new ActionManager();
 
-    public AsteroidsFrame ( boolean isPlayer1, boolean isMult )
+    public AsteroidsFrame( boolean isPlayer1, boolean isMult )
     {
         isPlayerOne = isPlayer1;
         isMultiplayer = isMult;
@@ -56,7 +56,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         addWindowListener( new WindowAdapter()
                    {
                        @Override
-                       public void windowClosing ( WindowEvent e )
+                       public void windowClosing( WindowEvent e )
                        {
                            try
                            {
@@ -66,36 +66,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
                            catch ( NullPointerException ex )
                            {
                            }
-                           Running.quit( );
+                           Running.quit();
                        }
                    } );
 
         // Set our size - fullscreen or windowed.
-        setVisible( false );
-        GraphicsDevice myDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-
-        if ( myDevice.isFullScreenSupported() && Settings.useFullscreen )
-        {
-            setUndecorated( true );
-            setSize( myDevice.getDisplayMode().getWidth(), myDevice.getDisplayMode().getHeight() );
-            myDevice.setFullScreenWindow( this );
-
-            // Hide the cursor.
-            Image cursorImage = Toolkit.getDefaultToolkit().getImage( "xparent.gif" );
-            Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor( cursorImage, new Point( 0, 0 ), "" );
-            setCursor( blankCursor );
-        }
-        else
-        {
-            setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
-
-            // Show the cursor.
-            setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
-        }
-        this.setVisible( true );
+        updateFullscreen();
     }
 
-    public void init ( Graphics g )
+    public void init( Graphics g )
     {
         this.g = g;
         virtualMem = createImage( WINDOW_WIDTH, WINDOW_HEIGHT );
@@ -125,60 +104,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         asteroidManager.setUpAsteroidField( level, gBuff );
     }
 
-    public void paint ( Graphics g )
+    public void paint( Graphics g )
     {
-        /*	if(Net.connectionStatus == 2) {
-        this.g=g;
-        if(isFirst)
-        init(g);
-        if(virtualMem==null)
-        init(g);
-        gBuff.setColor(Color.gray);
-        gBuff.fillRect(0,0,getWidth(),getHeight());
-        gBuff.setColor(Color.black);
-        gBuff.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        if(Net.isHost) {
-        gBuff.drawString("You are hosting the game.",350,300);
-        gBuff.setFont(new Font("Tahoma", Font.BOLD, 14));
-        gBuff.drawString("IP: "+Net.myIP,355,320);
-        gBuff.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        gBuff.drawString("Waiting for client...",370,340);
-        }
-        g.drawImage(virtualMem,0,0,this);
-        repaint();
-        }*/
-        if ( false )
-        {
-            updateBackground();
-            gBuff.drawImage( background, 0, 0, this );
-            if ( paused )
-                return;
-            this.g = g;
-            if ( isFirst )
-                init( g );
-            //	repaint();
-            if ( virtualMem == null )
-                init( g );
-            // Draw particles under other objects to fade correcrly
-            ParticleManager.drawParticles( gBuff );
-
-            //		invincibilityCount--;
-
-//			asteroidManager.act();
-            if ( ship != null )
-                ship.act();
-            if ( ship2 != null )
-                ship2.act();
-            drawScore( gBuff );
-
-            g.drawImage( virtualMem, 0, 0, this );
-            if ( ( ship != null ) )
-                if ( ship.livesLeft() < 1 || ( ship2 != null && ship2.livesLeft() < 1 ) )
-                    endGame( g );
-            if ( asteroidManager.size() == 0 )
-                nextLevel();
-            repaint();
-        }
         if ( paused )
             return;
         if ( isFirst )
@@ -207,7 +134,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         catch ( UnsynchronizedException e )
         {
             JOptionPane.showMessageDialog( null, "A fatal error has occured:\n" + e );
-            Running.quit( );
+            Running.quit();
         }
         ParticleManager.drawParticles( gBuff );
         asteroidManager.act();
@@ -225,7 +152,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         repaint();
     }
 
-    public void updateBackground ()
+    public void updateBackground()
     {
         Graphics g = background.getGraphics();
         g.drawImage( background, 0, -2, this );
@@ -241,7 +168,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             }
     }
 
-    public void warpDialog ()
+    public void warpDialog()
     {
         warp( Integer.parseInt( JOptionPane.showInputDialog( "Enter the level number to warp to.", level ) ) );
     }
@@ -249,7 +176,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Advances to the next level.
      */
-    public void nextLevel ()
+    public void nextLevel()
     {
         warp( level + 1 );
     }
@@ -257,7 +184,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Advances the game to a new level.
      */
-    public void warp ( int newLevel )
+    public void warp( int newLevel )
     {
         paused = true;
         level = newLevel;
@@ -288,12 +215,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
         paused = false;
     }
 
-    public static void staticNextLevel ()
+    public static void staticNextLevel()
     {
         Running.environment().nextLevel();
     }
 
-    private void drawScore ( Graphics g )
+    private void drawScore( Graphics g )
     {
         g.setColor( ship.getColor() );
         g.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
@@ -316,7 +243,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         g.drawString( "Asteroids: " + asteroidManager.size(), 700, 50 );
     }
 
-    private void drawBackground ()
+    private void drawBackground()
     {
         Graphics g = background.getGraphics();
         g.setColor( Color.black );
@@ -327,7 +254,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             g.fillRect( rand.nextInt( getWidth() ), rand.nextInt( getHeight() ), 1, 1 );
     }
 
-    public void newGame ()
+    public void newGame()
     {
         init( g );
         if ( isMultiplayer && isPlayerOne )
@@ -335,7 +262,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     //	repaint();
     }
 
-    public void endGame ( Graphics g )
+    public void endGame( Graphics g )
     {
         paused = true;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
@@ -376,17 +303,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
         repaint();
     }
 
-    public static Ship getShip ()
+    public static Ship getShip()
     {
         return ship;
     }
 
-    public static Graphics getGBuff ()
+    public static Graphics getGBuff()
     {
         return gBuff;
     }
 
-    public synchronized void keyReleased ( KeyEvent e )
+    public synchronized void keyReleased( KeyEvent e )
     {
         if ( !paused || e.getKeyCode() == 80 )
         {
@@ -401,11 +328,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
         repaint();
     }
 
-    public void keyTyped ( KeyEvent e )
+    public void keyTyped( KeyEvent e )
     {
     }
 
-    public synchronized void keyPressed ( KeyEvent e )
+    public synchronized void keyPressed( KeyEvent e )
     {
         if ( !paused || e.getKeyCode() == 80 )
         {
@@ -419,7 +346,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         repaint();
     }
 
-    public synchronized void performAction ( int action, Ship actor )
+    public synchronized void performAction( int action, Ship actor )
     {
         // Network start ket
 //		if(action == 123) {
@@ -432,7 +359,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         switch ( action )
         {
             case KeyEvent.VK_ESCAPE:
-                Running.quit( );
+                Running.quit();
             case KeyEvent.VK_SPACE:
                 if ( actor.canShoot() )
                     actor.shoot( true );
@@ -496,6 +423,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_S:
                 toggleSound();
                 break;
+            case KeyEvent.VK_F4:
+                toggleFullscreen();
+                break;
             case KeyEvent.VK_W:
                 warpDialog();
                 break;
@@ -505,28 +435,85 @@ public class AsteroidsFrame extends Frame implements KeyListener
         repaint();
     }
 
-    public void toggleMusic ()
+    public void toggleMusic()
     {
         writeOnBackground( "Music " + ( Sound.toggleMusic() ? " on." : "off." ), getWidth() / 2 - 10, getHeight() / 2, Color.green );
     }
 
-    public void toggleSound ()
+    public void toggleSound()
     {
         writeOnBackground( "Sound " + ( Sound.toggleSound() ? " on." : "off." ), getWidth() / 2 - 10, getHeight() / 2, Color.green );
     }
 
-    public void setOtherPlayerTimeStep ( int step )
+    /**
+     * 
+     */
+    public void toggleFullscreen()
+    {
+        Settings.useFullscreen = !Settings.useFullscreen;
+        updateFullscreen();
+    }
+
+    /**
+     * Updates the frame if needs to be windowed or fullscreened.
+     * @author Phillip Cohen
+     */
+    public void updateFullscreen()
+    {
+        boolean wasVisible = isVisible();
+
+        dispose();
+        if ( wasVisible )
+            setVisible( false );
+
+        setUndecorated( false );
+        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+
+        // Set fullscreen mode, if supported.
+        if ( ( graphicsDevice.isFullScreenSupported() ) && ( Settings.useFullscreen ) )
+        {
+            // Don't change anything if we're already in fullscreen mode.
+            if ( graphicsDevice.getFullScreenWindow() != this )
+            {
+                setUndecorated( true );
+                setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
+                graphicsDevice.setFullScreenWindow( this );
+
+                // Hide the cursor.
+                Image cursorImage = Toolkit.getDefaultToolkit().getImage( "xparent.gif" );
+                Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor( cursorImage, new Point( 0, 0 ), "" );
+                setCursor( blankCursor );
+            }
+        }
+        // Set windowed mode.
+        else
+        {
+            // Don't change anything if we're already in windowed mode.
+            if ( ( getSize().width != WINDOW_WIDTH ) || ( getSize().height != WINDOW_HEIGHT ) )
+            {
+                setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
+
+                // Show the cursor.
+                setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
+            }
+        }
+
+        if ( wasVisible )
+            setVisible( true );
+    }
+
+    public void setOtherPlayerTimeStep( int step )
     {
         otherPlayerTimeStep = step;
     }
 
     @Override
-    public void update ( Graphics g )
+    public void update( Graphics g )
     {
         paint( g );
     }
 
-    private void restoreBonusValues ()
+    private void restoreBonusValues()
     {
         ship.getMisileManager().setHugeBlastProb( 5 );
         ship.getMisileManager().setHugeBlastSize( 50 );
@@ -546,17 +533,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
     }
 
-    public static int getLevel ()
+    public static int getLevel()
     {
         return level;
     }
 
-    public static Ship getShip2 ()
+    public static Ship getShip2()
     {
         return ship2;
     }
 
-    public static void safeSleep ( int milis )
+    public static void safeSleep( int milis )
     {
         try
         {
@@ -567,7 +554,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
     }
 
-    public void writeOnBackground ( String message, int x, int y, Color col )
+    public void writeOnBackground( String message, int x, int y, Color col )
     {
         Graphics g = background.getGraphics();
         g.setColor( col );
@@ -575,19 +562,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
         g.drawString( message, x, y );
     }
 
-    public ActionManager actionManager ()
+    public ActionManager actionManager()
     {
         return actionManager;
     }
 
-    public static boolean isPlayerOne ()
+    public static boolean isPlayerOne()
     {
         return isPlayerOne;
     }
 
-    public void setHighScore ( String name )
+    public void setHighScore( String name )
     {
         highScoreName = name;
     }
-   
 }

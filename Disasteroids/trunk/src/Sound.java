@@ -32,7 +32,8 @@ public class Sound
             stopMusic();
         else
             startMusic();
-        return musicPlaying();
+        Settings.musicOn  = musicPlaying();
+        return Settings.musicOn;
 
     }
     

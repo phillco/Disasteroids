@@ -86,7 +86,7 @@ public class Running
 
                     // Get the server address.
                     String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.lastConnectionIP );
-                    if ( ( address == null ) || ( address.isEmpty() ) )
+                    if ( ( address == null ) || ( address.equals("") ) )
                         return;
 
                     // Connect to it.

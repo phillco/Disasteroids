@@ -126,32 +126,13 @@ public class Asteroid
 	}
 	private void checkCollision()
 	{
-		//Misile[] misiles=AsteroidsFrame.getShip().getMisileManager().getMisiles();
+            // Get the misiles of the first ship
 		ListIterator<Misile> iter = AsteroidsFrame.getShip().getMisileManager().getMisiles().listIterator();
-		/*
-		for(int index=0; index<misiles.length; index++)
-		//for(Misile m: AsteroidsFrame.getMisiles())
-		{
-			Misile m=misiles[index];
-			if(m!=null)
-				if (Math.pow(x-m.getX(),2)+Math.pow(y-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
-				{	
-					Driver_Sound.bloomph();
-					m.explode();
-					split(AsteroidsFrame.getShip());
-					return;
-				}
-			//if(m!=null)
-			//	System.out.println(m.getRadius());
-		}
-		*/
-		
-		
+		// Loop through all misiles
 		while(iter.hasNext())
-	//	for(Misile m: AsteroidsFrame.getShip().getMisileManager().getMisiles())
 		{
 			Misile m = iter.next();
-			if (Math.pow(x-m.getX(),2)+Math.pow(y-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
+			if (Math.pow(x-m.getX(),2)+Math.pow(y-this.size/2-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
 				{	
 					Sound.bloomph();
 					m.explode();
@@ -162,31 +143,12 @@ public class Asteroid
 		
 		if(AsteroidsFrame.getShip2()!=null)
 		{
-		/*
-		Misile[] misiles2=AsteroidsFrame.getShip2().getMisileManager().getMisiles();
-		for(int index=0; index<misiles2.length; index++)
-		//for(Misile m: AsteroidsFrame.getMisiles())
->>>>>>> .r23
-		{
-			Misile m=misiles2[index];
-			if(m!=null)
-				if (Math.pow(x-m.getX(),2)+Math.pow(y-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
-				{
-					Driver_Sound.bloomph();
-					m.explode();
-					split(AsteroidsFrame.getShip2());
-					return;
-				}
-			//if(m!=null)
-			//	System.out.println(m.getRadius());
-		}}*/
 		
 		ListIterator<Misile> iter2 = AsteroidsFrame.getShip2().getMisileManager().getMisiles().listIterator();
 			while(iter2.hasNext())
-		//	for(Misile m: AsteroidsFrame.getShip().getMisileManager().getMisiles())
 			{
 				Misile m = iter2.next();
-				if (Math.pow(x-m.getX(),2)+Math.pow(y-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
+				if (Math.pow(x-m.getX(),2)+Math.pow(y-this.size/2-m.getY(),2)<Math.pow(size+m.getRadius(),2))//hit by misile
 					{
 						Sound.bloomph();
 						m.explode();
@@ -197,14 +159,14 @@ public class Asteroid
 		}
 
 		if(AsteroidsFrame.getShip().livesLeft()>=0)
-			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip().getX(),2)+(Math.pow(y-AsteroidsFrame.getShip().getY(),2)))<size+10)//hit by ship
+			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip().getX()+Ship.radius,2)+(Math.pow(y-AsteroidsFrame.getShip().getY()+Ship.radius,2)))<size+Ship.radius)//hit by ship
 			{
 				if(AsteroidsFrame.getShip().looseLife())
 					split(AsteroidsFrame.getShip());
 			}
 		if(AsteroidsFrame.getShip2()!=null)
 		if(AsteroidsFrame.getShip2().livesLeft()>=0)
-			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip2().getX(),2)+(Math.pow(y-AsteroidsFrame.getShip2().getY(),2)))<size+10)//hit by ship2
+			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip2().getX()+Ship.radius,2)+(Math.pow(y-AsteroidsFrame.getShip2().getY()+Ship.radius,2)))<size+10)//hit by ship2
 			{
 				if(AsteroidsFrame.getShip2().looseLife())
 					split(AsteroidsFrame.getShip2());

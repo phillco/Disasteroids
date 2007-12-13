@@ -12,8 +12,8 @@ import java.awt.*;
 import java.util.ArrayList;
 public class ParticleManager  {
     	private static ArrayList<Particle> parts = new ArrayList<Particle>();
-    	public static void createParticle(double x, double y, double size, Color c , double dx, double dy, double lifemax, double lifemin) {
-    		parts.add(new Particle(x, y, size, c, dx, dy, lifemax, lifemin));
+    	public static void addParticle(Particle p) {
+    		parts.add(p);
     	}
     	
     	public static void drawParticles(Graphics g) {

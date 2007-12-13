@@ -23,15 +23,15 @@ public class Particle {
 	//[AK]The Color was fading too quickly to be seen, so i changed the fading mechanism
 	public double[] rgb=new double[3];
 	
-	public Particle(double x, double y, double size, Color c, double dx, double dy, double lifemax, double lifemin) {
+	public Particle(double x, double y, double size, Color c, double speed, double angle, double lifemax, double lifemin) {
 		life = (RandNumGen.getParticleInstance().nextDouble())*lifemax + lifemin;
 		this.life_max = life;
 		this.x = x;
 		this.y = y;
 		this.size = size;
 		this.color = c;
-		this.dx = dx;
-		this.dy = dy;
+		this.dx = speed*Math.cos(angle);
+		this.dy = -speed*Math.sin(angle);
 		//rgb={c.getRed(), c.getGreen(), c.getBlue()};
 		
 		rgb[0]=c.getRed();

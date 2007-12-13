@@ -13,7 +13,8 @@ import java.util.Random;
 import java.util.LinkedList;
 public class Ship
 {
-	public final static double BOO = 50;
+	public final static double BOO = 30;
+        public final static int radius=10;
 	
 	private double x,y;
 	private double dx,dy;
@@ -68,9 +69,9 @@ public class Ship
 			|| ! (cannotDie())) {
 				
 				// Draw the ship and pointer blob
-				g.fillOval((int)x,(int)y,20,20);
+				g.fillOval((int)x-radius,(int)y-radius,2*radius,2*radius);
 				g.setColor(Color.white);
-				g.fillOval((int)(x+10*Math.cos(angle))+7,(int)(y-10*Math.sin(angle))+7,5,5);
+				g.fillOval((int)(x+10*Math.cos(angle))-2,(int)(y-10*Math.sin(angle))-2,4,4);
 			}
 		
 	//	g.setAlpha(1);
@@ -157,13 +158,29 @@ public class Ship
 		checkBounce();
 		checkCollision();
 		draw();
-		if(!(Math.abs(dx) < 0.1  && Math.abs(dy) < 0.15)) {
+		if(forward&&!(Math.abs(dx) < 0.1  && Math.abs(dy) < 0.15)) {
 			Random rand=RandNumGen.getParticleInstance();		
 			for(int i = 0; i < 3; i++)
-				ParticleManager.createParticle(
-					x + rand.nextInt(16)-8 + dx,
-					y + rand.nextInt(16)-8 + dy,
-					rand.nextInt(4) + 3, myColor, rand.nextDouble()*2.0 - 1 , rand.nextDouble()*2.0 - 1, 30, 10);
+				ParticleManager.addParticle(new Particle(
+                                        x+rand.nextInt(16)-8-radius,
+                                        y+rand.nextInt(16)-8-radius,
+                                        rand.nextInt(4)+3,
+                                        myColor,
+                                        rand.nextDouble()*3*dx*dy,
+                                        angle+rand.nextDouble()*.4-.2+Math.PI,
+                                        30,10));
+		}
+               if(backwards&&!(Math.abs(dx) < 0.1  && Math.abs(dy) < 0.15)) {
+			Random rand=RandNumGen.getParticleInstance();		
+			for(int i = 0; i < 3; i++)
+				ParticleManager.addParticle(new Particle(
+					x+rand.nextInt(16)-8-radius,
+                                        y+rand.nextInt(16)-8-radius,
+                                        rand.nextInt(4)+3,
+                                        myColor,
+                                        rand.nextDouble()*3*dx*dy,
+                                        angle+rand.nextDouble()*.4-.2,
+                                        30,10));
 		}
 	}
 	
@@ -222,8 +239,8 @@ public class Ship
 		x+=dx;
 		y+=dy;
 		
-		dx *= .999;
-		dy *= .999;
+		dx *= .996;
+		dy *= .996;
 	}
 	
 	public int getX()
@@ -237,7 +254,7 @@ public class Ship
 		if(livesLeft<0)
 			return;
 		timeTillNextShot=15;
-		manager.addMisile((int)x+10,(int)y+10,angle,dx,dy, myColor);
+		manager.addMisile((int)x,(int)y,angle,dx,dy, myColor);
 		
 		if(useSound)
 		Sound.click();
@@ -272,12 +289,18 @@ public class Ship
 //		dx = 0.0;
 //		dy = 0.0;
 //		angle=Math.PI/2;
-Random rand=RandNumGen.getParticleInstance();
-for(int i = 0; i < 80; i++)
-				ParticleManager.createParticle(
-					x + rand.nextInt(16)-8 + dx,
-					y + rand.nextInt(16)-8 + dy,
-					rand.nextDouble()*9.0+0.2, myColor, rand.nextDouble()*6.0 - 3 +dx/8, rand.nextDouble()*6.0 - 3+dy/8, 150, 20);
+                dx*=-.3;
+                dy*=-.3;
+                Random rand=RandNumGen.getParticleInstance();
+                for(int i = 0; i < 80; i++)
+				ParticleManager.addParticle(new Particle(
+					x+rand.nextInt(16)-8-radius,
+                                        y+rand.nextInt(16)-8-radius,
+                                        rand.nextInt(4)+3,
+                                        myColor,
+                                        rand.nextDouble()*6,
+                                        rand.nextDouble()*2*Math.PI,
+                                        30,10));
 		return true;
 	}
 	

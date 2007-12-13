@@ -28,7 +28,7 @@ public class AsteroidsServer
      * This computer's IP address.
      */
     private static String localIP = null;
-    private static final int DEFAULT_PORT = 3344;
+    private static final int DEFAULT_PORT = 53;
     private static int net_myPort = DEFAULT_PORT;
     private static ServerSocket serverSocket = null;
     private static Socket clientSocket;
@@ -48,7 +48,7 @@ public class AsteroidsServer
         // Connect.
         try
         {
-            kkSocket = new Socket( address, 3344 );
+            kkSocket = new Socket( address, net_myPort );
             out = new PrintWriter( kkSocket.getOutputStream(), true );
             in = new BufferedReader( new InputStreamReader( kkSocket.getInputStream() ) );
         }

@@ -1,0 +1,16 @@
+<?xml?>
+<workspace>
+	<settings>
+		<label>Disasteroids</label>
+	</settings>
+	<users>
+		<user>
+			<path>Disasteroids.jcu</path>
+		</user>
+	</users>
+	<projects>
+		<project>
+			<path>Disasteroids.jcp</path>
+		</project>
+	</projects>
+</workspace>

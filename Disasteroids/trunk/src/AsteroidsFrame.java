@@ -17,7 +17,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.VolatileImage;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
@@ -35,7 +34,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private static Image virtualMem;
     private static Image background;
     private static Graphics gBuff;
-    private VolatileImage volatileImg;
     private static int level;
     private boolean isFirst = true;
     private Graphics g;
@@ -147,7 +145,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         g.drawImage( virtualMem, 0, 0, this );
         if ( ship.livesLeft() < 0 && ( ship2 == null || ship2.livesLeft() < 0 ) )
             endGame( g );
-        if ( asteroidManager.size() == 0 )
+        if ( asteroidManager.size() == 0 && level>-1)
             nextLevel();
         repaint();
     }

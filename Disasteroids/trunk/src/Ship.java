@@ -7,14 +7,16 @@
  *
  * Run Running.class to start
  */
-import java.awt.*;
-import java.util.ArrayList;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Polygon;
 import java.util.Random;
 import java.util.LinkedList;
 public class Ship
 {
-	public final static double BOO = 30;
-        public final static int radius=10;
+	public final static double SENSITIVITY = 30;
+        public final static int RADIUS=10;
 	
 	private double x,y;
 	private double dx,dy;
@@ -49,7 +51,7 @@ public class Ship
 		dy=0;
 		livesLeft=lives;
 		myColor=c;
-		double fadePct = 0.3;
+		double fadePct = 0.6;
 		myInvicibleColor = new Color((int)(myColor.getRed() * fadePct), (int)(myColor.getGreen() * fadePct), (int)(myColor.getBlue() * fadePct));
 		
 		manager=new MisileManager();
@@ -65,13 +67,20 @@ public class Ship
 				g.setColor(myColor);
 		
 		// Flash when invunerable
+                        Polygon outline=new Polygon();
+                        outline.addPoint((int)(x+RADIUS*Math.cos(angle)),(int)(y-RADIUS*Math.sin(angle)));
+                        outline.addPoint((int)(x+RADIUS*Math.cos(angle+Math.PI*.75)),(int)(y-RADIUS*Math.sin(angle+Math.PI*.75)));
+                        outline.addPoint((int)(x+RADIUS*Math.cos(angle-Math.PI*.75)),(int)(y-RADIUS*Math.sin(angle-Math.PI*.75)));
 			if( (cannotDie() && (invulFlash = !invulFlash) == true)
 			|| ! (cannotDie())) {
 				
 				// Draw the ship and pointer blob
-				g.fillOval((int)x-radius,(int)y-radius,2*radius,2*radius);
-				g.setColor(Color.white);
-				g.fillOval((int)(x+10*Math.cos(angle))-2,(int)(y-10*Math.sin(angle))-2,4,4);
+			//	g.fillOval((int)x-RADIUS,(int)y-RADIUS,2*RADIUS,2*RADIUS);
+			//	g.setColor(Color.white);
+			//	g.fillOval((int)(x+10*Math.cos(angle))-2,(int)(y-10*Math.sin(angle))-2,4,4);
+                                g.fillPolygon(outline);
+                                g.setColor(Color.black);
+                                g.drawPolygon(outline);
 			}
 		
 	//	g.setAlpha(1);
@@ -137,16 +146,16 @@ public class Ship
 	{
 		if(forward)
 		{
-			dx+=Math.cos(angle)/BOO;
-			dy-=Math.sin(angle)/BOO;
+			dx+=Math.cos(angle)/SENSITIVITY*2;
+			dy-=Math.sin(angle)/SENSITIVITY*2;
 		}
 		if(backwards)
 		{
-			dx-=Math.cos(angle)/BOO;
-			dy+=Math.sin(angle)/BOO;
+			dx-=Math.cos(angle)/SENSITIVITY*2;
+			dy+=Math.sin(angle)/SENSITIVITY*2;
 		}
-		if(left) angle+=Math.PI/BOO;
-		if(right) angle-=Math.PI/BOO;
+		if(left) angle+=Math.PI/SENSITIVITY/2;
+		if(right) angle-=Math.PI/SENSITIVITY/2;
 		
 		manager.act();
 		if(livesLeft<0)
@@ -160,25 +169,26 @@ public class Ship
 		draw();
 		if(forward&&!(Math.abs(dx) < 0.1  && Math.abs(dy) < 0.15)) {
 			Random rand=RandNumGen.getParticleInstance();		
-			for(int i = 0; i < 3; i++)
+			for(int i = 0; i < (int)(Math.sqrt(dx*dx+dy*dy)); i++)
 				ParticleManager.addParticle(new Particle(
-                                        x+rand.nextInt(16)-8-radius,
-                                        y+rand.nextInt(16)-8-radius,
+                                        x+rand.nextInt(8)-4-RADIUS,
+                                        y+rand.nextInt(8)-4-RADIUS,
                                         rand.nextInt(4)+3,
                                         myColor,
-                                        rand.nextDouble()*3*dx*dy,
+                                        rand.nextDouble()*3,
                                         angle+rand.nextDouble()*.4-.2+Math.PI,
                                         30,10));
 		}
+                
                if(backwards&&!(Math.abs(dx) < 0.1  && Math.abs(dy) < 0.15)) {
 			Random rand=RandNumGen.getParticleInstance();		
-			for(int i = 0; i < 3; i++)
+			for(int i = 0; i < (int)(Math.sqrt(dx*dx+dy*dy)); i++)
 				ParticleManager.addParticle(new Particle(
-					x+rand.nextInt(16)-8-radius,
-                                        y+rand.nextInt(16)-8-radius,
+					x+rand.nextInt(16)-8-RADIUS,
+                                        y+rand.nextInt(16)-8-RADIUS,
                                         rand.nextInt(4)+3,
                                         myColor,
-                                        rand.nextDouble()*3*dx*dy,
+                                        rand.nextDouble()*3,
                                         angle+rand.nextDouble()*.4-.2,
                                         30,10));
 		}
@@ -294,8 +304,8 @@ public class Ship
                 Random rand=RandNumGen.getParticleInstance();
                 for(int i = 0; i < 80; i++)
 				ParticleManager.addParticle(new Particle(
-					x+rand.nextInt(16)-8-radius,
-                                        y+rand.nextInt(16)-8-radius,
+					x+rand.nextInt(16)-8-RADIUS,
+                                        y+rand.nextInt(16)-8-RADIUS,
                                         rand.nextInt(4)+3,
                                         myColor,
                                         rand.nextDouble()*6,

@@ -159,14 +159,14 @@ public class Asteroid
 		}
 
 		if(AsteroidsFrame.getShip().livesLeft()>=0)
-			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip().getX()+Ship.radius,2)+(Math.pow(y-AsteroidsFrame.getShip().getY()+Ship.radius,2)))<size+Ship.radius)//hit by ship
+			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip().getX()+Ship.RADIUS,2)+(Math.pow(y-AsteroidsFrame.getShip().getY()+Ship.RADIUS,2)))<size+Ship.RADIUS)//hit by ship
 			{
 				if(AsteroidsFrame.getShip().looseLife())
 					split(AsteroidsFrame.getShip());
 			}
 		if(AsteroidsFrame.getShip2()!=null)
 		if(AsteroidsFrame.getShip2().livesLeft()>=0)
-			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip2().getX()+Ship.radius,2)+(Math.pow(y-AsteroidsFrame.getShip2().getY()+Ship.radius,2)))<size+10)//hit by ship2
+			if(Math.sqrt(Math.pow(x-AsteroidsFrame.getShip2().getX()+Ship.RADIUS,2)+(Math.pow(y-AsteroidsFrame.getShip2().getY()+Ship.RADIUS,2)))<size+10)//hit by ship2
 			{
 				if(AsteroidsFrame.getShip2().looseLife())
 					split(AsteroidsFrame.getShip2());

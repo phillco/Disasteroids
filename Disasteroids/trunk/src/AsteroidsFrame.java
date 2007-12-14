@@ -320,8 +320,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
             if ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 )
                 // Get the raw code from the keyboard
                 //performAction(e.getKeyCode(), ship);
-                actionManager.add( new Action( ship, 0 - e.getKeyCode(), timeStep + 15 ) );
-            AsteroidsServer.send( "k" + String.valueOf( 0 - e.getKeyCode() ) + "," + String.valueOf( timeStep + 15 ) );
+                actionManager.add( new Action( ship, 0 - e.getKeyCode(), timeStep + 2 ) );
+            AsteroidsServer.send( "k" + String.valueOf( 0 - e.getKeyCode() ) + "," + String.valueOf( timeStep + 2 ) );
         // [AK] moved to a new method to also be called by another class, receiving data from other computer
         //repaint();
         }
@@ -338,8 +338,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             // Get the raw code from the keyboard
             //performAction(e.getKeyCode(), ship);
-            actionManager.add( new Action( ship, e.getKeyCode(), timeStep + 10 ) );
-            AsteroidsServer.send( "k" + String.valueOf( e.getKeyCode() ) + "," + String.valueOf( timeStep + 10 ) );
+            actionManager.add( new Action( ship, e.getKeyCode(), timeStep+2) );
+            AsteroidsServer.send( "k" + String.valueOf( e.getKeyCode() ) + "," + String.valueOf( timeStep+2) );
         // [AK] moved to a new method to also be called by another class, receiving data from other computer
         //repaint();
         }

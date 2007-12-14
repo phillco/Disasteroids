@@ -7,10 +7,11 @@
  *
  * Run Running.class to start
  */
-import java.awt.*;
-import java.util.Scanner;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Queue;
 
 
 
@@ -24,7 +25,7 @@ public class MisileManager
 	private int popQuantity=5;
 	
 	private LinkedList<Misile> theMisiles = new LinkedList<Misile>();
-	private LinkedList<Misile> toBeAdded = new LinkedList<Misile>();
+	private Queue<Misile> toBeAdded = new LinkedList<Misile>();
 
 	
 	public synchronized LinkedList<Misile> getMisiles()
@@ -43,11 +44,9 @@ public class MisileManager
 					m.act(g);
 		}
 		
-		iter=toBeAdded.listIterator();
-		while(iter.hasNext())
+		while(!toBeAdded.isEmpty())
 		{
-			theMisiles.add(iter.next());
-			iter.remove();
+			theMisiles.add(toBeAdded.remove());
 		}
 		
 	}
@@ -55,7 +54,7 @@ public class MisileManager
 	public void explodeAll()
 	{
 		int probPopTemp=probPop;
-		probPop=100000;
+		probPop=Integer.MAX_VALUE;
 		for(Misile m: theMisiles)
 			m.explode();
 		probPop=probPopTemp;
@@ -65,8 +64,7 @@ public class MisileManager
 	{
 		if(theMisiles.size()>1000)
 			return false;
-		toBeAdded.addLast(new Misile(this,x,y,angle,dx,dy,col));
-		return true;
+		return toBeAdded.add(new Misile(this,x,y,angle,dx,dy,col));
 	}
 	
 	public void setHugeBlastProb(int newProb)

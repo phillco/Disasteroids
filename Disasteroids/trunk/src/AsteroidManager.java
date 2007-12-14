@@ -7,17 +7,18 @@
  *
  * Run Running.class to start
  */
+import java.awt.Graphics;
 import java.util.Random;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.awt.*;
-//import java.util.ConcurrentModificationException;
+import java.util.Queue;
+
 
 public class AsteroidManager
 {
 	
-	LinkedList<Asteroid> theAsteroids;
-	LinkedList<Asteroid> toBeAdded;
+	private LinkedList<Asteroid> theAsteroids;
+	private Queue<Asteroid> toBeAdded;
 	
 	public AsteroidManager()
 	{
@@ -69,18 +70,15 @@ public class AsteroidManager
 				a.act();
 		}
 		
-		itr=toBeAdded.listIterator();
-		while(itr.hasNext())
-		{
-			theAsteroids.addLast(itr.next());
-			itr.remove();
-		}
+		while(!toBeAdded.isEmpty())
+			theAsteroids.addLast(toBeAdded.remove());
+
 		
 	}
 	
 	public void add(Asteroid a)
 	{
-		toBeAdded.addFirst(a);
+		toBeAdded.add(a);
 	}
 	
 	public int size()

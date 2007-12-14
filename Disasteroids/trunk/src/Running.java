@@ -19,15 +19,32 @@ public class Running
 
     /**
      * Application entry point.
-     * @param args Command line arguments. Ignored.
+     * @param args Command line arguments.
      */
     public static void main( String[] args )
     {
+        MenuOption preselectedOption = null;
+
+        // Do we have command-line arguments?
+        for ( String arg : args )
+        {
+            for ( MenuOption option : MenuOption.values() )
+                if ( arg.equals( option.getParameter() ) )
+                    preselectedOption = option;
+        }
+
+
         // Read in our stored settings.
         Settings.loadFromStorage();
 
-        // Start the menu.
-        mF = new MainMenu();
+        // If the user wants to launch a mode, skip the menu.
+        if ( preselectedOption != null )
+            startGame(preselectedOption);
+        else
+        {
+            // Start the menu.
+            mF = new MainMenu();
+        }          
     }
 
     public static void quit()
@@ -86,7 +103,7 @@ public class Running
 
                     // Get the server address.
                     String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.lastConnectionIP );
-                    if ( ( address == null ) || ( address.equals("") ) )
+                    if ( ( address == null ) || ( address.equals( "" ) ) )
                         return;
 
                     // Connect to it.

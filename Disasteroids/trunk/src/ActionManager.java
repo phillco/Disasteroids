@@ -49,8 +49,7 @@ public class ActionManager {
                 }
             }
             if (a.timestep() < timestep) {
-                javax.swing.JOptionPane.showMessageDialog(null, "Action Missed");
-                throw new UnsynchronizedException("An Action Was Missed:\n" + a.actor());
+                throw new UnsynchronizedException("Actor: " + a.actor());
             }
 
 

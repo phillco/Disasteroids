@@ -17,7 +17,6 @@ import java.util.Queue;
 
 public class MisileManager
 {
-	private Graphics g;
 	private double speed=10;
 	private int hugeBlastProb=5;
 	private int hugeBlastSize=50;
@@ -33,7 +32,7 @@ public class MisileManager
 	
 	public synchronized void act()
 	{
-		g=AsteroidsFrame.getGBuff();
+		Graphics g=AsteroidsFrame.getGBuff();
 		ListIterator<Misile> iter = theMisiles.listIterator();
 		while(iter.hasNext())
 		{

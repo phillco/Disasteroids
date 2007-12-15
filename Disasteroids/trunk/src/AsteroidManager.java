@@ -26,7 +26,7 @@ public class AsteroidManager
 		toBeAdded=new LinkedList<Asteroid>();
 	}
 	
-	public void setUpAsteroidField(int level, Graphics gBuff)
+	public void setUpAsteroidField(int level)
 	{
 
 		Random rand=RandNumGen.getAsteroidInstance();
@@ -39,7 +39,6 @@ public class AsteroidManager
 									   rand.nextDouble()*6-3,
 									   rand.nextDouble()*6-3,
 									   rand.nextInt(150)+25,
-									   gBuff,
 									   this));
 			if(rand.nextInt(10)==1)
 				numBonuses++;
@@ -51,7 +50,6 @@ public class AsteroidManager
 										   rand.nextDouble()*6-3,
 										   rand.nextDouble()*6-3,
 										   rand.nextInt(150)+25,
-										   gBuff,
 										   this));
 
 		}

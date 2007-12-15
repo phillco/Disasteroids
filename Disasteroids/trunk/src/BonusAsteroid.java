@@ -16,9 +16,9 @@ public class BonusAsteroid extends Asteroid
 {
 	private int bonusType;
 	
-	public BonusAsteroid(int x, int y, double dx, double dy, int size, Graphics g, AsteroidManager environment)
+	public BonusAsteroid(int x, int y, double dx, double dy, int size, AsteroidManager environment)
 	{
-		super(x,y,dx,dy,size,g,environment);
+		super(x,y,dx,dy,size,environment);
 		Random rand=RandNumGen.getAsteroidInstance();
 		bonusType=rand.nextInt(7);
 	}
@@ -26,6 +26,7 @@ public class BonusAsteroid extends Asteroid
 	
 	protected void draw()
 	{
+                Graphics g = AsteroidsFrame.getGBuff();
 		g.setColor(Color.gray);
 		g.fillOval((int)(x-size/2),(int)(y-size/2),size,size);
 		g.setColor(Color.white);

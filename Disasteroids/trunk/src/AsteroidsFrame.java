@@ -28,9 +28,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
 {
     public static final int WINDOW_WIDTH = 800;
     public static final int WINDOW_HEIGHT = 800;
+    private static final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
     private static double highScore;
     private static String highScoreName;
-    private static Ship ship,  ship2;
     private static Image virtualMem;
     private static Image background;
     private static Graphics gBuff;
@@ -40,16 +40,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private boolean paused = false;
     public static long timeStep = 0; //for synchronization
     public static long otherPlayerTimeStep = 0;
-    public static boolean isPlayerOne;
-    public static boolean isMultiplayer;
     private AsteroidManager asteroidManager = new AsteroidManager();
     private ActionManager actionManager = new ActionManager();
+    public static Ship[] players;
+    private static int localPlayer;
 
-    public AsteroidsFrame( boolean isPlayer1, boolean isMult )
+    public AsteroidsFrame( int playerCount, int localPlayer )
     {
-        isPlayerOne = isPlayer1;
-        isMultiplayer = isMult;
-
         // Close when the exit key is pressed.
         addWindowListener( new WindowAdapter()
                    {
@@ -70,6 +67,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
+
+        players = new Ship[playerCount];
+        AsteroidsFrame.localPlayer = localPlayer;
     }
 
     public void init( Graphics g )
@@ -90,18 +90,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
             isFirst = false;
         }
         level = 1;
-        ship = new Ship( getWidth() / 2, getHeight() / 2, gBuff, Color.red, 5 );
-        if ( isMultiplayer )
-            ship2 = new Ship( getWidth() / 2 - 100, getHeight() / 2, gBuff, Color.blue, 5 );
-        if ( !isPlayerOne )
-        {
-            Ship temp = ship2;
-            ship2 = ship;
-            ship = temp;
-        }
-        asteroidManager.setUpAsteroidField( level, gBuff );
+
+        // Create the ships.       
+        for ( int i = 0; i < players.length; i++ )
+            players[i] = new Ship( getWidth() / 2 - ( i * 100 ), getHeight() / 2, g, PLAYER_COLORS[i], 3, "Player " + ( i + 1 ) );
+
+        asteroidManager.setUpAsteroidField( level );
     }
 
+    @Override
     public void paint( Graphics g )
     {
         if ( paused )
@@ -109,13 +106,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
         if ( isFirst )
             init( g );
 
-        //	if(timeStep%9==0)
         AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
 
-        if ( timeStep - otherPlayerTimeStep > 2 && ship2 != null )//you are too far ahead
+        // Are we are too far ahead?
+        if ( ( timeStep - otherPlayerTimeStep > 2 ) && ( players.length > 1 ) )
         {
             safeSleep( 20 );
-//			AsteroidsServer.send("PING");//encourage the creation of packets to be sent
             AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
             AsteroidsServer.flush();
             repaint();
@@ -131,21 +127,29 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
         catch ( UnsynchronizedException e )
         {
-            JOptionPane.showMessageDialog( null, "A fatal error has occured:\n" + e );
+            System.out.println( "Action missed! " + e + "\nOur timestep: " + timeStep + ", their timestep: " + otherPlayerTimeStep + "." );
             Running.quit();
         }
         ParticleManager.drawParticles( gBuff );
         asteroidManager.act();
-        ship.act();
-        if ( ship2 != null )
-            ship2.act();
+
+        // Update the ships.       
+        for ( int i = 0; i < players.length; i++ )
+        {
+            players[i].act();
+
+            // Game over?
+            if ( players[i].livesLeft() < 0 )
+            {
+                endGame( g );
+                continue;
+            }
+        }
 
         drawScore( gBuff );
-
         g.drawImage( virtualMem, 0, 0, this );
-        if ( ship.livesLeft() < 0 && ( ship2 == null || ship2.livesLeft() < 0 ) )
-            endGame( g );
-        if ( asteroidManager.size() == 0 && level>-1)
+
+        if ( asteroidManager.size() == 0 && level > -1 )
             nextLevel();
         repaint();
     }
@@ -186,16 +190,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         paused = true;
         level = newLevel;
-        ship.addLife();
-        ship.setInvincibilityCount( 100 );
-        ship.increaseScore( 2500 );
-        ship.getMisileManager().clear();
-        if ( ship2 != null )
+
+        // All players get bonuses.
+        for ( int i = 0; i < players.length; i++ )
         {
-            ship2.addLife();
-            ship2.setInvincibilityCount( 100 );
-            ship2.increaseScore( 2500 );
-            ship2.getMisileManager().clear();
+            players[i].addLife();
+            players[i].setInvincibilityCount( 100 );
+            players[i].increaseScore( 2500 );
+            players[i].getMisileManager().clear();
         }
 
         asteroidManager.clear();
@@ -203,13 +205,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         drawBackground();
         restoreBonusValues();
-        System.out.println( "Seed: " + RandNumGen.seed + "\nAsteroid generated numbers:\n" +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + "\n" +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + "\n" +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + "\n" +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + "\n" +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + "\n" );
-        asteroidManager.setUpAsteroidField( level, gBuff );
+        System.out.println( "Welcome to level " + newLevel + ". Random asteroid numbers: " +
+                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
+                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
+                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + " (Seed: " + RandNumGen.seed + ")" );
+        asteroidManager.setUpAsteroidField( level );
         paused = false;
     }
 
@@ -220,25 +220,26 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     private void drawScore( Graphics g )
     {
-        g.setColor( ship.getColor() );
-        g.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
-        if ( ship != null )
-            g.drawString( "Lives: " + ship.livesLeft(), 20, 50 );
-        g.drawString( "Level: " + level, 120, 50 );
-        g.drawString( "Score: " + ship.score(), 200, 50 );
-
-        if ( ship2 != null )
-        {//player 2
-            g.setColor( ship2.getColor() );
-            g.drawString( "Lives:" + ship2.livesLeft(), 20, 65 );
-            g.drawString( "Score:" + ship2.score(), 200, 65 );
-        }
-        g.setColor( Color.green );
-
-        // [PC] Do not draw high score if we don't have one.
-        if ( ( highScoreName != null ) && ( !highScoreName.equals( "" ) ) )
-            g.drawString( "High Score is " + highScore + " (by " + highScoreName + ")", 350, 50 );
-        g.drawString( "Asteroids: " + asteroidManager.size(), 700, 50 );
+    // TODO: Fix and implement scoreboard.
+            /*
+    g.setColor( ship.getColor() );
+    g.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
+    if ( ship != null )
+    g.drawString( "Lives: " + ship.livesLeft(), 20, 50 );
+    g.drawString( "Level: " + level, 120, 50 );
+    g.drawString( "Score: " + ship.score(), 200, 50 );
+    if ( ship2 != null )
+    {//player 2
+    g.setColor( ship2.getColor() );
+    g.drawString( "Lives:" + ship2.livesLeft(), 20, 65 );
+    g.drawString( "Score:" + ship2.score(), 200, 65 );
+    }
+    g.setColor( Color.green );
+    // [PC] Do not draw high score if we don't have one.
+    if ( ( highScoreName != null ) && ( !highScoreName.equals( "" ) ) )
+    g.drawString( "High Score is " + highScore + " (by " + highScoreName + ")", 350, 50 );
+    g.drawString( "Asteroids: " + asteroidManager.size(), 700, 50 );
+     */
     }
 
     private void drawBackground()
@@ -255,9 +256,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public void newGame()
     {
         init( g );
-        if ( isMultiplayer && isPlayerOne )
+        if ( ( players.length > 1 ) && ( localPlayer == 0 ) )
             AsteroidsServer.send( "ng" );
-    //	repaint();
     }
 
     public void endGame( Graphics g )
@@ -271,39 +271,49 @@ public class AsteroidsFrame extends Frame implements KeyListener
             g.drawString( "Game Over", 250, 400 );
         }
         this.setIgnoreRepaint( true );
-//		JOptionPane.showMessageDialog(null,"You died with a score of "+score);
-        if ( ship2 != null )
-            if ( ship.score() > ship2.score() )
-                JOptionPane.showMessageDialog( null, "Player One Wins" );
-            else
-                JOptionPane.showMessageDialog( null, "Player Two Wins" );
-        if ( ship.score() > highScore || ( ship2 != null && ship2.score() > highScore ) )
+
+        // Find the player with the highest score.
+        Ship highestScorer = players[0];
+        for ( Ship s : players )
         {
-            JOptionPane.showMessageDialog( null, "NEW HIGH SCORE!!!" );
-            if ( ship2 == null || ship.score() > ship2.score() )
-            {
-                highScoreName = JOptionPane.showInputDialog( null, "Input name here:" );
-                AsteroidsServer.send( "HS" + highScoreName );
-            }
-            if ( ship2 != null )
-                highScore = Math.max( ship.score(), ship2.score() );
-            else
-                highScore = ship.score();
-        //if(oldHighScore>10000000)
-        //{
-        //	JOptionPane.showMessageDialog(null, "HOLY CRAP!!!! YOUR SCORE IS HIGH!!!\nI NEED HELP TO COMPUTE IT");
-        //	try{Runtime.getRuntime().exec("C:/Windows/System32/calc");}catch(Exception e){}
-        //}
+            if ( s.getScore() > highestScorer.getScore() )
+                highestScorer = s;
         }
+
+        String victoryMessage = ( players.length > 1 ) ? highestScorer.getName() + " wins" : "You died";
+        victoryMessage += " with a score of " + highestScorer.getScore() + "!";
+
+        // Is this a new high score?
+        if ( highestScorer.getScore() > highScore )
+        {
+            victoryMessage += "\nThis is a new high score!";
+            highScoreName = highestScorer.getName();
+            highScore = highestScorer.getScore();
+            if ( ( players.length > 1 ) && ( highestScorer == players[localPlayer] ) )
+                AsteroidsServer.send( "HS" + highScoreName );
+        }
+
+        // Show the message box declaring victory!
+        JOptionPane.showMessageDialog( this, victoryMessage );
+
+        /* Easter egg!
+        if ( oldHighScore > 10000000 )
+        {
+        JOptionPane.showMessageDialog( null, "HOLY CRAP!!!! YOUR SCORE IS HIGH!!!\nI NEED HELP TO COMPUTE IT" );
+        try
+        {
+        Runtime.getRuntime().exec( "C:/Windows/System32/calc" );
+        }
+        catch ( Exception e )
+        {
+        }
+        }
+         */
+
         newGame();
         this.setIgnoreRepaint( false );
         paused = false;
         repaint();
-    }
-
-    public static Ship getShip()
-    {
-        return ship;
     }
 
     public static Graphics getGBuff()
@@ -318,7 +328,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             if ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 )
                 // Get the raw code from the keyboard
                 //performAction(e.getKeyCode(), ship);
-                actionManager.add( new Action( ship, 0 - e.getKeyCode(), timeStep + 2 ) );
+                actionManager.add( new Action( players[localPlayer], 0 - e.getKeyCode(), timeStep + 2 ) );
             AsteroidsServer.send( "k" + String.valueOf( 0 - e.getKeyCode() ) + "," + String.valueOf( timeStep + 2 ) );
         // [AK] moved to a new method to also be called by another class, receiving data from other computer
         //repaint();
@@ -336,8 +346,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             // Get the raw code from the keyboard
             //performAction(e.getKeyCode(), ship);
-            actionManager.add( new Action( ship, e.getKeyCode(), timeStep+2) );
-            AsteroidsServer.send( "k" + String.valueOf( e.getKeyCode() ) + "," + String.valueOf( timeStep+2) );
+            actionManager.add( new Action( players[localPlayer], e.getKeyCode(), timeStep + 2 ) );
+            AsteroidsServer.send( "k" + String.valueOf( e.getKeyCode() ) + "," + String.valueOf( timeStep + 2 ) );
         // [AK] moved to a new method to also be called by another class, receiving data from other computer
         //repaint();
         }
@@ -346,11 +356,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public synchronized void performAction( int action, Ship actor )
     {
-        // Network start ket
-//		if(action == 123) {
-//			Net.startNetworkPrompt();
-//		}
-
         /*============================
          * Decide what key was pressed
          *==========================*/
@@ -458,21 +463,16 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void updateFullscreen()
     {
-        boolean wasVisible = isVisible();
-
-        dispose();
-        if ( wasVisible )
-            setVisible( false );
-
-        setUndecorated( false );
         GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-        // Set fullscreen mode, if supported.
-        if ( ( graphicsDevice.isFullScreenSupported() ) && ( Settings.useFullscreen ) )
+        // Set fullscreen mode.
+        if ( Settings.useFullscreen )
         {
             // Don't change anything if we're already in fullscreen mode.
             if ( graphicsDevice.getFullScreenWindow() != this )
             {
+                setVisible( false );
+                dispose();
                 setUndecorated( true );
                 setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
                 graphicsDevice.setFullScreenWindow( this );
@@ -481,6 +481,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 Image cursorImage = Toolkit.getDefaultToolkit().getImage( "xparent.gif" );
                 Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor( cursorImage, new Point( 0, 0 ), "" );
                 setCursor( blankCursor );
+
+                // Re-create the background.
+                if ( background != null )
+                    drawBackground();
             }
         }
         // Set windowed mode.
@@ -489,15 +493,22 @@ public class AsteroidsFrame extends Frame implements KeyListener
             // Don't change anything if we're already in windowed mode.
             if ( ( getSize().width != WINDOW_WIDTH ) || ( getSize().height != WINDOW_HEIGHT ) )
             {
+                setVisible( false );
+                dispose();
+                setUndecorated( false );
                 setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
+                graphicsDevice.setFullScreenWindow( null );
 
                 // Show the cursor.
                 setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
+
+                // Re-create the background.
+                if ( background != null )
+                    drawBackground();
             }
         }
 
-        if ( wasVisible )
-            setVisible( true );
+        setVisible( true );
     }
 
     public void setOtherPlayerTimeStep( int step )
@@ -513,32 +524,20 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     private void restoreBonusValues()
     {
-        ship.getMisileManager().setHugeBlastProb( 5 );
-        ship.getMisileManager().setHugeBlastSize( 50 );
-        ship.getMisileManager().setProbPop( 2000 );
-        ship.getMisileManager().setPopQuantity( 5 );
-        ship.getMisileManager().setSpeed( 10 );
-        ship.setMaxShots( 10 );
-
-        if ( ship2 != null )
+        for ( Ship ship : players )
         {
-            ship2.getMisileManager().setHugeBlastProb( 5 );
-            ship2.getMisileManager().setHugeBlastSize( 50 );
-            ship2.getMisileManager().setProbPop( 2000 );
-            ship2.getMisileManager().setPopQuantity( 5 );
-            ship2.getMisileManager().setSpeed( 10 );
-            ship2.setMaxShots( 10 );
+            ship.getMisileManager().setHugeBlastProb( 5 );
+            ship.getMisileManager().setHugeBlastSize( 50 );
+            ship.getMisileManager().setProbPop( 2000 );
+            ship.getMisileManager().setPopQuantity( 5 );
+            ship.getMisileManager().setSpeed( 10 );
+            ship.setMaxShots( 10 );
         }
     }
 
     public static int getLevel()
     {
         return level;
-    }
-
-    public static Ship getShip2()
-    {
-        return ship2;
     }
 
     public static void safeSleep( int milis )
@@ -567,7 +566,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public static boolean isPlayerOne()
     {
-        return isPlayerOne;
+        return localPlayer == 0;
     }
 
     public void setHighScore( String name )

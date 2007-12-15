@@ -87,6 +87,6 @@ public class ServerListenerThread extends Thread
 		int comma=command.indexOf(",");
 		int keyCommand=Integer.parseInt(command.substring(0,comma));
 		int timeStep=Integer.parseInt(command.substring(comma+1));
-		Running.environment().actionManager().add(new Action(2, keyCommand, timeStep));
+		Running.environment().actionManager().add(new Action(AsteroidsFrame.players[1], keyCommand, timeStep));
 	}
 }

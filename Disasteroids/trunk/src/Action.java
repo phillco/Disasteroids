@@ -24,16 +24,6 @@ public class Action
 		this.timestep=timestep;
 	}
 	
-	public Action(int actor, int keyCode, long timestep)
-	{
-		if(actor==1)
-			this.actor=AsteroidsFrame.getShip();
-		else
-			this.actor=AsteroidsFrame.getShip2();
-		this.keyCode=keyCode;
-		this.timestep=timestep;
-	}
-	
 	public long timestep()
 	{
 		return timestep;

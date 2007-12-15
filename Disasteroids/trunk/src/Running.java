@@ -39,12 +39,12 @@ public class Running
 
         // If the user wants to launch a mode, skip the menu.
         if ( preselectedOption != null )
-            startGame(preselectedOption);
+            startGame( preselectedOption );
         else
         {
             // Start the menu.
             mF = new MainMenu();
-        }          
+        }
     }
 
     public static void quit()
@@ -72,10 +72,10 @@ public class Running
      */
     private static void startGame( MenuOption option )
     {
+        int playerCount = 1;
+        int localPlayer = 0;
         try
         {
-            boolean isPlayerOne = true;
-            boolean isMultiPlayer = true;
             int seed = 0;
 
             switch ( option )
@@ -93,7 +93,10 @@ public class Running
                     }
 
                     // Now start the local game.
-                    isPlayerOne = true;
+                    // Assume player 1.
+                    playerCount = 2;
+                    localPlayer = 0;
+
                     seed = (int) ( Math.random() * 10000 );
                     AsteroidsServer.send( "Seed" + String.valueOf( seed ) );
                     RandNumGen.init( seed );
@@ -105,6 +108,8 @@ public class Running
                     String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.lastConnectionIP );
                     if ( ( address == null ) || ( address.equals( "" ) ) )
                         return;
+                    
+                    Settings.lastConnectionIP = address;
 
                     // Connect to it.
                     try
@@ -117,7 +122,9 @@ public class Running
                     }
 
                     // Start the local game.
-                    isPlayerOne = false;
+                    // Assume player 2.
+                    playerCount = 2;
+                    localPlayer = 1;
                     while ( !RandNumGen.isInitialized() )
                         ;
                     break;
@@ -126,8 +133,6 @@ public class Running
 
                     // Start the local game.
                     RandNumGen.init( seed );
-                    isPlayerOne = true;
-                    isMultiPlayer = false;
                     break;
 
                 default:
@@ -136,7 +141,9 @@ public class Running
 
             // Start the music.
             Sound.updateMusic();
-            aF = new AsteroidsFrame( isPlayerOne, isMultiPlayer );
+            
+            // Create the game!
+            aF = new AsteroidsFrame( playerCount, localPlayer );
         }
         catch ( Exception e )
         {

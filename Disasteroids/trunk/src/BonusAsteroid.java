@@ -7,23 +7,43 @@
  *
  * Run Running.class to start
  */
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.Random;
-import java.awt.*;
-import java.util.ArrayList;
+
 
 
 public class BonusAsteroid extends Asteroid
 {
+        /**
+         * The code corresponding to the bonus carried by this <code>BonusAsteroid</code>
+         * @since Classic
+         */
 	private int bonusType;
 	
-	public BonusAsteroid(int x, int y, double dx, double dy, int size, AsteroidManager environment)
+        /**
+         * Creates a new instance of <code>BonusAsteroid</code>
+         * @param x The x coordinate
+         * @param y The y coordinate
+         * @param dx The x velocity
+         * @param dy The y velocity (up is negative)
+         * @param size The diameter
+         * @param g The <code>Graphics</code> context in which it will be drawn
+         * @param environment The <code>AsteroidManager</code> to which it belongs
+         * @since Classic
+         */
+	public BonusAsteroid(int x, int y, double dx, double dy, int size, Graphics g, AsteroidManager environment)
 	{
 		super(x,y,dx,dy,size,environment);
 		Random rand=RandNumGen.getAsteroidInstance();
 		bonusType=rand.nextInt(7);
 	}
 	
-	
+	/**
+         * Draws <code>this</code>.  Draws identically to a normal <code>Asteroid</code> except that it is Gray with a White border
+         * @since Classic
+         */
+    @Override
 	protected void draw()
 	{
                 Graphics g = AsteroidsFrame.getGBuff();
@@ -34,6 +54,12 @@ public class BonusAsteroid extends Asteroid
 
 	}
 	
+    /**
+     * Called when the <code>BonusAsteroid</code> is killed.  Splits into two normal <code>Asteroid</code>s and applys bonus
+     * @param killer The <code>Ship</code> which killed <code>this</code>
+     * @since Classic
+     */
+    @Override
 	protected void split(Ship killer)
 	{
 		if(children>2)
@@ -52,6 +78,11 @@ public class BonusAsteroid extends Asteroid
 		}
 	}
 	
+        /**
+         * Applies the bonus to the killer
+         * @param killer The <code>Ship</code> which killed <code>this</code>
+         * @since Classic
+         */
 	private void applyBonus(Ship killer)
 	{
 		switch (bonusType)

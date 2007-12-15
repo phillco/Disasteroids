@@ -70,7 +70,7 @@ public class AsteroidsServer
 
     /**
      * Creates a server and starts the game once a client connects.
-     * @return Whether the connection was made.
+     * 
      */
     public static void master() throws ConnectException
     {

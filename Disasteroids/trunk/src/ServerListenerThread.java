@@ -7,8 +7,9 @@
  *
  * Run Running.class to start
  */
-import java.io.*;
-import javax.swing.JOptionPane;
+
+import java.io.BufferedReader;
+import java.io.IOException;
 
 
 public class ServerListenerThread extends Thread
@@ -23,6 +24,7 @@ public class ServerListenerThread extends Thread
 	
 	
 	
+    @Override
 	public void run()
 	{
 		String fromServer;

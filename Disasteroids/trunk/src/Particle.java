@@ -11,18 +11,60 @@ import java.awt.Color;
 //uses Random
 
 public class Particle {
+        /**
+         * The time until this <code>Particle</code> will be removed
+         * @since Classic
+         */
 	public double life;
+        
+        /**
+         * The original life of this <code>Particle</code>
+         * @since Classic
+         */
 	public double life_max;
+        
+        /**
+         * The current <code>Color</code> of this <code>Particle</code>
+         * @since Classic
+         */
 	public Color color;
-	public double x;
-	public double y;
+        
+        /**
+         * The coordinates of this <code>Particle</code>
+         * @since Classic
+         */
+	public double x,y;
+        
+        /**
+         * The diameter of this <code>Particle</code>
+         * @since Classic
+         */
 	public double size;
-	public double dx;
-	public double dy;
-	
-	//[AK]The Color was fading too quickly to be seen, so i changed the fading mechanism
+        
+        /**
+         * The x and y components of velocity
+         * @since Classic
+         */
+	public double dx,dy;
+        
+        /**
+         * The <code>Color</code> represented as an array of red, green, and blue, each as a double between 0 and 1.0
+         * @since Classic
+         */
 	public double[] rgb=new double[3];
 	
+        /**
+         * Creates a new <code>Particle</code>
+         * @param x The x coordinate
+         * @param y The y coordinate
+         * @param size The diameter
+         * @param c The <code>Color</code>
+         * @param speed The speed
+         * @param angle The direction
+         * @param lifemax The longest this <code>Particle</code> can live
+         * @param lifemin The least amount of time this <code>Particle</code> can live
+         * @since Classic
+         */
 	public Particle(double x, double y, double size, Color c, double speed, double angle, double lifemax, double lifemin) {
 		life = (RandNumGen.getParticleInstance().nextDouble())*lifemax + lifemin;
 		this.life_max = life;
@@ -38,7 +80,12 @@ public class Particle {
 		rgb[1]=c.getGreen();
 		rgb[2]=c.getBlue();
 	}
-	// Returns whether this needs to be removed
+
+        /**
+         * Iterates through one time step:  Moves, ages, slows down, and fades
+         * @return whether this needs to be removed
+         * @since Classic
+         */
 	public boolean act() {
 		life--;
 		x += dx;

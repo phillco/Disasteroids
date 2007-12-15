@@ -8,14 +8,30 @@
  * Run Running.class to start
  */
 
-import java.awt.*;
+
+import java.awt.Graphics;
 import java.util.ArrayList;
 public class ParticleManager  {
+        /**
+         * A list of all <code>Particle</code>s of all <code>Ship</code>s
+         * @since Classic
+         */
     	private static ArrayList<Particle> parts = new ArrayList<Particle>();
+        
+        /**
+         * Adds the specified <code>Particle</code>
+         * @param p the <code>Particle</code> to be added
+         * @since Classic
+         */
     	public static void addParticle(Particle p) {
     		parts.add(p);
     	}
     	
+        /**
+         * Instructs all <code>Particle</code>s to act, removes old ones, and draws the rest
+         * @param g The <code>Graphics</code> context in which to draw the <code>Particles</code>
+         * @since Classic
+         */
     	public static void drawParticles(Graphics g) {
     		
 		if(parts.size() > 0) {
@@ -25,7 +41,7 @@ public class ParticleManager  {
 					parts.remove(i);
 				else {
 					g.setColor(p.color);
-					g.fillOval((int)p.x+10,(int)p.y+10,(int)p.size,(int)p.size);
+					g.fillOval((int)(p.x-p.size/2),(int)(p.y-p.size/2),(int)p.size,(int)p.size);
 					i++;
 				}
 			}

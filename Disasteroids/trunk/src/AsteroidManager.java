@@ -16,17 +16,35 @@ import java.util.Queue;
 
 public class AsteroidManager
 {
-	
+	/**
+         * A list of all currently valid <code>Asteroid</code>s
+         * @since Classic
+         */
 	private LinkedList<Asteroid> theAsteroids;
+        
+        /**
+         * A list of all pending <code>Asteroid</code>s
+         * @since Classic
+         */
 	private Queue<Asteroid> toBeAdded;
 	
+        /**
+         * Constructs a new <code>AsteroidManager</code>
+         * @since Classic
+         */
 	public AsteroidManager()
 	{
 		theAsteroids=new LinkedList<Asteroid>();
 		toBeAdded=new LinkedList<Asteroid>();
 	}
 	
-	public void setUpAsteroidField(int level)
+        /**
+         * 
+         * @param level The level which this asteroid field should reflect
+         * @param gBuff The <code>Graphics</code> context where the <code>Asteroid</code>s should be drawn
+         * @since Classic
+         */
+	public void setUpAsteroidField(int level, Graphics gBuff)
 	{
 
 		Random rand=RandNumGen.getAsteroidInstance();
@@ -56,6 +74,10 @@ public class AsteroidManager
 
 	}
 	
+        /**
+         * Removes all faulty <code>Asteroid</code>s and instructs all others to act
+         * @since Classic
+         */
 	public void act()
 	{
 		ListIterator<Asteroid> itr= theAsteroids.listIterator();
@@ -74,18 +96,33 @@ public class AsteroidManager
 		
 	}
 	
+        /**
+         * Queues an <code>Asteroid</code> to be added to <code>this</code>
+         * @param a The <code>Asteroid</code> to be added
+         * @since Classic
+         */
 	public void add(Asteroid a)
 	{
 		toBeAdded.add(a);
 	}
 	
+        /**
+         * Gets the number of <code>Asteroid</code>s
+         * @return the number of <code>Asteroid</code>s
+         * @since Classic
+         */
 	public int size()
 	{
 		return theAsteroids.size();
 	}
 	
+        /**
+         * Removes all current and pending <code>Asteroid</code>s
+         * @since Classic
+         */
 	public void clear()
 	{
 		theAsteroids=new LinkedList<Asteroid>();
+                toBeAdded=new LinkedList<Asteroid>();
 	}
 }

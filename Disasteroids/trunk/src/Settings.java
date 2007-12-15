@@ -19,6 +19,7 @@ public class Settings
     public static boolean soundOn = true;
     public static boolean useFullscreen = true;
     public static String lastConnectionIP = "";
+    public static boolean antiAlias = true;
 
     /**
      * Loads settings from <code>Disasteroids.prop</code> if it exists.
@@ -39,6 +40,9 @@ public class Settings
 
             if ( p.containsKey( "fullscreen" ) )
                 useFullscreen = Boolean.parseBoolean( p.getProperty( "fullscreen" ) );
+
+            if ( p.containsKey( "antiAlias" ) )
+                antiAlias = Boolean.parseBoolean( p.getProperty( "antiAlias" ) );
 
             if ( p.containsKey( "lastConnectionIP" ) )
                 lastConnectionIP = p.getProperty( "lastConnectionIP" );
@@ -65,6 +69,7 @@ public class Settings
             p.put( "musicOn", String.valueOf( musicOn ) );
             p.put( "soundOn", String.valueOf( soundOn ) );
             p.put( "fullscreen", String.valueOf( useFullscreen ) );
+            p.put( "antiAlias", String.valueOf( antiAlias ) );
             p.put( "lastConnectionIP", lastConnectionIP );
             p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );
         }

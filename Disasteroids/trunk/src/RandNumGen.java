@@ -15,7 +15,7 @@ public class RandNumGen
 	private static Random numGen;
 	private static Random particleGen;
 	private static Random starGen;
-	private static Random misileGen;
+	private static Random MissileGen;
 	private static Random asteroidGen;
 	private static boolean initialized=false;
 	public  static int seed;
@@ -26,7 +26,7 @@ public class RandNumGen
 		numGen=new Random(seed);
 		particleGen=new Random(numGen.nextInt(10000));
 		starGen=new Random(numGen.nextInt(10000));
-		misileGen=new Random(numGen.nextInt(10000));
+		MissileGen=new Random(numGen.nextInt(10000));
 		asteroidGen=new Random(numGen.nextInt(10000));
 		initialized=true;
 	}
@@ -46,9 +46,9 @@ public class RandNumGen
 		return starGen;
 	}
 	
-	public static Random getMisileInstance()
+	public static Random getMissileInstance()
 	{
-		return misileGen;
+		return MissileGen;
 	}
 	
 	public static Random getAsteroidInstance()

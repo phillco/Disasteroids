@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -19,6 +20,7 @@ import java.awt.event.WindowEvent;
 public class AsteroidsMenu extends BufferedFrame
 {
     public static final int WINDOW_HEIGHT = 250;
+
     public static final int WINDOW_WIDTH = 400;
 
     public AsteroidsMenu()
@@ -41,6 +43,9 @@ public class AsteroidsMenu extends BufferedFrame
     @Override
     public void paint( Graphics g )
     {
+        // Menus are always anti-aliased.
+        ( (Graphics2D) g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+
         // Draw the background.
         Graphics2D g2d = (Graphics2D) g;
         GradientPaint gradient = new GradientPaint( 0, 0, Color.darkGray, WINDOW_WIDTH, WINDOW_HEIGHT, Color.lightGray );

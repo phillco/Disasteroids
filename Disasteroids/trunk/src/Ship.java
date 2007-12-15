@@ -24,18 +24,17 @@ public class Ship
     private double origin_x,  origin_y;
     private double angle;
     private String name;
-    private Graphics g;
     private int timeTillNextShot = 0;
     private Color myColor;
     private int invincibilityCount;
     private Color myInvicibleColor;
     private int livesLeft;
     private boolean invulFlash;
-    private MisileManager manager;
+    private MissileManager manager;
     private int score = 0;
     private int maxShots = 10;
 
-    public Ship( int x, int y, Graphics g, Color c, int lives, String name )
+    public Ship( int x, int y, Color c, int lives, String name )
     {
         this.x = x;
         this.y = y;
@@ -43,7 +42,6 @@ public class Ship
         this.origin_y = y;
         this.name = name;
 
-        this.g = g;
         invulFlash = true;
         angle = Math.PI / 2;
         dx = 0;
@@ -53,13 +51,13 @@ public class Ship
         double fadePct = 0.6;
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
-        manager = new MisileManager();
+        manager = new MissileManager();
         invincibilityCount = 200;
     }
 
     private void draw()
     {
-        g = AsteroidsFrame.getGBuff();
+        Graphics g = AsteroidsFrame.getGBuff();
         
         // Set our color
         if ( cannotDie() )
@@ -156,8 +154,8 @@ public class Ship
             Random rand = RandNumGen.getParticleInstance();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
-                                             x + rand.nextInt( 8 ) - 4 - RADIUS,
-                                             y + rand.nextInt( 8 ) - 4 - RADIUS,
+                                             x + rand.nextInt( 8 ) - 4 + dx,
+                                             y + rand.nextInt( 8 ) - 4 + dy,
                                              rand.nextInt( 4 ) + 3,
                                              myColor,
                                              rand.nextDouble() * 3,
@@ -170,8 +168,8 @@ public class Ship
             Random rand = RandNumGen.getParticleInstance();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
-                                             x + rand.nextInt( 16 ) - 8 - RADIUS,
-                                             y + rand.nextInt( 16 ) - 8 - RADIUS,
+                                             x + rand.nextInt( 16 ) - 8 + dx,
+                                             y + rand.nextInt( 16 ) - 8 + dy,
                                              rand.nextInt( 4 ) + 3,
                                              myColor,
                                              rand.nextDouble() * 3,
@@ -225,9 +223,9 @@ public class Ship
             if ( other == this )
                 continue;
 
-            LinkedList<Misile> enemyMisiles = other.getMisileManager().getMisiles();
+            LinkedList<Missile> enemyMissiles = other.getMissileManager().getMissiles();
 
-            for ( Misile m : enemyMisiles )
+            for ( Missile m : enemyMissiles )
             {
                 if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y - m.getY(), 2 ) < 400 )
                     if ( looseLife() )
@@ -265,7 +263,7 @@ public class Ship
         if ( livesLeft < 0 )
             return;
         timeTillNextShot = 15;
-        manager.addMisile( (int) x, (int) y, angle, dx, dy, myColor );
+        manager.addMissile( (int) x, (int) y, angle, dx, dy, myColor );
 
         if ( useSound )
             Sound.click();
@@ -278,7 +276,7 @@ public class Ship
 
     public boolean canShoot()
     {
-        return ( manager.getNumLivingMisiles() < maxShots && timeTillNextShot < 1 && invincibilityCount < 400 && livesLeft >= 0 );
+        return ( manager.getNumLivingMissiles() < maxShots && timeTillNextShot < 1 && invincibilityCount < 400 && livesLeft >= 0 );
     }
 
     public Color getColor()
@@ -325,7 +323,7 @@ public class Ship
         return invincibilityCount > 0;
     }
 
-    public MisileManager getMisileManager()
+    public MissileManager getMissileManager()
     {
         return manager;
     }

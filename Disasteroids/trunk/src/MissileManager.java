@@ -16,6 +16,11 @@ import java.util.Queue;
 public class MissileManager
 {
     /**
+     * The time between each shot
+     * @since December 15, 2007
+     */
+    private int intervalShoot;
+    /**
      * The current initial speed for <code>Missile</code>s in this manager.
      * @since Classic
      */
@@ -49,13 +54,13 @@ public class MissileManager
      * The list of currently valid <code>Missile</code>s.
      * @since Classic
      */
-    private LinkedList<Missile> theMissiles = new LinkedList<Missile>();
+    private LinkedList<Misile> theMissiles = new LinkedList<Misile>();
 
     /**
      * The list of <code>Missile</code>s waiting to be added.
      * @since Classic
      */
-    private Queue<Missile> toBeAdded = new LinkedList<Missile>();
+    private Queue<Misile> toBeAdded = new LinkedList<Misile>();
 
     /**
      * Gets all currently valid <code>Missile</code>s.
@@ -63,7 +68,7 @@ public class MissileManager
      * @author Andy Kooiman
      * @since Classic
      */
-    public synchronized LinkedList<Missile> getMissiles()
+    public synchronized LinkedList<Misile> getMissiles()
     {
         return theMissiles;
     }
@@ -76,14 +81,14 @@ public class MissileManager
     public synchronized void act()
     {
         Graphics g = AsteroidsFrame.getGBuff();
-        ListIterator<Missile> iter = theMissiles.listIterator();
+        ListIterator<Misile> iter = theMissiles.listIterator();
         while ( iter.hasNext() )
         {
-            Missile m = iter.next();
+            Misile m = iter.next();
             if ( m.needsRemoval() )
                 iter.remove();
             else
-                m.act( g );
+                m.act();
         }
 
         while ( !toBeAdded.isEmpty() )
@@ -101,7 +106,7 @@ public class MissileManager
     {
         int probPopTemp = probPop;
         probPop = Integer.MAX_VALUE;
-        for ( Missile m : theMissiles )
+        for ( Misile m : theMissiles )
             m.explode();
         probPop = probPopTemp;
     }
@@ -122,7 +127,7 @@ public class MissileManager
     {
         if ( theMissiles.size() > 1000 )
             return false;
-        return toBeAdded.add( new Missile( this, x, y, angle, dx, dy, col ) );
+        return toBeAdded.add( new Misile( this, x, y, angle, dx, dy, col ) );
     }
 
     /**
@@ -276,5 +281,13 @@ public class MissileManager
     public int popQuantity()
     {
         return popQuantity;
+    }
+
+    int getIntervalShoot() {
+        return intervalShoot;
+    }
+
+    public void setIntervalShoot(int i) {
+        intervalShoot=i;
     }
 }

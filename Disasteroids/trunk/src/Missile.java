@@ -134,11 +134,10 @@ public class Missile
      * @author Andy Kooiman
      * @since Classic
      */
-    public synchronized void draw( Graphics g )
+    public synchronized void draw()
     {
-        g.setColor( myColor );
-        g.drawLine( (int) x, (int) y, (int) ( x - 10 * Math.cos( angle ) ), (int) ( y + 10 * Math.sin( angle ) ) );
-        g.fillOval( (int) x - 3, (int) y - 3, 6, 6 );
+            Running.environment().drawLine(myColor,(int)x+1,(int)y+1,(int)(x-10*Math.cos(angle))+1,(int)(y+10*Math.sin(angle))+1);
+            Running.environment().fillCircle(myColor, (int)x,(int)y, radius);
     }
 
     /**
@@ -158,14 +157,14 @@ public class Missile
      * @author Andy Kooiman
      * @since Classic
      */
-    public synchronized void act( Graphics g )
+    public synchronized void act()
     {
         age++;
         move();
         checkWrap();
         checkLeave();
-        draw( g );
-        explode( explodeCount, g );
+        draw();
+        explode( explodeCount);
     }
 
     /**
@@ -222,63 +221,58 @@ public class Missile
      * @author Andy Kooiman
      * @since Classic
      */
-    private synchronized void explode( int explodeCount, Graphics g )
+    private synchronized void explode( int explodeCount)
     {
-        switch ( explodeCount )
-        {
-            case 0:
-                return;
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                dx *= .8;
-                dy *= .8;
-                radius = 3;
-                if ( explodeCount % 2 == 0 )
-                    g.setColor( myColor );
-                else
-                    g.setColor( Color.yellow );
-                g.fillOval( (int) x - 3, (int) y - 3, 2 * radius, 2 * radius );
-                this.explodeCount++;
-                break;
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                dx *= .8;
-                dy *= .8;
-                if ( explodeCount % 2 == 0 )
-                    g.setColor( myColor );
-                else
-                    g.setColor( Color.yellow );
-                radius = 5;
-                g.fillOval( (int) x - 5, (int) y - 5, 2 * radius, 2 * radius );
-                this.explodeCount++;
-                break;
-            case 9:
-            case 10:
-            case 11:
-                dx *= .8;
-                dy *= .8;
-                if ( hugeBlast )
-                {
-                    g.setColor( myColor );
-                    radius = manager.hugeBlastSize();
-                    g.fillOval( (int) x - radius, (int) y - radius, 2 * radius, 2 * radius );
-                    this.explodeCount++;
-                }
-                else
-                {
-                    radius = 14;
-                    g.setColor( Color.yellow );
-                    g.fillOval( (int) x - radius, (int) y - radius, 2 * radius, 2 * radius );
-                    this.explodeCount++;
-                }
-                break;
-            default:
-                needsRemoval = true;
-        }
+        
+            Color col;
+		switch (explodeCount)
+		{
+			case 0:
+				return;
+			case 1:	case 2:	case 3:	case 4:
+				dx*=.8;
+				dy*=.8;
+				radius=3;
+				if(explodeCount%2==0)
+					col=myColor;
+				else
+					col=Color.yellow;
+				Running.environment().fillCircle(col,(int)x,(int)y,radius);
+				this.explodeCount++;
+				break;
+			case 5:	case 6:	case 7:	case 8:
+				dx*=.8;
+				dy*=.8;
+				if(explodeCount%2==0)
+					col=myColor;
+				else
+					col=Color.yellow;
+				radius=5;
+				Running.environment().fillCircle(col,(int)x,(int)y,radius);
+				this.explodeCount++;
+				break;
+			case 9:	case 10: case 11:
+				dx*=.8;
+				dy*=.8;
+				if(hugeBlast)
+				{
+					col=myColor;
+					radius=manager.hugeBlastSize();
+					Running.environment().fillCircle(col,(int)x,(int)y,radius);
+					this.explodeCount++;
+				}
+				else
+				{
+					radius=14;
+					col=Color.yellow;
+					Running.environment().fillCircle(col,(int)x,(int)y,radius);
+					this.explodeCount++;
+				}
+				break;
+			default :
+				needsRemoval = true;
+				
+		}
     }
 
     /**

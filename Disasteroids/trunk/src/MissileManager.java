@@ -19,7 +19,7 @@ public class MissileManager
      * The time between each shot
      * @since December 15, 2007
      */
-    private int intervalShoot;
+    private int intervalShoot=15;
     /**
      * The current initial speed for <code>Missile</code>s in this manager.
      * @since Classic

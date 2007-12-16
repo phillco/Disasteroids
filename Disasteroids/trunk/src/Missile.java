@@ -4,7 +4,6 @@
  */
 
 import java.awt.Color;
-import java.awt.Graphics;
 
 /**
  * The bullets that each <code>Ship</code> shoots.
@@ -128,17 +127,16 @@ public class Missile
         hugeBlast = ( RandNumGen.getMissileInstance().nextInt( manager.hugeBlastProb() ) <= 1 );
     }
 
-    /**
-     * Draws <code>this</code>.
-     * @param g The <code>Graphics</code> context in which to be drawn.
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    public synchronized void draw()
-    {
+	/**
+         * Draws <code>this</code>
+         * @param g The <code>Graphics</code> context in which to be drawn
+         * @since Classic
+         */
+	public void draw()
+	{
             Running.environment().drawLine(myColor,(int)x+1,(int)y+1,(int)(x-10*Math.cos(angle))+1,(int)(y+10*Math.sin(angle))+1);
             Running.environment().fillCircle(myColor, (int)x,(int)y, radius);
-    }
+	}
 
     /**
      * Moves <code>this</code> according to its speed.
@@ -223,7 +221,6 @@ public class Missile
      */
     private synchronized void explode( int explodeCount)
     {
-        
             Color col;
 		switch (explodeCount)
 		{

@@ -199,6 +199,7 @@ public class Asteroid
             return;
         }
         killer.increaseScore( radius*2 );
+        killer.setNumAsteroidsKilled(killer.getNumAsteroidsKilled() + 1);
         Running.environment().writeOnBackground( "+" + String.valueOf( radius*2 ), (int) x, (int) y, killer.getColor().darker() );
         if ( radius < 12 )
             shouldRemove = true;

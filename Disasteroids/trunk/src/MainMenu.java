@@ -111,7 +111,8 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             // Selecting a choice?
             case KeyEvent.VK_ENTER:
             case KeyEvent.VK_SPACE:
-                Running.exitMenu( MenuOption.values()[choice] );
+                dispose();
+                Running.startGame( MenuOption.values()[choice] );
                 break;
 
             // Changing a setting?

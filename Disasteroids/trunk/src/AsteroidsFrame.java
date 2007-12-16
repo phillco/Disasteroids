@@ -74,28 +74,22 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private static Image background;
 
     /**
-     * The <code>Graphics</code> context of virtualMem; used for double buffering.
-     * @since Classic
-     */
-    private static Graphics gBuff;
-
-    /**
      * The current level of the game.
      * @since Classic
      */
     private static int level;
 
     /**
-     * Stores if current timestep is the first iteration.
-     * @since Classic
-     */
-    private boolean isFirst = true;
-
-    /**
      * The <code>Graphics</code> context of the screen.
      * @since Classic
      */
     private Graphics g;
+
+    /**
+     * The <code>Graphics</code> context of virtualMem; used for double buffering.
+     * @since Classic
+     */
+    private static Graphics gBuff;
 
     /**
      * Stores whether the game is currently paused or not.
@@ -119,13 +113,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * Stores the current <code>Asteroid</code> field.
      * @since Classic
      */
-    private AsteroidManager asteroidManager = new AsteroidManager();
+    private AsteroidManager asteroidManager;
 
     /**
      * Stores the current pending <code>Action</code>s.
      * @since Classic
      */
-    private ActionManager actionManager = new ActionManager();
+    private ActionManager actionManager;
 
     /**
      * Array of players.
@@ -141,64 +135,93 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private static int localPlayer;
 
     /**
-     * Constructs the game frame.
-     * @param playerCount Number of players that will be playing.
-     * @param localPlayer Index of the player at this computer.
-     * @since December 14 2007
+     * Whether the user is pressing the scoreboard key.
+     * @since December 15 2007
+     */
+    private boolean drawScoreboard;
+
+    /**
+     * Constructs the game frame and game elements.
+     * 
+     * @param playerCount   number of players that will be playing
+     * @param localPlayer   index of the player at this computer
+     * @since December 14, 2007
      */
     public AsteroidsFrame( int playerCount, int localPlayer )
     {
+        Running.setEnvironment( this );
+
         // Close when the exit key is pressed.
         addWindowListener( new CloseAdapter() );
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
 
+        highScore = 1000000;
+        highScoreName = "Phillip and Andy";
+        
+        // Set up the connection/game settings.
         players = new Ship[playerCount];
         AsteroidsFrame.localPlayer = localPlayer;
+
+        // Set up the game.
+        resetEntireGame();
     }
 
     /**
-     * Initializes this <code>AsteroidsFrame</code>.
-     * @param g The <code>Graphics</code> context of the screen.
-     * @author Andy Kooiman
-     * @since Classic
+     * Resets all gameplay elements. Ships, asteroids, timesteps, missiles and actions are all reset.
+     * Connection elements like the number of players or the index of <code>localPlayer</code> are not reset.
+     * 
+     * @since December 16, 2007
      */
-    public void init( Graphics g )
+    private void resetEntireGame()
     {
-        // [PC] TODO: Clean up, fix new game fullscreen bug.
-        this.g = g;
-        virtualMem = createImage( WINDOW_WIDTH, WINDOW_HEIGHT );
-        gBuff = virtualMem.getGraphics();
-        if ( isFirst )
-        {
-            this.addKeyListener( this );
-            virtualMem = createImage( getWidth(), getHeight() );
-            background = createImage( getWidth(), getHeight() );
-            drawBackground();
-            gBuff = virtualMem.getGraphics();
+        timeStep = 0;
+        otherPlayerTimeStep = 0;
+        
+        // Create the ships.
+        actionManager = new ActionManager();
+        for ( int i = 0; i < players.length; i++ )
+            players[i] = new Ship( getWidth() / 2 - ( i * 100 ), getHeight() / 2, PLAYER_COLORS[i], 0, "Player " + ( i + 1 ) );
 
-            highScore = 1000000;
-            highScoreName = "Phillip and Andy";
-            isFirst = false;
-        }
+        // Create the asteroids.
+        level = 1;
+        asteroidManager = new AsteroidManager();
+        asteroidManager.setUpAsteroidField( level );
+        
+        // Reset the background.
+        drawBackground();
+    }
+
+    /**
+     * Sets up double buffering, the <code>background</code>, and the <code>KeyListener</code>.
+     * 
+     * @param g the unbuffered <code>Graphics</code> context
+     * @since December 25, 2007
+     */
+    private void initBuffering( Graphics g )
+    {
+        this.g = g;
+
+        // Create the buffer.
+        virtualMem = createImage( getWidth(), getHeight() );
+        gBuff = virtualMem.getGraphics();
 
         // Anti-alias, if the user wants it.
         updateAntiAliasing();
 
-        level = 1;
+        // Receive key events.
+        this.addKeyListener( this );
 
-        // Create the ships.       
-        for ( int i = 0; i < players.length; i++ )
-            players[i] = new Ship( getWidth() / 2 - ( i * 100 ), getHeight() / 2, PLAYER_COLORS[i], 3, "Player " + ( i + 1 ) );
-
-        asteroidManager.setUpAsteroidField( level );
+        // Create the background.
+        background = createImage( getWidth(), getHeight() );
+        drawBackground();
     }
 
     /**
      * Steps the game through one timestep and paints all components onto the screen.
-     * @param g The <code>Graphics</code> context of the screen.
-     * @author Andy Kooiman
+     * 
+     * @param g the <code>Graphics</code> context of the screen
      * @since Classic
      */
     @Override
@@ -206,8 +229,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         if ( paused )
             return;
-        if ( isFirst )
-            init( g );
+
+        if ( gBuff == null )
+            initBuffering( g );
 
         AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
 
@@ -241,7 +265,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         ParticleManager.drawParticles();
         asteroidManager.act();
 
-        // Update the ships.       
+        // Update the ships.
         for ( int i = 0; i < players.length; i++ )
         {
             players[i].act();
@@ -254,8 +278,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
             }
         }
 
-        // Draw the on-screen scoreboard.
+        // Draw the on-screen HUD.
         drawHud( gBuff );
+
+        // Draw the entire scoreboard.
+        if ( drawScoreboard )
+            drawScoreboard( gBuff );
 
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
@@ -270,7 +298,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Draws the star field over itself to make stars move.
-     * @author Andy Kooiman
+     *      
      * @since Classic
      */
     public void updateBackground()
@@ -321,12 +349,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
         level = newLevel;
 
         // All players get bonuses.
-        for ( int i = 0; i < players.length; i++ )
+        for ( Ship s : players )
         {
-            players[i].addLife();
-            players[i].setInvincibilityCount( 100 );
-            players[i].increaseScore( 2500 );
-            players[i].getMissileManager().clear();
+            s.addLife();
+            s.setInvincibilityCount( 100 );
+            s.increaseScore( 2500 );
+            s.getMissileManager().clear();
+            s.setNumAsteroidsKilled( 0 );
+            s.setNumShipsKilled( 0 );
         }
 
         asteroidManager.clear();
@@ -345,7 +375,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Advances to the next level from a static context.
      * @deprecated Use <code>Running.environment()</code> to access frame methods.
-     * @since Classic     
+     * @since Classic
      */
     @Deprecated
     public static void staticNextLevel()
@@ -400,7 +430,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Draw the score counter.
         g2d.setColor( Color.darkGray );
         g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
-        text = new DecimalFormat( "#,###,###,###,###,###,###" ).format( players[localPlayer].getScore() );
+        text = insertThousandCommas( players[localPlayer].getScore() );
         y = ( isFullscreen() ? 0 : 30 ) + 20; // Offset for the titlebar (yuck)!
         x = getWidth() - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() - 12;
         g2d.drawString( text, x, y );
@@ -410,6 +440,80 @@ public class AsteroidsFrame extends Frame implements KeyListener
         text = "score";
         x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() + 8;
         g2d.drawString( text, x, y );
+    }
+
+    /**
+     * Draws the full scoreboard of all players.
+     * @author Phillip Cohen
+     * @since December 15 2007
+     */
+    private void drawScoreboard( Graphics g )
+    {
+        Graphics2D g2d = (Graphics2D) gBuff;
+        String text = "";
+        int x = 0, y = 0;
+
+        // Draw the "scoreboard" string.
+        g.setColor( Color.white );
+        g.setFont( new Font( "Tahoma", Font.BOLD, 24 ) );
+        text = "Scoreboard";
+        x = getWidth() / 2 - (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+        y = getHeight() / 4;
+        g.drawString( text, x, y );
+        y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
+
+        // Draw the asteroid count.
+        g.setColor( Color.lightGray );
+        g.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
+        text = insertThousandCommas( asteroidManager.size() ) + " asteroid" + ( asteroidManager.size() == 1 ? " remains" : "s remain" );
+        x = getWidth() / 2 - (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+        g.drawString( text, x, y );
+        y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
+
+        // Create the columns.
+        ScoreboardColumn[] columns = new ScoreboardColumn[4];
+        columns[0] = new ScoreboardColumn( getWidth() * 2 / 7, "Name" );
+        columns[1] = new ScoreboardColumn( getWidth() * 1 / 2, "Score" );
+        columns[2] = new ScoreboardColumn( getWidth() * 3 / 5, "Lives" );
+        columns[3] = new ScoreboardColumn( getWidth() * 2 / 3, "# Destroyed" );
+
+        // Draw the column headers.
+        y += 15;
+        g.setColor( Color.darkGray );
+        g.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
+        for ( ScoreboardColumn c : columns )
+            g.drawString( c.getTitle(), c.getX(), y );
+
+        g.drawLine( columns[0].getX(), y + 5, columns[columns.length - 1].getX() + (int) g.getFont().getStringBounds( columns[columns.length - 1].getTitle(), g2d.getFontRenderContext() ).getWidth(), y + 5 );
+        y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
+
+        // Draw the entries.
+        for ( Ship s : players )
+        {
+            g.setColor( s.getColor() );
+            for ( int i = 0; i < columns.length; i++ )
+            {
+                switch ( i )
+                {
+                    case 0:
+                        text = s.getName();
+                        break;
+                    case 1:
+                        text = insertThousandCommas( s.score() );
+                        break;
+                    case 2:
+                        text = "" + s.livesLeft();
+                        break;
+                    case 3:
+                        text = "" + s.getNumAsteroidsKilled();
+                        break;
+                    default:
+                        text = "";
+                }
+                g.drawString( text, columns[i].getX(), y );
+            }
+            y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
+        }
     }
 
     /**
@@ -437,7 +541,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     @Deprecated
     public void newGame()
     {
-        init( g );
+        resetEntireGame();
         if ( ( players.length > 1 ) && ( localPlayer == 0 ) )
             AsteroidsServer.send( "ng" );
     }
@@ -452,7 +556,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         paused = true;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
-        if(Settings.soundOn)
+        if ( Settings.soundOn )
             Sound.wheeeargh();
         for ( float sat = 0; sat <= 1; sat += .00005 )
         {
@@ -505,7 +609,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
         repaint();
     }
 
-
     /**
      * Called automatically by key listener, and used only for arrow keys.
      * @param e The <code>KeyEvent</code> generated by the key listener.
@@ -514,6 +617,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public synchronized void keyReleased( KeyEvent e )
     {
+        drawScoreboard = false;
+
         if ( !paused || e.getKeyCode() == 80 )
         {
             if ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 )
@@ -643,7 +748,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 break;
             case KeyEvent.VK_A:
                 toggleAntiAliasing();
+                break;
+            case KeyEvent.VK_BACK_SLASH:
+                drawScoreboard = true;
+                break;
             default:
+                drawScoreboard = false;
                 break;
         }
         repaint();
@@ -809,7 +919,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             ship.getMissileManager().setPopQuantity( 5 );
             ship.getMissileManager().setSpeed( 10 );
             ship.setMaxShots( 10 );
-            ship.getMissileManager().setIntervalShoot(15);
+            ship.getMissileManager().setIntervalShoot( 15 );
         }
     }
 
@@ -857,7 +967,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         gBack.setFont( new Font( "Tahoma", Font.BOLD, 9 ) );
         gBack.drawString( message, x, y );
     }
-    
+
     /**
      * Draws a circle with center at coordinates with given radius in given color
      * @param col The <code>Color</code> in which the circle will be drawn
@@ -866,12 +976,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param radius The radius of the circle
      * @since December 15, 2007
      */
-    public void drawCircle(Color col, int x, int y, int radius)
+    public void drawCircle( Color col, int x, int y, int radius )
     {
-        gBuff.setColor(col);
-        gBuff.drawOval(x-radius/2-1, y-radius/2-1, radius*2, radius*2);
+        gBuff.setColor( col );
+        gBuff.drawOval( x - radius / 2 - 1, y - radius / 2 - 1, radius * 2, radius * 2 );
     }
-    
+
     /**
      * Draws a line from one coordinate to another in a given color
      * @param col The <code>Color</code> in wihch the circle will be drawn
@@ -881,13 +991,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param y2 The second y coordinate
      * @since December 15, 2007
      */
-    public void drawLine(Color col, int x1, int y1, int x2, int y2)
+    public void drawLine( Color col, int x1, int y1, int x2, int y2 )
     {
-        gBuff.setColor(col);
-        gBuff.drawLine(x1,y1, x2, y2);
+        gBuff.setColor( col );
+        gBuff.drawLine( x1, y1, x2, y2 );
     }
-    
-     /**
+
+    /**
      * Draws a circle with center at coordinates with given radius in given color
      * @param col The <code>Color</code> in which the circle will be drawn
      * @param x The x coordinate of the center
@@ -895,12 +1005,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param radius The radius of the circle
      * @since December 15, 2007
      */
-    public void fillCircle(Color col, int x, int y, int radius)
+    public void fillCircle( Color col, int x, int y, int radius )
     {
-        gBuff.setColor(col);
-        gBuff.fillOval(x-radius/2, y-radius/2, radius*2, radius*2);
+        gBuff.setColor( col );
+        gBuff.fillOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
     }
-    
+
     /**
      * Draws a polygon in one color with a background of another color
      * @param p The <code>Polygon</code> to be drawn
@@ -908,14 +1018,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param outline The <code>Color</code> of the outline
      * @since December 15, 2007
      */
-    public void drawPolygon(Color fill, Color outline, Polygon p)
+    public void drawPolygon( Color fill, Color outline, Polygon p )
     {
-        gBuff.setColor(fill);
-        gBuff.fillPolygon(p);
-        gBuff.setColor(outline);
-        gBuff.drawPolygon(p);
+        gBuff.setColor( fill );
+        gBuff.fillPolygon( p );
+        gBuff.setColor( outline );
+        gBuff.drawPolygon( p );
     }
-    
+
     /**
      * Draws a circle with center at given point with given radius in one color, with an outline of another color
      * @param fill The <code>Color</code> in which the circle will be drawn
@@ -925,10 +1035,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param radius The radius
      * @since December 15, 2007
      */
-    public void drawOutlinedCircle(Color fill, Color outline, int x, int y, int radius)
+    public void drawOutlinedCircle( Color fill, Color outline, int x, int y, int radius )
     {
-        fillCircle(fill,x-radius/2,y-radius/2,radius);
-        drawCircle(outline, x-radius/2, y-radius/2, radius);
+        fillCircle( fill, x - radius / 2, y - radius / 2, radius );
+        drawCircle( outline, x - radius / 2, y - radius / 2, radius );
     }
 
     /**
@@ -947,11 +1057,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @return The <code>Graphics</code> Context of the offscreen <code>Image</code> used for double buffering
      * @since classic
      */
-    public static Graphics getGBuff() {
+    public static Graphics getGBuff()
+    {
         return gBuff;
     }
-    
-    
 
     /**
      * Returns whether this computer is the first player.
@@ -974,6 +1083,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public void setHighScore( String name )
     {
         highScoreName = name;
+    }
+
+    /**
+     * Inserts comma seperators at each grouping, up to 10^34.
+     * @param number The number to be formatted.
+     * @author Phillip Cohen
+     * @return The formatted string.
+     * @since December 15 2007
+     */
+    public static String insertThousandCommas( int number )
+    {
+        return new DecimalFormat( "#,###,###,###,###,###,###,###,###,###,###,###" ).format( number );
     }
 
     /**
@@ -1000,6 +1121,29 @@ public class AsteroidsFrame extends Frame implements KeyListener
             {
             }
             Running.quit();
+        }
+    }
+
+    private static class ScoreboardColumn
+    {
+        private int x;
+
+        private String title;
+
+        public String getTitle()
+        {
+            return title;
+        }
+
+        public int getX()
+        {
+            return x;
+        }
+
+        public ScoreboardColumn( int x, String title )
+        {
+            this.x = x;
+            this.title = title;
         }
     }
 }

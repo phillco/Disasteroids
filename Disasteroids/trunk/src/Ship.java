@@ -16,24 +16,44 @@ import java.util.LinkedList;
 public class Ship
 {
     public final static double SENSITIVITY = 30;
+
     public final static int RADIUS = 10;
+
     private double x,  y;
+
     private double dx,  dy;
+
     private boolean forward = false,  backwards = false,  left = false,  right = false;
+
     private double origin_x,  origin_y;
+
     private double angle;
+
     private String name;
+
     private int timeTillNextShot = 0;
+
     private Color myColor;
+
     private int invincibilityCount;
+
     private Color myInvicibleColor;
+
     private int livesLeft;
+
     private boolean invulFlash;
+
     private MissileManager manager;
+
     private int score = 0;
+
     private int maxShots = 10;
 
-    public Ship( int x, int y,Color c, int lives, String name )
+    private int numAsteroidsKilled = 0;
+
+    private int numShipsKilled = 0;
+
+    public Ship( int x, int y, Color c, int lives, String name )
     {
         this.x = x;
         this.y = y;
@@ -57,12 +77,12 @@ public class Ship
     private void draw()
     {
         Color col;
-        
+
         // Set our color
         if ( cannotDie() )
-            col= myInvicibleColor ;
+            col = myInvicibleColor;
         else
-            col=myColor;
+            col = myColor;
 
         // Flash when invunerable
         Polygon outline = new Polygon();
@@ -71,8 +91,8 @@ public class Ship
         outline.addPoint( (int) ( x + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( y - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
-            Running.environment().drawPolygon(col, Color.black, outline);
-        }       
+            Running.environment().drawPolygon( col, Color.black, outline );
+        }
     }
 
     public void forward()
@@ -230,6 +250,7 @@ public class Ship
                         m.explode();
                         score -= 5000;
                         other.score += 5000;
+                        other.numShipsKilled++;
                         other.livesLeft++;
                     }
             }
@@ -293,8 +314,8 @@ public class Ship
         //	berserk();
         livesLeft--;
         setInvincibilityCount( 300 );
-        if(Settings.soundOn)
-             Sound.bleargh();
+        if ( Settings.soundOn )
+            Sound.bleargh();
         // Disabled, very sensitiuve to lag --> desync
 //		x = origin_x;
 //		y = origin_y;
@@ -358,7 +379,7 @@ public class Ship
         if ( !canShoot() )
             return;
         double angleBefore = angle;
-        if(Settings.soundOn)
+        if ( Settings.soundOn )
             Sound.kablooie();
         for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
         {
@@ -369,8 +390,59 @@ public class Ship
         timeTillNextShot = 100;
     }
 
+    /**
+     * Returns <code>this</code> player's in-game name.
+     * Names are assigned by <code>AsteroidsFrame</code>; "Player 1", "Player2", and so on.
+     * 
+     * @return the player's name
+     * @since December 15, 2007
+     */
     public String getName()
     {
         return name;
+    }
+
+    /**
+     * Returns the statistic of <code>Asteroid</code>s killed on this level.
+     * An <code>Asteroid</code> is "killed" when it splits, so both bullets and collisions will affect this counter.
+     * 
+     * @return The number of <code>Asteroid</code>s <code>this</code> has killed on this level.
+     * @since December 16, 2007
+     */
+    public int getNumAsteroidsKilled()
+    {
+        return numAsteroidsKilled;
+    }
+
+    /**
+     * Sets the number of <code>Asteroid</code>s killed on this level.
+     * 
+     * @param numAsteroidsKilled The new number of <code>Asteroid</code>s <code>this</code> has killed on this level.
+     * @since December 16, 2007
+     */
+    public void setNumAsteroidsKilled( int numAsteroidsKilled )
+    {
+        this.numAsteroidsKilled = numAsteroidsKilled;
+    }
+
+    /**
+     * Returns the statistic of <code>Ship</code>s killed this level.
+     * 
+     * @return The number of <code>Ship</code>s <code>this</code> has killed on this level.
+     * @since December 16, 2007
+     */
+    public int getNumShipsKilled()
+    {
+        return numShipsKilled;
+    }
+
+    /**
+     * Sets the number of <code>Ship</code>s killed on this level.
+     * @param numShipsKilled The new number of <code>Ship</code>s <code>this</code> has killed on this level.
+     * @since December 16, 2007
+     */
+    public void setNumShipsKilled( int numShipsKilled )
+    {
+        this.numShipsKilled = numShipsKilled;
     }
 }

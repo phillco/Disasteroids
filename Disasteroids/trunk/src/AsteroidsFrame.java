@@ -213,8 +213,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Receive key events.
         this.addKeyListener( this );
 
-        // Create the background.
-        background = createImage( getWidth(), getHeight() );
+        // Create the background.        
         drawBackground();
     }
 
@@ -523,6 +522,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void drawBackground()
     {
+        // Create the image if we haven't yet.
+        if( background == null )
+            background = createImage( getWidth(), getHeight() );
+        
         Graphics gBack = background.getGraphics();
         gBack.setColor( Color.black );
         gBack.fillRect( 0, 0, getWidth(), getHeight() );

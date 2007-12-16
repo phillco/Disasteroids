@@ -54,13 +54,13 @@ public class MissileManager
      * The list of currently valid <code>Missile</code>s.
      * @since Classic
      */
-    private LinkedList<Misile> theMissiles = new LinkedList<Misile>();
+    private LinkedList<Missile> theMissiles = new LinkedList<Missile>();
 
     /**
      * The list of <code>Missile</code>s waiting to be added.
      * @since Classic
      */
-    private Queue<Misile> toBeAdded = new LinkedList<Misile>();
+    private Queue<Missile> toBeAdded = new LinkedList<Missile>();
 
     /**
      * Gets all currently valid <code>Missile</code>s.
@@ -68,7 +68,7 @@ public class MissileManager
      * @author Andy Kooiman
      * @since Classic
      */
-    public synchronized LinkedList<Misile> getMissiles()
+    public synchronized LinkedList<Missile> getMissiles()
     {
         return theMissiles;
     }
@@ -81,10 +81,10 @@ public class MissileManager
     public synchronized void act()
     {
         Graphics g = AsteroidsFrame.getGBuff();
-        ListIterator<Misile> iter = theMissiles.listIterator();
+        ListIterator<Missile> iter = theMissiles.listIterator();
         while ( iter.hasNext() )
         {
-            Misile m = iter.next();
+            Missile m = iter.next();
             if ( m.needsRemoval() )
                 iter.remove();
             else
@@ -106,7 +106,7 @@ public class MissileManager
     {
         int probPopTemp = probPop;
         probPop = Integer.MAX_VALUE;
-        for ( Misile m : theMissiles )
+        for ( Missile m : theMissiles )
             m.explode();
         probPop = probPopTemp;
     }
@@ -127,7 +127,7 @@ public class MissileManager
     {
         if ( theMissiles.size() > 1000 )
             return false;
-        return toBeAdded.add( new Misile( this, x, y, angle, dx, dy, col ) );
+        return toBeAdded.add( new Missile( this, x, y, angle, dx, dy, col ) );
     }
 
     /**

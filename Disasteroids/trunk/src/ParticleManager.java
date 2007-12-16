@@ -3,7 +3,6 @@
  * ParticleManager.java
  */
 
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +33,7 @@ public class ParticleManager
      * @author Phillip Cohen
      * @since Classic
      */
-    public static void drawParticles( Graphics g )
+    public static void drawParticles()
     {
         if ( parts.size() > 0 )
         {
@@ -45,8 +44,7 @@ public class ParticleManager
                     parts.remove( i );
                 else
                 {
-                    g.setColor( p.color );
-                    g.fillOval( (int) ( p.x - p.size / 2 ), (int) ( p.y - p.size / 2 ), (int) p.size, (int) p.size );
+                    Running.environment().fillCircle(p.color, (int)p.x, (int)p.y , (int) p.size/2);
                     i++;
                 }
             }

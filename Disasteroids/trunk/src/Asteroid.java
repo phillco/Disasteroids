@@ -3,7 +3,7 @@
  * Asteroid.java
  */
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ListIterator;
 import java.util.Random;
 
@@ -44,7 +44,7 @@ public class Asteroid
      * The diameter of this <code>Asteroid</code>.
      * @since Classic
      */
-    protected int size;
+    protected int radius;
 
     /**
      * Stores whether this <code>Asteroid</code> should be removed.
@@ -57,6 +57,12 @@ public class Asteroid
      * @since December 14 2007
      */
     protected Ship victim = null;
+    
+    /**
+     * The <code>Color</code>s of the inside and outline of <code>this</code>
+     * @since December 15 2007
+     */
+    protected Color fill=Color.white,outline=Color.gray;
 
     /**
      * Constructs a new Asteroid from scratch.
@@ -76,7 +82,7 @@ public class Asteroid
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-        this.size = size;
+        this.radius = size/2;
 
         // Enforce a minimum size.
         if ( size < 25 )
@@ -101,9 +107,9 @@ public class Asteroid
     {
         parent.children++;
         if ( parent.children > 2 )
-            this.size = 5;
+            this.radius = 5;
         else
-            this.size = parent.size / 2;
+            this.radius = parent.radius / 2;
         Random rand = RandNumGen.getAsteroidInstance();
         this.x = parent.x;
         this.y = parent.y;
@@ -125,11 +131,7 @@ public class Asteroid
      */
     protected void draw()
     {
-        Graphics g = AsteroidsFrame.getGBuff();
-        g.setColor( Color.white );
-        g.fillOval( (int) ( x - size / 2 ), (int) ( y - size / 2 ), size, size );
-        g.setColor( Color.gray );
-        g.drawOval( (int) ( x - size / 2 ), (int) ( y - size / 2 ), size, size );
+        Running.environment().drawOutlinedCircle(fill, outline, (int)x, (int)y, radius);
     }
 
     /**
@@ -139,7 +141,7 @@ public class Asteroid
      */
     public void act()
     {
-        if ( children > 1 || size == 5 )
+        if ( children > 1 || radius == 5 )
             shouldRemove = true;
         move();
         checkCollision();
@@ -196,9 +198,9 @@ public class Asteroid
             shouldRemove = true;
             return;
         }
-        killer.increaseScore( size );
-        Running.environment().writeOnBackground( "+" + String.valueOf( size ), (int) x, (int) y, killer.getColor().darker() );
-        if ( size < 25 )
+        killer.increaseScore( radius*2 );
+        Running.environment().writeOnBackground( "+" + String.valueOf( radius*2 ), (int) x, (int) y, killer.getColor().darker() );
+        if ( radius < 12 )
             shouldRemove = true;
         else
         {
@@ -227,7 +229,7 @@ public class Asteroid
             // Were we hit by the ship?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Math.sqrt( Math.pow( x - s.getX() + Ship.RADIUS, 2 ) + ( Math.pow( y - s.getY() + Ship.RADIUS, 2 ) ) ) < size + Ship.RADIUS )
+                if ( Math.pow( x - s.getX(), 2 ) + ( Math.pow( y - s.getY(), 2 ) ) < (radius + Ship.RADIUS )*(radius+Ship.RADIUS))
                 {
                     if ( s.looseLife() )
                     {
@@ -243,7 +245,7 @@ public class Asteroid
                 Missile m = iter.next();
 
                 // Were we hit by a missile?
-                if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y - this.size / 2 - m.getY(), 2 ) < Math.pow( size + m.getRadius(), 2 ) )
+                if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y -m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )
                 {
                     Sound.bloomph();
                     m.explode();

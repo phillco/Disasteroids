@@ -9,7 +9,6 @@
  */
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.Random;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ public class Ship
     private int score = 0;
     private int maxShots = 10;
 
-    public Ship( int x, int y, Color c, int lives, String name )
+    public Ship( int x, int y,Color c, int lives, String name )
     {
         this.x = x;
         this.y = y;
@@ -57,24 +56,22 @@ public class Ship
 
     private void draw()
     {
-        Graphics g = AsteroidsFrame.getGBuff();
+        Color col;
         
         // Set our color
         if ( cannotDie() )
-            g.setColor( myInvicibleColor );
+            col= myInvicibleColor ;
         else
-            g.setColor( myColor );
+            col=myColor;
 
         // Flash when invunerable
         Polygon outline = new Polygon();
         outline.addPoint( (int) ( x + RADIUS * Math.cos( angle ) ), (int) ( y - RADIUS * Math.sin( angle ) ) );
-        outline.addPoint( (int) ( x + RADIUS * Math.cos( angle + Math.PI * .75 ) ), (int) ( y - RADIUS * Math.sin( angle + Math.PI * .75 ) ) );
-        outline.addPoint( (int) ( x + RADIUS * Math.cos( angle - Math.PI * .75 ) ), (int) ( y - RADIUS * Math.sin( angle - Math.PI * .75 ) ) );
+        outline.addPoint( (int) ( x + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( y - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
+        outline.addPoint( (int) ( x + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( y - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
-            g.fillPolygon( outline );
-            g.setColor( Color.black );
-            g.drawPolygon( outline );
+            Running.environment().drawPolygon(col, Color.black, outline);
         }       
     }
 
@@ -154,8 +151,8 @@ public class Ship
             Random rand = RandNumGen.getParticleInstance();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
-                                             x + rand.nextInt( 8 ) - 4 + dx,
-                                             y + rand.nextInt( 8 ) - 4 + dy,
+                                             x + rand.nextInt( 8 ) - 4,
+                                             y + rand.nextInt( 8 ) - 4,
                                              rand.nextInt( 4 ) + 3,
                                              myColor,
                                              rand.nextDouble() * 3,
@@ -168,8 +165,8 @@ public class Ship
             Random rand = RandNumGen.getParticleInstance();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
-                                             x + rand.nextInt( 16 ) - 8 + dx,
-                                             y + rand.nextInt( 16 ) - 8 + dy,
+                                             x + rand.nextInt( 16 ) - 8,
+                                             y + rand.nextInt( 16 ) - 8,
                                              rand.nextInt( 4 ) + 3,
                                              myColor,
                                              rand.nextDouble() * 3,
@@ -262,7 +259,7 @@ public class Ship
     {
         if ( livesLeft < 0 )
             return;
-        timeTillNextShot = 15;
+        timeTillNextShot = manager.getIntervalShoot();
         manager.addMissile( (int) x, (int) y, angle, dx, dy, myColor );
 
         if ( useSound )
@@ -296,7 +293,8 @@ public class Ship
         //	berserk();
         livesLeft--;
         setInvincibilityCount( 300 );
-        Sound.bleargh();
+        if(Settings.soundOn)
+             Sound.bleargh();
         // Disabled, very sensitiuve to lag --> desync
 //		x = origin_x;
 //		y = origin_y;
@@ -360,7 +358,8 @@ public class Ship
         if ( !canShoot() )
             return;
         double angleBefore = angle;
-        Sound.kablooie();
+        if(Settings.soundOn)
+            Sound.kablooie();
         for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
         {
             shoot( false );

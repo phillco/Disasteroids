@@ -13,6 +13,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -237,7 +238,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
 
         // Draw stuff in order of importance, from least to most.
-        ParticleManager.drawParticles( gBuff );
+        ParticleManager.drawParticles();
         asteroidManager.act();
 
         // Update the ships.       
@@ -451,7 +452,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         paused = true;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
-        Sound.wheeeargh();
+        if(Settings.soundOn)
+            Sound.wheeeargh();
         for ( float sat = 0; sat <= 1; sat += .00005 )
         {
             g.setColor( Color.getHSBColor( sat, sat, sat ) );
@@ -503,16 +505,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
         repaint();
     }
 
-    /**
-     * Returns the game graphics that can be drawn to.
-     * @return The buffered <code>Graphics</code> context of the screen.
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    public static Graphics getGBuff()
-    {
-        return gBuff;
-    }
 
     /**
      * Called automatically by key listener, and used only for arrow keys.
@@ -574,8 +566,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public synchronized void performAction( int action, Ship actor )
     {
-        /*============================
-         * Decide what key was pressed
+        /* Decide what key was pressed
          *==========================*/
         switch ( action )
         {
@@ -583,7 +574,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 Running.quit();
             case KeyEvent.VK_SPACE:
                 if ( actor.canShoot() )
-                    actor.shoot( true );
+                    actor.shoot( Settings.soundOn );
                 break;
             case KeyEvent.VK_LEFT:
                 actor.left();
@@ -818,6 +809,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             ship.getMissileManager().setPopQuantity( 5 );
             ship.getMissileManager().setSpeed( 10 );
             ship.setMaxShots( 10 );
+            ship.getMissileManager().setIntervalShoot(15);
         }
     }
 
@@ -865,6 +857,79 @@ public class AsteroidsFrame extends Frame implements KeyListener
         gBack.setFont( new Font( "Tahoma", Font.BOLD, 9 ) );
         gBack.drawString( message, x, y );
     }
+    
+    /**
+     * Draws a circle with center at coordinates with given radius in given color
+     * @param col The <code>Color</code> in which the circle will be drawn
+     * @param x The x coordinate of the center
+     * @param y The y coordinate of the center
+     * @param radius The radius of the circle
+     * @since December 15, 2007
+     */
+    public void drawCircle(Color col, int x, int y, int radius)
+    {
+        gBuff.setColor(col);
+        gBuff.drawOval(x-radius/2-1, y-radius/2-1, radius*2, radius*2);
+    }
+    
+    /**
+     * Draws a line from one coordinate to another in a given color
+     * @param col The <code>Color</code> in wihch the circle will be drawn
+     * @param x1 The first x coordinate
+     * @param y1 The first y coordinate
+     * @param x2 The second x coordinate
+     * @param y2 The second y coordinate
+     * @since December 15, 2007
+     */
+    public void drawLine(Color col, int x1, int y1, int x2, int y2)
+    {
+        gBuff.setColor(col);
+        gBuff.drawLine(x1,y1, x2, y2);
+    }
+    
+     /**
+     * Draws a circle with center at coordinates with given radius in given color
+     * @param col The <code>Color</code> in which the circle will be drawn
+     * @param x The x coordinate of the center
+     * @param y The y coordinate of the center
+     * @param radius The radius of the circle
+     * @since December 15, 2007
+     */
+    public void fillCircle(Color col, int x, int y, int radius)
+    {
+        gBuff.setColor(col);
+        gBuff.fillOval(x-radius/2, y-radius/2, radius*2, radius*2);
+    }
+    
+    /**
+     * Draws a polygon in one color with a background of another color
+     * @param p The <code>Polygon</code> to be drawn
+     * @param fill The <code>Color</code> in which the <code>Polygon</code> will be drawn
+     * @param outline The <code>Color</code> of the outline
+     * @since December 15, 2007
+     */
+    public void drawPolygon(Color fill, Color outline, Polygon p)
+    {
+        gBuff.setColor(fill);
+        gBuff.fillPolygon(p);
+        gBuff.setColor(outline);
+        gBuff.drawPolygon(p);
+    }
+    
+    /**
+     * Draws a circle with center at given point with given radius in one color, with an outline of another color
+     * @param fill The <code>Color</code> in which the circle will be drawn
+     * @param outline The <code>Color</code> of the outline
+     * @param x The x coordinate of the center
+     * @param y The y coordinate of the center
+     * @param radius The radius
+     * @since December 15, 2007
+     */
+    public void drawOutlinedCircle(Color fill, Color outline, int x, int y, int radius)
+    {
+        fillCircle(fill,x-radius/2,y-radius/2,radius);
+        drawCircle(outline, x-radius/2, y-radius/2, radius);
+    }
 
     /**
      * Returns the game's <code>ActionManager</code>.
@@ -876,6 +941,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         return actionManager;
     }
+
+    /**
+     * Returns the <code>Graphics</code> Context of the offscreen <code>Image</code> used for double buffering
+     * @return The <code>Graphics</code> Context of the offscreen <code>Image</code> used for double buffering
+     * @since classic
+     */
+    public static Graphics getGBuff() {
+        return gBuff;
+    }
+    
+    
 
     /**
      * Returns whether this computer is the first player.

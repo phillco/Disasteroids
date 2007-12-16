@@ -81,21 +81,27 @@ public class Sound
     }
 
     static void beep()
-    {
+    {    
+        if(!Settings.soundOn)
+            return;
         SpeakerThread s = new SpeakerThread();
         s.addCue( new Tone( 440, 100 ) );
         new Thread( s ).start();
     }
 
     static void click()
-    {
+    {      
+        if(!Settings.soundOn)
+            return;
         SpeakerThread s = new SpeakerThread();
         s.addCue( new Tone( 200, 25 ) );
         new Thread( s ).start();
     }
 
     static void play( int freq, int dur )
-    {
+    {    
+        if(!Settings.soundOn)
+            return;
         SpeakerThread s = new SpeakerThread();
         s.addCue( new Tone( freq, dur ) );
         new Thread( s ).start();
@@ -104,6 +110,8 @@ public class Sound
     // Custom Disasteroids sounds
     static void bloomph()
     {
+        if(!Settings.soundOn)
+            return;
         SpeakerThread s = new SpeakerThread();
         s.addCue( new Tone( 50, 400 ) );
         new Thread( s ).start();
@@ -111,6 +119,8 @@ public class Sound
 
     static void bleargh()
     {
+         if(!Settings.soundOn)
+            return;
         SpeakerThread s = new SpeakerThread();
         s.addCue( new Tone( 600, 20, 5 ) );
         s.addCue( new Tone( 600, 20, 5 ) );
@@ -127,7 +137,9 @@ public class Sound
     }
 
     static void wheeeargh()
-    {
+    {        
+        if(!Settings.soundOn)
+            return;
         SpeakerThread s = new SpeakerThread();
         for ( float sat = 0; sat <= 1; sat += .1 )
             s.addCue( new Tone( (int) ( 220 - 70 * sat ), 25 ) );
@@ -135,7 +147,9 @@ public class Sound
     }
 
     static void kablooie()
-    {
+    {      
+        if(!Settings.soundOn)
+            return;
         SpeakerThread s = new SpeakerThread();
         for ( int i = 0; i < 1400; i += 100 )
             s.addCue( new Tone( i, 20 ) );

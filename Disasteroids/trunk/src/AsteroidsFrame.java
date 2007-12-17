@@ -25,23 +25,18 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**
- * The main, central class/frame.
+ * The big momma class up in the sky.
+ * 
  * @author Andy Kooiman, Phillip Cohen
  * @since Classic
  */
 public class AsteroidsFrame extends Frame implements KeyListener
 {
     /**
-     * Horizontal dimension of the window.
+     * Dimensions of the window when not in fullscreen mode.
      * @since November 15 2007
      */
-    public static final int WINDOW_WIDTH = 800;
-
-    /**
-     * Vertical dimension of the window.
-     * @since November 15 2007
-     */
-    public static final int WINDOW_HEIGHT = 800;
+    private static final int WINDOW_WIDTH = 800,  WINDOW_HEIGHT = 800;
 
     /**
      * Default player colors. Inspired from AOE2.
@@ -159,10 +154,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         highScore = 1000000;
         highScoreName = "Phillip and Andy";
-        
+
         // Set up the connection/game settings.
         players = new Ship[playerCount];
         AsteroidsFrame.localPlayer = localPlayer;
+
+        // Receive key events.
+        this.addKeyListener( this );
+
+        // 
 
         // Set up the game.
         resetEntireGame();
@@ -178,7 +178,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         timeStep = 0;
         otherPlayerTimeStep = 0;
-        
+
         // Create the ships.
         actionManager = new ActionManager();
         for ( int i = 0; i < players.length; i++ )
@@ -188,13 +188,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
         level = 1;
         asteroidManager = new AsteroidManager();
         asteroidManager.setUpAsteroidField( level );
-        
+
         // Reset the background.
         drawBackground();
     }
 
     /**
-     * Sets up double buffering, the <code>background</code>, and the <code>KeyListener</code>.
+     * Sets up double buffering.
      * 
      * @param g the unbuffered <code>Graphics</code> context
      * @since December 25, 2007
@@ -208,13 +208,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         gBuff = virtualMem.getGraphics();
 
         // Anti-alias, if the user wants it.
-        updateAntiAliasing();
-
-        // Receive key events.
-        this.addKeyListener( this );
-
-        // Create the background.        
-        drawBackground();
+        updateAntiAliasing( Settings.antiAlias );
     }
 
     /**
@@ -278,17 +272,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
 
         // Draw the on-screen HUD.
-        drawHud( gBuff );
+        drawHud();
 
         // Draw the entire scoreboard.
         if ( drawScoreboard )
-            drawScoreboard( gBuff );
+            drawScoreboard();
 
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
 
-        // Advance to the next level if all asteroids are destroyed (except -999, which is a sandbox).
-        if ( asteroidManager.size() == 0 && level != -999 )
+        // Advance to the next level if it's time.
+        if ( shouldExitLevel() )
             nextLevel();
 
         // This causes 100% cpu usage, but it's safe to say the game always has to be updated.
@@ -300,30 +294,80 @@ public class AsteroidsFrame extends Frame implements KeyListener
      *      
      * @since Classic
      */
-    public void updateBackground()
+    private void updateBackground()
     {
+        // Create the background first.
+        if ( background == null )
+            drawBackground();
+
+        // Don't anti-alias this.
+        updateAntiAliasing( false );
+
         Graphics gBack = background.getGraphics();
-        gBack.drawImage( background, 0, -2, this );
+
+        // Scroll the background up.
+        gBack.drawImage( background, 0, -1, this );
+
+        // Draw new stars.
         Random rand = RandNumGen.getStarInstance();
-        for ( int y = getHeight() - 3; y < getHeight(); y++ )
+        for ( int y = getHeight() - 2; y < getHeight(); y++ )
+        {
             for ( int x = 0; x < getWidth(); x++ )
             {
-                if ( rand.nextInt( 1000 ) < 1 )
-                    gBack.setColor( Color.white );
+                if ( rand.nextInt( 300 ) < 1 )
+                {
+                    int sat = rand.nextInt( 255 );
+                    gBack.setColor( new Color( sat, sat, sat ) );
+                }
                 else
                     gBack.setColor( Color.black );
+
                 gBack.fillRect( x, y, 1, 1 );
             }
+        }
+
+        updateAntiAliasing( Settings.antiAlias );
     }
 
     /**
      * Shows a dialog to warps to a particular level.
-     * @author Phillip Cohen
+     * 
      * @since November 15 2007
      */
-    public void warpDialog()
+    private void warpDialog()
     {
         warp( Integer.parseInt( JOptionPane.showInputDialog( "Enter the level number to warp to.", level ) ) );
+    }
+
+    /**
+     * Returns if the game is ready to advance levels.
+     * Checks if the <code>Asteroids</code> have been cleared, then if we're on the sandbox level, and finally if the <code>Missile</code>s have been cleared.
+     * 
+     * @see Settings.waitForMissiles
+     * @return  whether the game should advance to the next level
+     */
+    private boolean shouldExitLevel()
+    {
+        // Have the asteroids been cleared?
+        if ( asteroidManager.size() > 0 )
+            return false;
+
+        // Level -999 is a sandbox and never exits.
+        if ( level == -999 )
+            return false;
+
+        // The user can choose to wait for missiles.
+        if ( Settings.waitForMissiles )
+        {
+            for ( Ship s : players )
+            {
+                if ( s.getMissileManager().getNumLivingMissiles() > 0 )
+                    return false;
+            }
+        }
+        
+        // Ready to advance!
+        return true;
     }
 
     /**
@@ -331,18 +375,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @author Phillip Cohen
      * @since November 15 2007
      */
-    public void nextLevel()
+    private void nextLevel()
     {
         warp( level + 1 );
     }
 
     /**
      * Advances the game to a new level.
+     * 
      * @param newLevel The level to warp to.
-     * @author Phillip Cohen
      * @since November 15 2007
      */
-    public void warp( int newLevel )
+    private void warp( int newLevel )
     {
         paused = true;
         level = newLevel;
@@ -368,11 +412,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
                             RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
                             RandNumGen.getAsteroidInstance().nextInt( 9 ) + " (Seed: " + RandNumGen.seed + ")" );
         asteroidManager.setUpAsteroidField( level );
+        writeOnBackground( "Welcome to level " + newLevel + ".", getWidth() / 2 - 80, getHeight() / 2, Color.green );
         paused = false;
     }
 
     /**
      * Advances to the next level from a static context.
+     * 
      * @deprecated Use <code>Running.environment()</code> to access frame methods.
      * @since Classic
      */
@@ -384,13 +430,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Draws the on-screen information for the local player.
-     * @param g The <code>Graphics</code> context of the screen.
+     * 
      * @since December 15, 2007
-     * @author Phillip Cohen
      */
-    private void drawHud( Graphics g )
+    private void drawHud()
     {
-        Graphics2D g2d = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) gBuff;
         String text = "";
         int x = 0, y = 0;
 
@@ -443,31 +488,31 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Draws the full scoreboard of all players.
-     * @author Phillip Cohen
-     * @since December 15 2007
+     * 
+     * @since December 15, 2007
      */
-    private void drawScoreboard( Graphics g )
+    private void drawScoreboard()
     {
         Graphics2D g2d = (Graphics2D) gBuff;
         String text = "";
         int x = 0, y = 0;
 
         // Draw the "scoreboard" string.
-        g.setColor( Color.white );
-        g.setFont( new Font( "Tahoma", Font.BOLD, 24 ) );
+        g2d.setColor( Color.white );
+        g2d.setFont( new Font( "Tahoma", Font.BOLD, 24 ) );
         text = "Scoreboard";
-        x = getWidth() / 2 - (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+        x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         y = getHeight() / 4;
-        g.drawString( text, x, y );
-        y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
+        g2d.drawString( text, x, y );
+        y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
 
         // Draw the asteroid count.
-        g.setColor( Color.lightGray );
-        g.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
+        g2d.setColor( Color.lightGray );
+        g2d.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
         text = insertThousandCommas( asteroidManager.size() ) + " asteroid" + ( asteroidManager.size() == 1 ? " remains" : "s remain" );
-        x = getWidth() / 2 - (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
-        g.drawString( text, x, y );
-        y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
+        x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+        g2d.drawString( text, x, y );
+        y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
 
         // Create the columns.
         ScoreboardColumn[] columns = new ScoreboardColumn[4];
@@ -478,18 +523,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Draw the column headers.
         y += 15;
-        g.setColor( Color.darkGray );
-        g.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
+        g2d.setColor( Color.darkGray );
+        g2d.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
         for ( ScoreboardColumn c : columns )
-            g.drawString( c.getTitle(), c.getX(), y );
+            g2d.drawString( c.getTitle(), c.getX(), y );
 
-        g.drawLine( columns[0].getX(), y + 5, columns[columns.length - 1].getX() + (int) g.getFont().getStringBounds( columns[columns.length - 1].getTitle(), g2d.getFontRenderContext() ).getWidth(), y + 5 );
-        y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
+        g2d.drawLine( columns[0].getX(), y + 5, columns[columns.length - 1].getX() + (int) g2d.getFont().getStringBounds( columns[columns.length - 1].getTitle(), g2d.getFontRenderContext() ).getWidth(), y + 5 );
+        y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
 
         // Draw the entries.
         for ( Ship s : players )
         {
-            g.setColor( s.getColor() );
+            g2d.setColor( s.getColor() );
             for ( int i = 0; i < columns.length; i++ )
             {
                 switch ( i )
@@ -509,35 +554,42 @@ public class AsteroidsFrame extends Frame implements KeyListener
                     default:
                         text = "";
                 }
-                g.drawString( text, columns[i].getX(), y );
+                g2d.drawString( text, columns[i].getX(), y );
             }
-            y += (int) g.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
+            y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
         }
     }
 
     /**
      * Draws the star background completely from scratch.
-     * @author Andy Kooiman
+     * 
      * @since Classic
      */
     private void drawBackground()
     {
         // Create the image if we haven't yet.
-        if( background == null )
+        if ( background == null )
             background = createImage( getWidth(), getHeight() );
-        
+
         Graphics gBack = background.getGraphics();
+
+        // Fill the background with black.
         gBack.setColor( Color.black );
         gBack.fillRect( 0, 0, getWidth(), getHeight() );
-        gBack.setColor( Color.white );
+
+        // Add stars of varying lightness.
         Random rand = RandNumGen.getStarInstance();
-        for ( int star = 0; star < getWidth() * getHeight() / 1000; star++ )
+        for ( int star = 0; star < getWidth() * getHeight() / 300; star++ )
+        {
+            int sat = rand.nextInt( 255 );
+            gBack.setColor( new Color( sat, sat, sat ) );
             gBack.fillRect( rand.nextInt( getWidth() ), rand.nextInt( getHeight() ), 1, 1 );
+        }
     }
 
     /**
      * Starts a new game.
-     * @author Andy Kooiman
+     * 
      * @deprecated Doesn't work.
      * @since Classic
      */
@@ -551,11 +603,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Displays the end game messages.
-     * @param g The <code>Graphics</code> context of the screen.
-     * @author Andy Kooiman, Phillip Cohen
+     * @param g the <code>Graphics</code> context of the screen
+     * 
      * @since Classic
      */
-    public void endGame( Graphics g )
+    private void endGame( Graphics g )
     {
         paused = true;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
@@ -592,19 +644,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Show the message box declaring victory!
         JOptionPane.showMessageDialog( this, victoryMessage );
 
-        /* Easter egg!
-        if ( oldHighScore > 10000000 )
-        {
-        JOptionPane.showMessageDialog( null, "HOLY CRAP!!!! YOUR SCORE IS HIGH!!!\nI NEED HELP TO COMPUTE IT" );
-        try
-        {
-        Runtime.getRuntime().exec( "C:/Windows/System32/calc" );
-        }
-        catch ( Exception e )
-        {
-        }
-        }
-         */
+        // Easter egg!
+        //        if ( highScore > 1000000 )
+        //        {
+        //            try
+        //            {
+        //                JOptionPane.showMessageDialog( null, "HOLY CRAP!!!! YOUR SCORE IS HIGH!!!\nI NEED HELP TO COMPUTE IT" );
+        //                Runtime.getRuntime().exec( "C:/Windows/system32/calc" );
+        //            }
+        //            catch ( Exception e )
+        //            {
+        //            }
+        //        }
 
         newGame();
         this.setIgnoreRepaint( false );
@@ -614,8 +665,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Called automatically by key listener, and used only for arrow keys.
-     * @param e The <code>KeyEvent</code> generated by the key listener.
-     * @author Andy Kooiman
+     * 
+     * @param e the <code>KeyEvent</code> generated by the key listener
      * @since Classic
      */
     public synchronized void keyReleased( KeyEvent e )
@@ -637,8 +688,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Dummy method to satisfy <code>KeyListener</code> interface.
-     * @param e The <code>KeyEvent</code> generated by the key listener.
-     * @author Andy Kooiman
+     * 
+     * @param e the <code>KeyEvent</code> generated by the key listener
      * @since Classic
      */
     public void keyTyped( KeyEvent e )
@@ -647,8 +698,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Called automatically by key listener for all keys pressed, and creates an <code>Action</code> to store the relevent data.
-     * @param e The <code>KeyEvent</code> generated by the key listener.
-     * @author Andy Kooiman
+     * 
+     * @param e the <code>KeyEvent</code> generated by the key listener
      * @since Classic
      */
     public synchronized void keyPressed( KeyEvent e )
@@ -667,15 +718,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Performs the action specified by the action as applied to the actor.
-     * @param action The key code for the action.
-     * @param actor The <code>Ship</code> to execute the action.
-     * @author Andy Kooiman
+     * 
+     * @param action    the key code for the action
+     * @param actor     the <code>Ship</code> to execute the action
      * @since Classic
      */
     public synchronized void performAction( int action, Ship actor )
     {
-        /* Decide what key was pressed
-         *==========================*/
+        // Decide what key was pressed.
         switch ( action )
         {
             case KeyEvent.VK_ESCAPE:
@@ -764,30 +814,30 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Toggles music on/off, and writes the setting to the background.
-     * @author Phillip Cohen
-     * @since November 15 2007
+     * 
+     * @since November 15, 2007
      */
-    public void toggleMusic()
+    private void toggleMusic()
     {
         writeOnBackground( "Music " + ( Sound.toggleMusic() ? " on." : "off." ), getWidth() / 2 - 10, getHeight() / 2, Color.green );
     }
 
     /**
      * Toggles sound on/off, and writes the setting to the background.
-     * @author Phillip Cohen
-     * @since November 15 2007
+     * 
+     * @since November 15, 2007
      */
-    public void toggleSound()
+    private void toggleSound()
     {
         writeOnBackground( "Sound " + ( Sound.toggleSound() ? " on." : "off." ), getWidth() / 2 - 10, getHeight() / 2, Color.green );
     }
 
     /**
      * Toggles fullscreen on/off. This is rather problematic.
-     * @author Phillip Cohen
-     * @since December 11 2007
+     * 
+     * @since December 11, 2007
      */
-    public void toggleFullscreen()
+    private void toggleFullscreen()
     {
         Settings.useFullscreen = !Settings.useFullscreen;
         updateFullscreen();
@@ -795,25 +845,25 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Toggles antialiasing on/off, and writes the setting to the background.
-     * @author Phillip Cohen
-     * @since December 15 2007
+     * 
+     * @since December 15, 2007
      */
-    public void toggleAntiAliasing()
+    private void toggleAntiAliasing()
     {
         Settings.antiAlias = !Settings.antiAlias;
-        updateAntiAliasing();
+        updateAntiAliasing( Settings.antiAlias );
         writeOnBackground( "Antialiasing " + ( Settings.antiAlias ? " on." : "off." ), getWidth() / 2 - 10, getHeight() / 2, Color.green );
     }
 
     /**
-     * Sets the anti-aliasing mode based on the setting.
-     * @author Phillip Cohen
-     * @since December 15 2007
+     * Enables or disables anti-aliasing of all graphics.
+     * 
+     * @param useAntiAliasing   whether to use anti-aliasing
+     * @since December 15, 2007
      */
-    public void updateAntiAliasing()
+    private void updateAntiAliasing( boolean useAntiAliasing )
     {
-        // Update the rendering settings.
-        if ( Settings.antiAlias )
+        if ( useAntiAliasing )
             ( (Graphics2D) getGBuff() ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
         else
             ( (Graphics2D) getGBuff() ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
@@ -821,10 +871,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Sets the fullscreen/window mode based on the setting.
-     * @author Phillip Cohen
-     * @since December 11 2007
+     *
+     * @since December 11, 2007
      */
-    public void updateFullscreen()
+    private void updateFullscreen()
     {
         GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
@@ -874,10 +924,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Used to check if we're in fullscreen (regardless of the setting).
-     * @return Whether the frame is in fullscreen mode.
-     * @author Phillip Cohen
-     * @since December 15 2007
+     * Returns if we're in fullscreen (regardless of the setting).
+     * 
+     * @return  whether the frame is in fullscreen mode
+     * @since December 15, 2007
      */
     public boolean isFullscreen()
     {
@@ -886,8 +936,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Sets the current time of the other player.
-     * @param step The new value for the other player's current time.
-     * @author Andy Kooiman
+     * 
+     * @param step  the new value for the other player's current time
      * @since Classic
      */
     public void setOtherPlayerTimeStep( int step )
@@ -897,8 +947,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Included to prevent the clearing of the screen between repaints.
-     * @param g The <code>Graphics</code> context of the screen.
-     * @author Andy Kooiman
+     * 
+     * @param g the <code>Graphics</code> context of the screen
      * @since Classic
      */
     @Override
@@ -909,7 +959,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Undoes all changes that <code>BonusAsteroid</code>s may have caused.
-     * @author Andy Kooiman, Phillip Cohen
+     * 
      * @since Classic
      */
     private void restoreBonusValues()
@@ -928,8 +978,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Returns the current level.
-     * @return The current level.
-     * @author Andy Kooiman
+     * 
+     * @return  the current level
      * @since Classic
      */
     public static int getLevel()
@@ -939,15 +989,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Sleeps the game for the specified time.
-     * @param milis How many milliseconds to sleep for.
-     * @author Andy Kooiman
+     * 
+     * @param millis How many milliseconds to sleep for.
      * @since Classic
      */
-    public static void safeSleep( int milis )
+    public static void safeSleep( int millis )
     {
         try
         {
-            Thread.sleep( milis );
+            Thread.sleep( millis );
         }
         catch ( InterruptedException e )
         {
@@ -956,11 +1006,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Writes a message onto the background.
-     * @param message The message to be written.
-     * @param x The x coordinate where the message should be drawn.
-     * @param y The y coordinate where the message should be drawn.
-     * @param col The <code>Color</code> in which the message should be drawn.
-     * @author Andy Kooiman
+     * 
+     * @param message   the message to be written.
+     * @param x         the x coordinate where the message should be drawn
+     * @param y         the y coordinate where the message should be drawn
+     * @param col       the <code>Color</code> in which the message should be drawn
      * @since Classic
      */
     public void writeOnBackground( String message, int x, int y, Color col )
@@ -972,11 +1022,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Draws a circle with center at coordinates with given radius in given color
-     * @param col The <code>Color</code> in which the circle will be drawn
-     * @param x The x coordinate of the center
-     * @param y The y coordinate of the center
-     * @param radius The radius of the circle
+     * Draws a circle with center at coordinates with given radius in given color.
+     * 
+     * @param col       the <code>Color</code> in which the circle will be drawn
+     * @param x         the x coordinate of the center
+     * @param y         the y coordinate of the center
+     * @param radius    the radius of the circle
      * @since December 15, 2007
      */
     public void drawCircle( Color col, int x, int y, int radius )
@@ -986,12 +1037,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Draws a line from one coordinate to another in a given color
-     * @param col The <code>Color</code> in wihch the circle will be drawn
-     * @param x1 The first x coordinate
-     * @param y1 The first y coordinate
-     * @param x2 The second x coordinate
-     * @param y2 The second y coordinate
+     * Draws a line from one coordinate to another in a given color.
+     * 
+     * @param col   the <code>Color</code> in wihch the circle will be drawn
+     * @param x1    the first x coordinate
+     * @param y1    the first y coordinate
+     * @param x2    the second x coordinate
+     * @param y2    the second y coordinate
      * @since December 15, 2007
      */
     public void drawLine( Color col, int x1, int y1, int x2, int y2 )
@@ -1001,11 +1053,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Draws a circle with center at coordinates with given radius in given color
-     * @param col The <code>Color</code> in which the circle will be drawn
-     * @param x The x coordinate of the center
-     * @param y The y coordinate of the center
-     * @param radius The radius of the circle
+     * Draws a circle with center at coordinates with given radius in given color.
+     * 
+     * @param col       the <code>Color</code> in which the circle will be drawn
+     * @param x         the x coordinate of the center
+     * @param y         the y coordinate of the center
+     * @param radius    the radius of the circle
      * @since December 15, 2007
      */
     public void fillCircle( Color col, int x, int y, int radius )
@@ -1015,10 +1068,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Draws a polygon in one color with a background of another color
-     * @param p The <code>Polygon</code> to be drawn
-     * @param fill The <code>Color</code> in which the <code>Polygon</code> will be drawn
-     * @param outline The <code>Color</code> of the outline
+     * Draws a polygon in one color with a background of another color.
+     * 
+     * @param p         the <code>Polygon</code> to be drawn
+     * @param fill      the <code>Color</code> in which the <code>Polygon</code> will be drawn
+     * @param outline   the <code>Color</code> of the outline
      * @since December 15, 2007
      */
     public void drawPolygon( Color fill, Color outline, Polygon p )
@@ -1030,12 +1084,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Draws a circle with center at given point with given radius in one color, with an outline of another color
-     * @param fill The <code>Color</code> in which the circle will be drawn
-     * @param outline The <code>Color</code> of the outline
-     * @param x The x coordinate of the center
-     * @param y The y coordinate of the center
-     * @param radius The radius
+     * Draws a circle with center at given point with given radius in one color, with an outline of another color.
+     * 
+     * @param fill      the <code>Color</code> in which the circle will be drawn
+     * @param outline   the <code>Color</code> of the outline
+     * @param x         the x coordinate of the center
+     * @param y         the y coordinate of the center
+     * @param radius    the radius
      * @since December 15, 2007
      */
     public void drawOutlinedCircle( Color fill, Color outline, int x, int y, int radius )
@@ -1046,8 +1101,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Returns the game's <code>ActionManager</code>.
-     * @return The <code>ActionManager</code> of <code>this</code>.
-     * @author Andy Kooiman
+     * 
+     * @return  the <code>ActionManager</code> of <code>this</code>.
      * @since Classic
      */
     public ActionManager actionManager()
@@ -1056,9 +1111,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Returns the <code>Graphics</code> Context of the offscreen <code>Image</code> used for double buffering
-     * @return The <code>Graphics</code> Context of the offscreen <code>Image</code> used for double buffering
-     * @since classic
+     * Returns the buffered <code>Graphics</code> context.
+     * 
+     * @return  the <code>Graphics</code> context of the offscreen <code>Image</code> used for double buffering
+     * @since Classic
      */
     public static Graphics getGBuff()
     {
@@ -1068,8 +1124,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Returns whether this computer is the first player.
      * This occurs in singleplayer or when hosting.
-     * @return Whether the local computer is player #1.
-     * @author Andy Kooiman, Phillip Cohen
+     * 
+     * @return  whether the local computer is player #1
      * @since Classic
      */
     public static boolean isPlayerOne()
@@ -1079,8 +1135,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Sets a new high score name.
-     * @param name The name of the player who has the high score.
-     * @author Andy Kooiman
+     * 
+     * @param name  the name of the player who has the high score
      * @since Classic
      */
     public void setHighScore( String name )
@@ -1090,10 +1146,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Inserts comma seperators at each grouping, up to 10^34.
-     * @param number The number to be formatted.
-     * @author Phillip Cohen
-     * @return The formatted string.
-     * @since December 15 2007
+     * 
+     * @param number    The number to be formatted.
+     * @return  the formatted string.
+     * @since December 15, 2007
      */
     public static String insertThousandCommas( int number )
     {
@@ -1102,14 +1158,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * A simple handler for the frame's window buttons.
-     * @author Phillip Cohen, Andy Kooiman
-     * @since December 15 2007
+     * 
+     * @since December 15, 2007
      */
     private static class CloseAdapter extends WindowAdapter
     {
         /**
          * Invoked when a window has been closed.
-         * @param e See <code>WindowListener</code>.
+         * 
+         * @param e see <code>WindowListener</code>
          */
         @Override
         public void windowClosing( WindowEvent e )
@@ -1127,22 +1184,51 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
     }
 
+    /**
+     * A small class for the storage of scoreboard colums.
+     * 
+     * @see <code>drawScoreboard</code>
+     * @author Phillip Cohen
+     * @since December 15, 2007
+     */
     private static class ScoreboardColumn
     {
+        /**
+         * x coordinate of the column.
+         */
         private int x;
 
+        /**
+         * Header text.
+         */
         private String title;
 
+        /**
+         * Returns the column's header text.
+         * 
+         * @return  the text of the column's header
+         */
         public String getTitle()
         {
             return title;
         }
 
+        /**
+         * Returns the column's left edge.
+         * 
+         * @return  the x coordinate of the left edge
+         */
         public int getX()
         {
             return x;
         }
 
+        /**
+         * Assigns this column's data.
+         * 
+         * @param x     the x coordinate of the left edge
+         * @param title the text of the column's header
+         */
         public ScoreboardColumn( int x, String title )
         {
             this.x = x;

@@ -63,6 +63,25 @@ class Bullet implements Weapon {
     private void move() {
         x+=dx;
         y+=dy;
+        checkWrap();
+    }
+    
+     /**
+     * Checks to see if <code>this</code> has left the screen and adjusts accordingly.
+     * @author Andy Kooiman
+     * @since December 16, 2007
+     */
+    private void checkWrap()
+    {
+        // Wrap to stay inside the level.
+        if ( x < 0 )
+            x += AsteroidsFrame.GAME_WIDTH - 1;
+        if ( y < 0 )
+            y += AsteroidsFrame.GAME_HEIGHT - 1;
+        if ( x > AsteroidsFrame.GAME_WIDTH )
+            x -= AsteroidsFrame.GAME_WIDTH - 1;
+        if ( y > AsteroidsFrame.GAME_HEIGHT )
+            y -= AsteroidsFrame.GAME_HEIGHT - 1;
     }
 
 }

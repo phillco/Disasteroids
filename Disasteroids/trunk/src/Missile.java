@@ -192,13 +192,13 @@ public class Missile implements Weapon
     {
         // Wrap to stay inside the level.
         if ( x < 0 )
-            x += Running.environment().getWidth() - 1;
+            x += AsteroidsFrame.GAME_WIDTH - 1;
         if ( y < 0 )
-            y += Running.environment().getHeight() - 1;
-        if ( x > Running.environment().getWidth() )
-            x -= Running.environment().getWidth() - 1;
-        if ( y > Running.environment().getHeight() )
-            y -= Running.environment().getHeight() - 1;
+            y += AsteroidsFrame.GAME_HEIGHT - 1;
+        if ( x > AsteroidsFrame.GAME_WIDTH )
+            x -= AsteroidsFrame.GAME_WIDTH - 1;
+        if ( y > AsteroidsFrame.GAME_HEIGHT )
+            y -= AsteroidsFrame.GAME_HEIGHT - 1;
     }
 
     /**

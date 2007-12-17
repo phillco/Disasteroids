@@ -4,7 +4,6 @@
  */
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Queue;
@@ -13,7 +12,7 @@ import java.util.Queue;
  * A manager that each <code>Ship</code> uses for its <code>Missile</code>s.
  * @author Andy Kooiman
  */
-public class MissileManager
+public class MissileManager implements WeaponManager
 {
     /**
      * The time between each shot
@@ -24,7 +23,7 @@ public class MissileManager
      * The current initial speed for <code>Missile</code>s in this manager.
      * @since Classic
      */
-    private double speed = 10;
+    private double speed = 15;
 
     /**
      * The current probability of a huge blast in <code>Missile</code>s of this manager.
@@ -54,7 +53,7 @@ public class MissileManager
      * The list of currently valid <code>Missile</code>s.
      * @since Classic
      */
-    private LinkedList<Missile> theMissiles = new LinkedList<Missile>();
+    private LinkedList<Weapon> theMissiles = new LinkedList<Weapon>();
 
     /**
      * The list of <code>Missile</code>s waiting to be added.
@@ -62,13 +61,27 @@ public class MissileManager
      */
     private Queue<Missile> toBeAdded = new LinkedList<Missile>();
 
+    private int maxShots=10;
+    
+    public MissileManager()
+    {
+        theMissiles=new LinkedList<Weapon>();
+        toBeAdded=new LinkedList<Missile>();
+    }
+    
+    public MissileManager(LinkedList<Weapon> start)
+    {
+        theMissiles=start;
+        toBeAdded=new LinkedList<Missile>();
+    }
+    
     /**
      * Gets all currently valid <code>Missile</code>s.
      * @return All currently valid <code>Missile</code>s.
      * @author Andy Kooiman
      * @since Classic
      */
-    public synchronized LinkedList<Missile> getMissiles()
+    public LinkedList<Weapon> getWeapons()
     {
         return theMissiles;
     }
@@ -78,17 +91,16 @@ public class MissileManager
      * @author Andy Kooiman
      * @since Classic
      */
-    public synchronized void act()
+    public void act()
     {
-        Graphics g = AsteroidsFrame.getGBuff();
-        ListIterator<Missile> iter = theMissiles.listIterator();
+        ListIterator<Weapon> iter = theMissiles.listIterator();
         while ( iter.hasNext() )
         {
-            Missile m = iter.next();
-            if ( m.needsRemoval() )
+            Weapon w = iter.next();
+            if ( w.needsRemoval() )
                 iter.remove();
             else
-                m.act();
+                w.act();
         }
 
         while ( !toBeAdded.isEmpty() )
@@ -106,8 +118,8 @@ public class MissileManager
     {
         int probPopTemp = probPop;
         probPop = Integer.MAX_VALUE;
-        for ( Missile m : theMissiles )
-            m.explode();
+        for ( Weapon w: theMissiles )
+            w.explode();
         probPop = probPopTemp;
     }
 
@@ -123,9 +135,9 @@ public class MissileManager
      * @author Andy Kooiman
      * @since Classic
      */
-    public boolean addMissile( int x, int y, double angle, double dx, double dy, Color col )
+    public boolean add( int x, int y, double angle, double dx, double dy, Color col )
     {
-        if ( theMissiles.size() > 1000 )
+        if ( theMissiles.size() > 100 )
             return false;
         return toBeAdded.add( new Missile( this, x, y, angle, dx, dy, col ) );
     }
@@ -172,6 +184,7 @@ public class MissileManager
     public void increasePopQuantity( int increase )
     {
         popQuantity += increase;
+        popQuantity=Math.min(popQuantity,50);
     }
 
     /**
@@ -223,7 +236,7 @@ public class MissileManager
      * @author Andy Kooiman
      * @since Classic
      */
-    public int getNumLivingMissiles()
+    public int getNumLiving()
     {
         return theMissiles.size();
     }
@@ -283,11 +296,57 @@ public class MissileManager
         return popQuantity;
     }
 
-    int getIntervalShoot() {
+    public int getIntervalShoot() {
         return intervalShoot;
     }
 
     public void setIntervalShoot(int i) {
         intervalShoot=i;
+    }
+    
+    public int getMaxShots()
+    {
+        return maxShots;
+    }
+
+    public void restoreBonusValues() {
+            setHugeBlastProb( 5 );
+            setHugeBlastSize( 50 );
+            setProbPop( 2000 );
+            setPopQuantity( 5 );
+            setSpeed( 15 );
+            setIntervalShoot(15);
+            setMaxShots(10);
+    }
+    
+    private void setMaxShots(int numShots)
+    {
+        maxShots=numShots;
+    }
+
+    public String ApplyBonus(int key) {
+        switch(key)
+        {
+            case 0:
+                setHugeBlastProb(2);
+                return "Huge Blast Probable";
+            case 1:
+                setHugeBlastSize(100);
+                return "Huge Blast Radius";
+            case 2:
+                setProbPop(500);
+                return "Probability of Splitting Increased";
+            case 4:
+                increasePopQuantity(15);
+                return "Split Quantity /\\ 15";
+            case 6:
+                setMaxShots(50);
+                return "Max Shots=> 50";
+            case 7:
+                setIntervalShoot(3);
+                return "Rapid Fire";
+            default:
+                return "";
+        }
     }
 }

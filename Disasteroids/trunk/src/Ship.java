@@ -42,18 +42,22 @@ public class Ship
     private int livesLeft;
 
     private boolean invulFlash;
-
-    private MissileManager manager;
+    
+    private WeaponManager manager;
 
     private int score = 0;
 
-    private int maxShots = 10;
+    private WeaponType weaponType;
+    
+    private boolean shooting;
+    
+    public static enum WeaponType {BULLETS, MISSILES};
 
     private int numAsteroidsKilled = 0;
 
     private int numShipsKilled = 0;
 
-    public Ship( int x, int y, Color c, int lives, String name )
+    public Ship( int x, int y, Color c, int lives, String name, WeaponType weaponType )
     {
         this.x = x;
         this.y = y;
@@ -70,7 +74,11 @@ public class Ship
         double fadePct = 0.6;
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
-        manager = new MissileManager();
+        this.weaponType=weaponType;
+        if(weaponType==WeaponType.MISSILES)
+            manager = new MissileManager();
+        else if(weaponType==WeaponType.BULLETS)
+            manager= new BulletManager();
         invincibilityCount = 200;
     }
 
@@ -84,11 +92,13 @@ public class Ship
         else
             col = myColor;
 
+        int centerX=Running.environment().getWidth()/2;
+        int centerY=Running.environment().getHeight()/2;
         // Flash when invunerable
         Polygon outline = new Polygon();
-        outline.addPoint( (int) ( x + RADIUS * Math.cos( angle ) ), (int) ( y - RADIUS * Math.sin( angle ) ) );
-        outline.addPoint( (int) ( x + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( y - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
-        outline.addPoint( (int) ( x + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( y - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
             Running.environment().drawPolygon( col, Color.black, outline );
@@ -138,6 +148,16 @@ public class Ship
     {
         right = false;
     }
+    
+    public void startShoot()
+    {
+        this.shooting=true;
+    }
+    
+    public void stopShoot()
+    {
+        this.shooting=false;
+    }
 
     public void act()
     {
@@ -155,6 +175,8 @@ public class Ship
             angle += Math.PI / SENSITIVITY / 2;
         if ( right )
             angle -= Math.PI / SENSITIVITY / 2;
+        if(shooting&&canShoot())
+            shoot(Settings.soundOn);
 
         manager.act();
         if ( livesLeft < 0 )
@@ -166,33 +188,8 @@ public class Ship
         checkBounce();
         checkCollision();
         draw();
-        if ( forward && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
-        {
-            Random rand = RandNumGen.getParticleInstance();
-            for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
-                ParticleManager.addParticle( new Particle(
-                                             x + rand.nextInt( 8 ) - 4,
-                                             y + rand.nextInt( 8 ) - 4,
-                                             rand.nextInt( 4 ) + 3,
-                                             myColor,
-                                             rand.nextDouble() * 3,
-                                             angle + rand.nextDouble() * .4 - .2 + Math.PI,
-                                             30, 10 ) );
-        }
+        generateParticles();
 
-        if ( backwards && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
-        {
-            Random rand = RandNumGen.getParticleInstance();
-            for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
-                ParticleManager.addParticle( new Particle(
-                                             x + rand.nextInt( 16 ) - 8,
-                                             y + rand.nextInt( 16 ) - 8,
-                                             rand.nextInt( 4 ) + 3,
-                                             myColor,
-                                             rand.nextDouble() * 3,
-                                             angle + rand.nextDouble() * .4 - .2,
-                                             30, 10 ) );
-        }
     }
 
     public void fullRight()
@@ -219,6 +216,20 @@ public class Ship
     {
         dx = dy = 0;
     }
+    
+    public void rotateWeapons()
+    {
+       // manager.clear();
+        if(this.weaponType==WeaponType.BULLETS)
+        {
+            this.weaponType=WeaponType.MISSILES;
+            this.manager=new MissileManager(manager.getWeapons());
+        }else if(this.weaponType==WeaponType.MISSILES)
+        {
+            this.weaponType=WeaponType.BULLETS;
+            this.manager=new BulletManager(manager.getWeapons());
+        }
+    }
 
     private void checkBounce()
     {
@@ -240,9 +251,9 @@ public class Ship
             if ( other == this )
                 continue;
 
-            LinkedList<Missile> enemyMissiles = other.getMissileManager().getMissiles();
+            LinkedList<Weapon> enemyWeapons = other.getWeaponManager().getWeapons();
 
-            for ( Missile m : enemyMissiles )
+            for ( Weapon m : enemyWeapons )
             {
                 if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y - m.getY(), 2 ) < 400 )
                     if ( looseLife() )
@@ -254,6 +265,40 @@ public class Ship
                         other.livesLeft++;
                     }
             }
+        }
+    }
+    
+    /**
+     * Generates particles for the ships boosters, moved from act metod
+     * @snice December 16, 2007
+     */
+    private void generateParticles() {
+        if ( forward && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
+        {
+            Random rand = RandNumGen.getParticleInstance();
+            for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
+                ParticleManager.addParticle( new Particle(
+                                            -15 * Math.cos(angle) + x + rand.nextInt( 8 ) - 4,
+                                             15 * Math.sin(angle) + y + rand.nextInt( 8 ) - 4,
+                                             rand.nextInt( 4 ) + 3,
+                                             myColor,
+                                             rand.nextDouble() * 4,
+                                             angle + rand.nextDouble() * .4 - .2 + Math.PI,
+                                             30, 10 ) );
+        }
+
+        if ( backwards && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
+        {
+            Random rand = RandNumGen.getParticleInstance();
+            for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
+                ParticleManager.addParticle( new Particle(
+                                              15*Math.cos(angle) + x + rand.nextInt( 8 ) - 4,
+                                             -15*Math.sin(angle) + y + rand.nextInt( 8 ) - 4,
+                                             rand.nextInt( 4 ) + 3,
+                                             myColor,
+                                             rand.nextDouble() * 4,
+                                             angle + rand.nextDouble() * .4 - .2,
+                                             30, 10 ) );
         }
     }
 
@@ -281,20 +326,15 @@ public class Ship
         if ( livesLeft < 0 )
             return;
         timeTillNextShot = manager.getIntervalShoot();
-        manager.addMissile( (int) x, (int) y, angle, dx, dy, myColor );
+        manager.add( (int) x, (int) y, angle, dx, dy, myColor );
 
         if ( useSound )
             Sound.click();
     }
 
-    public void setMaxShots( int newMax )
-    {
-        maxShots = newMax;
-    }
-
     public boolean canShoot()
     {
-        return ( manager.getNumLivingMissiles() < maxShots && timeTillNextShot < 1 && invincibilityCount < 400 && livesLeft >= 0 );
+        return ( manager.getNumLiving() < manager.getMaxShots() && timeTillNextShot < 1 && invincibilityCount < 400 && livesLeft >= 0 );
     }
 
     public Color getColor()
@@ -342,7 +382,7 @@ public class Ship
         return invincibilityCount > 0;
     }
 
-    public MissileManager getMissileManager()
+    public WeaponManager getWeaponManager()
     {
         return manager;
     }

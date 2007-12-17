@@ -225,7 +225,7 @@ public class Asteroid
         // Go through all of the ships.
         for ( Ship s : AsteroidsFrame.players )
         {
-            ListIterator<Missile> iter = s.getMissileManager().getMissiles().listIterator();
+            ListIterator<Weapon> iter = s.getWeaponManager().getWeapons().listIterator();
 
             // Were we hit by the ship?
             if ( s.livesLeft() >= 0 )
@@ -243,7 +243,7 @@ public class Asteroid
             // Loop through all this ship's Missiles.
             while ( iter.hasNext() )
             {
-                Missile m = iter.next();
+                Weapon m = iter.next();
 
                 // Were we hit by a missile?
                 if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y -m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )

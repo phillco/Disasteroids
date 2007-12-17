@@ -4,12 +4,13 @@
  */
 
 import java.awt.Color;
+import java.util.Random;
 
 /**
  * The bullets that each <code>Ship</code> shoots.
  * @author Andy Kooiman
  */
-public class Missile
+public class Missile implements Weapon
 {
     /**
      * The <code>Color</code> to be drawn in.
@@ -117,8 +118,8 @@ public class Missile
         age = 0;
         this.x = x;
         this.y = y;
-        this.dx = manager.speed() * Math.cos( angle ) + dx;
-        this.dy = -manager.speed() * Math.sin( angle ) + dy;
+        this.dx = /*manager.speed() * Math.cos( angle )*/  dx;
+        this.dy =/* -manager.speed() * Math.sin( angle ) */ dy;
         this.angle = angle;
         radius = 3;
         explodeCount = 0;
@@ -134,7 +135,7 @@ public class Missile
          */
 	public void draw()
 	{
-            Running.environment().drawLine(myColor,(int)x+1,(int)y+1,(int)(x-10*Math.cos(angle))+1,(int)(y+10*Math.sin(angle))+1);
+            Running.environment().drawLine(myColor,(int)x+1,(int)y+1,10,angle+Math.PI);
             Running.environment().fillCircle(myColor, (int)x,(int)y, radius);
 	}
 
@@ -147,6 +148,10 @@ public class Missile
     {
         x += dx;
         y += dy;
+        dx+=manager.speed()*Math.cos(angle)/50;
+        dy-=manager.speed()*Math.sin(angle)/50;
+        dx*=.98;
+        dy*=.98;
     }
 
     /**
@@ -157,6 +162,19 @@ public class Missile
      */
     public synchronized void act()
     {
+        if ( age<30 )
+        {
+            Random rand = RandNumGen.getParticleInstance();
+            for ( int i = 0; i < (int) ( 7-Math.sqrt( dx * dx + dy * dy ) ); i++ )
+                ParticleManager.addParticle( new Particle(
+                                             x + rand.nextInt( 8 ) - 4,
+                                             y + rand.nextInt( 8 ) - 4,
+                                             rand.nextInt( 4 ),
+                                             myColor,
+                                             rand.nextDouble() * 3,
+                                             angle + rand.nextDouble() * .4 - .2 + Math.PI,
+                                             30, 10 ) );
+        }
         age++;
         move();
         checkWrap();
@@ -280,7 +298,7 @@ public class Missile
     private synchronized void pop()
     {
         for ( double ang = 0; ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
-            manager.addMissile( (int) x, (int) y, ang, 0, 0, myColor );
+            manager.add( (int) x, (int) y, ang, 0, 0, myColor );
         needsRemoval = true;
     }
 

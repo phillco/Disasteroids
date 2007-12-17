@@ -29,7 +29,6 @@ public class ParticleManager
 
     /**
      * Instructs all <code>Particle</code>s to act, removes old ones, and draws the rest.
-     * @param g The <code>Graphics</code> context in which to draw the <code>Particles</code>.
      * @author Phillip Cohen
      * @since Classic
      */
@@ -37,7 +36,7 @@ public class ParticleManager
     {
         if ( parts.size() > 0 )
         {
-            for ( int i = 0; i < parts.size(); i += 0 )
+            for ( int i = 0; i < parts.size();)
             {
                 Particle p = parts.get( i );
                 if ( p.act() == true )

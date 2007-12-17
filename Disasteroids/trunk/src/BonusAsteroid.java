@@ -74,18 +74,13 @@ public class BonusAsteroid extends Asteroid
 		switch (bonusType)
 		{
 			case 0:
-				killer.getMissileManager().setHugeBlastProb(2);
-				Running.environment().writeOnBackground("Huge Blast Probable", (int) x, (int) y, killer.getColor());
+				Running.environment().writeOnBackground(killer.getWeaponManager().ApplyBonus(0),(int)x, (int) y, killer.getColor());
 				break;
 			case 1:
-				killer.getMissileManager().setHugeBlastSize(100);
-				Running.environment().writeOnBackground("Huge Blast Radius", (int) x, (int) y, killer.getColor());
-				//AsteroidsFrame.setJuggernut(true);
-				//Misile.increaseSpeed(1);
+				Running.environment().writeOnBackground(killer.getWeaponManager().ApplyBonus(1),(int)x, (int) y, killer.getColor());
 				break;
 			case 2:
-				killer.getMissileManager().setProbPop(500);
-				Running.environment().writeOnBackground("Probability of Popping increased", (int) x, (int) y, killer.getColor());
+				Running.environment().writeOnBackground(killer.getWeaponManager().ApplyBonus(2),(int)x, (int) y, killer.getColor());
 				break;
 			case 3:
 				killer.addLife();
@@ -99,15 +94,12 @@ public class BonusAsteroid extends Asteroid
 				Running.environment().writeOnBackground("+10,000 Points", (int) x, (int) y, killer.getColor());
 				break;
 			case 6:
-				killer.setMaxShots(50);
-				Running.environment().writeOnBackground("Max Shots => 50", (int) x, (int) y, killer.getColor());
+				Running.environment().writeOnBackground(killer.getWeaponManager().ApplyBonus(6),(int)x, (int) y, killer.getColor());
 				break;
 			case 4:
-				killer.getMissileManager().increasePopQuantity(15);
-				Running.environment().writeOnBackground("Pop Quantity /\\ 15", (int) x, (int) y, killer.getColor());
-                       case 7:
-                           killer.getMissileManager().setIntervalShoot(3);
-                           Running.environment().writeOnBackground("Rapid Fire", (int)x, (int) y, killer.getColor());
+				Running.environment().writeOnBackground(killer.getWeaponManager().ApplyBonus(4),(int)x, (int) y, killer.getColor());
+                        case 7:
+				Running.environment().writeOnBackground(killer.getWeaponManager().ApplyBonus(7),(int)x, (int) y, killer.getColor());
 			
 		}
 	}

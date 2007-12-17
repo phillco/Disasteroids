@@ -21,6 +21,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
@@ -128,12 +130,26 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @since December 14 2007
      */
     private static int localPlayer;
+    
+    /**
+     * The time stored at the beginning of the last call to paint; Used for FPS.
+     * @since December 15, 2007
+     */
+    private long timeOfLastRepaint;
+    
+    /**
+     * Stores every <code>Star</code> for the background
+     * @since December 16, 2007
+     */
+    private Star[] theStars;
 
     /**
      * Whether the user is pressing the scoreboard key.
      * @since December 15 2007
      */
     private boolean drawScoreboard;
+    
+    private LinkedList<Message> theMessages= new LinkedList<Message>();
 
     /**
      * Constructs the game frame and game elements.
@@ -182,7 +198,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Create the ships.
         actionManager = new ActionManager();
         for ( int i = 0; i < players.length; i++ )
-            players[i] = new Ship( getWidth() / 2 - ( i * 100 ), getHeight() / 2, PLAYER_COLORS[i], 0, "Player " + ( i + 1 ) );
+            players[i] = new Ship( getWidth() / 2 - ( i * 100 ), getHeight() / 2, PLAYER_COLORS[i], 0, "Player " + ( i + 1 ) , Ship.WeaponType.MISSILES);
 
         // Create the asteroids.
         level = 1;
@@ -222,7 +238,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         if ( paused )
             return;
-
+        long timeSinceLast=-timeOfLastRepaint+(timeOfLastRepaint=System.currentTimeMillis());
+        System.out.println("FPS="+1000.0/timeSinceLast);
         if ( gBuff == null )
             initBuffering( g );
 
@@ -304,27 +321,19 @@ public class AsteroidsFrame extends Frame implements KeyListener
         updateAntiAliasing( false );
 
         Graphics gBack = background.getGraphics();
-
-        // Scroll the background up.
-        gBack.drawImage( background, 0, -1, this );
-
-        // Draw new stars.
-        Random rand = RandNumGen.getStarInstance();
-        for ( int y = getHeight() - 2; y < getHeight(); y++ )
+        gBack.setColor(Color.black);
+        gBack.fillRect(0, 0, getWidth(), getHeight());
+        for(Star star: this.theStars)
+            drawPoint(gBack, star.color, star.x, star.y);
+        ListIterator<Message> itr=theMessages.listIterator();
+        while(itr.hasNext())
         {
-            for ( int x = 0; x < getWidth(); x++ )
-            {
-                if ( rand.nextInt( 300 ) < 1 )
-                {
-                    int sat = rand.nextInt( 255 );
-                    gBack.setColor( new Color( sat, sat, sat ) );
-                }
-                else
-                    gBack.setColor( Color.black );
-
-                gBack.fillRect( x, y, 1, 1 );
-            }
+            Message m=itr.next();
+            drawString(gBack, m.x, m.y, m.message, m.col);
+            if(m.life--==0)
+                itr.remove();
         }
+        
 
         updateAntiAliasing( Settings.antiAlias );
     }
@@ -361,7 +370,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             for ( Ship s : players )
             {
-                if ( s.getMissileManager().getNumLivingMissiles() > 0 )
+                if ( s.getWeaponManager().getNumLiving() > 0 )
                     return false;
             }
         }
@@ -397,7 +406,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             s.addLife();
             s.setInvincibilityCount( 100 );
             s.increaseScore( 2500 );
-            s.getMissileManager().clear();
+            s.getWeaponManager().clear();
             s.setNumAsteroidsKilled( 0 );
             s.setNumShipsKilled( 0 );
         }
@@ -579,12 +588,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Add stars of varying lightness.
         Random rand = RandNumGen.getStarInstance();
-        for ( int star = 0; star < getWidth() * getHeight() / 300; star++ )
+        this.theStars=new Star[getWidth()*getHeight()/1000];
+        for ( int star = 0; star < theStars.length; star++ )
         {
             int sat = rand.nextInt( 255 );
-            gBack.setColor( new Color( sat, sat, sat ) );
-            gBack.fillRect( rand.nextInt( getWidth() ), rand.nextInt( getHeight() ), 1, 1 );
+            Color col=new Color( sat, sat, sat );
+            theStars[star]=new Star( rand.nextInt( getWidth() ), rand.nextInt( getHeight() ), col );
         }
+        
     }
 
     /**
@@ -675,7 +686,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         if ( !paused || e.getKeyCode() == 80 )
         {
-            if ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 )
+            if ( (e.getKeyCode() >= 37 && e.getKeyCode() <= 40 )||e.getKeyCode()==KeyEvent.VK_SPACE)
                 // Get the raw code from the keyboard
                 //performAction(e.getKeyCode(), ship);
                 actionManager.add( new Action( players[localPlayer], 0 - e.getKeyCode(), timeStep + 2 ) );
@@ -731,8 +742,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_ESCAPE:
                 Running.quit();
             case KeyEvent.VK_SPACE:
-                if ( actor.canShoot() )
-                    actor.shoot( Settings.soundOn );
+                actor.startShoot();
+                break;
+            case -KeyEvent.VK_SPACE:
+                actor.stopShoot();
                 break;
             case KeyEvent.VK_LEFT:
                 actor.left();
@@ -781,7 +794,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 actor.berserk();
                 break;
             case KeyEvent.VK_HOME:
-                actor.getMissileManager().explodeAll();
+                actor.getWeaponManager().explodeAll();
                 break;
             case KeyEvent.VK_P:
                 // [PC] Not unpausable!
@@ -798,6 +811,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 break;
             case KeyEvent.VK_W:
                 warpDialog();
+                break;
+            case KeyEvent.VK_Q:
+                actor.rotateWeapons();
                 break;
             case KeyEvent.VK_A:
                 toggleAntiAliasing();
@@ -966,13 +982,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         for ( Ship ship : players )
         {
-            ship.getMissileManager().setHugeBlastProb( 5 );
-            ship.getMissileManager().setHugeBlastSize( 50 );
-            ship.getMissileManager().setProbPop( 2000 );
-            ship.getMissileManager().setPopQuantity( 5 );
-            ship.getMissileManager().setSpeed( 10 );
-            ship.setMaxShots( 10 );
-            ship.getMissileManager().setIntervalShoot( 15 );
+            ship.getWeaponManager().restoreBonusValues();
         }
     }
 
@@ -1015,25 +1025,40 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void writeOnBackground( String message, int x, int y, Color col )
     {
-        Graphics gBack = background.getGraphics();
-        gBack.setColor( col );
-        gBack.setFont( new Font( "Tahoma", Font.BOLD, 9 ) );
-        gBack.drawString( message, x, y );
+        theMessages.add(new Message(x, y, message, col));
     }
 
     /**
-     * Draws a circle with center at coordinates with given radius in given color.
-     * 
-     * @param col       the <code>Color</code> in which the circle will be drawn
-     * @param x         the x coordinate of the center
-     * @param y         the y coordinate of the center
-     * @param radius    the radius of the circle
+     * Draws a point at specified coordinates, translated relative to local ship.
+     * @param graph The <code>Graphics</code> context in which to draw
+     * @param col The <code>Color</code> in which to draw
+     * @param x The x coordinate
+     * @param y The y coordinate
+     * @author Andy Kooiman
+     * @since December 16, 2007
+     */
+    public void drawPoint(Graphics graph, Color col, int x, int y) {
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        graph.setColor(col);
+        graph.drawRect(x, y, 0, 0);
+    }
+
+    
+    /**
+     * Draws a circle with center at coordinates translated relative to local ship with given radius in given color
+     * @param col The <code>Color</code> in which the circle will be drawn
+     * @param x The x coordinate of the center
+     * @param y The y coordinate of the center
+     * @param radius The radius of the circle
      * @since December 15, 2007
      */
     public void drawCircle( Color col, int x, int y, int radius )
     {
-        gBuff.setColor( col );
-        gBuff.drawOval( x - radius / 2 - 1, y - radius / 2 - 1, radius * 2, radius * 2 );
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        gBuff.setColor(col);
+        gBuff.drawOval(x-radius/2-1, y-radius/2-1, radius*2, radius*2);
     }
 
     /**
@@ -1048,11 +1073,42 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void drawLine( Color col, int x1, int y1, int x2, int y2 )
     {
-        gBuff.setColor( col );
-        gBuff.drawLine( x1, y1, x2, y2 );
+        x1=(x1-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y1=(y1-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        x2=(x2-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y2=(y2-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        gBuff.setColor(col);
+        gBuff.drawLine(x1,y1, x2, y2);
     }
-
-    /**
+    
+        /**
+     * Draws a line from one coordinate to another in a given color
+     * @param col The <code>Color</code> in wihch the circle will be drawn
+     * @param x1 The first x coordinate
+     * @param y1 The first y coordinate
+     * @param x2 The second x coordinate
+     * @param y2 The second y coordinate
+     * @since December 15, 2007
+     */
+    public void drawLine(Graphics graph, Color col, int x1, int y1, int x2, int y2)
+    {
+        x1=(x1-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y1=(y1-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        x2=(x2-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y2=(y2-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        graph.setColor(col);
+        graph.drawLine(x1,y1, x2, y2);
+    }
+    
+    public void drawLine(Color col, int x, int y, int length, double angle)
+    {
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        gBuff.setColor(col);
+        gBuff.drawLine(x, y,(int)(x+length*Math.cos(angle)),(int)(y-length*Math.sin(angle)));
+    }
+    
+     /**
      * Draws a circle with center at coordinates with given radius in given color.
      * 
      * @param col       the <code>Color</code> in which the circle will be drawn
@@ -1063,8 +1119,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void fillCircle( Color col, int x, int y, int radius )
     {
-        gBuff.setColor( col );
-        gBuff.fillOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        gBuff.setColor(col);
+        gBuff.fillOval(x-radius/2, y-radius/2, radius*2, radius*2);
+    }
+    
+    public void drawString(Graphics graph, int x, int y, String str, Color col)
+    {
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*getWidth())%getWidth();
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*getHeight())%getHeight();
+        graph.setColor(col);       
+        graph.drawString(str,x,y);
     }
 
     /**
@@ -1132,7 +1198,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         return localPlayer == 0;
     }
-
+    
     /**
      * Sets a new high score name.
      * 
@@ -1235,4 +1301,42 @@ public class AsteroidsFrame extends Frame implements KeyListener
             this.title = title;
         }
     }
+    
+    /**
+     * The <code>Star</code> class is little more than an overblown
+     * coordinate class and is used for storing the absolute locations of each Star.
+     * 
+     * @since December 16,2007
+     */
+    private static class Star
+    {
+        public int x, y;
+        public Color color;
+        public Star(int x, int y, Color col)
+        {
+            this.x=x;
+            this.y=y;
+            this.color=col;
+        }
+    }
+    
+    /**
+     * 
+     */
+    private static class Message
+    {
+        public int x, y;
+        public String message;
+        public Color col;
+        public int life=40;
+
+        public Message(int x, int y, String message, Color col) {
+            this.x = x;
+            this.y = y;
+            this.message = message;
+            this.col = col;
+        }
+        
+    }
+    
 }

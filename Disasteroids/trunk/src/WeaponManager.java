@@ -12,6 +12,8 @@ interface WeaponManager {
     
     public void act();
 
+    public void add(LinkedList<Weapon> weapons);
+
     public void clear();
 
     public void explodeAll();

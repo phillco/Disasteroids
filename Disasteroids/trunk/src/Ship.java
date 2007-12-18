@@ -51,11 +51,32 @@ public class Ship
     
     private boolean shooting;
     
-    public static enum WeaponType {BULLETS, MISSILES};
+    public static enum WeaponType {
+        BULLETS(0),
+        MISSILES(1);
+        private int index;
+        
+        private WeaponType(int index)
+        {
+            this.index=index;
+        }
+        
+        public int index(){return index;}
+
+        //hackish, fix later
+        private WeaponType next(WeaponType weaponType) {
+            if(weaponType==BULLETS)
+                return MISSILES;
+            return BULLETS;
+        }
+                
+    };
 
     private int numAsteroidsKilled = 0;
 
     private int numShipsKilled = 0;
+    
+    private WeaponManager[] allWeapons;
 
     public Ship( int x, int y, Color c, int lives, String name, WeaponType weaponType )
     {
@@ -75,11 +96,21 @@ public class Ship
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
         this.weaponType=weaponType;
-        if(weaponType==WeaponType.MISSILES)
-            manager = new MissileManager();
-        else if(weaponType==WeaponType.BULLETS)
-            manager= new BulletManager();
+        allWeapons=new WeaponManager[WeaponType.values().length];
+        allWeapons[0]=new BulletManager();
+        allWeapons[1]=new MissileManager();
+        manager=allWeapons[weaponType.index()];
         invincibilityCount = 200;
+    }
+
+    public void clearWeapons() {
+        for(WeaponManager wM: allWeapons)
+            wM.clear();
+    }
+
+    public void restoreBonusValues() {
+        for(WeaponManager wM: allWeapons)
+            wM.restoreBonusValues();
     }
 
     private void draw()
@@ -219,16 +250,11 @@ public class Ship
     
     public void rotateWeapons()
     {
-       // manager.clear();
-        if(this.weaponType==WeaponType.BULLETS)
-        {
-            this.weaponType=WeaponType.MISSILES;
-            this.manager=new MissileManager(manager.getWeapons());
-        }else if(this.weaponType==WeaponType.MISSILES)
-        {
-            this.weaponType=WeaponType.BULLETS;
-            this.manager=new BulletManager(manager.getWeapons());
-        }
+        int index=weaponType.index();
+        manager=allWeapons[(index+1)%WeaponType.values().length];
+        manager.clear();//make sure nothing is lingering
+        manager.add(allWeapons[index].getWeapons());
+        weaponType=weaponType.next(weaponType);
     }
 
     private void checkBounce()

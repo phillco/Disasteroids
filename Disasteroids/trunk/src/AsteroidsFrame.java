@@ -412,7 +412,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             s.addLife();
             s.setInvincibilityCount( 100 );
             s.increaseScore( 2500 );
-            s.getWeaponManager().clear();
+            s.clearWeapons();
             s.setNumAsteroidsKilled( 0 );
             s.setNumShipsKilled( 0 );
         }
@@ -594,7 +594,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Add stars of varying lightness.
         Random rand = RandNumGen.getStarInstance();
-        this.theStars=new Star[GAME_WIDTH*GAME_HEIGHT/1000];
+        this.theStars=new Star[GAME_WIDTH*GAME_HEIGHT/(1700+300)];
         for ( int star = 0; star < theStars.length; star++ )
         {
             int sat = rand.nextInt( 255 );
@@ -988,7 +988,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         for ( Ship ship : players )
         {
-            ship.getWeaponManager().restoreBonusValues();
+            ship.restoreBonusValues();
         }
     }
 

@@ -59,20 +59,20 @@ public class MissileManager implements WeaponManager
      * The list of <code>Missile</code>s waiting to be added.
      * @since Classic
      */
-    private Queue<Missile> toBeAdded = new LinkedList<Missile>();
+    private Queue<Weapon> toBeAdded = new LinkedList<Weapon>();
 
     private int maxShots=10;
     
     public MissileManager()
     {
         theMissiles=new LinkedList<Weapon>();
-        toBeAdded=new LinkedList<Missile>();
+        toBeAdded=new LinkedList<Weapon>();
     }
     
     public MissileManager(LinkedList<Weapon> start)
     {
         theMissiles=start;
-        toBeAdded=new LinkedList<Missile>();
+        toBeAdded=new LinkedList<Weapon>();
     }
     
     /**
@@ -140,6 +140,23 @@ public class MissileManager implements WeaponManager
         if ( theMissiles.size() > 100 )
             return false;
         return toBeAdded.add( new Missile( this, x, y, angle, dx, dy, col ) );
+    }
+    
+    /**
+     * Adds all elements of a <code>LinkedList</code> to this <code>MissileManager</code>.
+     * These elements need not be <code>Missile</code>s, and will be removed from their
+     * current location by this method.
+     * 
+     * @param others The <code>LinkedList</code> of <code>Weapon</code>s to be added
+     */
+    public void add(LinkedList<Weapon> others)
+    {
+        ListIterator<Weapon> itr= others.listIterator();
+        while(itr.hasNext())
+        {
+            toBeAdded.add(itr.next());
+            itr.remove();
+        }
     }
 
     /**
@@ -227,7 +244,8 @@ public class MissileManager implements WeaponManager
      */
     public void clear()
     {
-        theMissiles.clear();
+        theMissiles=new LinkedList<Weapon>();
+        toBeAdded.clear();
     }
 
     /**

@@ -78,6 +78,24 @@ class BulletManager implements WeaponManager {
         
         return toBeAdded.add( new Bullet( this, x, y, angle, dx, dy, col ) );
     }
+    
+     /**
+     * Adds all elements of a <code>LinkedList</code> to this <code>MissileManager</code>.
+     * These elements need not be <code>Missile</code>s, and will be removed from their
+     * current location by this method.
+     * 
+     * @param others The <code>LinkedList</code> of <code>Weapon</code>s to be added
+     * @since December 17, 2007
+     */
+    public void add(LinkedList<Weapon> others)
+    {
+        ListIterator<Weapon> itr= others.listIterator();
+        while(itr.hasNext())
+        {
+            toBeAdded.add(itr.next());
+            itr.remove();
+        }
+    }
 
     public int getNumLiving() {
         return theBullets.size();
@@ -94,19 +112,26 @@ class BulletManager implements WeaponManager {
     }
 
     public String ApplyBonus(int key) {
+        String ret="";
+        
         switch(key)
         {
-            case 7:
+            case 1:
                 intervalShoot=1;
-                return "Rapid Fire";
+                ret += "Rapid Fire";
+                break;
             case 4:
                 threeWayShot=true;
-                return "Three Way Shot";
-            case 1:
+                ret += "Three Way Shot";
+                break;
+            case 7:
                 radius=6;
-                return "Huge Bullets";
+                ret += "Huge Bullets";
+                break;
+            default:
+                ret="";
         }
-        return "";
+        return ret;
     }
     
     public int getSpeed()

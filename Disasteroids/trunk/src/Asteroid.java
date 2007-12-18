@@ -158,8 +158,8 @@ public class Asteroid
         // Accelerate towards our hapless victim. <g>
         if ( victim != null )
         {
-            dx += ( -x + victim.getX() ) * (double) ( AsteroidsFrame.getLevel() ) / 500000.0;
-            dy += ( -y + victim.getY() ) * (double) ( AsteroidsFrame.getLevel() ) / 500000.0;
+//            dx += ( -x + victim.getX() ) * (double) ( AsteroidsFrame.getLevel() ) / 500000.0;
+  //          dy += ( -y + victim.getY() ) * (double) ( AsteroidsFrame.getLevel() ) / 500000.0;
         }
 
         x += dx;

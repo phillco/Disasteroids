@@ -60,6 +60,20 @@ public class Running
      */
     public static void quit()
     {
+        // Find the player with the highest score.
+        if ( aF != null )
+        {
+            Ship highestScorer = AsteroidsFrame.players[0];
+            for ( Ship s : AsteroidsFrame.players )
+            {
+                if ( s.getScore() > Settings.highScore )
+                {
+                    Settings.highScoreName = highestScorer.getName();
+                    Settings.highScore = highestScorer.getScore();
+                }
+            }
+        }
+
         // Write our settings.
         Settings.saveToStorage();
 

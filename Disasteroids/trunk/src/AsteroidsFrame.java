@@ -53,18 +53,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private static final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
 
     /**
-     * The record high score.
-     * @since Classic
-     */
-    private static double highScore;
-
-    /**
-     * The record high-scorer's name.
-     * @since Classic
-     */
-    private static String highScoreName;
-
-    /**
      * The <code>Image</code> used for double buffering.
      * @since Classic
      */
@@ -179,9 +167,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
-
-        highScore = 1000000;
-        highScoreName = "Phillip and Andy";
 
         // Set up the connection/game settings.
         players = new Ship[playerCount];
@@ -599,6 +584,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
             }
             y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
         }
+
+        // Draw the high scorer.
+        g2d.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
+        text = "All-time high scorer is " + Settings.highScoreName + " with " + insertThousandCommas( (int) Settings.highScore ) + " points.";
+        x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+        y += 40;
+        g2d.setColor( Color.white );
+        g2d.drawString( text, x, y );
+
     }
 
     /**
@@ -633,10 +627,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Starts a new game.
      * 
-     * @deprecated Doesn't work.
      * @since Classic
      */
-    @Deprecated
     public void newGame()
     {
         resetEntireGame();
@@ -675,13 +667,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
         victoryMessage += " with a score of " + highestScorer.getScore() + "!";
 
         // Is this a new high score?
-        if ( highestScorer.getScore() > highScore )
+        if ( highestScorer.getScore() > Settings.highScore )
         {
             victoryMessage += "\nThis is a new high score!";
-            highScoreName = highestScorer.getName();
-            highScore = highestScorer.getScore();
-            if ( ( players.length > 1 ) && ( highestScorer == players[localPlayer] ) )
-                AsteroidsServer.send( "HS" + highScoreName );
+            Settings.highScoreName = highestScorer.getName();
+            Settings.highScore = highestScorer.getScore();
         }
 
         // Show the message box declaring victory!
@@ -1229,17 +1219,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public static boolean isPlayerOne()
     {
         return localPlayer == 0;
-    }
-
-    /**
-     * Sets a new high score name.
-     * 
-     * @param name  the name of the player who has the high score
-     * @since Classic
-     */
-    public void setHighScore( String name )
-    {
-        highScoreName = name;
     }
 
     /**

@@ -1,94 +1,115 @@
 /*
  * DISASTEROIDS
- * by Phillip Cohen and Andy Kooiman
- * 
- * APCS 1, 2006 to 2007, Period 3
- * Version - 1.0 Final (exam release)
- *
- * Run Running.class to start
+ * ServerListenerThread.java
  */
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
-
+/**
+ * Network listener thread for multiplayer games.
+ * @author Phillip Cohen, Andy Kooiman 
+ */
 public class ServerListenerThread extends Thread
 {
-	
-	private BufferedReader in;
-	
-	public ServerListenerThread(BufferedReader in)
-	{
-		this.in=in;
-	}
-	
-	
-	
+    /**
+     * Our source of messages.
+     * @since Classic
+     */
+    private BufferedReader in;
+
+    /**
+     * Creates the listener, but doesn't start it.
+     * @param in    the source of messages
+     */
+    public ServerListenerThread( BufferedReader in )
+    {
+        this.in = in;
+    }
+
+    /**
+     * Runs the listening loop.
+     * 
+     * @since Classic
+     */
     @Override
-	public void run()
-	{
-		String fromServer;
-		try{
-			while((fromServer=in.readLine())!=null)
-			{
-//				System.out.println("RECEIVED: "+fromServer);
-				process(fromServer);
-			}
-		}catch(IOException e){}
-	}
-	
-	
-	 /*******************************************************************************************************\
-	 *Called by run to figure out what the command is intended to accomplish.								 *
-	 *																										 *
-	 *valid commands:   "k###" is interpreted as key strokes from the other computer						 *
-	 *					"t###" is the other computer stating its timestep									 *
-	 *					"Seed###" is a call to initialize the random number generator with ### as the seed	 *
-	 *					"EXIT" will cause the program to exit												 *
-	 *					"ng" will start a new game															 *
-	 *					"HS!@#$" will set the high score name to !@#$										 *
-	 *																										 *
-	 \*******************************************************************************************************/
-	public void process(String command)
-	{
-		if(command.charAt(0)=='k')//denotes that the command was a keystroke
-		{try{
-			keystroke(command.substring(1));
-			}catch(NumberFormatException e){System.out.println(e);}
-		}
-		else if(command.charAt(0)=='t')
-		{try{
-			Running.environment().setOtherPlayerTimeStep(Integer.parseInt(command.substring(1)));
-			}catch(NumberFormatException e){System.out.println(e);}
-			catch(NullPointerException e){}
-		}else if(command.indexOf("Seed")==0)
-		{try{
-			RandNumGen.init(Integer.parseInt(command.substring(4)));
-		
-			
-			}catch(NumberFormatException e){System.out.println(e);}
-		}
-		else if(command.equalsIgnoreCase("exit"))
-		{
-			Running.quit( );
-		}else if(command.equals("PING"))
-		{
-			AsteroidsServer.send("PONG");
-			return;
-		}else if(command.equals("ng"))
-		{
-			Running.environment().newGame();
-		}else if(command.indexOf("HS")==0)
-		{
-			Running.environment().setHighScore(command.substring(2));
-		}
-	}
-	
-	private void keystroke(String command)
-	{
-		int comma=command.indexOf(",");
-		int keyCommand=Integer.parseInt(command.substring(0,comma));
-		int timeStep=Integer.parseInt(command.substring(comma+1));
-		Running.environment().actionManager().add(new Action(AsteroidsFrame.players[1], keyCommand, timeStep));
-	}
+    public void run()
+    {
+        String fromServer;
+        try
+        {
+            while ( ( fromServer = in.readLine() ) != null )
+            {
+                process( fromServer );
+            }
+        }
+        catch ( IOException e )
+        {
+        }
+    }
+
+    /**
+     * Takes a received command and applies it to the game.
+     * Valid commands are:
+     *      k###,###    keystrokes from the other computer, comma, timestep
+     *      t###        timestep of the other computer
+     *      seed###     random number seed to use
+     *      exit        quits Disasteroids
+     *      ng          new game
+     *      hs### ""    high score number, space, name
+     * 
+     * @param command   the command
+     */
+    private void process( String command )
+    {
+        // A keystroke?
+        if ( command.charAt( 0 ) == 'k' )
+        {
+            keystroke( command.substring( 1 ) );
+            return;
+        }
+        
+        // Other player's timestep.
+        else if ( command.charAt( 0 ) == 't' )
+        {
+            Running.environment().setOtherPlayerTimeStep( Integer.parseInt( command.substring( 1 ) ) );
+            return;
+        }
+        
+        // Random number seed.
+        else if ( command.indexOf( "Seed" ) == 0 )
+        {
+            RandNumGen.init( Integer.parseInt( command.substring( 4 ) ) );
+            return;
+        }
+        
+        // Quitting time!
+        else if ( command.equalsIgnoreCase( "exit" ) )
+        {
+            Running.quit();
+            return;
+        }
+        
+        // New game.
+        else if ( command.equals( "ng" ) )
+        {
+            Running.environment().newGame();
+            return;
+        }             
+    }
+
+    /**
+     * Executes a keystroke from the other computer.
+     * 
+     * @param command   the ###,### string
+     *                  keystroke, comma, timestep
+     * @since Classic
+     */
+    private void keystroke( String command )
+    {
+        int comma = command.indexOf( "," );
+        int keyCommand = Integer.parseInt( command.substring( 0, comma ) );
+        int timeStep = Integer.parseInt( command.substring( comma + 1 ) );
+        Running.environment().actionManager().add( new Action( AsteroidsFrame.players[1], keyCommand, timeStep ) );
+    }
 }

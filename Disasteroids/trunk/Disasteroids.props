@@ -1,7 +1,8 @@
 #Disasteroids settings file.
-#Sat Dec 15 19:26:16 CST 2007
+#Mon Dec 17 12:32:56 ACT 2007
 lastConnectionIP=
 antiAlias=true
 soundOn=false
 fullscreen=true
+waitForMissiles=false
 musicOn=false

@@ -54,6 +54,7 @@ class Bullet implements Weapon {
             needsRemoval=true;
         move();
         draw();
+        checkWrap();
     }
 
     private void draw() {

@@ -248,10 +248,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
             initBuffering( g );
 
         // Calculate FPS.
-        long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
-        if ( timeSinceLast > 0 )
-            lastFPS = (int) ( 1000.0 / timeSinceLast );
-
+        if(timeStep%10==0)
+        {   long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
+            if ( timeSinceLast > 0 )
+               lastFPS = (int) ( 10000.0 / timeSinceLast );
+        }
         AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
 
         // Are we are too far ahead?
@@ -340,7 +341,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         while ( itr.hasNext() )
         {
             BackgroundMessage m = itr.next();
-            drawString( gBack, m.x, m.y, m.message, m.col );
+            drawString( gBack, m.x, m.y--, m.message, m.col );
             if ( m.life-- <= 0 )
                 itr.remove();
         }
@@ -639,7 +640,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Add stars of varying lightness.
         Random rand = RandNumGen.getStarInstance();
-        this.theStars = new Star[GAME_WIDTH * GAME_HEIGHT / ( 1700 + 300 )];
+        this.theStars=new Star[GAME_WIDTH*GAME_HEIGHT/(rand.nextInt(1700)+300)];
         for ( int star = 0; star < theStars.length; star++ )
         {
             int sat = rand.nextInt( 255 );
@@ -1085,12 +1086,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @author Andy Kooiman
      * @since December 16, 2007
      */
-    public void drawPoint( Graphics graph, Color col, int x, int y )
-    {
-        x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
-        y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        graph.setColor( col );
-        graph.drawRect( x, y, 0, 0 );
+    public void drawPoint(Graphics graph, Color col, int x, int y) {
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*GAME_WIDTH)%GAME_WIDTH;
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*GAME_HEIGHT)%GAME_HEIGHT;
+        graph.setColor(col);
+        if(x>-100&&x<GAME_WIDTH+100&&y>-100&&y<GAME_HEIGHT+100)
+             graph.drawRect(x, y, 0, 0);
     }
 
     /**
@@ -1103,10 +1104,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void drawCircle( Color col, int x, int y, int radius )
     {
-        x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
-        y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        gBuff.setColor( col );
-        gBuff.drawOval( x - radius / 2 - 1, y - radius / 2 - 1, radius * 2, radius * 2 );
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*GAME_WIDTH)%GAME_WIDTH;
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*GAME_HEIGHT)%GAME_HEIGHT;
+        gBuff.setColor(col);
+        if(x>-100&&x<GAME_WIDTH+100&&y>-100&&y<GAME_HEIGHT+100)
+            gBuff.drawOval(x-radius/2, y-radius/2, radius*2, radius*2);
     }
 
     /**
@@ -1150,10 +1152,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void drawLine( Color col, int x, int y, int length, double angle )
     {
-        x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
-        y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        gBuff.setColor( col );
-        gBuff.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*GAME_WIDTH)%GAME_WIDTH;
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*GAME_HEIGHT)%GAME_HEIGHT;
+        gBuff.setColor(col);
+        if(x>-100&&x<GAME_WIDTH+100&&y>-100&&y<GAME_HEIGHT+100)
+            gBuff.drawLine(x, y,(int)(x+length*Math.cos(angle)),(int)(y-length*Math.sin(angle)));
     }
 
     /**
@@ -1167,18 +1170,20 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void fillCircle( Color col, int x, int y, int radius )
     {
-        x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
-        y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        gBuff.setColor( col );
-        gBuff.fillOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*GAME_WIDTH)%GAME_WIDTH;
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*GAME_HEIGHT)%GAME_HEIGHT;
+        gBuff.setColor(col);
+        if(x>-100&&x<GAME_WIDTH+100&&y>-100&&y<GAME_HEIGHT+100)
+                  gBuff.fillOval(x-radius/2, y-radius/2, radius*2, radius*2);
     }
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
     {
-        x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
-        y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        graph.setColor( col );
-        graph.drawString( str, x, y );
+        x=(x-players[localPlayer].getX()+getWidth()/2+4*GAME_WIDTH)%GAME_WIDTH;
+        y=(y-players[localPlayer].getY()+getHeight()/2+4*GAME_HEIGHT)%GAME_HEIGHT;
+        graph.setColor(col);
+        if(x>-50&&x<GAME_WIDTH&&y>-50&&y<GAME_HEIGHT)
+            graph.drawString(str,x,y);
     }
 
     /**

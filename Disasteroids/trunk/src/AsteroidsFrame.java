@@ -341,7 +341,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         while ( itr.hasNext() )
         {
             BackgroundMessage m = itr.next();
-            drawString( gBack, m.x, m.y--, m.message, m.col );
+            m.draw(gBack);
             if ( m.life-- <= 0 )
                 itr.remove();
         }
@@ -1361,15 +1361,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @author Andy Kooiman
      * @since December 16, 2007
      */
-    private static class BackgroundMessage
+    private  class BackgroundMessage
     {
         public int x,  y;
 
+        public double dy;
+        
         public String message;
 
         public Color col;
 
-        public int life = 40;
+        public int life = 70;
 
         public BackgroundMessage( int x, int y, String message, Color col )
         {
@@ -1377,6 +1379,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
             this.y = y;
             this.message = message;
             this.col = col;
+            dy=-RandNumGen.getStarInstance().nextDouble()*4;
+        }
+
+        private void draw(Graphics gBack) {
+            y+=dy;
+            Color c=new Color(
+                    Math.min(col.getRed()*life/70+80,255),
+                    col.getGreen()*life/70,
+                    col.getBlue()*life/70);
+            drawString(gBack,(int) (x+3*Math.cos(life/5.0)) , y, message, c);
+            
         }
     }
 

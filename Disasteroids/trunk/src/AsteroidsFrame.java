@@ -143,7 +143,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private boolean drawScoreboard;
 
-    private LinkedList<Message> theMessages = new LinkedList<Message>();
+    /**
+     * Messages that are to be drawn temporarily on the star background.
+     * @since December 16, 2007
+     */
+    private LinkedList<BackgroundMessage> starMessages = new LinkedList<BackgroundMessage>();
+
+    /**
+     * Notification messages always shown in the top-left corner.
+     * @since December 19, 2004
+     */
+    private LinkedList<NotificationMessage> notificationMessages = new LinkedList<NotificationMessage>();
 
     /**
      * The current amount of FPS. Updated in <code>paint</code>.
@@ -174,8 +184,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Receive key events.
         this.addKeyListener( this );
-
-        // 
 
         // Set up the game.
         resetEntireGame();
@@ -326,12 +334,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
         gBack.fillRect( 0, 0, getWidth(), getHeight() );
         for ( Star star : this.theStars )
             drawPoint( gBack, star.color, star.x, star.y );
-        ListIterator<Message> itr = theMessages.listIterator();
+
+        // Draw background messages.
+        ListIterator<BackgroundMessage> itr = starMessages.listIterator();
         while ( itr.hasNext() )
         {
-            Message m = itr.next();
+            BackgroundMessage m = itr.next();
             drawString( gBack, m.x, m.y, m.message, m.col );
-            if ( m.life-- == 0 )
+            if ( m.life-- <= 0 )
                 itr.remove();
         }
 
@@ -422,7 +432,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                             RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
                             RandNumGen.getAsteroidInstance().nextInt( 9 ) + " (Seed: " + RandNumGen.seed + ")" );
         asteroidManager.setUpAsteroidField( level );
-        writeOnBackground( "Welcome to level " + newLevel + ".", GAME_WIDTH / 2 - 80, GAME_HEIGHT / 2, Color.green );
+        addNotificationMessage( "Welcome to level " + newLevel + "." );
         paused = false;
     }
 
@@ -500,7 +510,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
         text = "" + lastFPS;
         x = 8;
-        y = ( isFullscreen() ? 0 : 30 ) + 20; // Offset for the titlebar (yuck)!
+        y = (int) ( getHeight() - g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() ) - 2;
         g2d.drawString( text, x, y );
 
         // Draw the "fps" string.
@@ -509,7 +519,22 @@ public class AsteroidsFrame extends Frame implements KeyListener
         text = "fps";
         g2d.drawString( text, x, y );
 
+        // Draw notification messages.
+        x = 8;
+        y = ( isFullscreen() ? 0 : 30 ) + 20; // Offset for the titlebar (yuck)!
+        g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
+        g2d.setColor( Color.lightGray );
+        ListIterator<NotificationMessage> itr = notificationMessages.listIterator();
 
+        while ( itr.hasNext() )
+        {
+            NotificationMessage m = itr.next();
+            text = m.message;
+            g2d.drawString( text, x, y );
+            y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 2;
+            if ( m.life-- <= 0 )
+                itr.remove();
+        }
     }
 
     /**
@@ -621,7 +646,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
             Color col = new Color( sat, sat, sat );
             theStars[star] = new Star( rand.nextInt( GAME_WIDTH ), rand.nextInt( GAME_HEIGHT ), col );
         }
-
     }
 
     /**
@@ -704,8 +728,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public synchronized void keyReleased( KeyEvent e )
     {
-        drawScoreboard = false;
-
         if ( !paused || e.getKeyCode() == 80 )
         {
             if ( ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 ) || e.getKeyCode() == KeyEvent.VK_SPACE )
@@ -739,8 +761,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         if ( !paused || e.getKeyCode() == 80 )
         {
-            // Get the raw code from the keyboard
-            //performAction(e.getKeyCode(), ship);
             actionManager.add( new Action( players[localPlayer], e.getKeyCode(), timeStep + 2 ) );
             AsteroidsServer.send( "k" + String.valueOf( e.getKeyCode() ) + "," + String.valueOf( timeStep + 2 ) );
         // [AK] moved to a new method to also be called by another class, receiving data from other computer
@@ -818,9 +838,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_HOME:
                 actor.getWeaponManager().explodeAll();
                 break;
-            case KeyEvent.VK_P:
-                // [PC] Not unpausable!
-                // paused = !paused;
+            case KeyEvent.VK_Q:
+                actor.rotateWeapons();
                 break;
             case KeyEvent.VK_M:
                 toggleMusic();
@@ -834,17 +853,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_W:
                 warpDialog();
                 break;
-            case KeyEvent.VK_Q:
-                actor.rotateWeapons();
-                break;
             case KeyEvent.VK_A:
                 toggleAntiAliasing();
                 break;
             case KeyEvent.VK_BACK_SLASH:
-                drawScoreboard = true;
+                drawScoreboard = !drawScoreboard;
                 break;
             default:
-                drawScoreboard = false;
                 break;
         }
         repaint();
@@ -857,7 +872,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void toggleMusic()
     {
-        writeOnBackground( "Music " + ( Sound.toggleMusic() ? " on." : "off." ), GAME_WIDTH / 2 - 10, GAME_HEIGHT / 2, Color.green );
+        addNotificationMessage( "Music " + ( Sound.toggleMusic() ? " on." : "off." ) );
     }
 
     /**
@@ -867,7 +882,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void toggleSound()
     {
-        writeOnBackground( "Sound " + ( Sound.toggleSound() ? " on." : "off." ), GAME_WIDTH / 2 - 10, GAME_HEIGHT / 2, Color.green );
+        addNotificationMessage( "Sound " + ( Sound.toggleSound() ? " on." : "off." ) );
     }
 
     /**
@@ -890,7 +905,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         Settings.antiAlias = !Settings.antiAlias;
         updateAntiAliasing( Settings.antiAlias );
-        writeOnBackground( "Antialiasing " + ( Settings.antiAlias ? " on." : "off." ), GAME_WIDTH / 2 - 10, GAME_HEIGHT / 2, Color.green );
+        addNotificationMessage( "Antialiasing " + ( Settings.antiAlias ? " on." : "off." ) );
     }
 
     /**
@@ -1037,9 +1052,20 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
+     * Adds a new message to the on-screen list.
+     * These messages should be relevant to the local player.
+     * 
+     * @param message   the message text
+     */
+    public void addNotificationMessage( String message )
+    {
+        notificationMessages.add( new NotificationMessage( message ) );
+    }
+
+    /**
      * Writes a message onto the background.
      * 
-     * @param message   the message to be written.
+     * @param message   the message to be written
      * @param x         the x coordinate where the message should be drawn
      * @param y         the y coordinate where the message should be drawn
      * @param col       the <code>Color</code> in which the message should be drawn
@@ -1047,7 +1073,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void writeOnBackground( String message, int x, int y, Color col )
     {
-        theMessages.add( new Message( x, y, message, col ) );
+        starMessages.add( new BackgroundMessage( x, y, message, col ) );
     }
 
     /**
@@ -1234,6 +1260,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
+     * Returns the player at this computer.
+     * 
+     * @return  the <code>Ship</code> controlled by the player at this computer
+     * @since December 19, 2007
+     */
+    public static Ship localPlayer()
+    {
+        return players[localPlayer];
+    }
+
+    /**
      * A simple handler for the frame's window buttons.
      * 
      * @since December 15, 2007
@@ -1271,34 +1308,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private static class ScoreboardColumn
     {
         /**
-         * x coordinate of the column.
+         * x coordinate of the column's left edge.
          */
-        private int x;
+        public int x;
 
         /**
          * Header text.
          */
-        private String title;
-
-        /**
-         * Returns the column's header text.
-         * 
-         * @return  the text of the column's header
-         */
-        public String getTitle()
-        {
-            return title;
-        }
-
-        /**
-         * Returns the column's left edge.
-         * 
-         * @return  the x coordinate of the left edge
-         */
-        public int getX()
-        {
-            return x;
-        }
+        public String title;
 
         /**
          * Assigns this column's data.
@@ -1317,7 +1334,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * The <code>Star</code> class is little more than an overblown
      * coordinate class and is used for storing the absolute locations of each Star.
      * 
-     * @since December 16,2007
+     * @author Andy Kooiman
+     * @since December 16, 2007
      */
     private static class Star
     {
@@ -1334,9 +1352,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * 
+     * A message drawn on the star background.
+     * @author Andy Kooiman
+     * @since December 16, 2007
      */
-    private static class Message
+    private static class BackgroundMessage
     {
         public int x,  y;
 
@@ -1346,12 +1366,26 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         public int life = 40;
 
-        public Message( int x, int y, String message, Color col )
+        public BackgroundMessage( int x, int y, String message, Color col )
         {
             this.x = x;
             this.y = y;
             this.message = message;
             this.col = col;
+        }
+    }
+
+    /**
+     */
+    private static class NotificationMessage
+    {
+        public String message;
+
+        public int life = 250;
+
+        public NotificationMessage( String message )
+        {
+            this.message = message;
         }
     }
 }

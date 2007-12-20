@@ -577,9 +577,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         g2d.setColor( Color.darkGray );
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
         for ( ScoreboardColumn c : columns )
-            g2d.drawString( c.getTitle(), c.getX(), y );
+            g2d.drawString( c.title, c.x, y );
 
-        g2d.drawLine( columns[0].getX(), y + 5, columns[columns.length - 1].getX() + (int) g2d.getFont().getStringBounds( columns[columns.length - 1].getTitle(), g2d.getFontRenderContext() ).getWidth(), y + 5 );
+        g2d.drawLine( columns[0].x, y + 5, columns[columns.length - 1].x + (int) g2d.getFont().getStringBounds( columns[columns.length - 1].title, g2d.getFontRenderContext() ).getWidth(), y + 5 );
         y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
 
         // Draw the entries.
@@ -605,7 +605,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                     default:
                         text = "";
                 }
-                g2d.drawString( text, columns[i].getX(), y );
+                g2d.drawString( text, columns[i].x, y );
             }
             y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
         }

@@ -203,7 +203,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Create the ships.
         actionManager = new ActionManager();
         for ( int i = 0; i < players.length; i++ )
-            players[i] = new Ship( GAME_WIDTH / 2 - ( i * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[i], 0, "Player " + ( i + 1 ), Ship.WeaponType.MISSILES );
+        {
+            String name = "Player " + ( i + 1 );
+            
+            // Use our preferred name.
+            if ( i == localPlayer && !Settings.playerName.equals( "" ) )
+                name = Settings.playerName;
+            players[i] = new Ship( GAME_WIDTH / 2 - ( i * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[i], 0, name, Ship.WeaponType.MISSILES );
+        }
 
         // Create the asteroids.
         level = 1;

@@ -13,6 +13,7 @@ public enum MenuOption
     SINGLEPLAYER( "Singleplayer", "-single" ),
     MULTIHOST( "Multiplayer (host)", "-host" ),
     MULTIJOIN( "Multiplayer (join)", "-join" ),
+    SETTIINGS( "Adjust settings", "-settings"),
     EXIT( "Exit" );
     
     private final String name;

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import javax.swing.JOptionPane;
 
 /**
  * Stores user settings and writes/retrieves them from <code>Disasteroids.props</code>.
@@ -65,6 +66,12 @@ public class Settings
     public static String highScoreName = "Phillip & Andy";
 
     /**
+     * Our local player name.
+     * @since December 20, 2007
+     */
+    public static String playerName = "";
+
+    /**
      * Loads settings from <code>Disasteroids.props</code>, if it exists.
      * 
      * @return  whether settings were loaded
@@ -102,6 +109,9 @@ public class Settings
 
             if ( p.containsKey( "highScoreName" ) )
                 highScoreName = p.getProperty( "highScoreName" );
+
+            if ( p.containsKey( "playerName" ) )
+                playerName = p.getProperty( "playerName" );
         }
         catch ( IOException ex )
         {
@@ -131,6 +141,7 @@ public class Settings
             p.put( "lastConnectionIP", lastConnectionIP );
             p.put( "highScore", String.valueOf( highScore ) );
             p.put( "highScoreName", highScoreName );
+            p.put( "playerName", playerName );
 
             // Write the settings file.            
             p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );
@@ -142,5 +153,16 @@ public class Settings
 
         // Success!
         return true;
+    }
+
+    /**
+     * Shows a series of questions to get settings that aren't on the main menu.
+     * 
+     * @since December 20, 2007
+     */
+    public static void doPrompter()
+    {
+        playerName = JOptionPane.showInputDialog( null, "Enter your player name.", playerName );
+        waitForMissiles = JOptionPane.showConfirmDialog( null, "Wait for missiles to be destroyed at the end of levels?", "", JOptionPane.YES_NO_OPTION ) == JOptionPane.YES_OPTION;        
     }
 }

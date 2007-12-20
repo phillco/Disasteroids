@@ -19,6 +19,7 @@ import java.awt.event.KeyListener;
 public class MainMenu extends AsteroidsMenu implements KeyListener
 {
     private static final String title = "DISASTEROIDS!";
+
     private int choice = 0;
 
     public MainMenu()
@@ -31,13 +32,13 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
     public void paint( Graphics g )
     {
         // Draw background and shared elements.
-        super.paint(g);
-        
+        super.paint( g );
+
         // Some positioning.
         int y = 0;
 
         Font normal = new Font( "Tahoma", Font.PLAIN, 14 );
-        Font accent = new Font( "Tahoma", Font.BOLD, 14 );      
+        Font accent = new Font( "Tahoma", Font.BOLD, 14 );
 
         // Draw the title.
         y += 75;
@@ -111,8 +112,17 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             // Selecting a choice?
             case KeyEvent.VK_ENTER:
             case KeyEvent.VK_SPACE:
-                dispose();
-                Running.startGame( MenuOption.values()[choice] );
+                if ( MenuOption.values()[choice] == MenuOption.SETTIINGS )
+                {
+                    setVisible( false );
+                    Settings.doPrompter();
+                    setVisible( true );
+                }
+                else
+                {
+                    dispose();
+                    Running.startGame( MenuOption.values()[choice] );
+                }
                 break;
 
             // Changing a setting?
@@ -133,7 +143,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             case KeyEvent.VK_DOWN:
                 moveSelectionDown();
                 break;
-                
+
             // Exiting?
             case KeyEvent.VK_ESCAPE:
                 Running.quit();

@@ -160,6 +160,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @since December 18, 2007
      */
     private int lastFPS;
+    
+    /**
+     * Stores whether a high score has been achieved by this player.
+     * @since December 20, 2007
+     */
+    private boolean highScoreAchieved;
 
     /**
      * Constructs the game frame and game elements.
@@ -200,6 +206,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         timeStep = 0;
         otherPlayerTimeStep = 0;
 
+        highScoreAchieved=false;
+        
         // Create the ships.
         actionManager = new ActionManager();
         for ( int i = 0; i < players.length; i++ )
@@ -254,6 +262,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
         if ( gBuff == null )
             initBuffering( g );
 
+        if(!highScoreAchieved&&localPlayer().getScore()>Settings.highScore)
+        {
+            addNotificationMessage("New High Score!!");
+            highScoreAchieved=true;
+        }
+        
         // Calculate FPS.
         if(timeStep%10==0)
         {   long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
@@ -620,7 +634,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Draw the high scorer.
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
-        text = "All-time high scorer is " + Settings.highScoreName + " with " + insertThousandCommas( (int) Settings.highScore ) + " points.";
+        text = "All-time high scorer " +(highScoreAchieved ? "was " : "is " )   + Settings.highScoreName + " with " + insertThousandCommas( (int) Settings.highScore ) + " points.";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         y += 40;
         g2d.setColor( Color.white );

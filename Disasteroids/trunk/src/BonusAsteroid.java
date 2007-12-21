@@ -103,6 +103,9 @@ public class BonusAsteroid extends Asteroid
                 message = killer.getWeaponManager().ApplyBonus( 7 );
                 break;
         }
+        if( message.equals(""))
+            return;
+        
         Running.environment().writeOnBackground( message, (int) x, (int) y, killer.getColor() );
         if ( killer == AsteroidsFrame.localPlayer() )
             Running.environment().addNotificationMessage( message );

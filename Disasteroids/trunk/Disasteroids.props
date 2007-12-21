@@ -1,8 +1,11 @@
 #Disasteroids settings file.
-#Mon Dec 17 12:32:56 ACT 2007
-lastConnectionIP=
-antiAlias=false
+#Fri Dec 21 12:31:54 ACT 2007
 soundOn=false
-fullscreen=true
+playerName=
+antiAlias=false
+lastConnectionIP=
 waitForMissiles=false
+highScoreName=Player 1
+fullscreen=true
 musicOn=false
+highScore=8700.0

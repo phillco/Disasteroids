@@ -136,7 +136,7 @@ public class Missile implements Weapon, GameElement
          */
 	public void draw(Graphics g)
 	{
-            Running.environment().drawLine(g, myColor,(int)x+1,(int)y+1,10,angle+Math.PI);
+            Running.environment().drawLine(g, myColor,(int)x,(int)y,10,angle+Math.PI);
             Running.environment().fillCircle(g, myColor, (int)x,(int)y, radius);
             
             // Draw explosion.
@@ -193,7 +193,7 @@ public class Missile implements Weapon, GameElement
 
     /**
      * Steps <code>this</code> through one iteration and draws it.
-     * @param g The <code>Graphics</code> context in which to be drawn.
+     * 
      * @author Andy Kooiman
      * @since Classic
      */
@@ -376,5 +376,15 @@ public class Missile implements Weapon, GameElement
     public boolean needsRemoval()
     {
         return needsRemoval;
+    }
+    
+    /**
+     * Returns the damage this <code>Weapon</code> will do.
+     * 
+     * @return The damage done by this <code>Weapon</code>
+     */
+    public int getDamage()
+    {
+        return 100;
     }
 }

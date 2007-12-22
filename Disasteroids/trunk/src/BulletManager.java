@@ -25,6 +25,7 @@ class BulletManager implements WeaponManager {
     private boolean threeWayShot=false;
     private int intervalShoot=4;
     private int radius=2;
+    private int damage=10;
     
     public BulletManager() {
         theBullets=new LinkedList<Weapon>();
@@ -110,6 +111,12 @@ class BulletManager implements WeaponManager {
       threeWayShot=false;
       intervalShoot=4;
       radius=2;
+      damage=10;
+    }
+    
+    public int getDamage()
+    {
+        return damage;
     }
 
     public String ApplyBonus(int key) {
@@ -117,6 +124,10 @@ class BulletManager implements WeaponManager {
         
         switch(key)
         {
+            case 0: 
+                damage+=50;
+                ret+="Depleted Uranium Bullets!!";
+                break;
             case 1:
                 intervalShoot=1;
                 ret += "Rapid Fire";

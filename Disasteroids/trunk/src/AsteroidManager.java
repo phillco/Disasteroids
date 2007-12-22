@@ -49,7 +49,6 @@ public class AsteroidManager
 
         Random rand = RandNumGen.getAsteroidInstance();
         int numBonuses = 0;
-        AsteroidsFrame env = Running.environment();
         for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
         {
             theAsteroids.addFirst( new Asteroid( rand.nextInt( AsteroidsFrame.GAME_WIDTH ),
@@ -57,6 +56,7 @@ public class AsteroidManager
                                                  rand.nextDouble() * 6 - 3,
                                                  rand.nextDouble() * 6 - 3,
                                                  rand.nextInt( 150 ) + 25,
+                                                 rand.nextInt(level*10+10)-9,
                                                  this ) );
             if ( rand.nextInt( 10 ) == 1 )
                 numBonuses++;
@@ -68,6 +68,7 @@ public class AsteroidManager
                                                       rand.nextDouble() * 6 - 3,
                                                       rand.nextDouble() * 6 - 3,
                                                       rand.nextInt( 150 ) + 25,
+                                                      rand.nextInt(level*10+10)-9,
                                                       this ) );
 
         }

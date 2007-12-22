@@ -64,6 +64,13 @@ public class Asteroid implements GameElement
      * @since December 15 2007
      */
     protected Color fill=Color.white,outline=Color.gray;
+    
+    
+    /**
+     * The starting and current life of this <code>Asteroid</code>
+     * @since December 21, 2007
+     */
+    protected int lifeMax, life;
 
     /**
      * Constructs a new Asteroid from scratch.
@@ -76,7 +83,7 @@ public class Asteroid implements GameElement
      * @author Andy Kooiman, Phillip Cohen
      * @since Classic
      */
-    public Asteroid( int x, int y, double dx, double dy, int size, AsteroidManager environment )
+    public Asteroid( int x, int y, double dx, double dy, int size, int lifeMax, AsteroidManager environment )
     {
         Random rand = RandNumGen.getAsteroidInstance();
         this.x = x;
@@ -84,6 +91,7 @@ public class Asteroid implements GameElement
         this.dx = dx;
         this.dy = dy;
         this.radius = size/2;
+        this.life=this.lifeMax=Math.max(1,lifeMax);
 
         // Enforce a minimum size.
         if ( size < 25 )
@@ -117,6 +125,7 @@ public class Asteroid implements GameElement
         this.dx = rand.nextDouble() * 2 - 1;
         this.dy = rand.nextDouble() * 2 - 1;
         this.environment = parent.environment;
+        this.life=this.lifeMax=parent.lifeMax/2+1;//live half as long as parents
 
         // Attack the same player that the parent did. (Would random be better?)
         this.victim = parent.victim;
@@ -132,7 +141,9 @@ public class Asteroid implements GameElement
      */
     public void draw(Graphics g)
     {
-        Running.environment().drawOutlinedCircle(g, fill, outline, (int)x, (int)y, radius);
+        
+        Color f=new Color(fill.getRed()*life/lifeMax, fill.getGreen()*life/lifeMax, fill.getBlue()*life/lifeMax);
+        Running.environment().drawOutlinedCircle(g, f, outline, (int)x, (int)y, radius);
     }
 
     /**
@@ -225,7 +236,7 @@ public class Asteroid implements GameElement
         // Go through all of the ships.
         for ( Ship s : AsteroidsFrame.players )
         {
-            ListIterator<Weapon> iter = s.getWeaponManager().getWeapons().listIterator();
+
 
             // Were we hit by the ship?
             if ( s.livesLeft() >= 0 )
@@ -239,19 +250,27 @@ public class Asteroid implements GameElement
                     }
                 }
             }
-
-            // Loop through all this ship's Missiles.
-            while ( iter.hasNext() )
+            
+            for(WeaponManager wm:s.allWeapons())
             {
-                Weapon m = iter.next();
-
-                // Were we hit by a missile?
-                if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y -m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )
+                ListIterator<Weapon> iter = wm.getWeapons().listIterator();
+                // Loop through all this ship's Missiles.
+                while ( iter.hasNext() )
                 {
-                    Sound.bloomph();
-                    m.explode();
-                    split( s );
-                    return;
+                    Weapon m = iter.next();
+
+                    // Were we hit by a missile?
+                    if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y -m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )
+                    {
+                        Sound.bloomph();
+                        m.explode();
+                        life=Math.max(0,life-m.getDamage());
+                        if(life<=0)
+                        {   
+                            split( s );
+                            return;
+                        }
+                    }
                 }
             }
         }

@@ -29,10 +29,10 @@ public class BonusAsteroid extends Asteroid
      * @param environment   the <code>AsteroidManager</code> to which it belongs
      * @since Classic
      */
-    public BonusAsteroid( int x, int y, double dx, double dy, int size, AsteroidManager environment )
+    public BonusAsteroid( int x, int y, double dx, double dy, int size, int life, AsteroidManager environment )
     {
-        super( x, y, dx, dy, size, environment );
-        fill = Color.gray;
+        super( x, y, dx, dy, size, life, environment );
+        fill = Color.green;//radioactive?
         outline = Color.white;
 
         // Choose the type of bonus.

@@ -17,6 +17,7 @@ class Bullet implements Weapon, GameElement {
     private Color myColor;
     private boolean needsRemoval=false;
     private int age=0;
+    private int damage=10;
     
     public Bullet(BulletManager env, int x, int y, double angle, double dx, double dy, Color col) {
         this.x=x;
@@ -82,5 +83,9 @@ class Bullet implements Weapon, GameElement {
         if ( y > AsteroidsFrame.GAME_HEIGHT )
             y -= AsteroidsFrame.GAME_HEIGHT - 1;
     }
-
+    
+    public int getDamage()
+    {
+        return env.getDamage();
+    }
 }

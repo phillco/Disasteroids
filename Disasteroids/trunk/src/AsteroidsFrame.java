@@ -263,7 +263,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             highScoreAchieved = true;
         }
         AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
-
+        
         // Are we are too far ahead?
         if ( ( timeStep - otherPlayerTimeStep > 2 ) && ( players.length > 1 ) )
         {
@@ -404,7 +404,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void warpDialog()
     {
+        try{
         warp( Integer.parseInt( JOptionPane.showInputDialog( "Enter the level number to warp to.", level ) ) );
+        }catch(NumberFormatException e){}//do nothing with incorrect input or cancel
     }
 
     /**
@@ -793,7 +795,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 // Get the raw code from the keyboard
                 //performAction(e.getKeyCode(), ship);
                 actionManager.add( new Action( players[localPlayer], 0 - e.getKeyCode(), timeStep + 2 ) );
-            AsteroidsServer.send( "k" + String.valueOf( 0 - e.getKeyCode() ) + "," + String.valueOf( timeStep + 2 ) );
+             AsteroidsServer.send( "k" + String.valueOf( 0 - e.getKeyCode() ) + "," + String.valueOf( timeStep + 2 ) );
         // [AK] moved to a new method to also be called by another class, receiving data from other computer
         //repaint();
         }
@@ -1177,8 +1179,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
         y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
         graph.setColor( col );
-        if ( x > -100 && x < GAME_WIDTH + 100 && y > -100 && y < GAME_HEIGHT + 100 )
-            graph.drawOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
+        if ( x > -radius*2 && x < GAME_WIDTH + radius * 2 && y > -radius*2 && y < GAME_HEIGHT + radius*2 )
+            gBuff.drawOval( x - radius, y - radius, radius * 2, radius * 2 );
     }
 
     /**
@@ -1224,8 +1226,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
         y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
         graph.setColor( col );
-        if ( x > -100 && x < GAME_WIDTH + 100 && y > -100 && y < GAME_HEIGHT + 100 )
-            graph.fillOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
+        if ( x > -2*radius && x < GAME_WIDTH + radius * 2 && y > -radius * 2 && y < GAME_HEIGHT + radius * 2 )
+            graph.fillOval( x - radius , y - radius, radius * 2, radius * 2 );
     }
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
@@ -1265,8 +1267,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void drawOutlinedCircle( Graphics graph, Color fill, Color outline, int x, int y, int radius )
     {
-        fillCircle( graph, fill, x - radius / 2, y - radius / 2, radius );
-        drawCircle( graph, outline, x - radius / 2, y - radius / 2, radius );
+        fillCircle(graph, fill, x, y, radius );
+        drawCircle(graph, outline, x , y , radius );
     }
 
     /**

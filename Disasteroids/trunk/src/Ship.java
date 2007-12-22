@@ -54,7 +54,8 @@ public class Ship implements GameElement
     
     public static enum WeaponType {
         BULLETS(0),
-        MISSILES(1);
+        MISSILES(1),
+        MINES(2);
         private int index;
         
         private WeaponType(int index)
@@ -68,6 +69,8 @@ public class Ship implements GameElement
         private WeaponType next(WeaponType weaponType) {
             if(weaponType==BULLETS)
                 return MISSILES;
+            if(weaponType==MISSILES)
+                return MINES;
             return BULLETS;
         }
                 
@@ -100,6 +103,7 @@ public class Ship implements GameElement
         allWeapons=new WeaponManager[WeaponType.values().length];
         allWeapons[0]=new BulletManager();
         allWeapons[1]=new MissileManager();
+        allWeapons[2]=new MineManager();
         manager=allWeapons[weaponType.index()];
         invincibilityCount = 200;
     }
@@ -112,6 +116,11 @@ public class Ship implements GameElement
     public void restoreBonusValues() {
         for(WeaponManager wM: allWeapons)
             wM.restoreBonusValues();
+    }
+    
+    public WeaponManager[] allWeapons()
+    {
+        return allWeapons;
     }
 
     public void draw(Graphics g)
@@ -136,7 +145,8 @@ public class Ship implements GameElement
             Running.environment().drawPolygon( g, col, Color.black, outline );
         }
         
-        manager.draw(g);
+        for(WeaponManager wm: allWeapons)
+            wm.draw(g);
     }
 
     public void forward()
@@ -212,7 +222,8 @@ public class Ship implements GameElement
         if(shooting&&canShoot())
             shoot(Settings.soundOn);
 
-        manager.act();
+        for(WeaponManager wm: allWeapons)
+            wm.act();
         if ( livesLeft < 0 )
             return;
 
@@ -253,8 +264,6 @@ public class Ship implements GameElement
     {
         int index=weaponType.index();
         manager=allWeapons[(index+1)%WeaponType.values().length];
-        manager.clear();//make sure nothing is lingering
-        manager.add(allWeapons[index].getWeapons());
         weaponType=weaponType.next(weaponType);
     }
 

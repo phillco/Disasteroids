@@ -18,4 +18,6 @@ public interface Weapon extends GameElement
     public void explode();
     
     public boolean needsRemoval();   
+    
+    public int getDamage();
 }

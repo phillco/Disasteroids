@@ -4,6 +4,7 @@
  */
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Queue;
@@ -365,6 +366,17 @@ public class MissileManager implements WeaponManager
                 return "Rapid Fire";
             default:
                 return "";
+        }
+    }
+
+    public void draw( Graphics g )
+    {
+        ListIterator<Weapon> iter = theMissiles.listIterator();
+        while ( iter.hasNext() )
+        {
+            Weapon w = iter.next();
+            w.draw(g);
+         
         }
     }
 }

@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.LinkedList;
 
 /*
@@ -145,6 +146,17 @@ class BulletManager implements WeaponManager {
 
     public int getRadius() {
         return radius;
+    }
+
+    public void draw( Graphics g )
+    {
+        ListIterator<Weapon> iter = theBullets.listIterator();
+        while ( iter.hasNext() )
+        {
+            Weapon w = iter.next();
+            w.draw(g);
+        }
+
     }
 
 }

@@ -4,13 +4,14 @@
  */
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.Random;
 
 /**
  * The bullets that each <code>Ship</code> shoots.
  * @author Andy Kooiman
  */
-public class Missile implements Weapon
+public class Missile implements Weapon, GameElement
 {
     /**
      * The <code>Color</code> to be drawn in.
@@ -133,10 +134,46 @@ public class Missile implements Weapon
          * @param g The <code>Graphics</code> context in which to be drawn
          * @since Classic
          */
-	public void draw()
+	public void draw(Graphics g)
 	{
-            Running.environment().drawLine(myColor,(int)x+1,(int)y+1,10,angle+Math.PI);
-            Running.environment().fillCircle(myColor, (int)x,(int)y, radius);
+            Running.environment().drawLine(g, myColor,(int)x+1,(int)y+1,10,angle+Math.PI);
+            Running.environment().fillCircle(g, myColor, (int)x,(int)y, radius);
+            
+            // Draw explosion.
+            Color col;
+            switch (explodeCount)
+		{
+			case 1:	case 2:	case 3:	case 4:
+				if(explodeCount%2==0)
+					col=myColor;
+				else
+					col=Color.yellow;
+				 Running.environment().fillCircle(g,col,(int)x,(int)y,radius);
+				break;
+			case 5:	case 6:	case 7:	case 8:
+				if(explodeCount%2==0)
+					col=myColor;
+				else
+					col=Color.yellow;
+				radius=5;
+				Running.environment().fillCircle(g, col,(int)x,(int)y,radius);
+				break;
+			case 9:	case 10: case 11:
+				if(hugeBlast)
+				{
+					col=myColor;
+					radius=manager.hugeBlastSize();
+                                        Running.environment().fillCircle(g, col,(int)x,(int)y,radius);
+				}
+				else
+				{
+					radius=14;
+					col=Color.yellow;
+                                        Running.environment().fillCircle(g, col,(int)x,(int)y,radius);
+					this.explodeCount++;
+				}
+				break;
+            }
 	}
 
     /**
@@ -179,7 +216,6 @@ public class Missile implements Weapon
         move();
         checkWrap();
         checkLeave();
-        draw();
         explode( explodeCount);
     }
 
@@ -239,7 +275,9 @@ public class Missile implements Weapon
      */
     private synchronized void explode( int explodeCount)
     {
-            Color col;
+        if(explodeCount <= 0)
+            return;
+        this.explodeCount++;
 		switch (explodeCount)
 		{
 			case 0:
@@ -248,45 +286,17 @@ public class Missile implements Weapon
 				dx*=.8;
 				dy*=.8;
 				radius=3;
-				if(explodeCount%2==0)
-					col=myColor;
-				else
-					col=Color.yellow;
-				Running.environment().fillCircle(col,(int)x,(int)y,radius);
-				this.explodeCount++;
 				break;
 			case 5:	case 6:	case 7:	case 8:
 				dx*=.8;
 				dy*=.8;
-				if(explodeCount%2==0)
-					col=myColor;
-				else
-					col=Color.yellow;
-				radius=5;
-				Running.environment().fillCircle(col,(int)x,(int)y,radius);
-				this.explodeCount++;
 				break;
 			case 9:	case 10: case 11:
 				dx*=.8;
 				dy*=.8;
-				if(hugeBlast)
-				{
-					col=myColor;
-					radius=manager.hugeBlastSize();
-					Running.environment().fillCircle(col,(int)x,(int)y,radius);
-					this.explodeCount++;
-				}
-				else
-				{
-					radius=14;
-					col=Color.yellow;
-					Running.environment().fillCircle(col,(int)x,(int)y,radius);
-					this.explodeCount++;
-				}
 				break;
 			default :
-				needsRemoval = true;
-				
+				needsRemoval = true;				
 		}
     }
 

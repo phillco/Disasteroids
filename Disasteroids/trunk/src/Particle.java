@@ -4,12 +4,13 @@
  */
 
 import java.awt.Color;
+import java.awt.Graphics;
 
 /**
  * A simple particle used in effects. 
  * @author Phillip Cohen, Andy Kooiman
  */
-public class Particle
+public class Particle implements GameElement
 {
     /**
      * The time until this <code>Particle</code> will be removed.
@@ -88,20 +89,24 @@ public class Particle
      * @author Phillip Cohen, Andy Kooiman
      * @since Classic
      */
-    public boolean act()
+    public boolean shouldRemove()
+    {
+        return ( life <= 1 );
+    }
+
+    public void act()
     {
         life--;
         x += dx;
         y += dy;
         dx *= 0.998;
         dy *= 0.998;
+    }
 
-        if ( life <= 1 )
-            return true;
-
+    public void draw( Graphics g )
+    {
         double fadePct = (double) life / life_max;
         color = new Color( (int) ( rgb[0] * fadePct ), (int) ( rgb[1] * fadePct ), (int) ( rgb[2] * fadePct ) );
-
-        return false;
+        Running.environment().fillCircle( g, color, (int) x, (int) y, (int) size / 2 );
     }
 }

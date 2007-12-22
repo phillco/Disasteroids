@@ -4,6 +4,7 @@
  */
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ListIterator;
 import java.util.Random;
 
@@ -11,7 +12,7 @@ import java.util.Random;
  * A game object which the players destroy to score.
  * @author Andy Kooiman, Phillip Cohen
  */
-public class Asteroid
+public class Asteroid implements GameElement
 {
     /**
      * The <code>AsteroidManager</code> to which this <code>Asteroid</code> belongs.
@@ -129,9 +130,9 @@ public class Asteroid
      * @author Andy Kooiman
      * @since Classic
      */
-    protected void draw()
+    public void draw(Graphics g)
     {
-        Running.environment().drawOutlinedCircle(fill, outline, (int)x, (int)y, radius);
+        Running.environment().drawOutlinedCircle(g, fill, outline, (int)x, (int)y, radius);
     }
 
     /**
@@ -145,7 +146,6 @@ public class Asteroid
             shouldRemove = true;
         move();
         checkCollision();
-        draw();
     }
 
     /**

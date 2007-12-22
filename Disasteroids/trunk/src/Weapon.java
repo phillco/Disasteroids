@@ -7,8 +7,8 @@
  *
  * @author Owner
  */
-public interface Weapon {
-
+public interface Weapon extends GameElement 
+{
     public int getX();
     
     public int getY();
@@ -17,7 +17,5 @@ public interface Weapon {
     
     public void explode();
     
-    public boolean needsRemoval();
-    
-    public void act();
+    public boolean needsRemoval();   
 }

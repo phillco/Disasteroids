@@ -8,10 +8,8 @@ import java.util.LinkedList;
  *
  * @author Owner
  */
-interface WeaponManager {
+interface WeaponManager extends GameElement{
     
-    public void act();
-
     public void add(LinkedList<Weapon> weapons);
 
     public void clear();

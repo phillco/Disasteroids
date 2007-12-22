@@ -9,11 +9,12 @@
  */
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Polygon;
 import java.util.Random;
 import java.util.LinkedList;
 
-public class Ship
+public class Ship implements GameElement
 {
     public final static double SENSITIVITY = 30;
 
@@ -113,7 +114,7 @@ public class Ship
             wM.restoreBonusValues();
     }
 
-    private void draw()
+    public void draw(Graphics g)
     {
         Color col;
 
@@ -132,8 +133,10 @@ public class Ship
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
-            Running.environment().drawPolygon( col, Color.black, outline );
+            Running.environment().drawPolygon( g, col, Color.black, outline );
         }
+        
+        manager.draw(g);
     }
 
     public void forward()
@@ -218,9 +221,7 @@ public class Ship
         move();
         checkBounce();
         checkCollision();
-        draw();
         generateParticles();
-
     }
 
     public void fullRight()

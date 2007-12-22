@@ -74,7 +74,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * The <code>Graphics</code> context of the screen.
      * @since Classic
      */
-    private Graphics g;
+    private Graphics gStatic;
 
     /**
      * The <code>Graphics</code> context of virtualMem; used for double buffering.
@@ -238,7 +238,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void initBuffering( Graphics g )
     {
-        this.g = g;
+        this.gStatic = g;
 
         // Create the buffer.
         virtualMem = createImage( getWidth(), getHeight() );
@@ -246,6 +246,96 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Anti-alias, if the user wants it.
         updateAntiAliasing( Settings.antiAlias );
+    }
+
+    private void act()
+    {
+        // Advance to the next level if it's time.
+        if ( shouldExitLevel() )
+        {
+            nextLevel();
+            return;
+        }
+        
+        if ( !highScoreAchieved && localPlayer().getScore() > Settings.highScore )
+        {
+            addNotificationMessage( "New high score of " + insertThousandCommas( localPlayer().getScore() ) + "!", 800 );
+            highScoreAchieved = true;
+        }
+        AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
+
+        // Are we are too far ahead?
+        if ( ( timeStep - otherPlayerTimeStep > 2 ) && ( players.length > 1 ) )
+        {
+            safeSleep( 20 );
+            AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
+            AsteroidsServer.flush();
+            repaint();
+            return;
+        }                
+        
+        // Execute game actions.
+        timeStep++;
+        try
+        {
+            actionManager.act( timeStep );
+        }
+        catch ( UnsynchronizedException e )
+        {
+            System.out.println( "Action missed! " + e + "\nOur timestep: " + timeStep + ", their timestep: " + otherPlayerTimeStep + "." );
+            Running.quit();
+        }
+        ParticleManager.act();
+        asteroidManager.act();
+        
+        // Update the ships.
+        for ( int i = 0; i < players.length; i++ )
+        {
+            players[i].act();
+        }
+
+    }
+
+    private void draw( Graphics g )
+    {
+       
+        // Calculate FPS.
+        if ( timeStep % 10 == 0 )
+        {
+            long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
+            if ( timeSinceLast > 0 )
+                lastFPS = (int) ( 10000.0 / timeSinceLast );
+        }
+        
+        // Scroll the stars up and draw the background.
+        updateBackground();
+        g.drawImage( background, 0, 0, this );
+
+        // Draw stuff in order of importance, from least to most.
+        ParticleManager.draw(g);
+        
+        // Update the ships.
+        for ( int i = 0; i < players.length; i++ )
+        {
+            players[i].draw(g);
+
+            // Game over?
+            if ( players[i].livesLeft() < 0 )
+            {
+                // TODO: Divorce
+                endGame( g );
+                continue;
+            }
+        }
+        
+        asteroidManager.draw(g);
+
+        // Draw the on-screen HUD.
+        drawHud();
+
+        // Draw the entire scoreboard.
+        if ( drawScoreboard )
+            drawScoreboard();
     }
 
     /**
@@ -259,81 +349,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         if ( paused )
             return;
-
+        
         if ( gBuff == null )
             initBuffering( g );
-
-        if ( !highScoreAchieved && localPlayer().getScore() > Settings.highScore )
-        {
-            addNotificationMessage( "New high score of " + insertThousandCommas(localPlayer().getScore()) + "!", 800 );
-            highScoreAchieved = true;
-        }
-
-        // Calculate FPS.
-        if ( timeStep % 10 == 0 )
-        {
-            long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
-            if ( timeSinceLast > 0 )
-                lastFPS = (int) ( 10000.0 / timeSinceLast );
-        }
-        AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
-
-        // Are we are too far ahead?
-        if ( ( timeStep - otherPlayerTimeStep > 2 ) && ( players.length > 1 ) )
-        {
-            safeSleep( 20 );
-            AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
-            AsteroidsServer.flush();
-            repaint();
-            return;
-        }
-
-        // Scroll the stars up and draw the background.
-        updateBackground();
-        gBuff.drawImage( background, 0, 0, this );
-
-        // Execute game actions.
-        timeStep++;
-        try
-        {
-            actionManager.act( timeStep );
-        }
-        catch ( UnsynchronizedException e )
-        {
-            System.out.println( "Action missed! " + e + "\nOur timestep: " + timeStep + ", their timestep: " + otherPlayerTimeStep + "." );
-            Running.quit();
-        }
-
-        // Draw stuff in order of importance, from least to most.
-        ParticleManager.drawParticles();
-        asteroidManager.act();
-
-        // Update the ships.
-        for ( int i = 0; i < players.length; i++ )
-        {
-            players[i].act();
-
-            // Game over?
-            if ( players[i].livesLeft() < 0 )
-            {
-                endGame( g );
-                continue;
-            }
-        }
-
-        // Draw the on-screen HUD.
-        drawHud();
-
-        // Draw the entire scoreboard.
-        if ( drawScoreboard )
-            drawScoreboard();
+ 
+        act();
+        draw(gBuff);
 
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
-
-        // Advance to the next level if it's time.
-        if ( shouldExitLevel() )
-            nextLevel();
 
         // This causes 100% cpu usage, but it's safe to say the game always has to be updated.
         repaint();
@@ -723,7 +747,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
 
         String victoryMessage = ( players.length > 1 ) ? highestScorer.getName() + " wins" : "You died";
-        victoryMessage += " with a score of " + highestScorer.getScore() + "!";
+        victoryMessage += " with a score of " + insertThousandCommas(highestScorer.getScore()) + "!";
 
         // Is this a new high score?
         if ( highestScorer.getScore() > Settings.highScore )
@@ -907,7 +931,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void toggleMusic()
     {
-        addNotificationMessage( "Music " + ( Sound.toggleMusic() ? " on." : "off." ) );
+        addNotificationMessage( "Music " + ( Sound.toggleMusic() ? "on." : "off." ) );
     }
 
     /**
@@ -917,7 +941,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void toggleSound()
     {
-        addNotificationMessage( "Sound " + ( Sound.toggleSound() ? " on." : "off." ) );
+        addNotificationMessage( "Sound " + ( Sound.toggleSound() ? "on." : "off." ) );
     }
 
     /**
@@ -1097,7 +1121,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         if ( message.equals( "" ) )
             return;
 
-        addNotificationMessage(message, 250);
+        addNotificationMessage( message, 250 );
     }
 
     public void addNotificationMessage( String message, int life )
@@ -1148,13 +1172,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param radius The radius of the circle
      * @since December 15, 2007
      */
-    public void drawCircle( Color col, int x, int y, int radius )
+    public void drawCircle( Graphics graph, Color col, int x, int y, int radius )
     {
         x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
         y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        gBuff.setColor( col );
+        graph.setColor( col );
         if ( x > -100 && x < GAME_WIDTH + 100 && y > -100 && y < GAME_HEIGHT + 100 )
-            gBuff.drawOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
+            graph.drawOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
     }
 
     /**
@@ -1167,25 +1191,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param y2    the second y coordinate
      * @since December 15, 2007
      */
-    public void drawLine( Color col, int x1, int y1, int x2, int y2 )
-    {
-        x1 = ( x1 - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
-        y1 = ( y1 - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        x2 = ( x2 - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
-        y2 = ( y2 - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        gBuff.setColor( col );
-        gBuff.drawLine( x1, y1, x2, y2 );
-    }
-
-    /**
-     * Draws a line from one coordinate to another in a given color
-     * @param col The <code>Color</code> in wihch the circle will be drawn
-     * @param x1 The first x coordinate
-     * @param y1 The first y coordinate
-     * @param x2 The second x coordinate
-     * @param y2 The second y coordinate
-     * @since December 15, 2007
-     */
     public void drawLine( Graphics graph, Color col, int x1, int y1, int x2, int y2 )
     {
         x1 = ( x1 - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
@@ -1196,13 +1201,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
         graph.drawLine( x1, y1, x2, y2 );
     }
 
-    public void drawLine( Color col, int x, int y, int length, double angle )
+    public void drawLine( Graphics graph, Color col, int x, int y, int length, double angle )
     {
         x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
         y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        gBuff.setColor( col );
+        graph.setColor( col );
         if ( x > -100 && x < GAME_WIDTH + 100 && y > -100 && y < GAME_HEIGHT + 100 )
-            gBuff.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
+            graph.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
     }
 
     /**
@@ -1214,13 +1219,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param radius    the radius of the circle
      * @since December 15, 2007
      */
-    public void fillCircle( Color col, int x, int y, int radius )
+    public void fillCircle( Graphics graph, Color col, int x, int y, int radius )
     {
         x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
         y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
-        gBuff.setColor( col );
+        graph.setColor( col );
         if ( x > -100 && x < GAME_WIDTH + 100 && y > -100 && y < GAME_HEIGHT + 100 )
-            gBuff.fillOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
+            graph.fillOval( x - radius / 2, y - radius / 2, radius * 2, radius * 2 );
     }
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
@@ -1240,12 +1245,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param outline   the <code>Color</code> of the outline
      * @since December 15, 2007
      */
-    public void drawPolygon( Color fill, Color outline, Polygon p )
+    public void drawPolygon( Graphics graph, Color fill, Color outline, Polygon p )
     {
-        gBuff.setColor( fill );
-        gBuff.fillPolygon( p );
-        gBuff.setColor( outline );
-        gBuff.drawPolygon( p );
+        graph.setColor( fill );
+        graph.fillPolygon( p );
+        graph.setColor( outline );
+        graph.drawPolygon( p );
     }
 
     /**
@@ -1258,10 +1263,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param radius    the radius
      * @since December 15, 2007
      */
-    public void drawOutlinedCircle( Color fill, Color outline, int x, int y, int radius )
+    public void drawOutlinedCircle( Graphics graph, Color fill, Color outline, int x, int y, int radius )
     {
-        fillCircle( fill, x - radius / 2, y - radius / 2, radius );
-        drawCircle( outline, x - radius / 2, y - radius / 2, radius );
+        fillCircle( graph, fill, x - radius / 2, y - radius / 2, radius );
+        drawCircle( graph, outline, x - radius / 2, y - radius / 2, radius );
     }
 
     /**

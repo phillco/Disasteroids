@@ -1,16 +1,15 @@
-
-import java.awt.Color;
-
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.awt.Graphics;
+import java.awt.Color;
 
 /**
  *
  * @author Owner
  */
-class Bullet implements Weapon {
+class Bullet implements Weapon, GameElement {
 
     private double x, y;
     private double dx, dy;
@@ -53,12 +52,11 @@ class Bullet implements Weapon {
         if(age>50)
             needsRemoval=true;
         move();
-        draw();
         checkWrap();
     }
 
-    private void draw() {
-        Running.environment().fillCircle(myColor, (int)x, (int)y, env.getRadius());
+    public void draw(Graphics g) {
+        Running.environment().fillCircle(g, myColor, (int)x, (int)y, env.getRadius());
     }
 
     private void move() {

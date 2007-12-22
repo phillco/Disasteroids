@@ -3,6 +3,7 @@
  * AsteroidManger.java
  */
 
+import java.awt.Graphics;
 import java.util.Random;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -91,6 +92,13 @@ public class AsteroidManager
 
         while ( !toBeAdded.isEmpty() )
             theAsteroids.addLast( toBeAdded.remove() );
+    }
+
+    public void draw(Graphics g)
+    {
+        ListIterator<Asteroid> itr = theAsteroids.listIterator();
+        while ( itr.hasNext() )
+            itr.next().draw(g);
     }
 
     /**

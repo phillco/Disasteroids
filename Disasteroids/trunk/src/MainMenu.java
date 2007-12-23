@@ -18,8 +18,8 @@ import java.awt.event.KeyListener;
  */
 public class MainMenu extends AsteroidsMenu implements KeyListener
 {
-    private static final String title = "DISASTEROIDS!";
 
+    private static final String title = "DISASTEROIDS!";
     private int choice = 0;
 
     public MainMenu()
@@ -52,7 +52,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         for ( int i = 0; i < MenuOption.values().length; i++ )
         {
             int midpoint = WINDOW_WIDTH / 2;
-            int string_width = (int) normal.getStringBounds( MenuOption.values()[i].toString(), ( (Graphics2D) g ).getFontRenderContext() ).getWidth();
+            int string_width = ( int ) normal.getStringBounds( MenuOption.values()[i].toString(), ( ( Graphics2D ) g ).getFontRenderContext() ).getWidth();
             g.setFont( choice == i ? accent : normal );
             g.drawString( MenuOption.values()[i].toString(), midpoint - string_width / 2, y );
 
@@ -70,14 +70,19 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         String musicString = "Music " + ( Settings.musicOn ? "on" : "off" );
         String soundString = "Sound " + ( Settings.soundOn ? "on" : "off" );
         String fullscreenString = ( Settings.useFullscreen ? "Fullscreen" : "Windowed" );
-        int height = (int) ( normal.getStringBounds( "|", ( (Graphics2D) g ).getFontRenderContext() ).getHeight() );
+        String renderingString = ( Settings.hardwareRendering ? "Hardware" : "Software" );
+        int height = ( int ) ( normal.getStringBounds( "|", ( ( Graphics2D ) g ).getFontRenderContext() ).getHeight() );
 
         g.setFont( normal );
         g.drawString( musicString, 15, ( WINDOW_HEIGHT - height ) );
-        g.drawString( fullscreenString, 15, ( WINDOW_HEIGHT - 2 * height ) );
-        g.drawString( soundString,
-                      WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
+        g.drawString( soundString, 15, ( WINDOW_HEIGHT - 2 * height ) );
+
+        g.drawString( fullscreenString,
+                      WINDOW_WIDTH - 15 - ( int ) ( normal.getStringBounds( soundString, ( ( Graphics2D ) g ).getFontRenderContext() ).getWidth() ),
                       ( WINDOW_HEIGHT - height ) );
+        g.drawString( renderingString,
+                      WINDOW_WIDTH - 15 - ( int ) ( normal.getStringBounds( soundString, ( ( Graphics2D ) g ).getFontRenderContext() ).getWidth() ),
+                      ( WINDOW_HEIGHT - 2 * height ) );
     }
 
     private void moveSelectionUp()
@@ -132,8 +137,12 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             case KeyEvent.VK_S:
                 Settings.soundOn = !Settings.soundOn;
                 break;
+            case KeyEvent.VK_W:
             case KeyEvent.VK_F:
                 Settings.useFullscreen = !Settings.useFullscreen;
+                break;
+            case KeyEvent.VK_H:
+                Settings.hardwareRendering = !Settings.hardwareRendering;
                 break;
 
             // Scrolling?

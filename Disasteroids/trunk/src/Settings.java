@@ -70,6 +70,12 @@ public class Settings
      * @since December 20, 2007
      */
     public static String playerName = "";
+    
+    /**
+     * Whether the user would like hardware accelerated graphics (true), or software (false).
+     * @since December 21, 2007
+     */
+    public static boolean hardwareRendering = false;
 
     /**
      * Loads settings from <code>Disasteroids.props</code>, if it exists.
@@ -112,6 +118,10 @@ public class Settings
 
             if ( p.containsKey( "playerName" ) )
                 playerName = p.getProperty( "playerName" );
+            
+            if ( p.containsKey( "hardwareRendering" ) )
+                hardwareRendering = Boolean.parseBoolean(p.getProperty( "hardwareRendering" ));
+                        
         }
         catch ( IOException ex )
         {
@@ -142,6 +152,7 @@ public class Settings
             p.put( "highScore", String.valueOf( highScore ) );
             p.put( "highScoreName", highScoreName );
             p.put( "playerName", playerName );
+            p.put( "hardwareRendering", String.valueOf(hardwareRendering));
 
             // Write the settings file.            
             p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );

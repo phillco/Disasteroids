@@ -24,7 +24,6 @@ import java.awt.image.VolatileImage;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**
@@ -61,10 +60,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private static Image virtualMem;
 
     /**
-     * The <code>Image</code> storing the star background.
+     * The star background.
      * @since Classic
      */
-    private static Image background;
+    private static Background background;
 
     /**
      * The current level of the game.
@@ -122,22 +121,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private long timeOfLastRepaint;
 
     /**
-     * Stores every <code>Star</code> for the background
-     * @since December 16, 2007
-     */
-    private Star[] theStars;
-
-    /**
      * Whether the user is pressing the scoreboard key.
      * @since December 15 2007
      */
     private boolean drawScoreboard;
-
-    /**
-     * Messages that are to be drawn temporarily on the star background.
-     * @since December 16, 2007
-     */
-    private LinkedList<BackgroundMessage> starMessages = new LinkedList<BackgroundMessage>();
 
     /**
      * Notification messages always shown in the top-left corner.
@@ -173,6 +160,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
+        
+        // Create background.
+        background = new Background(GAME_WIDTH, GAME_HEIGHT);
 
         // Set up the connection/game settings.
         players = new Ship[playerCount];
@@ -196,7 +186,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         timeStep = 0;
         otherPlayerTimeStep = 0;
         highScoreAchieved = false;
-        starMessages.clear();
+        background.clearMessages();
         notificationMessages.clear();
 
         // Create the ships.
@@ -217,9 +207,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
         asteroidManager.setUpAsteroidField( level );
 
         // Reset the background.
-        initBackground();
+        background.init();
     }
 
+    /**
+     * Steps the game through one timestep.
+     * 
+     * @since December 21, 2007
+     */
     private void act()
     {
         // Advance to the next level if it's time.
@@ -268,6 +263,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     }
 
+    /**
+     * Draws game elements
+     * @param g     buffered <code>Graphics</code> context to draw on
+     * @since December 21, 2007
+     */
     private void draw( Graphics g )
     {
         // Anti-alias, if the user wants it.
@@ -281,9 +281,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 lastFPS = (int) ( 10000.0 / timeSinceLast );
         }
 
-        // Scroll the stars up and draw the background.
-        updateBackground();
-        g.drawImage( background, 0, 0, this );
+        // Draw the star background.
+        g.drawImage( background.render(), 0, 0, this );
 
         // Draw stuff in order of importance, from least to most.
         ParticleManager.draw( g );
@@ -456,8 +455,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         asteroidManager.clear();
         actionManager.clear();
-
-        initBackground();
+        
+        background.init();
         restoreBonusValues();
         System.out.println( "Welcome to level " + newLevel + ". Random asteroid numbers: " +
                             RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
@@ -662,98 +661,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 text = "But you're much better with your shiny " + insertThousandCommas( localPlayer().getScore() ) + "!";
             x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
             g2d.drawString( text, x, y );
-        }
-    }
-
-    /**
-     * Creates the <code>background</code> image and <code>Star</code> array.
-     * Uses hardware acceleration, if desired.
-     * 
-     * @since Classic
-     */
-    private void initBackground()
-    {
-        // Create the image if we haven't yet.
-        if ( background == null )
-        {
-            if ( Settings.hardwareRendering )
-                background = getGraphicsConfiguration().createCompatibleVolatileImage( GAME_WIDTH, GAME_HEIGHT );
-            else
-                background = createImage( GAME_WIDTH, GAME_HEIGHT );
-        }
-
-        // Create the array of stars.
-        Random rand = RandNumGen.getStarInstance();
-        this.theStars = new Star[GAME_WIDTH * GAME_HEIGHT / ( rand.nextInt( 1700 ) + 300 )];
-        for ( int star = 0; star < theStars.length; star++ )
-        {
-            int sat = rand.nextInt( 255 );
-            Color col = new Color( sat, sat, sat );
-            theStars[star] = new Star( rand.nextInt( GAME_WIDTH ), rand.nextInt( GAME_HEIGHT ), col );
-        }
-    }
-
-    /**
-     * Renderes the <code>background</code>.
-     * Uses hardware acceleration, if desired.
-     *      
-     * @since Classic
-     */
-    private void updateBackground()
-    {
-        // Create the background first.
-        if ( background == null )
-            initBackground();
-
-        // Render in hardware mode.
-        if ( Settings.hardwareRendering )
-        {
-            do
-            {
-                // If the resolution has changed causing an incompatibility, re-create the VolatileImage.
-                if ( ( (VolatileImage) background ).validate( getGraphicsConfiguration() ) == VolatileImage.IMAGE_INCOMPATIBLE )
-                    initBackground();
-
-                // Draw the game's graphics.
-                drawBackground( background.getGraphics() );
-            }
-            while ( ( (VolatileImage) background ).contentsLost() );
-        }
-        // Render in software mode.
-       else
-        {
-            // Draw the game's graphics.
-            drawBackground( background.getGraphics() );
-        }
-    }
-
-    /**
-     * Draws the <code>background</code>: its <code>Star</code>s and <code>BackgroundMessage</code>s.
-     * 
-     * @param g the <code>Graphics</code> context to draw on.
-     * @since December 23, 2007
-     */
-    private void drawBackground( Graphics g )
-    {
-        // The background should never be anti-aliased (lag).
-            updateAntiAliasing( g, false );
-
-        // Fill with black.
-        g.setColor( Color.black );
-        g.fillRect( 0, 0, getWidth(), getHeight() );
-
-        // Draw stars.
-        for ( Star star : this.theStars )
-            drawPoint( g, star.color, star.x, star.y );
-
-        // Draw background messages.
-        ListIterator<BackgroundMessage> itr = starMessages.listIterator();
-        while ( itr.hasNext() )
-        {
-            BackgroundMessage m = itr.next();
-            m.draw( g );
-            if ( m.life-- <= 0 )
-                itr.remove();
         }
     }
 
@@ -1065,7 +972,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
                 // Re-create the background.
                 if ( background != null )
-                    initBackground();
+                    background.init();
             }
         }
         // Set windowed mode.
@@ -1085,7 +992,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
                 // Re-create the background.
                 if ( background != null )
-                    initBackground();
+                    background.init();
             }
         }
         setVisible( true );
@@ -1199,7 +1106,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void writeOnBackground( String message, int x, int y, Color col )
     {
-        starMessages.add( new BackgroundMessage( x, y, message, col ) );
+        background.writeOnBackground(message, x, y, col);
     }
 
     /**
@@ -1432,67 +1339,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             this.title = title;
         }
     }
-
-    /**
-     * The <code>Star</code> class is little more than an overblown
-     * coordinate class and is used for storing the absolute locations of each Star.
-     * 
-     * @author Andy Kooiman
-     * @since December 16, 2007
-     */
-    private static class Star
-    {
-
-        public int x,  y;
-
-        public Color color;
-
-        public Star( int x, int y, Color col )
-        {
-            this.x = x;
-            this.y = y;
-            this.color = col;
-        }
-    }
-
-    /**
-     * A message drawn on the star background.
-     * @author Andy Kooiman
-     * @since December 16, 2007
-     */
-    private class BackgroundMessage
-    {
-
-        public int x,  y;
-
-        public double dy;
-
-        public String message;
-
-        public Color col;
-
-        public int life = 70;
-
-        public BackgroundMessage( int x, int y, String message, Color col )
-        {
-            this.x = x;
-            this.y = y;
-            this.message = message;
-            this.col = col;
-            dy = -RandNumGen.getStarInstance().nextDouble() * 4;
-        }
-
-        private void draw( Graphics gBack )
-        {
-            y += dy;
-            Color c = new Color(
-                    Math.min( col.getRed() * life / 70 + 80, 255 ),
-                    col.getGreen() * life / 70,
-                    col.getBlue() * life / 70 );
-            drawString( gBack, (int) ( x + 3 * Math.cos( life / 5.0 ) ), y, message, c );
-        }
-    }
-
+    
     /**
      */
     private static class NotificationMessage

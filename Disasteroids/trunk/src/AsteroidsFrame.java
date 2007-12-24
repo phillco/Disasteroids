@@ -143,6 +143,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @since December 20, 2007
      */
     private boolean highScoreAchieved;
+    
+    /**
+     * How many times we <code>act</code> per paint call. Can be used to make later levels more playable.
+     * @since December 23, 2007
+     */
+    private int gameSpeed = 1;
 
     /**
      * Constructs the game frame and game elements.
@@ -327,7 +333,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     }
 
     /**
-     * Steps the game through one timestep and paints all components onto the screen.
+     * Steps the game and paints all components onto the screen.
      * Uses hardware acceleration, if desired.
      * 
      * @param g the <code>Graphics</code> context of the screen
@@ -339,8 +345,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         if ( paused )
             return;
 
-        // Step the game through one timestep.
-        act();
+        // Step the game through a timestep, or multiple timesteps if the user wishes.
+        for(int i = 0; i < gameSpeed; i++)
+            act();
 
         // Create the image if needed.
         if ( virtualMem == null )
@@ -387,7 +394,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
         catch ( NumberFormatException e )
         {
-        }//do nothing with incorrect input or cancel
+            // Do nothing with incorrect input or cancel.
+            addNotificationMessage("Invalid warp command.");
+        }
     }
 
     /**
@@ -874,6 +883,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 break;
             case KeyEvent.VK_BACK_SLASH:
                 drawScoreboard = !drawScoreboard;
+                break;
+            case KeyEvent.VK_EQUALS:
+            case KeyEvent.VK_PLUS:
+                gameSpeed++;
+                addNotificationMessage("Game speed increased to " + gameSpeed + ".");                
+                break;
+            case KeyEvent.VK_MINUS:
+                if(gameSpeed > 1)
+                {
+                gameSpeed--;
+                addNotificationMessage("Game speed decreased to " + gameSpeed + ".");
+                }
                 break;
             default:
                 break;

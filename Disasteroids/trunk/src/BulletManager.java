@@ -170,4 +170,9 @@ class BulletManager implements WeaponManager {
 
     }
 
+    public String getWeaponName()
+    {
+        return "Bullets";
+    }
+
 }

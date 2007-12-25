@@ -90,4 +90,9 @@ public class MineManager implements WeaponManager{
             itr.next().draw(g);
     }
 
+    public String getWeaponName()
+    {
+        return "Mines";
+    }
+
 }

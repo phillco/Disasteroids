@@ -204,7 +204,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             // Use our preferred name.
             if ( i == localPlayer && !Settings.playerName.equals( "" ) )
                 name = Settings.playerName;
-            players[i] = new Ship( GAME_WIDTH / 2 - ( i * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[i], 0, name, Ship.WeaponType.MISSILES );
+            players[i] = new Ship( GAME_WIDTH / 2 - ( i * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[i], 0, name );
         }
 
         // Create the asteroids.
@@ -343,7 +343,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public void paint( Graphics g )
     {
         if ( paused )
-            return;
+            return;               
 
         // Step the game through a timestep, or multiple timesteps if the user wishes.
         for(int i = 0; i < gameSpeed; i++)
@@ -1214,6 +1214,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
     {
+        graph.setFont(new Font("Tahoma",graph.getFont().getStyle(), graph.getFont().getSize()));
         x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
         y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
         graph.setColor( col );

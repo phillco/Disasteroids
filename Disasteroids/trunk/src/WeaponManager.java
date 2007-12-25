@@ -29,4 +29,13 @@ interface WeaponManager extends GameElement{
     public String ApplyBonus(int key);
 
     public int getMaxShots();
+    
+    /**
+     * Returns the name of the <code>Weapon</code>.
+     * Examples: "Missiles", "Bullets".
+     * 
+     * @since December 25, 2007
+     * @return  plural name of the <code>Weapon</code>
+     */
+    public String getWeaponName();
 }

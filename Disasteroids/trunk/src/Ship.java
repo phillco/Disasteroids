@@ -1,129 +1,182 @@
-/*
+/**
  * DISASTEROIDS
- * by Phillip Cohen and Andy Kooiman
- * 
- * APCS 1, 2006 to 2007, Period 3
- * Version - 1.0 Final (exam release)
- *
- * Run Running.class to start
+ * Ship.java
  */
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.Random;
 import java.util.LinkedList;
 
+/**
+ * The player ships.
+ * @author Andy Kooiman, Phillip Cohen
+ * @since Classic
+ */
 public class Ship implements GameElement
 {
+
     public final static double SENSITIVITY = 30;
 
     public final static int RADIUS = 10;
 
+    /**
+     * Our location on the absolute game world.
+     * @since Classic
+     */
     private double x,  y;
 
+    /**
+     * Our speed (delta).
+     * @since Classic
+     */
     private double dx,  dy;
 
-    private boolean forward = false,  backwards = false,  left = false,  right = false;
+    /**
+     * Togglers for various actions.
+     * @since Classic (last minute)
+     */
+    private boolean forward = false,  backwards = false,  left = false,  right = false, shooting = false;
 
-    private double origin_x,  origin_y;
-
+    /**
+     * The angle we're facing.
+     * @since Classic
+     */
     private double angle;
 
+    /**
+     * Our name, showed on the scoreboard.
+     * @since December 14, 2007
+     */
     private String name;
 
-    private int timeTillNextShot = 0;
+    /**
+     * Time left until we can shoot.
+     * @since Classic
+     */
+    private int timeTillNextShot;
 
+    /**
+     * Our color. The ship, missiles, <code>StarMissile</code>s, and explosions are drawn in this.
+     * @see AsteroidsFrame#PLAYER_COLORS
+     * @since Classic
+     */
     private Color myColor;
 
+    /**
+     * A darker version of <code>myColor</code> shown when invincible.
+     * @since Classic
+     */
+    private Color myInvicibleColor;
+    
+    /**
+     * Time left until we become vincible.
+     * @since Classic
+     */
     private int invincibilityCount;
 
-    private Color myInvicibleColor;
-
+    /**
+     * How many reserve lives remain. When less than 0, the game is over.
+     * @since Classic
+     */
     private int livesLeft;
 
+    /**
+     * Toggler for the invincibility flashing during drawing.
+     * @since Classic
+     */
     private boolean invulFlash;
-    
-    private WeaponManager manager;
 
-    private int score = 0;
+    /**
+     * Our score.
+     * @since Classic
+     */
+    private int score;
 
-    private WeaponType weaponType;
-    
-    private boolean shooting;
-    
-    public static enum WeaponType {
-        BULLETS(0),
-        MISSILES(1),
-        MINES(2);
-        private int index;
-        
-        private WeaponType(int index)
-        {
-            this.index=index;
-        }
-        
-        public int index(){return index;}
+    /**
+     * How many <code>Asteroid</code>s we've killed on this level.
+     * @since December 16, 2007
+     */
+    private int numAsteroidsKilled;
 
-        //hackish, fix later
-        private WeaponType next(WeaponType weaponType) {
-            if(weaponType==BULLETS)
-                return MISSILES;
-            if(weaponType==MISSILES)
-                return MINES;
-            return BULLETS;
-        }
-                
-    };
+    /**
+     * How many <code>Ship</code>s we've killed on this level.
+     * @since December 16, 2007
+     */
+    private int numShipsKilled;
 
-    private int numAsteroidsKilled = 0;
+    /**
+     * The current weapon selected in <code>allWeapons</code>.
+     * @since December 25, 2007
+     */
+    private int weaponIndex;
 
-    private int numShipsKilled = 0;
-    
+    /**
+     * Our cache of weapons.
+     * @since December 16, 2007
+     */
     private WeaponManager[] allWeapons;
+    
+    /**
+     * How long to draw the name of the current weapon.
+     * @since December 25, 2007
+     */
+    private int drawWeaponNameTimer;
 
-    public Ship( int x, int y, Color c, int lives, String name, WeaponType weaponType )
+    public Ship( int x, int y, Color c, int lives, String name )
     {
         this.x = x;
         this.y = y;
-        this.origin_x = x;
-        this.origin_y = y;
+        this.myColor = c;
+        this.livesLeft = lives;
         this.name = name;
-
-        invulFlash = true;
+        
+        score = 0;
+        numAsteroidsKilled = 0;
+        drawWeaponNameTimer = 0;
+        numShipsKilled = 0;
+        timeTillNextShot = 0;
         angle = Math.PI / 2;
         dx = 0;
         dy = 0;
-        livesLeft = lives;
-        myColor = c;
+        
+        // Colors.        
         double fadePct = 0.6;
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
-        this.weaponType=weaponType;
-        allWeapons=new WeaponManager[WeaponType.values().length];
-        allWeapons[0]=new BulletManager();
-        allWeapons[1]=new MissileManager();
-        allWeapons[2]=new MineManager();
-        manager=allWeapons[weaponType.index()];
+        // Init weapons.
+        allWeapons = new WeaponManager[3];
+        allWeapons[0] = new MissileManager();
+        allWeapons[1] = new BulletManager();
+        allWeapons[2] = new MineManager();
+        weaponIndex = 0;
+        
+        // Start invincible.
+        invulFlash = true;
         invincibilityCount = 200;
     }
 
-    public void clearWeapons() {
-        for(WeaponManager wM: allWeapons)
+    public void clearWeapons()
+    {
+        for ( WeaponManager wM : allWeapons )
             wM.clear();
     }
 
-    public void restoreBonusValues() {
-        for(WeaponManager wM: allWeapons)
+    public void restoreBonusValues()
+    {
+        for ( WeaponManager wM : allWeapons )
             wM.restoreBonusValues();
     }
-    
+
     public WeaponManager[] allWeapons()
     {
         return allWeapons;
     }
 
-    public void draw(Graphics g)
+    public void draw( Graphics g )
     {
         Color col;
 
@@ -133,43 +186,48 @@ public class Ship implements GameElement
         else
             col = myColor;
 
-        int centerX=Running.environment().getWidth()/2;
-        int centerY=Running.environment().getHeight()/2;
-        // Flash when invunerable
+        int centerX = Running.environment().getWidth() / 2;
+        int centerY = Running.environment().getHeight() / 2;
+
         Polygon outline = new Polygon();
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
+        
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
             Running.environment().drawPolygon( g, col, Color.black, outline );
         }
+
+        for ( WeaponManager wm : allWeapons )
+            wm.draw( g );
         
-        for(WeaponManager wm: allWeapons)
-            wm.draw(g);
+        if(drawWeaponNameTimer > 0)
+        {
+            drawWeaponNameTimer--;
+            g.setFont(g.getFont().deriveFont(Font.BOLD));
+            Graphics2D g2d = (Graphics2D) g;
+            Running.environment().drawString(g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray);
+        }
     }
 
     public void forward()
     {
-        //	dx+=Math.cos(angle)/20;
-        //	dy-=Math.sin(angle)/20;
         forward = true;
     }
 
     public void backwards()
     {
-        //	dx-=Math.cos(angle)/20;
-        //	dy+=Math.sin(angle)/20;
         backwards = true;
     }
 
     public void left()
-    {//angle+=Math.PI/20;
+    {
         left = true;
     }
 
     public void right()
-    {//angle-=Math.PI/20;
+    {
         right = true;
     }
 
@@ -192,15 +250,15 @@ public class Ship implements GameElement
     {
         right = false;
     }
-    
+
     public void startShoot()
     {
-        this.shooting=true;
+        this.shooting = true;
     }
-    
+
     public void stopShoot()
     {
-        this.shooting=false;
+        this.shooting = false;
     }
 
     public void act()
@@ -219,11 +277,12 @@ public class Ship implements GameElement
             angle += Math.PI / SENSITIVITY / 2;
         if ( right )
             angle -= Math.PI / SENSITIVITY / 2;
-        if(shooting&&canShoot())
-            shoot(Settings.soundOn);
+        if ( shooting && canShoot() )
+            shoot( Settings.soundOn );
 
-        for(WeaponManager wm: allWeapons)
+        for ( WeaponManager wm : allWeapons )
             wm.act();
+        
         if ( livesLeft < 0 )
             return;
 
@@ -259,12 +318,12 @@ public class Ship implements GameElement
     {
         dx = dy = 0;
     }
-    
+
     public void rotateWeapons()
     {
-        int index=weaponType.index();
-        manager=allWeapons[(index+1)%WeaponType.values().length];
-        weaponType=weaponType.next(weaponType);
+        weaponIndex++;
+        weaponIndex %= allWeapons.length;
+        drawWeaponNameTimer = 50;
     }
 
     private void checkBounce()
@@ -303,19 +362,20 @@ public class Ship implements GameElement
             }
         }
     }
-    
+
     /**
      * Generates particles for the ships boosters, moved from act metod
      * @snice December 16, 2007
      */
-    private void generateParticles() {
+    private void generateParticles()
+    {
         if ( forward && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
         {
             Random rand = RandNumGen.getParticleInstance();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
-                                            -15 * Math.cos(angle) + x + rand.nextInt( 8 ) - 4,
-                                             15 * Math.sin(angle) + y + rand.nextInt( 8 ) - 4,
+                                             -15 * Math.cos( angle ) + x + rand.nextInt( 8 ) - 4,
+                                             15 * Math.sin( angle ) + y + rand.nextInt( 8 ) - 4,
                                              rand.nextInt( 4 ) + 3,
                                              myColor,
                                              rand.nextDouble() * 4,
@@ -328,8 +388,8 @@ public class Ship implements GameElement
             Random rand = RandNumGen.getParticleInstance();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
-                                              15*Math.cos(angle) + x + rand.nextInt( 8 ) - 4,
-                                             -15*Math.sin(angle) + y + rand.nextInt( 8 ) - 4,
+                                             15 * Math.cos( angle ) + x + rand.nextInt( 8 ) - 4,
+                                             -15 * Math.sin( angle ) + y + rand.nextInt( 8 ) - 4,
                                              rand.nextInt( 4 ) + 3,
                                              myColor,
                                              rand.nextDouble() * 4,
@@ -361,8 +421,8 @@ public class Ship implements GameElement
     {
         if ( livesLeft < 0 )
             return;
-        timeTillNextShot = manager.getIntervalShoot();
-        manager.add( (int) x, (int) y, angle, dx, dy, myColor );
+        timeTillNextShot = getWeaponManager().getIntervalShoot();
+        getWeaponManager().add( (int) x, (int) y, angle, dx, dy, myColor );
 
         if ( useSound )
             Sound.click();
@@ -370,7 +430,7 @@ public class Ship implements GameElement
 
     public boolean canShoot()
     {
-        return ( manager.getNumLiving() < manager.getMaxShots() && timeTillNextShot < 1 && invincibilityCount < 400 && livesLeft >= 0 );
+        return ( getWeaponManager().getNumLiving() < getWeaponManager().getMaxShots() && timeTillNextShot < 1 && invincibilityCount < 400 && livesLeft >= 0 );
     }
 
     public Color getColor()
@@ -420,7 +480,7 @@ public class Ship implements GameElement
 
     public WeaponManager getWeaponManager()
     {
-        return manager;
+        return allWeapons[weaponIndex];
     }
 
     public void increaseScore( int points )
@@ -482,7 +542,7 @@ public class Ship implements GameElement
      * Returns the statistic of <code>Asteroid</code>s killed on this level.
      * An <code>Asteroid</code> is "killed" when it splits, so both bullets and collisions will affect this counter.
      * 
-     * @return The number of <code>Asteroid</code>s <code>this</code> has killed on this level.
+     * @return  the number of <code>Asteroid</code>s <code>this</code> has killed on this level
      * @since December 16, 2007
      */
     public int getNumAsteroidsKilled()
@@ -493,7 +553,7 @@ public class Ship implements GameElement
     /**
      * Sets the number of <code>Asteroid</code>s killed on this level.
      * 
-     * @param numAsteroidsKilled The new number of <code>Asteroid</code>s <code>this</code> has killed on this level.
+     * @param numAsteroidsKilled    the new number of <code>Asteroid</code>s <code>this</code> has killed on this level
      * @since December 16, 2007
      */
     public void setNumAsteroidsKilled( int numAsteroidsKilled )
@@ -504,7 +564,7 @@ public class Ship implements GameElement
     /**
      * Returns the statistic of <code>Ship</code>s killed this level.
      * 
-     * @return The number of <code>Ship</code>s <code>this</code> has killed on this level.
+     * @return  the number of <code>Ship</code>s <code>this</code> has killed on this level.
      * @since December 16, 2007
      */
     public int getNumShipsKilled()
@@ -514,7 +574,8 @@ public class Ship implements GameElement
 
     /**
      * Sets the number of <code>Ship</code>s killed on this level.
-     * @param numShipsKilled The new number of <code>Ship</code>s <code>this</code> has killed on this level.
+     * 
+     * @param numShipsKilled    the new number of <code>Ship</code>s <code>this</code> has killed on this level
      * @since December 16, 2007
      */
     public void setNumShipsKilled( int numShipsKilled )

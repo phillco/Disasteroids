@@ -379,4 +379,9 @@ public class MissileManager implements WeaponManager
          
         }
     }
+
+    public String getWeaponName()
+    {
+        return "Missiles";
+    }
 }

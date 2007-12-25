@@ -225,7 +225,7 @@ public class Background
             Color c = new Color(
                     Math.min( col.getRed() * life / 70 + 80, 255 ),
                     col.getGreen() * life / 70,
-                    col.getBlue() * life / 70 );
+                    col.getBlue() * life / 70 );            
             Running.environment().drawString( gBack, (int) ( x + 3 * Math.cos( life / 5.0 ) ), y, message, c );
         }
     }

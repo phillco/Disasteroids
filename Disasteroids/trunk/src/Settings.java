@@ -165,15 +165,4 @@ public class Settings
         // Success!
         return true;
     }
-
-    /**
-     * Shows a series of questions to get settings that aren't on the main menu.
-     * 
-     * @since December 20, 2007
-     */
-    public static void doPrompter()
-    {
-        playerName = JOptionPane.showInputDialog( null, "Enter your player name.", playerName );
-        waitForMissiles = JOptionPane.showConfirmDialog( null, "Wait for missiles to be destroyed at the end of levels?", "", JOptionPane.YES_NO_OPTION ) == JOptionPane.YES_OPTION;        
-    }
 }

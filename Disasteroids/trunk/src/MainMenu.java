@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.UIManager;
 
 /**
  * The new main menu.
@@ -20,6 +21,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
 {
 
     private static final String title = "DISASTEROIDS!";
+
     private int choice = 0;
 
     public MainMenu()
@@ -52,7 +54,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         for ( int i = 0; i < MenuOption.values().length; i++ )
         {
             int midpoint = WINDOW_WIDTH / 2;
-            int string_width = ( int ) normal.getStringBounds( MenuOption.values()[i].toString(), ( ( Graphics2D ) g ).getFontRenderContext() ).getWidth();
+            int string_width = (int) normal.getStringBounds( MenuOption.values()[i].toString(), ( (Graphics2D) g ).getFontRenderContext() ).getWidth();
             g.setFont( choice == i ? accent : normal );
             g.drawString( MenuOption.values()[i].toString(), midpoint - string_width / 2, y );
 
@@ -71,17 +73,17 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         String soundString = "Sound " + ( Settings.soundOn ? "on" : "off" );
         String fullscreenString = ( Settings.useFullscreen ? "Fullscreen" : "Windowed" );
         String renderingString = ( Settings.hardwareRendering ? "Hardware" : "Software" );
-        int height = ( int ) ( normal.getStringBounds( "|", ( ( Graphics2D ) g ).getFontRenderContext() ).getHeight() );
+        int height = (int) ( normal.getStringBounds( "|", ( (Graphics2D) g ).getFontRenderContext() ).getHeight() );
 
         g.setFont( normal );
         g.drawString( musicString, 15, ( WINDOW_HEIGHT - height ) );
         g.drawString( soundString, 15, ( WINDOW_HEIGHT - 2 * height ) );
 
         g.drawString( fullscreenString,
-                      WINDOW_WIDTH - 15 - ( int ) ( normal.getStringBounds( soundString, ( ( Graphics2D ) g ).getFontRenderContext() ).getWidth() ),
+                      WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
                       ( WINDOW_HEIGHT - height ) );
         g.drawString( renderingString,
-                      WINDOW_WIDTH - 15 - ( int ) ( normal.getStringBounds( soundString, ( ( Graphics2D ) g ).getFontRenderContext() ).getWidth() ),
+                      WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
                       ( WINDOW_HEIGHT - 2 * height ) );
     }
 
@@ -119,9 +121,17 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             case KeyEvent.VK_SPACE:
                 if ( MenuOption.values()[choice] == MenuOption.SETTIINGS )
                 {
+                    // Look pretty in XP.
+                    try
+                    {
+                        UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+                    }
+                    catch ( Exception ex )
+                    {
+
+                    }
                     setVisible( false );
-                    Settings.doPrompter();
-                    setVisible( true );
+                    new OptionsFrame( this );
                 }
                 else
                 {

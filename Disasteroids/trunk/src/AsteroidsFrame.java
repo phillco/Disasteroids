@@ -166,6 +166,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public AsteroidsFrame( int playerCount, int localPlayer )
     {
+        frame = this;
         Running.setEnvironment( this );
 
         // Close when the exit key is pressed.

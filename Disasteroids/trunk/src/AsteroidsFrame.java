@@ -57,13 +57,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * The <code>Image</code> used for double buffering.
      * @since Classic
      */
-    private static Image virtualMem;
+    private Image virtualMem;
 
     /**
      * The star background.
      * @since Classic
      */
-    private static Background background;
+    private Background background;
 
     /**
      * The current level of the game.
@@ -75,7 +75,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * Stores whether the game is currently paused or not.
      * @since Classic
      */
-    private boolean paused = false;
+    private static boolean paused = false;
 
     /**
      * The current game time.
@@ -93,13 +93,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * Stores the current <code>Asteroid</code> field.
      * @since Classic
      */
-    private AsteroidManager asteroidManager;
+    private static AsteroidManager asteroidManager;
 
     /**
      * Stores the current pending <code>Action</code>s.
      * @since Classic
      */
-    private ActionManager actionManager;
+    private static ActionManager actionManager;
 
     /**
      * Array of players.
@@ -143,12 +143,19 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @since December 20, 2007
      */
     private boolean highScoreAchieved;
-    
+
     /**
      * How many times we <code>act</code> per paint call. Can be used to make later levels more playable.
      * @since December 23, 2007
      */
-    private int gameSpeed = 1;
+    private static int gameSpeed = 1;
+
+    private static AsteroidsFrame frame;
+
+    public static AsteroidsFrame frame()
+    {
+        return frame;
+    }
 
     /**
      * Constructs the game frame and game elements.
@@ -166,9 +173,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
-        
+
         // Create background.
-        background = new Background(GAME_WIDTH, GAME_HEIGHT);
+        background = new Background( GAME_WIDTH, GAME_HEIGHT );
 
         // Set up the connection/game settings.
         players = new Ship[playerCount];
@@ -187,13 +194,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since December 16, 2007
      */
-    private void resetEntireGame()
+    private static void resetEntireGame()
     {
         timeStep = 0;
         otherPlayerTimeStep = 0;
-        highScoreAchieved = false;
-        background.clearMessages();
-        notificationMessages.clear();
+        frame.highScoreAchieved = false;
+        frame.background.clearMessages();
+        frame.notificationMessages.clear();
 
         // Create the ships.
         actionManager = new ActionManager();
@@ -213,7 +220,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         asteroidManager.setUpAsteroidField( level );
 
         // Reset the background.
-        background.init();
+        frame.background.init();
     }
 
     /**
@@ -221,7 +228,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since December 21, 2007
      */
-    private void act()
+    private static void act()
     {
         // Advance to the next level if it's time.
         if ( shouldExitLevel() )
@@ -230,11 +237,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
             return;
         }
 
-        if ( !highScoreAchieved && localPlayer().getScore() > Settings.highScore )
-        {
-            addNotificationMessage( "New high score of " + insertThousandCommas( localPlayer().getScore() ) + "!", 800 );
-            highScoreAchieved = true;
-        }
         AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
 
         // Are we are too far ahead?
@@ -243,7 +245,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
             safeSleep( 20 );
             AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
             AsteroidsServer.flush();
-            repaint();
             return;
         }
 
@@ -266,7 +267,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             players[i].act();
         }
-
     }
 
     /**
@@ -285,6 +285,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
             long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
             if ( timeSinceLast > 0 )
                 lastFPS = (int) ( 10000.0 / timeSinceLast );
+        }
+
+        if ( !highScoreAchieved && localPlayer().getScore() > Settings.highScore )
+        {
+            addNotificationMessage( "New high score of " + insertThousandCommas( localPlayer().getScore() ) + "!", 800 );
+            highScoreAchieved = true;
         }
 
         // Draw the star background.
@@ -343,10 +349,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public void paint( Graphics g )
     {
         if ( paused )
-            return;               
+            return;
 
         // Step the game through a timestep, or multiple timesteps if the user wishes.
-        for(int i = 0; i < gameSpeed; i++)
+        for ( int i = 0; i < gameSpeed; i++ )
             act();
 
         // Create the image if needed.
@@ -386,7 +392,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since November 15 2007
      */
-    private void warpDialog()
+    private static void warpDialog()
     {
         try
         {
@@ -395,7 +401,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         catch ( NumberFormatException e )
         {
             // Do nothing with incorrect input or cancel.
-            addNotificationMessage("Invalid warp command.");
+            addNotificationMessage( "Invalid warp command." );
         }
     }
 
@@ -406,7 +412,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @see Settings#waitForMissiles
      * @return  whether the game should advance to the next level
      */
-    private boolean shouldExitLevel()
+    private static boolean shouldExitLevel()
     {
         // Have the asteroids been cleared?
         if ( asteroidManager.size() > 0 )
@@ -435,7 +441,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @author Phillip Cohen
      * @since November 15 2007
      */
-    private void nextLevel()
+    private static void nextLevel()
     {
         warp( level + 1 );
     }
@@ -446,7 +452,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param newLevel  the level to warp to
      * @since November 15 2007
      */
-    private void warp( int newLevel )
+    private static void warp( int newLevel )
     {
         paused = true;
         level = newLevel;
@@ -464,8 +470,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         asteroidManager.clear();
         actionManager.clear();
-        
-        background.init();
+
+        frame.background.init();
         restoreBonusValues();
         System.out.println( "Welcome to level " + newLevel + ". Random asteroid numbers: " +
                             RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
@@ -678,7 +684,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since Classic
      */
-    public void newGame()
+    public static void newGame()
     {
         resetEntireGame();
         if ( ( players.length > 1 ) && ( localPlayer == 0 ) )
@@ -887,13 +893,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_EQUALS:
             case KeyEvent.VK_PLUS:
                 gameSpeed++;
-                addNotificationMessage("Game speed increased to " + gameSpeed + ".");                
+                addNotificationMessage( "Game speed increased to " + gameSpeed + "." );
                 break;
             case KeyEvent.VK_MINUS:
-                if(gameSpeed > 1)
+                if ( gameSpeed > 1 )
                 {
-                gameSpeed--;
-                addNotificationMessage("Game speed decreased to " + gameSpeed + ".");
+                    gameSpeed--;
+                    addNotificationMessage( "Game speed decreased to " + gameSpeed + "." );
                 }
                 break;
             default:
@@ -1036,7 +1042,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @param step  the new value for the other player's current time
      * @since Classic
      */
-    public void setOtherPlayerTimeStep( int step )
+    public static void setOtherPlayerTimeStep( int step )
     {
         otherPlayerTimeStep = step;
     }
@@ -1058,7 +1064,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since Classic
      */
-    private void restoreBonusValues()
+    private static void restoreBonusValues()
     {
         for ( Ship ship : players )
         {
@@ -1100,7 +1106,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @param message   the message text
      */
-    public void addNotificationMessage( String message )
+    public static void addNotificationMessage( String message )
     {
         if ( message.equals( "" ) )
             return;
@@ -1108,12 +1114,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
         addNotificationMessage( message, 250 );
     }
 
-    public void addNotificationMessage( String message, int life )
+    public static void addNotificationMessage( String message, int life )
     {
         if ( message.equals( "" ) )
             return;
 
-        notificationMessages.add( new NotificationMessage( message, life ) );
+        if ( frame != null )
+            frame.notificationMessages.add( new NotificationMessage( message, life ) );
+        else
+            System.out.println(message);
     }
 
     /**
@@ -1127,7 +1136,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void writeOnBackground( String message, int x, int y, Color col )
     {
-        background.writeOnBackground(message, x, y, col);
+        background.writeOnBackground( message, x, y, col );
     }
 
     /**
@@ -1214,7 +1223,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
     {
-        graph.setFont(new Font("Tahoma",graph.getFont().getStyle(), graph.getFont().getSize()));
+        graph.setFont( new Font( "Tahoma", graph.getFont().getStyle(), graph.getFont().getSize() ) );
         x = ( x - players[localPlayer].getX() + getWidth() / 2 + 4 * GAME_WIDTH ) % GAME_WIDTH;
         y = ( y - players[localPlayer].getY() + getHeight() / 2 + 4 * GAME_HEIGHT ) % GAME_HEIGHT;
         graph.setColor( col );
@@ -1361,7 +1370,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             this.title = title;
         }
     }
-    
+
     /**
      */
     private static class NotificationMessage

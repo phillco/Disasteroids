@@ -72,7 +72,7 @@ public class ServerListenerThread extends Thread
         // Other player's timestep.
         else if ( command.charAt( 0 ) == 't' )
         {
-            Running.environment().setOtherPlayerTimeStep( Integer.parseInt( command.substring( 1 ) ) );
+            Game.setOtherPlayerTimeStep( Integer.parseInt( command.substring( 1 ) ) );
             return;
         }
         
@@ -110,6 +110,8 @@ public class ServerListenerThread extends Thread
         int comma = command.indexOf( "," );
         int keyCommand = Integer.parseInt( command.substring( 0, comma ) );
         int timeStep = Integer.parseInt( command.substring( comma + 1 ) );
-        Running.environment().actionManager().add( new Action( AsteroidsFrame.players[1], keyCommand, timeStep ) );
+        
+        // TODO: Work for multiple comps.
+        Game.actionManager().add( new Action( Game.players.getLast(), keyCommand, timeStep ) );
     }
 }

@@ -1,45 +1,44 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.LinkedList;
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
  * @author Owner
  */
-class BulletManager implements WeaponManager {
+class BulletManager implements WeaponManager
+{
 
-    private LinkedList<Weapon> theBullets;
-    
-    private LinkedList<Weapon> toBeAdded;
-    
-    private int speed=20;
-    
-    private int maxShots=100;
-    private boolean threeWayShot=false;
-    private int intervalShoot=4;
-    private int radius=2;
-    private int damage=10;
-    
-    public BulletManager() {
-        theBullets=new LinkedList<Weapon>();
-        toBeAdded=new LinkedList<Weapon>();
-    }
-    
-    public BulletManager(LinkedList<Weapon> start)
+    private ConcurrentLinkedQueue<Weapon> theBullets;
+
+    private int speed = 20;
+
+    private int maxShots = 100;
+
+    private boolean threeWayShot = false;
+
+    private int intervalShoot = 4;
+
+    private int radius = 2;
+
+    private int damage = 10;
+
+    public BulletManager()
     {
-        theBullets=start;
-        toBeAdded=new LinkedList<Weapon>();
+        theBullets = new ConcurrentLinkedQueue<Weapon>();
     }
 
-    public void act() {
-        ListIterator<Weapon> iter = theBullets.listIterator();
+    public BulletManager( ConcurrentLinkedQueue<Weapon> start )
+    {
+        theBullets = start;
+    }
+
+    public void act()
+    {
+        Iterator<Weapon> iter = theBullets.iterator();
         while ( iter.hasNext() )
         {
             Weapon w = iter.next();
@@ -48,125 +47,121 @@ class BulletManager implements WeaponManager {
             else
                 w.act();
         }
-
-        while ( !toBeAdded.isEmpty() )
-        {
-            theBullets.add( toBeAdded.remove() );
-        } 
     }
 
-    public void clear() {
-        theBullets=new LinkedList<Weapon>();
-        toBeAdded=new LinkedList<Weapon>();
+    public void clear()
+    {
+        theBullets = new ConcurrentLinkedQueue<Weapon>();
     }
 
-    public void explodeAll() {
-        for(Weapon w: theBullets)
+    public void explodeAll()
+    {
+        for ( Weapon w : theBullets )
             w.explode();
     }
 
-    public int getIntervalShoot() {
+    public int getIntervalShoot()
+    {
         return intervalShoot;
     }
 
-    public boolean add(int x, int y, double angle, double dx, double dy, Color col) {
+    public boolean add( int x, int y, double angle, double dx, double dy, Color col )
+    {
         if ( theBullets.size() > 500 )
             return false;
-        if(threeWayShot)
+        if ( threeWayShot )
         {
-            toBeAdded.add(new Bullet(this,x,y,angle+Math.PI/8, dx, dy, col));
-            toBeAdded.add(new Bullet(this,x,y,angle-Math.PI/8, dx, dy, col));
+            theBullets.add( new Bullet( this, x, y, angle + Math.PI / 8, dx, dy, col ) );
+            theBullets.add( new Bullet( this, x, y, angle - Math.PI / 8, dx, dy, col ) );
         }
-        
-        return toBeAdded.add( new Bullet( this, x, y, angle, dx, dy, col ) );
+
+        return theBullets.add( new Bullet( this, x, y, angle, dx, dy, col ) );
     }
-    
-     /**
-     * Adds all elements of a <code>LinkedList</code> to this <code>MissileManager</code>.
+
+    /**
+     * Adds all elements of a <code>ConcurrentLinkedQueue</code> to this <code>MissileManager</code>.
      * These elements need not be <code>Missile</code>s, and will be removed from their
      * current location by this method.
      * 
-     * @param others The <code>LinkedList</code> of <code>Weapon</code>s to be added
+     * @param others The <code>ConcurrentLinkedQueue</code> of <code>Weapon</code>s to be added
      * @since December 17, 2007
      */
-    public void add(LinkedList<Weapon> others)
+    public void add( ConcurrentLinkedQueue<Weapon> others )
     {
-        ListIterator<Weapon> itr= others.listIterator();
-        while(itr.hasNext())
-        {
-            toBeAdded.add(itr.next());
-            itr.remove();
-        }
+        while ( !others.isEmpty() )
+            theBullets.add( others.remove() );
     }
 
-    public int getNumLiving() {
+    public int getNumLiving()
+    {
         return theBullets.size();
     }
 
-    public LinkedList<Weapon> getWeapons() {
+    public ConcurrentLinkedQueue<Weapon> getWeapons()
+    {
         return theBullets;
     }
 
-    public void restoreBonusValues() {
-      threeWayShot=false;
-      intervalShoot=4;
-      radius=2;
-      damage=10;
+    public void restoreBonusValues()
+    {
+        threeWayShot = false;
+        intervalShoot = 4;
+        radius = 2;
+        damage = 10;
     }
-    
+
     public int getDamage()
     {
         return damage;
     }
 
-    public String ApplyBonus(int key) {
-        String ret="";
-        
-        switch(key)
+    public String ApplyBonus( int key )
+    {
+        String ret = "";
+
+        switch ( key )
         {
-            case 0: 
-                damage+=50;
-                ret+="Depleted Uranium Bullets!!";
+            case 0:
+                damage += 50;
+                ret += "Depleted Uranium Bullets!!";
                 break;
             case 1:
-                intervalShoot=1;
+                intervalShoot = 1;
                 ret += "Rapid Fire";
                 break;
             case 4:
-                threeWayShot=true;
+                threeWayShot = true;
                 ret += "Three Way Shot";
                 break;
             case 7:
-                radius=6;
+                radius = 6;
                 ret += "Huge Bullets";
                 break;
             default:
-                ret="";
+                ret = "";
         }
         return ret;
     }
-    
+
     public int getSpeed()
     {
         return speed;
     }
 
-    public int getMaxShots() {
+    public int getMaxShots()
+    {
         return maxShots;
     }
 
-    public int getRadius() {
+    public int getRadius()
+    {
         return radius;
     }
 
     public void draw( Graphics g )
     {
-        ListIterator<Weapon> iter = theBullets.listIterator();
-        while ( iter.hasNext() )
-        {
-            Weapon w = iter.next();
-            w.draw(g);
-        }
+        for ( Weapon w : theBullets )
+            w.draw( g );
 
     }
 
@@ -174,5 +169,4 @@ class BulletManager implements WeaponManager {
     {
         return "Bullets";
     }
-
 }

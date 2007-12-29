@@ -14,6 +14,7 @@ import java.util.Random;
  */
 public class Asteroid implements GameElement
 {
+
     /**
      * The <code>AsteroidManager</code> to which this <code>Asteroid</code> belongs.
      * @author Andy Kooiman
@@ -58,29 +59,28 @@ public class Asteroid implements GameElement
      * @since December 14 2007
      */
     protected Ship victim = null;
-    
+
     /**
      * The <code>Color</code>s of the inside and outline of <code>this</code>
      * @since December 15 2007
      */
-    protected Color fill=Color.white,outline=Color.gray;
-    
-    
+    protected Color fill = Color.white,  outline = Color.gray;
+
     /**
      * The starting and current life of this <code>Asteroid</code>
      * @since December 21, 2007
      */
-    protected int lifeMax, life;
+    protected int lifeMax,  life;
 
     /**
      * Constructs a new Asteroid from scratch.
-     * @param x The x coordinate.
-     * @param y The y coordinate.
-     * @param dx The x velocity.
-     * @param dy The y velocity (up is negative).
-     * @param size The diameter.
-     * @param environment The <code>AsteroidManager</code> responsible for <code>this</code>.
-     * @author Andy Kooiman, Phillip Cohen
+     * 
+     * @param x				the x coordinate
+     * @param y				the y coordinate
+     * @param dx			the x velocity
+     * @param dy			the y velocity (up is negative)
+     * @param size			the diameter
+     * @param environment	the <code>AsteroidManager</code> responsible for <code>this</code>
      * @since Classic
      */
     public Asteroid( int x, int y, double dx, double dy, int size, int lifeMax, AsteroidManager environment )
@@ -90,8 +90,8 @@ public class Asteroid implements GameElement
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-        this.radius = size/2;
-        this.life=this.lifeMax=Math.max(1,lifeMax);
+        this.radius = size / 2;
+        this.life = this.lifeMax = Math.max( 1, lifeMax );
 
         // Enforce a minimum size.
         if ( size < 25 )
@@ -99,7 +99,8 @@ public class Asteroid implements GameElement
         this.environment = environment;
 
         // Attack a random player.
-        this.victim = AsteroidsFrame.players[rand.nextInt( AsteroidsFrame.players.length )];
+        if ( Game.players.size() > 0 )
+            this.victim = Game.players.get( rand.nextInt( Game.players.size() ) );
 
         // Enforce a mininum speed.
         checkMovement();
@@ -108,8 +109,8 @@ public class Asteroid implements GameElement
     /**
      * Constructs a new <code>Asteroid</code> from a parent <code>Asteroid</code>.
      * This is used when a missile splits an <code>Asteroid</code>.
-     * @param parent The parent <code>Asteroid</code> to split from.
-     * @author Andy Kooiman, Phillip Cohen
+     * 
+     * @param parent	the parent <code>Asteroid</code> to split from
      * @since Classic
      */
     public Asteroid( Asteroid parent )
@@ -125,7 +126,7 @@ public class Asteroid implements GameElement
         this.dx = rand.nextDouble() * 2 - 1;
         this.dy = rand.nextDouble() * 2 - 1;
         this.environment = parent.environment;
-        this.life=this.lifeMax=parent.lifeMax/2+1;//live half as long as parents
+        this.life = this.lifeMax = parent.lifeMax / 2 + 1;//live half as long as parents
 
         // Attack the same player that the parent did. (Would random be better?)
         this.victim = parent.victim;
@@ -139,11 +140,11 @@ public class Asteroid implements GameElement
      * @author Andy Kooiman
      * @since Classic
      */
-    public void draw(Graphics g)
+    public void draw( Graphics g )
     {
-        
-        Color f=new Color(fill.getRed()*life/lifeMax, fill.getGreen()*life/lifeMax, fill.getBlue()*life/lifeMax);
-        Running.environment().drawOutlinedCircle(g, f, outline, (int)x, (int)y, radius);
+
+        Color f = new Color( fill.getRed() * life / lifeMax, fill.getGreen() * life / lifeMax, fill.getBlue() * life / lifeMax );
+        Running.environment().drawOutlinedCircle( g, f, outline, (int) x, (int) y, radius );
     }
 
     /**
@@ -170,7 +171,7 @@ public class Asteroid implements GameElement
         if ( victim != null )
         {
 //            dx += ( -x + victim.getX() ) * (double) ( AsteroidsFrame.getLevel() ) / 500000.0;
-  //          dy += ( -y + victim.getY() ) * (double) ( AsteroidsFrame.getLevel() ) / 500000.0;
+        //          dy += ( -y + victim.getY() ) * (double) ( AsteroidsFrame.getLevel() ) / 500000.0;
         }
 
         x += dx;
@@ -187,13 +188,13 @@ public class Asteroid implements GameElement
     {
         // Wrap to stay inside the level.
         if ( x < 0 )
-            x += AsteroidsFrame.GAME_WIDTH - 1;
+            x += Game.GAME_WIDTH - 1;
         if ( y < 0 )
-            y += AsteroidsFrame.GAME_HEIGHT - 1;
-        if ( x > AsteroidsFrame.GAME_WIDTH )
-            x -= AsteroidsFrame.GAME_WIDTH - 1;
-        if ( y > AsteroidsFrame.GAME_HEIGHT )
-            y -= AsteroidsFrame.GAME_HEIGHT - 1;
+            y += Game.GAME_HEIGHT - 1;
+        if ( x > Game.GAME_WIDTH )
+            x -= Game.GAME_WIDTH - 1;
+        if ( y > Game.GAME_HEIGHT )
+            y -= Game.GAME_HEIGHT - 1;
     }
 
     /**
@@ -209,9 +210,9 @@ public class Asteroid implements GameElement
             shouldRemove = true;
             return;
         }
-        killer.increaseScore( radius*2 );
-        killer.setNumAsteroidsKilled(killer.getNumAsteroidsKilled() + 1);
-        Running.environment().writeOnBackground( "+" + String.valueOf( radius*2 ), (int) x, (int) y, killer.getColor().darker() );
+        killer.increaseScore( radius * 2 );
+        killer.setNumAsteroidsKilled( killer.getNumAsteroidsKilled() + 1 );
+        Running.environment().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) x, (int) y, killer.getColor().darker() );
         if ( radius < 12 )
             shouldRemove = true;
         else
@@ -229,19 +230,17 @@ public class Asteroid implements GameElement
      */
     private void checkCollision()
     {
-        // Don't check if already dead
+        // Don't check if already dead.
         if ( shouldRemove )
             return;
 
-        // Go through all of the ships.
-        for ( Ship s : AsteroidsFrame.players )
+        // Go through all of the ships.        
+        for ( Ship s : Game.players )
         {
-
-
             // Were we hit by the ship?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Math.pow( x - s.getX(), 2 ) + ( Math.pow( y - s.getY(), 2 ) ) < (radius + Ship.RADIUS )*(radius+Ship.RADIUS))
+                if ( Math.pow( x - s.getX(), 2 ) + ( Math.pow( y - s.getY(), 2 ) ) < ( radius + Ship.RADIUS ) * ( radius + Ship.RADIUS ) )
                 {
                     if ( s.looseLife() )
                     {
@@ -250,23 +249,21 @@ public class Asteroid implements GameElement
                     }
                 }
             }
-            
-            for(WeaponManager wm:s.allWeapons())
+
+            for ( WeaponManager wm : s.allWeapons() )
             {
-                ListIterator<Weapon> iter = wm.getWeapons().listIterator();
                 // Loop through all this ship's Missiles.
-                while ( iter.hasNext() )
+                for ( Weapon m : wm.getWeapons() )
                 {
-                    Weapon m = iter.next();
 
                     // Were we hit by a missile?
-                    if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y -m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )
+                    if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y - m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )
                     {
                         Sound.bloomph();
                         m.explode();
-                        life=Math.max(0,life-m.getDamage());
-                        if(life<=0)
-                        {   
+                        life = Math.max( 0, life - m.getDamage() );
+                        if ( life <= 0 )
+                        {
                             split( s );
                             return;
                         }

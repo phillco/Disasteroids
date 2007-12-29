@@ -45,7 +45,7 @@ public class Settings
      * Whether the user wants to anti-alias the game graphics.
      * @since December 15, 2007
      */
-    public static boolean antiAlias = true;
+    public static boolean qualityRendering = true;
 
     /**
      * Whether the game should wait for all <code>Missile</code>s to be destroyed before advancing to the next level.
@@ -102,7 +102,7 @@ public class Settings
                 useFullscreen = Boolean.parseBoolean( p.getProperty( "fullscreen" ) );
 
             if ( p.containsKey( "antiAlias" ) )
-                antiAlias = Boolean.parseBoolean( p.getProperty( "antiAlias" ) );
+                qualityRendering = Boolean.parseBoolean( p.getProperty( "antiAlias" ) );
 
             if ( p.containsKey( "waitForMissiles" ) )
                 waitForMissiles = Boolean.parseBoolean( p.getProperty( "waitForMissiles" ) );
@@ -146,7 +146,7 @@ public class Settings
             p.put( "musicOn", String.valueOf( musicOn ) );
             p.put( "soundOn", String.valueOf( soundOn ) );
             p.put( "fullscreen", String.valueOf( useFullscreen ) );
-            p.put( "antiAlias", String.valueOf( antiAlias ) );
+            p.put( "antiAlias", String.valueOf( qualityRendering ) );
             p.put( "waitForMissiles", String.valueOf( waitForMissiles ) );
             p.put( "lastConnectionIP", lastConnectionIP );
             p.put( "highScore", String.valueOf( highScore ) );

@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
  */
 public class Running
 {
+
     /**
      * The instance of the <code>AsteroidsFrame</code> in which the game runs.
      * @since Classic
@@ -63,8 +64,8 @@ public class Running
         // Find the player with the highest score.
         if ( aF != null )
         {
-            Ship highestScorer = AsteroidsFrame.players[0];
-            for ( Ship s : AsteroidsFrame.players )
+            Ship highestScorer = Game.players.getFirst();
+            for ( Ship s : Game.players )
             {
                 if ( s.getScore() > Settings.highScore )
                 {
@@ -89,75 +90,42 @@ public class Running
      */
     public static void startGame( MenuOption option )
     {
-        int playerCount = 1;
-        int localPlayer = 0;
-        int seed = 0;
+        // Init - but do not start - the game.
+        Game.thread = new Game();
 
+        // Add our player.
         switch ( option )
         {
-            case MULTIHOST:
-
-                // Start the network server.
-                try
-                {
-                    AsteroidsServer.master();
-                }
-                catch ( ConnectException e )
-                {
-                    return;
-                }
-
-                // Now start the local game. Assume player 1.
-                playerCount = 2;
-                localPlayer = 0;
-
-                seed = (int) ( Math.random() * 10000 );
-                AsteroidsServer.send( "Seed" + String.valueOf( seed ) );
-                RandNumGen.init( seed );
+            case SINGLEPLAYER:
+                Game.state = Game.Netstate.SINGLEPLAYER;
+                Game.addPlayer( ( Settings.playerName.equals( "" ) ? "Player" : Settings.playerName ) );
+                new AsteroidsFrame( Game.players.size() - 1 );
+                break;
+            case LOCALLOOP:
+                new Server();
+                Game.safeSleep( 900 );
+                new Client( "localhost" );
+                break;
+            case START_SERVER:
+                Game.state = Game.Netstate.SERVER;
+                new Server();
                 break;
 
-            case MULTIJOIN:
-
+            case CONNECT:
+                Game.state = Game.Netstate.CLIENT;
                 // Get the server address.
-                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.lastConnectionIP );
+                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", "localhost" );
                 if ( ( address == null ) || ( address.equals( "" ) ) )
                     return;
 
                 Settings.lastConnectionIP = address;
 
                 // Connect to it.
-                try
-                {
-                    AsteroidsServer.slave( address );
-                }
-                catch ( ConnectException e )
-                {
-                    return;
-                }
-
-                // Start the local game. Assume player 2.
-                playerCount = 2;
-                localPlayer = 1;
-                while ( !RandNumGen.isInitialized() )
-                    ;
+                new Client( address );
                 break;
-
-            case SINGLEPLAYER:
-
-                // Start the local game.
-                seed = (int) ( Math.random() * 10000 );
-                RandNumGen.init( seed );
-                break;
-
             default:
                 Running.quit();
         }
-
-        // Start the music.
-        Sound.updateMusic();
-
-        // Create the game frame. aF is not assigned here; because game initialization is done in the constructor, and those calls use Running.environment(), aF must be set at the beginning of the constructor.
-        new AsteroidsFrame( playerCount, localPlayer );
     }
 
     /**
@@ -182,5 +150,12 @@ public class Running
     {
         if ( Running.aF == null )
             Running.aF = aF;
+    }
+
+    public static void log( String message )
+    {
+        System.out.println( message );
+        if ( AsteroidsFrame.frame() != null )
+            AsteroidsFrame.addNotificationMessage( message );
     }
 }

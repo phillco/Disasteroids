@@ -5,7 +5,7 @@
 
 import java.awt.Graphics;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Game-wide manager of <code>Particle</code>s.
@@ -13,11 +13,12 @@ import java.util.LinkedList;
  */
 public class ParticleManager // implements GameElement
 {
+
     /**
      * A list of all <code>Particle</code>s of all <code>Ship</code>s.
      * @since Classic
      */
-    private static LinkedList<Particle> parts = new LinkedList<Particle>();
+    private static ConcurrentLinkedQueue<Particle> allParticles = new ConcurrentLinkedQueue<Particle>();
 
     /**
      * Adds the specified <code>Particle</code>.
@@ -26,12 +27,12 @@ public class ParticleManager // implements GameElement
      */
     public static void addParticle( Particle p )
     {
-        parts.add( p );
+        allParticles.add( p );
     }
 
     public static void act()
     {
-        Iterator<Particle> itr = parts.iterator();
+        Iterator<Particle> itr = allParticles.iterator();
         while ( itr.hasNext() )
         {
             Particle p = itr.next();
@@ -49,8 +50,10 @@ public class ParticleManager // implements GameElement
      */
     public static void draw( Graphics g )
     {
-        Iterator<Particle> itr = parts.iterator();
-        while ( itr.hasNext() )
-            itr.next().draw( g );
+        if ( !Settings.qualityRendering )
+            return;
+        
+        for ( Particle p : allParticles )
+            p.draw( g );
     }
 }

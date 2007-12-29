@@ -119,7 +119,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             // Selecting a choice?
             case KeyEvent.VK_ENTER:
             case KeyEvent.VK_SPACE:
-                if ( MenuOption.values()[choice] == MenuOption.SETTIINGS )
+                if ( MenuOption.values()[choice] == MenuOption.OPTIONS )
                 {
                     // Look pretty in XP.
                     try

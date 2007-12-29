@@ -26,7 +26,7 @@ public class OptionsFrame extends javax.swing.JFrame
         hardware.setSelected( Settings.hardwareRendering );
         fullscreen.setSelected( Settings.useFullscreen );
         windowed.setSelected( !Settings.useFullscreen );
-        antiAlias.setSelected( Settings.antiAlias );
+        qualityRendering.setSelected( Settings.qualityRendering );
         wait.setSelected( Settings.waitForMissiles );
         playerName.setText( Settings.playerName );
 
@@ -49,7 +49,7 @@ public class OptionsFrame extends javax.swing.JFrame
         Settings.musicOn = music.isSelected();
         Settings.hardwareRendering = hardware.isSelected();
         Settings.useFullscreen = fullscreen.isSelected();
-        Settings.antiAlias = antiAlias.isSelected();
+        Settings.qualityRendering = qualityRendering.isSelected();
         Settings.waitForMissiles = wait.isSelected();
         Settings.playerName = playerName.getText();
     }
@@ -85,7 +85,7 @@ public class OptionsFrame extends javax.swing.JFrame
         jPanel2 = new javax.swing.JPanel();
         hardware = new javax.swing.JRadioButton();
         software = new javax.swing.JRadioButton();
-        antiAlias = new javax.swing.JCheckBox();
+        qualityRendering = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         sound = new javax.swing.JCheckBox();
         music = new javax.swing.JCheckBox();
@@ -149,7 +149,7 @@ public class OptionsFrame extends javax.swing.JFrame
         renderingGroup.add(software);
         software.setText("Software");
 
-        antiAlias.setText("Anti-alias");
+        qualityRendering.setText("Quality");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -160,8 +160,8 @@ public class OptionsFrame extends javax.swing.JFrame
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(software)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
-                        .addComponent(antiAlias))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+                        .addComponent(qualityRendering))
                     .addComponent(hardware))
                 .addContainerGap())
         );
@@ -170,7 +170,7 @@ public class OptionsFrame extends javax.swing.JFrame
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(software)
-                    .addComponent(antiAlias))
+                    .addComponent(qualityRendering))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(hardware))
         );
@@ -282,7 +282,6 @@ public class OptionsFrame extends javax.swing.JFrame
     }//GEN-LAST:event_cancelActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox antiAlias;
     private javax.swing.JButton cancel;
     private javax.swing.JRadioButton fullscreen;
     private javax.swing.JRadioButton hardware;
@@ -295,6 +294,7 @@ public class OptionsFrame extends javax.swing.JFrame
     private javax.swing.JCheckBox music;
     private javax.swing.JButton ok;
     private javax.swing.JTextField playerName;
+    private javax.swing.JCheckBox qualityRendering;
     private javax.swing.ButtonGroup renderingGroup;
     private javax.swing.JRadioButton software;
     private javax.swing.JCheckBox sound;

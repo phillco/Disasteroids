@@ -4,8 +4,9 @@
  */
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -13,23 +14,18 @@ import java.util.ListIterator;
  */
 public class MineManager implements WeaponManager{
     
-    private LinkedList<Weapon> mines;
-    
-    private LinkedList<Weapon> toBeAdded;
+    private ConcurrentLinkedQueue<Weapon> mines;    
     
     private int maxShots=20;
 
     public MineManager()
     {
-        mines=new LinkedList<Weapon>();
-        toBeAdded=new LinkedList<Weapon>();
+        mines=new ConcurrentLinkedQueue<Weapon>();
     }
     
 
     public void act() {
-        ListIterator<Weapon> itr=mines.listIterator();
-        while(!toBeAdded.isEmpty())
-            itr.add(toBeAdded.remove());
+        Iterator<Weapon> itr=mines.iterator();
         while(itr.hasNext())
         {
             Weapon w=itr.next();
@@ -41,14 +37,13 @@ public class MineManager implements WeaponManager{
         }
     }
 
-    public void add(LinkedList<Weapon> weapons) {
+    public void add(ConcurrentLinkedQueue<Weapon> weapons) {
         while(!weapons.isEmpty())
-            toBeAdded.add(weapons.remove());
+            mines.add(weapons.remove());
     }
 
     public void clear() {
-        toBeAdded=new LinkedList<Weapon>();
-        mines=new LinkedList<Weapon>();
+        mines=new ConcurrentLinkedQueue<Weapon>();
     }
 
     public void explodeAll() {
@@ -61,14 +56,14 @@ public class MineManager implements WeaponManager{
     }
 
     public boolean add(int x, int y, double angle, double dx, double dy, Color col) {
-        return toBeAdded.add(new Mine(x,y,col));
+        return mines.add(new Mine(x,y,col));
     }
 
     public int getNumLiving() {
         return mines.size();
     }
 
-    public LinkedList<Weapon> getWeapons() {
+    public ConcurrentLinkedQueue<Weapon> getWeapons() {
         return mines;
     }
 
@@ -85,9 +80,8 @@ public class MineManager implements WeaponManager{
     }
 
     public void draw(Graphics g) {
-        ListIterator<Weapon> itr= mines.listIterator();
-        while(itr.hasNext())
-            itr.next().draw(g);
+        for( Weapon w : mines)
+            w.draw(g);
     }
 
     public String getWeaponName()

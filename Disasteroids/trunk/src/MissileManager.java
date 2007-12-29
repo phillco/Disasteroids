@@ -5,9 +5,10 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A manager that each <code>Ship</code> uses for its <code>Missile</code>s.
@@ -15,11 +16,13 @@ import java.util.Queue;
  */
 public class MissileManager implements WeaponManager
 {
+
     /**
      * The time between each shot
      * @since December 15, 2007
      */
-    private int intervalShoot=15;
+    private int intervalShoot = 15;
+
     /**
      * The current initial speed for <code>Missile</code>s in this manager.
      * @since Classic
@@ -54,35 +57,27 @@ public class MissileManager implements WeaponManager
      * The list of currently valid <code>Missile</code>s.
      * @since Classic
      */
-    private LinkedList<Weapon> theMissiles = new LinkedList<Weapon>();
+    private ConcurrentLinkedQueue<Weapon> theMissiles = new ConcurrentLinkedQueue<Weapon>();
 
-    /**
-     * The list of <code>Missile</code>s waiting to be added.
-     * @since Classic
-     */
-    private Queue<Weapon> toBeAdded = new LinkedList<Weapon>();
+    private int maxShots = 10;
 
-    private int maxShots=10;
-    
     public MissileManager()
     {
-        theMissiles=new LinkedList<Weapon>();
-        toBeAdded=new LinkedList<Weapon>();
+        theMissiles = new ConcurrentLinkedQueue<Weapon>();
     }
-    
-    public MissileManager(LinkedList<Weapon> start)
+
+    public MissileManager( ConcurrentLinkedQueue<Weapon> start )
     {
-        theMissiles=start;
-        toBeAdded=new LinkedList<Weapon>();
+        theMissiles = start;
     }
-    
+
     /**
      * Gets all currently valid <code>Missile</code>s.
      * @return All currently valid <code>Missile</code>s.
      * @author Andy Kooiman
      * @since Classic
      */
-    public LinkedList<Weapon> getWeapons()
+    public ConcurrentLinkedQueue<Weapon> getWeapons()
     {
         return theMissiles;
     }
@@ -94,7 +89,7 @@ public class MissileManager implements WeaponManager
      */
     public void act()
     {
-        ListIterator<Weapon> iter = theMissiles.listIterator();
+        Iterator<Weapon> iter = theMissiles.iterator();
         while ( iter.hasNext() )
         {
             Weapon w = iter.next();
@@ -102,11 +97,6 @@ public class MissileManager implements WeaponManager
                 iter.remove();
             else
                 w.act();
-        }
-
-        while ( !toBeAdded.isEmpty() )
-        {
-            theMissiles.add( toBeAdded.remove() );
         }
     }
 
@@ -119,7 +109,7 @@ public class MissileManager implements WeaponManager
     {
         int probPopTemp = probPop;
         probPop = Integer.MAX_VALUE;
-        for ( Weapon w: theMissiles )
+        for ( Weapon w : theMissiles )
             w.explode();
         probPop = probPopTemp;
     }
@@ -140,9 +130,9 @@ public class MissileManager implements WeaponManager
     {
         if ( theMissiles.size() > 100 )
             return false;
-        return toBeAdded.add( new Missile( this, x, y, angle, dx, dy, col ) );
+        return theMissiles.add( new Missile( this, x, y, angle, dx, dy, col ) );
     }
-    
+
     /**
      * Adds all elements of a <code>LinkedList</code> to this <code>MissileManager</code>.
      * These elements need not be <code>Missile</code>s, and will be removed from their
@@ -150,14 +140,12 @@ public class MissileManager implements WeaponManager
      * 
      * @param others The <code>LinkedList</code> of <code>Weapon</code>s to be added
      */
-    public void add(LinkedList<Weapon> others)
+    public void add( ConcurrentLinkedQueue<Weapon> others )
     {
-        ListIterator<Weapon> itr= others.listIterator();
-        while(itr.hasNext())
-        {
-            toBeAdded.add(itr.next());
-            itr.remove();
-        }
+       for( Weapon w : others)
+           theMissiles.add(w);
+       
+       others.clear();
     }
 
     /**
@@ -202,7 +190,7 @@ public class MissileManager implements WeaponManager
     public void increasePopQuantity( int increase )
     {
         popQuantity += increase;
-        popQuantity=Math.min(popQuantity,50);
+        popQuantity = Math.min( popQuantity, 50 );
     }
 
     /**
@@ -245,8 +233,7 @@ public class MissileManager implements WeaponManager
      */
     public void clear()
     {
-        theMissiles=new LinkedList<Weapon>();
-        toBeAdded.clear();
+        theMissiles = new ConcurrentLinkedQueue<Weapon>();
     }
 
     /**
@@ -315,54 +302,58 @@ public class MissileManager implements WeaponManager
         return popQuantity;
     }
 
-    public int getIntervalShoot() {
+    public int getIntervalShoot()
+    {
         return intervalShoot;
     }
 
-    public void setIntervalShoot(int i) {
-        intervalShoot=i;
+    public void setIntervalShoot( int i )
+    {
+        intervalShoot = i;
     }
-    
+
     public int getMaxShots()
     {
         return maxShots;
     }
 
-    public void restoreBonusValues() {
-            setHugeBlastProb( 5 );
-            setHugeBlastSize( 50 );
-            setProbPop( 2000 );
-            setPopQuantity( 5 );
-            setSpeed( 15 );
-            setIntervalShoot(15);
-            setMaxShots(10);
-    }
-    
-    private void setMaxShots(int numShots)
+    public void restoreBonusValues()
     {
-        maxShots=numShots;
+        setHugeBlastProb( 5 );
+        setHugeBlastSize( 50 );
+        setProbPop( 2000 );
+        setPopQuantity( 5 );
+        setSpeed( 15 );
+        setIntervalShoot( 15 );
+        setMaxShots( 10 );
     }
 
-    public String ApplyBonus(int key) {
-        switch(key)
+    private void setMaxShots( int numShots )
+    {
+        maxShots = numShots;
+    }
+
+    public String ApplyBonus( int key )
+    {
+        switch ( key )
         {
             case 0:
-                setHugeBlastProb(2);
+                setHugeBlastProb( 2 );
                 return "Huge Blast Probable";
             case 1:
-                setHugeBlastSize(100);
+                setHugeBlastSize( 100 );
                 return "Huge Blast Radius";
             case 2:
-                setProbPop(500);
+                setProbPop( 500 );
                 return "Probability of Splitting Increased";
             case 4:
-                increasePopQuantity(15);
+                increasePopQuantity( 15 );
                 return "Split Quantity /\\ 15";
             case 6:
-                setMaxShots(50);
+                setMaxShots( 50 );
                 return "Max Shots=> 50";
             case 7:
-                setIntervalShoot(3);
+                setIntervalShoot( 3 );
                 return "Rapid Fire";
             default:
                 return "";
@@ -371,13 +362,8 @@ public class MissileManager implements WeaponManager
 
     public void draw( Graphics g )
     {
-        ListIterator<Weapon> iter = theMissiles.listIterator();
-        while ( iter.hasNext() )
-        {
-            Weapon w = iter.next();
-            w.draw(g);
-         
-        }
+        for ( Weapon w : theMissiles )
+            w.draw( g );
     }
 
     public String getWeaponName()

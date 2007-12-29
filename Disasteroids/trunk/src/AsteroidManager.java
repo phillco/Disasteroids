@@ -4,10 +4,12 @@
  */
 
 import java.awt.Graphics;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Manger of the level's asteroids.
@@ -15,17 +17,12 @@ import java.util.Queue;
  */
 public class AsteroidManager
 {
+
     /**
      * A list of all currently valid <code>Asteroid</code>s.
      * @since Classic
      */
-    private LinkedList<Asteroid> theAsteroids;
-
-    /**
-     * A list of all pending <code>Asteroid</code>s.
-     * @since Classic
-     */
-    private Queue<Asteroid> toBeAdded;
+    private ConcurrentLinkedQueue<Asteroid> theAsteroids;
 
     /**
      * Constructs a new <code>AsteroidManager</code>.
@@ -34,8 +31,7 @@ public class AsteroidManager
      */
     public AsteroidManager()
     {
-        theAsteroids = new LinkedList<Asteroid>();
-        toBeAdded = new LinkedList<Asteroid>();
+        theAsteroids = new ConcurrentLinkedQueue<Asteroid>();
     }
 
     /**
@@ -51,24 +47,24 @@ public class AsteroidManager
         int numBonuses = 0;
         for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
         {
-            theAsteroids.addFirst( new Asteroid( rand.nextInt( AsteroidsFrame.GAME_WIDTH ),
-                                                 rand.nextInt( AsteroidsFrame.GAME_HEIGHT ),
+            theAsteroids.add( new Asteroid( rand.nextInt( Game.GAME_WIDTH ),
+                                                 rand.nextInt( Game.GAME_HEIGHT ),
                                                  rand.nextDouble() * 6 - 3,
                                                  rand.nextDouble() * 6 - 3,
                                                  rand.nextInt( 150 ) + 25,
-                                                 rand.nextInt(level*10+10)-9,
+                                                 rand.nextInt( level * 10 + 10 ) - 9,
                                                  this ) );
             if ( rand.nextInt( 10 ) == 1 )
                 numBonuses++;
         }
         for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
         {
-            theAsteroids.addFirst( new BonusAsteroid( rand.nextInt( AsteroidsFrame.GAME_WIDTH ),
-                                                      rand.nextInt( AsteroidsFrame.GAME_HEIGHT ),
+            theAsteroids.add( new BonusAsteroid( rand.nextInt( Game.GAME_WIDTH ),
+                                                      rand.nextInt( Game.GAME_HEIGHT ),
                                                       rand.nextDouble() * 6 - 3,
                                                       rand.nextDouble() * 6 - 3,
                                                       rand.nextInt( 150 ) + 25,
-                                                      rand.nextInt(level*10+10)-9,
+                                                      rand.nextInt( level * 10 + 10 ) - 9,
                                                       this ) );
 
         }
@@ -81,7 +77,7 @@ public class AsteroidManager
      */
     public void act()
     {
-        ListIterator<Asteroid> itr = theAsteroids.listIterator();
+        Iterator<Asteroid> itr = theAsteroids.iterator();
         while ( itr.hasNext() )
         {
             Asteroid a = itr.next();
@@ -90,16 +86,12 @@ public class AsteroidManager
             else
                 a.act();
         }
-
-        while ( !toBeAdded.isEmpty() )
-            theAsteroids.addLast( toBeAdded.remove() );
     }
 
-    public void draw(Graphics g)
+    public void draw( Graphics g )
     {
-        ListIterator<Asteroid> itr = theAsteroids.listIterator();
-        while ( itr.hasNext() )
-            itr.next().draw(g);
+        for( Asteroid a : theAsteroids)
+            a.draw(g);
     }
 
     /**
@@ -110,7 +102,7 @@ public class AsteroidManager
      */
     public void add( Asteroid a )
     {
-        toBeAdded.add( a );
+        theAsteroids.add(a);
     }
 
     /**
@@ -131,6 +123,6 @@ public class AsteroidManager
      */
     public void clear()
     {
-        theAsteroids = new LinkedList<Asteroid>();
+        theAsteroids = new ConcurrentLinkedQueue<Asteroid>();
     }
 }

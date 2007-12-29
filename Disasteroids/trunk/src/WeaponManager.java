@@ -2,34 +2,37 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 import java.awt.Color;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  *
  * @author Owner
  */
-interface WeaponManager extends GameElement{
-    
-    public void add(LinkedList<Weapon> weapons);
+interface WeaponManager extends GameElement
+{
+
+    public void add( ConcurrentLinkedQueue<Weapon> weapons );
 
     public void clear();
 
     public void explodeAll();
-    
+
     public int getIntervalShoot();
-    
-    public boolean add( int x, int y, double angle, double dx, double dy, Color col  );
-    
+
+    public boolean add( int x, int y, double angle, double dx, double dy, Color col );
+
     public int getNumLiving();
-    
-    public LinkedList<Weapon> getWeapons();
+
+    public ConcurrentLinkedQueue<Weapon> getWeapons();
 
     public void restoreBonusValues();
-    
-    public String ApplyBonus(int key);
+
+    public String ApplyBonus( int key );
 
     public int getMaxShots();
-    
+
     /**
      * Returns the name of the <code>Weapon</code>.
      * Examples: "Missiles", "Bullets".

@@ -185,8 +185,8 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="software" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="67" max="32767" attributes="0"/>
-                          <Component id="antiAlias" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="77" max="32767" attributes="0"/>
+                          <Component id="qualityRendering" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <Component id="hardware" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -199,7 +199,7 @@
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="software" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="antiAlias" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="qualityRendering" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="hardware" min="-2" max="-2" attributes="0"/>
@@ -224,9 +224,9 @@
             <Property name="text" type="java.lang.String" value="Software"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="antiAlias">
+        <Component class="javax.swing.JCheckBox" name="qualityRendering">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Anti-alias"/>
+            <Property name="text" type="java.lang.String" value="Quality"/>
           </Properties>
         </Component>
       </SubComponents>

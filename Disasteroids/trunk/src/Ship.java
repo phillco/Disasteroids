@@ -1,8 +1,8 @@
+
 /**
  * DISASTEROIDS
  * Ship.java
  */
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.Random;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The player ships.
@@ -39,7 +40,7 @@ public class Ship implements GameElement
      * Togglers for various actions.
      * @since Classic (last minute)
      */
-    private boolean forward = false,  backwards = false,  left = false,  right = false, shooting = false;
+    private boolean forward = false,  backwards = false,  left = false,  right = false,  shooting = false;
 
     /**
      * The angle we're facing.
@@ -61,7 +62,7 @@ public class Ship implements GameElement
 
     /**
      * Our color. The ship, missiles, <code>StarMissile</code>s, and explosions are drawn in this.
-     * @see AsteroidsFrame#PLAYER_COLORS
+     * @see Game#PLAYER_COLORS
      * @since Classic
      */
     private Color myColor;
@@ -71,7 +72,7 @@ public class Ship implements GameElement
      * @since Classic
      */
     private Color myInvicibleColor;
-    
+
     /**
      * Time left until we become vincible.
      * @since Classic
@@ -119,7 +120,7 @@ public class Ship implements GameElement
      * @since December 16, 2007
      */
     private WeaponManager[] allWeapons;
-    
+
     /**
      * How long to draw the name of the current weapon.
      * @since December 25, 2007
@@ -133,7 +134,7 @@ public class Ship implements GameElement
         this.myColor = c;
         this.livesLeft = lives;
         this.name = name;
-        
+
         score = 0;
         numAsteroidsKilled = 0;
         drawWeaponNameTimer = 0;
@@ -142,7 +143,7 @@ public class Ship implements GameElement
         angle = Math.PI / 2;
         dx = 0;
         dy = 0;
-        
+
         // Colors.        
         double fadePct = 0.6;
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
@@ -153,7 +154,7 @@ public class Ship implements GameElement
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();
         weaponIndex = 0;
-        
+
         // Start invincible.
         invulFlash = true;
         invincibilityCount = 200;
@@ -193,7 +194,7 @@ public class Ship implements GameElement
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
-        
+
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
             Running.environment().drawPolygon( g, col, Color.black, outline );
@@ -201,13 +202,13 @@ public class Ship implements GameElement
 
         for ( WeaponManager wm : allWeapons )
             wm.draw( g );
-        
-        if(drawWeaponNameTimer > 0)
+
+        if ( drawWeaponNameTimer > 0 )
         {
             drawWeaponNameTimer--;
-            g.setFont(g.getFont().deriveFont(Font.BOLD));
+            g.setFont( g.getFont().deriveFont( Font.BOLD ) );
             Graphics2D g2d = (Graphics2D) g;
-            Running.environment().drawString(g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray);
+            Running.environment().drawString( g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray );
         }
     }
 
@@ -282,7 +283,7 @@ public class Ship implements GameElement
 
         for ( WeaponManager wm : allWeapons )
             wm.act();
-        
+
         if ( livesLeft < 0 )
             return;
 
@@ -330,23 +331,23 @@ public class Ship implements GameElement
     {
         // Wrap to stay inside the level.
         if ( x < 0 )
-            x += AsteroidsFrame.GAME_WIDTH - 1;
+            x += Game.GAME_WIDTH - 1;
         if ( y < 0 )
-            y += AsteroidsFrame.GAME_HEIGHT - 1;
-        if ( x > AsteroidsFrame.GAME_WIDTH )
-            x -= AsteroidsFrame.GAME_WIDTH - 1;
-        if ( y > AsteroidsFrame.GAME_HEIGHT )
-            y -= AsteroidsFrame.GAME_HEIGHT - 1;
+            y += Game.GAME_HEIGHT - 1;
+        if ( x > Game.GAME_WIDTH )
+            x -= Game.GAME_WIDTH - 1;
+        if ( y > Game.GAME_HEIGHT )
+            y -= Game.GAME_HEIGHT - 1;
     }
 
     private void checkCollision()
     {
-        for ( Ship other : AsteroidsFrame.players )
+        for ( Ship other : Game.players )
         {
             if ( other == this )
                 continue;
 
-            LinkedList<Weapon> enemyWeapons = other.getWeaponManager().getWeapons();
+            ConcurrentLinkedQueue<Weapon> enemyWeapons = other.getWeaponManager().getWeapons();
 
             for ( Weapon m : enemyWeapons )
             {

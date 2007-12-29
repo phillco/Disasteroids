@@ -7,9 +7,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.VolatileImage;
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The star background.
@@ -35,7 +35,7 @@ public class Background
      * Messages that are to be drawn temporarily on the star background.
      * @since December 16, 2007
      */
-    private LinkedList<BackgroundMessage> starMessages = new LinkedList<BackgroundMessage>();
+    private ConcurrentLinkedQueue<Background.BackgroundMessage> starMessages = new ConcurrentLinkedQueue<BackgroundMessage>();
 
     /**
      * The rendered output.
@@ -148,7 +148,7 @@ public class Background
             Running.environment().drawPoint( g, star.color, star.x, star.y );
 
         // Draw background messages.
-        ListIterator<BackgroundMessage> itr = starMessages.listIterator();
+        Iterator<BackgroundMessage> itr = starMessages.iterator();
         while ( itr.hasNext() )
         {
             BackgroundMessage m = itr.next();

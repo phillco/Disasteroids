@@ -106,8 +106,11 @@ public class BonusAsteroid extends Asteroid
         if ( message.equals( "" ) )
             return;
 
-        Running.environment().writeOnBackground( message, (int) x, (int) y, killer.getColor() );
-        if ( killer == AsteroidsFrame.localPlayer() )
-            Running.environment().addNotificationMessage( "Bonus: " + message );
+        if( AsteroidsFrame.frame() != null)
+        {
+        	AsteroidsFrame.frame().writeOnBackground( message, (int) x, (int) y, killer.getColor() );        
+	        if ( killer == AsteroidsFrame.frame().localPlayer() )
+	            Running.log( "Bonus: " + message );
+        }
     }
 }

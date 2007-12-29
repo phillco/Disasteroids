@@ -11,9 +11,10 @@
 public enum MenuOption
 {
     SINGLEPLAYER( "Singleplayer", "-single" ),
-    MULTIHOST( "Multiplayer (host)", "-host" ),
-    MULTIJOIN( "Multiplayer (join)", "-join" ),
-    SETTIINGS( "Adjust settings", "-settings"),
+    LOCALLOOP("Both!", "-ll"),
+    START_SERVER( "Start server", "-host" ),
+    CONNECT( "Join server", "-join" ),
+    OPTIONS( "Options", "-options"),
     EXIT( "Exit" );
     
     private final String name;

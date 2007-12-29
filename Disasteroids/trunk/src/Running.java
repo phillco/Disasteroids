@@ -64,8 +64,8 @@ public class Running
         // Find the player with the highest score.
         if ( aF != null )
         {
-            Ship highestScorer = Game.players.getFirst();
-            for ( Ship s : Game.players )
+            Ship highestScorer = Game.getInstance().players.getFirst();
+            for ( Ship s : Game.getInstance().players )
             {
                 if ( s.getScore() > Settings.highScore )
                 {
@@ -90,29 +90,30 @@ public class Running
      */
     public static void startGame( MenuOption option )
     {
-        // Init - but do not start - the game.
-        Game.thread = new Game();
+        // Init - but do not start - the Game.getInstance().
+        new Game();
 
-        // Add our player.
         switch ( option )
         {
             case SINGLEPLAYER:
-                Game.state = Game.Netstate.SINGLEPLAYER;
-                Game.addPlayer( ( Settings.playerName.equals( "" ) ? "Player" : Settings.playerName ) );
-                new AsteroidsFrame( Game.players.size() - 1 );
+                Game.getInstance().state = Game.Netstate.SINGLEPLAYER;
+                Game.getInstance().addPlayer( ( Settings.playerName.equals( "" ) ? "Player" : Settings.playerName ) );
+                new AsteroidsFrame( Game.getInstance().players.size() - 1 );
                 break;
             case LOCALLOOP:
+                /*
                 new Server();
-                Game.safeSleep( 900 );
+                Game.getInstance().safeSleep( 900 );
                 new Client( "localhost" );
+                 */
                 break;
             case START_SERVER:
-                Game.state = Game.Netstate.SERVER;
+                Game.getInstance().state = Game.Netstate.SERVER;
                 new Server();
                 break;
 
             case CONNECT:
-                Game.state = Game.Netstate.CLIENT;
+                Game.getInstance().state = Game.Netstate.CLIENT;
                 // Get the server address.
                 String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", "localhost" );
                 if ( ( address == null ) || ( address.equals( "" ) ) )

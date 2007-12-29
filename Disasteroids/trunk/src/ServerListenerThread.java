@@ -49,7 +49,7 @@ public class ServerListenerThread extends Thread
     }
 
     /**
-     * Takes a received command and applies it to the game.
+     * Takes a received command and applies it to the Game.getInstance().
      * Valid commands are:
      *      k###,###    keystrokes from the other computer, comma, timestep
      *      t###        timestep of the other computer
@@ -72,7 +72,7 @@ public class ServerListenerThread extends Thread
         // Other player's timestep.
         else if ( command.charAt( 0 ) == 't' )
         {
-            Game.setOtherPlayerTimeStep( Integer.parseInt( command.substring( 1 ) ) );
+            Game.getInstance().setOtherPlayerTimeStep( Integer.parseInt( command.substring( 1 ) ) );
             return;
         }
         
@@ -90,7 +90,7 @@ public class ServerListenerThread extends Thread
             return;
         }
         
-        // New game.
+        // New Game.getInstance().
         else if ( command.equals( "ng" ) )
         {
             Running.environment().newGame();
@@ -112,6 +112,6 @@ public class ServerListenerThread extends Thread
         int timeStep = Integer.parseInt( command.substring( comma + 1 ) );
         
         // TODO: Work for multiple comps.
-        Game.actionManager().add( new Action( Game.players.getLast(), keyCommand, timeStep ) );
+        Game.getInstance().actionManager().add( new Action( Game.getInstance().players.getLast(), keyCommand, timeStep ) );
     }
 }

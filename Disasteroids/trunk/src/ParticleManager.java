@@ -4,6 +4,7 @@
  */
 
 import java.awt.Graphics;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Game-wide manager of <code>Particle</code>s.
  * @author Phillip Cohen, Andy Kooiman
  */
-public class ParticleManager // implements GameElement
+public class ParticleManager implements Serializable
 {
 
     /**
@@ -52,7 +53,7 @@ public class ParticleManager // implements GameElement
     {
         if ( !Settings.qualityRendering )
             return;
-        
+
         for ( Particle p : allParticles )
             p.draw( g );
     }

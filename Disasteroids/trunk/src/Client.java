@@ -1,7 +1,11 @@
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -16,7 +20,7 @@ import java.util.logging.Logger;
 public class Client extends DatagramListener
 {
 
-    public enum Messages
+    public enum Message
     {
 
         CONNECT,
@@ -46,14 +50,13 @@ public class Client extends DatagramListener
         try
         {
             System.out.println( "Connecting to " + serverAddress );
-            new ListenerThread( this ).start();
+            beginListening();
 
-            // Send our server challenge.
+            // Send our connection request.
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream d = new DataOutputStream( b );
-            d.writeShort( 108 );
-
-            sendCommand( b.toByteArray() );
+            d.writeInt( Message.CONNECT.ordinal() );
+            sendCommand( b );
         }
         catch ( IOException ex )
         {
@@ -61,10 +64,11 @@ public class Client extends DatagramListener
         }
     }
 
-    void sendCommand( ByteArrayOutputStream stream)
+    void sendCommand( ByteArrayOutputStream stream )
     {
-        sendCommand(stream.toByteArray());
+        sendCommand( stream.toByteArray() );
     }
+
     void sendCommand( byte[] buf )
     {
         try
@@ -79,6 +83,33 @@ public class Client extends DatagramListener
 
     void parseReceived( DatagramPacket p )
     {
-        System.out.println( "Mister client has received!" );
+        try
+        {
+            // Create streams.
+            ByteArrayInputStream bin = new ByteArrayInputStream( p.getData() );
+            DataInputStream din = new DataInputStream( bin );
+
+            // Determine the type of message.
+            int command = din.readInt();
+            if ( ( command >= 0 ) && ( command < Server.Message.values().length ) )
+            {
+                switch ( Server.Message.values()[command] )
+                {
+                    case OK:
+                    case FULL_UPDATE:
+                        System.out.println( "Receiving update..." );
+/*
+                        ObjectInputStream is = new ObjectInputStream( new BufferedInputStream( bin ) );
+                        .asteroidManager = (AsteroidManager) is.readObject();
+                        System.out.println(.asteroidManager.size() + " asteroids.");
+*/
+                        break;
+                }
+            }
+        }
+     catch ( IOException ex )
+        {
+            Logger.getLogger( Client.class.getName() ).log( Level.SEVERE, null, ex );
+        }
     }
 }

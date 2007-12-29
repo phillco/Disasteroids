@@ -1,8 +1,14 @@
 
 import java.awt.Color;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Game extends Thread
+public class Game implements Serializable
 {
 
     public enum Netstate
@@ -11,94 +17,131 @@ public class Game extends Thread
         SINGLEPLAYER, SERVER, CLIENT;
 
     }
-    
-    static Netstate state;
-    
+    Netstate state;
+
     /**
      * Dimensions of the game, regardless of the graphical depiction
      * @since December 17, 2007
      */
-    static final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
+    final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
 
     /**
      * Default player colors. Inspired from AOE2.
      * @since December 14 2007
      */
-    static final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
+    final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
 
     /**
-     * The current level of the game.
+     * The current level of the Game.getInstance().
      * @since Classic
      */
-    static int level = 1;
+    int level = 1;
 
     /**
      * Stores whether the game is currently paused or not.
      * @since Classic
      */
-    static boolean paused = false;
+    boolean paused = false;
 
     /**
      * The current game time.
      * @since Classic
      */
-    public static long timeStep = 0;
+    public long timeStep = 0;
 
     /**
      * The current game time of the other player.
      * @since Classic
      */
-    public static long otherPlayerTimeStep = 0;
+    public long otherPlayerTimeStep = 0;
 
     /**
      * Stores the current <code>Asteroid</code> field.
      * @since Classic
      */
-    static AsteroidManager asteroidManager = new AsteroidManager();
+    AsteroidManager asteroidManager = new AsteroidManager();
 
     /**
      * Stores the current pending <code>Action</code>s.
      * @since Classic
      */
-    static ActionManager actionManager = new ActionManager();
+    ActionManager actionManager = new ActionManager();
 
     /**
      * Array of players.
      * @since December 14 2007
      */
-    public static LinkedList<Ship> players = new LinkedList<Ship>();
+    public LinkedList<Ship> players = new LinkedList<Ship>();
 
     /**
      * How many times we <code>act</code> per paint call. Can be used to make later levels more playable.
      * @since December 23, 2007
      */
-    static int gameSpeed = 1;
+    int gameSpeed = 1;
 
-    static Game thread;
+    private transient RunnerThread thread;
+    private static Game instance;
+
+    public static Game getInstance()
+    {
+        return instance;
+    }
+    
 
     public Game()
     {
+        Game.instance = this;
         RandNumGen.init( 0 );
-        resetEntireGame();
+        resetEntireGame();                
     }
 
-    @Override
-    public void run()
+    public static void saveToFile()
     {
-        System.out.println( "Game loop started." );
-        while ( true )
+        FileOutputStream fos = null;
+        ObjectOutputStream out = null;
+        try
         {
-            if ( !paused )
-                Game.act();            
-            Game.safeSleep( 15 );
+            fos = new FileOutputStream( "Game.ser" );
+            out = new ObjectOutputStream( fos );
+            out.writeObject( instance );
+            out.close();
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+
+        Running.log( "Game saved." );
+    }
+
+    public void loadFromFile()
+    {
+        FileInputStream fis = null;
+        {
+            try
+            {
+                fis = new FileInputStream( "Game.ser" );
+                ObjectInputStream in = new ObjectInputStream( fis );
+                instance = (Game) in.readObject();
+                in.close();
+                Running.log( "Game restored." );
+            }
+            catch ( IOException ex )
+            {
+                ex.printStackTrace();
+            }
+            catch ( ClassNotFoundException ex )
+            {
+                ex.printStackTrace();
+            }
         }
     }
 
-    static void addPlayer( String name )
+    void addPlayer( String name )
     {
         Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 1, name );
         players.add( s );
-        Running.log( s.getName() + " entered the game." );
+        Running.log( s.getName() + " entered the Game.." );
     }
 
     /**
@@ -107,7 +150,7 @@ public class Game extends Thread
      * 
      * @since December 16, 2007
      */
-    static void resetEntireGame()
+    void resetEntireGame()
     {
         timeStep = 0;
         otherPlayerTimeStep = 0;
@@ -131,9 +174,9 @@ public class Game extends Thread
      * @author Phillip Cohen
      * @since November 15 2007
      */
-    static void nextLevel()
+    void nextLevel()
     {
-        Game.warp( level + 1 );
+        Game.getInstance().warp( level + 1 );
     }
 
     /**
@@ -143,7 +186,7 @@ public class Game extends Thread
      * @see Settings#waitForMissiles
      * @return  whether the game should advance to the next level
      */
-    public static boolean shouldExitLevel()
+    public boolean shouldExitLevel()
     {
         // Have the asteroids been cleared?
         if ( asteroidManager.size() > 0 )
@@ -172,7 +215,7 @@ public class Game extends Thread
      * 
      * @since Classic
      */
-    static void restoreBonusValues()
+    void restoreBonusValues()
     {
         for ( Ship ship : players )
         {
@@ -186,7 +229,7 @@ public class Game extends Thread
      * @param step  the new value for the other player's current time
      * @since Classic
      */
-    public static void setOtherPlayerTimeStep( int step )
+    public void setOtherPlayerTimeStep( int step )
     {
         otherPlayerTimeStep = step;
     }
@@ -197,7 +240,7 @@ public class Game extends Thread
      * @param millis How many milliseconds to sleep for.
      * @since Classic
      */
-    public static void safeSleep( int millis )
+    public void safeSleep( int millis )
     {
         try
         {
@@ -214,7 +257,7 @@ public class Game extends Thread
      * @return  the current level
      * @since Classic
      */
-    public static int getLevel()
+    public int getLevel()
     {
         return level;
     }
@@ -225,7 +268,7 @@ public class Game extends Thread
      * @return  the <code>ActionManager</code> of <code>this</code>.
      * @since Classic
      */
-    public static ActionManager actionManager()
+    public ActionManager actionManager()
     {
         return actionManager;
     }
@@ -235,10 +278,10 @@ public class Game extends Thread
      * 
      * @since December 21, 2007
      */
-    static void act()
+    void act()
     {
         if ( players.size() < 1 )
-            return;        
+            return;
 
         // Advance to the next level if it's time.
         if ( shouldExitLevel() )
@@ -265,21 +308,19 @@ public class Game extends Thread
             actionManager.act( timeStep );
         }
         catch ( UnsynchronizedException e )
-        {
-            System.out.println( "Action missed! " + e + "\nOur timestep: " + timeStep + ", their timestep: " + otherPlayerTimeStep + "." );
-            Running.quit();
+        {           
         }
         ParticleManager.act();
         asteroidManager.act();
 
         // Update the ships.
         for ( Ship s : players )
-            s.act();        
+            s.act();
     }
 
-    public static boolean gameIsActive()
+    public boolean gameIsActive()
     {
-        return ( Game.players.size() > 1 );
+        return ( Game.getInstance().players.size() > 1 );
     }
 
     /**
@@ -288,7 +329,7 @@ public class Game extends Thread
      * @param newLevel  the level to warp to
      * @since November 15 2007
      */
-    static void warp( int newLevel )
+    void warp( int newLevel )
     {
         paused = true;
         level = newLevel;
@@ -317,5 +358,27 @@ public class Game extends Thread
         asteroidManager.setUpAsteroidField( level );
         AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
         paused = false;
+    }
+
+    public void startGame()
+    {
+        thread = new RunnerThread();
+        thread.start();
+    }
+
+    private class RunnerThread extends Thread
+    {
+
+        @Override
+        public void run()
+        {
+            System.out.println( "Game loop started." );
+            while ( true )
+            {
+                if ( !paused )
+                    Game.getInstance().act();
+                Game.getInstance().safeSleep( 15 );
+            }
+        }
     }
 }

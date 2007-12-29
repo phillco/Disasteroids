@@ -6,8 +6,8 @@
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Properties;
-import javax.swing.JOptionPane;
 
 /**
  * Stores user settings and writes/retrieves them from <code>Disasteroids.props</code>.
@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
  * @since Nov 16, 2007
  * @author Phillip Cohen
  */
-public class Settings
+public class Settings implements Serializable
 {
     /**
      * Whether the user wants music to play.

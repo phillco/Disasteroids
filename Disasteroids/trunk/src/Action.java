@@ -3,13 +3,16 @@
  * Action.java
  */
 
+import java.io.Serializable;
+
 /**
  * A ship's action (keystroke). Used for synchronization between computers.
  * @author Andy Kooiman
  * @since Classic
  */
-public class Action
+public class Action implements Serializable
 {
+
     /**
      * The <code>Ship</code> that executed this action.
      * @since Classic
@@ -55,7 +58,7 @@ public class Action
     }
 
     /**
-     * Applies the keystroke to the local game.
+     * Applies the keystroke to the local Game.getInstance().
      * @since Classic
      */
     public void applyAction()

@@ -18,12 +18,9 @@ this README should be updated - but people forget. :)
 Known bugs
 ==========
 
-- If you place the files in a package, the midi file must be placed in the folder
-  above the .class files, and the sound (beep.dll) won't work at all.
-- The game runs very slowly with lots of asteroids (software rendering).
-- Collision code is also pretty bad.
-- Ships seem to collide with asteroids whenenever they enter their bounding "box"...sometimes.
-- The code sucks! Seriously, what kind of smoke were we *cracking*?
+- Background in hardware rendering does not show.
 
 Thanks all, folks!
-~ Phillip Cohen, 15 November 2007
+~ Phillip Cohen,
+
+since 15 November 2007

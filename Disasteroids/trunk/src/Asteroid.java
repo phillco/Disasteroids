@@ -5,14 +5,14 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ListIterator;
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  * A game object which the players destroy to score.
  * @author Andy Kooiman, Phillip Cohen
  */
-public class Asteroid implements GameElement
+public class Asteroid implements GameElement, Serializable
 {
 
     /**
@@ -58,7 +58,7 @@ public class Asteroid implements GameElement
      * Which player we accelerate towards.
      * @since December 14 2007
      */
-    protected Ship victim = null;
+    protected transient Ship victim = null;
 
     /**
      * The <code>Color</code>s of the inside and outline of <code>this</code>
@@ -99,8 +99,8 @@ public class Asteroid implements GameElement
         this.environment = environment;
 
         // Attack a random player.
-        if ( Game.players.size() > 0 )
-            this.victim = Game.players.get( rand.nextInt( Game.players.size() ) );
+        if ( Game.getInstance().players.size() > 0 )
+            this.victim = Game.getInstance().players.get( rand.nextInt( Game.getInstance().players.size() ) );
 
         // Enforce a mininum speed.
         checkMovement();
@@ -188,13 +188,13 @@ public class Asteroid implements GameElement
     {
         // Wrap to stay inside the level.
         if ( x < 0 )
-            x += Game.GAME_WIDTH - 1;
+            x += Game.getInstance().GAME_WIDTH - 1;
         if ( y < 0 )
-            y += Game.GAME_HEIGHT - 1;
-        if ( x > Game.GAME_WIDTH )
-            x -= Game.GAME_WIDTH - 1;
-        if ( y > Game.GAME_HEIGHT )
-            y -= Game.GAME_HEIGHT - 1;
+            y += Game.getInstance().GAME_HEIGHT - 1;
+        if ( x > Game.getInstance().GAME_WIDTH )
+            x -= Game.getInstance().GAME_WIDTH - 1;
+        if ( y > Game.getInstance().GAME_HEIGHT )
+            y -= Game.getInstance().GAME_HEIGHT - 1;
     }
 
     /**
@@ -235,7 +235,7 @@ public class Asteroid implements GameElement
             return;
 
         // Go through all of the ships.        
-        for ( Ship s : Game.players )
+        for ( Ship s : Game.getInstance().players )
         {
             // Were we hit by the ship?
             if ( s.livesLeft() >= 0 )

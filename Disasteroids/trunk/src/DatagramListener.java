@@ -2,6 +2,9 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @since December 28, 2007
@@ -12,6 +15,30 @@ public abstract class DatagramListener
 
     DatagramSocket socket;
 
+    void beginListening(int port)
+    {
+        try
+        {
+            socket = new DatagramSocket( port );
+        }
+        catch ( SocketException ex )
+        {
+            Logger.getLogger( DatagramListener.class.getName() ).log( Level.SEVERE, null, ex );
+        }
+    }
+    
+    void beginListening()
+    {
+        try
+        {
+            socket = new DatagramSocket();
+        }
+        catch ( SocketException ex )
+        {
+            Logger.getLogger( DatagramListener.class.getName() ).log( Level.SEVERE, null, ex );
+        }
+        new ListenerThread(this).start();
+    }
     abstract void parseReceived( DatagramPacket p );
 
     class ListenerThread extends Thread
@@ -19,19 +46,12 @@ public abstract class DatagramListener
 
         private DatagramListener parent;
 
-        private int port;
-
         public ListenerThread( DatagramListener parent )
         {
-            this( parent, 0 );
-        }
-
-        public ListenerThread( DatagramListener parent, int port )
-        {
             this.parent = parent;
-            this.port = port;
         }
 
+        @Override
         public void run()
         {
             try
@@ -47,11 +67,6 @@ public abstract class DatagramListener
 
         private void listenLoop() throws IOException
         {
-            if ( port == 0 )
-                parent.socket = new DatagramSocket();
-            else
-                parent.socket = new DatagramSocket( port );
-
             while ( true )
             {
                 byte[] buf = new byte[256];

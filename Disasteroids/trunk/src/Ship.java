@@ -9,7 +9,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.util.Random;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -331,18 +330,18 @@ public class Ship implements GameElement
     {
         // Wrap to stay inside the level.
         if ( x < 0 )
-            x += Game.GAME_WIDTH - 1;
+            x += Game.getInstance().GAME_WIDTH - 1;
         if ( y < 0 )
-            y += Game.GAME_HEIGHT - 1;
-        if ( x > Game.GAME_WIDTH )
-            x -= Game.GAME_WIDTH - 1;
-        if ( y > Game.GAME_HEIGHT )
-            y -= Game.GAME_HEIGHT - 1;
+            y += Game.getInstance().GAME_HEIGHT - 1;
+        if ( x > Game.getInstance().GAME_WIDTH )
+            x -= Game.getInstance().GAME_WIDTH - 1;
+        if ( y > Game.getInstance().GAME_HEIGHT )
+            y -= Game.getInstance().GAME_HEIGHT - 1;
     }
 
     private void checkCollision()
     {
-        for ( Ship other : Game.players )
+        for ( Ship other : Game.getInstance().players )
         {
             if ( other == this )
                 continue;

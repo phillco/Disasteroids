@@ -75,13 +75,13 @@ class Bullet implements Weapon, GameElement {
     {
         // Wrap to stay inside the level.
         if ( x < 0 )
-            x += Game.GAME_WIDTH - 1;
+            x += Game.getInstance().GAME_WIDTH - 1;
         if ( y < 0 )
-            y += Game.GAME_HEIGHT - 1;
-        if ( x > Game.GAME_WIDTH )
-            x -= Game.GAME_WIDTH - 1;
-        if ( y > Game.GAME_HEIGHT )
-            y -= Game.GAME_HEIGHT - 1;
+            y += Game.getInstance().GAME_HEIGHT - 1;
+        if ( x > Game.getInstance().GAME_WIDTH )
+            x -= Game.getInstance().GAME_WIDTH - 1;
+        if ( y > Game.getInstance().GAME_HEIGHT )
+            y -= Game.getInstance().GAME_HEIGHT - 1;
     }
     
     public int getDamage()

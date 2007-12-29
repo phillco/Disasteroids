@@ -4,6 +4,7 @@
  */
 
 import java.awt.Graphics;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.LinkedList;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Manger of the level's asteroids.
  * @author Andy Kooiman
  */
-public class AsteroidManager
+public class AsteroidManager implements Serializable
 {
 
     /**
@@ -47,8 +48,8 @@ public class AsteroidManager
         int numBonuses = 0;
         for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
         {
-            theAsteroids.add( new Asteroid( rand.nextInt( Game.GAME_WIDTH ),
-                                                 rand.nextInt( Game.GAME_HEIGHT ),
+            theAsteroids.add( new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
+                                                 rand.nextInt( Game.getInstance().GAME_HEIGHT ),
                                                  rand.nextDouble() * 6 - 3,
                                                  rand.nextDouble() * 6 - 3,
                                                  rand.nextInt( 150 ) + 25,
@@ -59,8 +60,8 @@ public class AsteroidManager
         }
         for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
         {
-            theAsteroids.add( new BonusAsteroid( rand.nextInt( Game.GAME_WIDTH ),
-                                                      rand.nextInt( Game.GAME_HEIGHT ),
+            theAsteroids.add( new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
+                                                      rand.nextInt( Game.getInstance().GAME_HEIGHT ),
                                                       rand.nextDouble() * 6 - 3,
                                                       rand.nextDouble() * 6 - 3,
                                                       rand.nextInt( 150 ) + 25,

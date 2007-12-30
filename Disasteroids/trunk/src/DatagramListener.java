@@ -1,54 +1,109 @@
+/*
+ * DISASTEROIDS
+ * DatagramListener.java
+ */
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
+ * A superclass for both client and server. Implements all shared code.
+ * @author Phillip Cohen
  * @since December 28, 2007
- * @author CHAFX005
  */
 public abstract class DatagramListener
 {
 
+    /**
+     * Our socket for sending and receiving.
+     * @since December 28, 2007
+     */
     DatagramSocket socket;
 
-    void beginListening(int port)
+    /**
+     * Starts listening for packets on a definite port (typical of servers).
+     * 
+     * @param port  port to listen on
+     * @throws java.net.SocketException     if the port is taken, or a general error
+     * @since December 28, 2007
+     */
+    void beginListening( int port ) throws SocketException
     {
-        try
-        {
-            socket = new DatagramSocket( port );
-        }
-        catch ( SocketException ex )
-        {
-            Logger.getLogger( DatagramListener.class.getName() ).log( Level.SEVERE, null, ex );
-        }
+        socket = new DatagramSocket( port );
+        new ListenerThread( this );
     }
-    
-    void beginListening()
-    {
-        try
-        {
-            socket = new DatagramSocket();
-        }
-        catch ( SocketException ex )
-        {
-            Logger.getLogger( DatagramListener.class.getName() ).log( Level.SEVERE, null, ex );
-        }
-        new ListenerThread(this).start();
-    }
-    abstract void parseReceived( DatagramPacket p );
 
+    /**
+     * Starts listening for packets on any availible port Java can find us (typical of clients).
+     * @since December 28, 2007
+     * @throws java.net.SocketException
+     */
+    void beginListening() throws SocketException
+    {
+        socket = new DatagramSocket();
+        new ListenerThread( this );
+    }
+
+    /**
+     * Called whenever we receive a <code>DatagramPacket</code> through our listener.
+     * @param packet     the <code>DatagramPacket</code>
+     */
+    abstract void parseReceived( DatagramPacket packet );
+
+    /**
+     * Sends a packet to a machine (a shortcut for stream.toByteArray).
+     * bytestream->buffer->packet->machine
+     * 
+     * @param client    the client to send to
+     * @param stream    the bytestream of data to be sent
+     * @throws java.io.IOException 
+     * @since December 29, 2007
+     */
+    void sendPacket( Machine client, ByteArrayOutputStream stream ) throws IOException
+    {
+        sendPacket( client, stream.toByteArray() );
+    }
+
+    /**
+     * Sends a packet to a machine.
+     * buffer->packet->machine
+     * 
+     * @param client    the client to send to
+     * @param buffer    the buffer of data to be sent
+     * @throws java.io.IOException 
+     * @since December 29, 2007
+     */
+    void sendPacket( Machine client, byte[] buffer ) throws IOException
+    {
+        socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
+    }
+    /**
+     * A <code>Thread</code> that listens for packets and passes them to <code>parseReceived</code>.
+     * @since December 28, 2007
+     */
     class ListenerThread extends Thread
     {
 
+        /**
+         * Parent class that implements <code>parseReceived</code>.
+         * @since December 28, 2007
+         */
         private DatagramListener parent;
 
+        /**
+         * Creates the listener and starts it.
+         * 
+         * @param parent    parent class that implements <code>parseReceived</code>
+         * @since December 28, 2007
+         */
         public ListenerThread( DatagramListener parent )
         {
             this.parent = parent;
+            start();
         }
 
         @Override
@@ -56,26 +111,84 @@ public abstract class DatagramListener
         {
             try
             {
-                listenLoop();
+                // Continuously wait for packets.
+                while ( true )
+                {
+                    // Create a buffer to receive the packet in.
+                    byte[] buffer = new byte[512];
+                    DatagramPacket packet = new DatagramPacket( buffer, buffer.length );
+
+                    // Receive it.
+                    parent.socket.receive( packet );
+
+                    // Pass it off.
+                    parent.parseReceived( packet );
+                }
             }
-            catch ( Exception e )
+            catch ( IOException e )
             {
-                System.out.println( "Listening error." );
+                System.out.println( "Listening error!" );
                 e.printStackTrace();
             }
         }
+    }
+    /**
+     * Represents an IP address and a port.
+     * 
+     * @since December 29, 2007
+     */
+    class Machine
+    {
 
-        private void listenLoop() throws IOException
+        /**
+         * IP address of this machine.
+         * @since December 29, 2007
+         */
+        public InetAddress address;
+
+        /**
+         * Port of this machine.
+         * @since December 29, 2007
+         */
+        public int port;
+
+        /**
+         * Constructs the machine.
+         * @param address   its IP address
+         * @param port      its port
+         */
+        public Machine( InetAddress address, int port )
         {
-            while ( true )
-            {
-                byte[] buf = new byte[256];
+            this.address = address;
+            this.port = port;
+        }
 
-                // receive request
-                DatagramPacket packet = new DatagramPacket( buf, buf.length );
-                parent.socket.receive( packet );
-                parent.parseReceived( packet );
+        /**
+         * Returns if our IP and port are equal to another's.
+         * @param other     the <code>Machine</code> to compare to
+         * @return  <code>true</code> if we have the same IP and port; <code>false</code> otherwise.
+         */
+        public boolean equals( Machine other )
+        {
+            // Compare ports first.
+            if ( this.port != other.port )
+                return false;
+
+            // Compare IP addresses. Inetaddress doesn't implement this (JDK 6).
+            for ( int i = 0; i < this.address.getAddress().length; i++ )
+            {
+                if ( this.address.getAddress()[i] != other.address.getAddress()[i] )
+                    return false;
             }
+
+            // Same!
+            return true;
+        }
+        
+        @Override
+        public String toString()
+        {
+            return address.toString() + ":" + port;
         }
     }
 }

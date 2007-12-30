@@ -4,12 +4,12 @@
  */
 
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -126,4 +126,47 @@ public class AsteroidManager implements Serializable
     {
         theAsteroids = new ConcurrentLinkedQueue<Asteroid>();
     }
+    
+    @Override
+    public String toString()
+    {
+        String returnString = getClass().getName() + "@" + Integer.toHexString(hashCode()) + "\n[";
+        for(Asteroid a : theAsteroids)
+            returnString += a.toString()+"\n";
+        returnString += "]";
+        return returnString;
+        
+    }
+    
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param d     the stream to write to (sent to the client)
+     * @since December 29, 2007
+     */
+    public void flatten(DataOutputStream stream) throws IOException
+    {        
+        // Write asteroid count.
+        stream.writeInt(theAsteroids.size());
+        
+        // Write asteroids.
+        for( Asteroid a : theAsteroids )
+            a.flatten(stream);
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @since December 29, 2007
+     */
+    public AsteroidManager( DataInputStream stream ) throws IOException
+    {
+        this.theAsteroids = new ConcurrentLinkedQueue<Asteroid>();
+        int size = stream.readInt();
+        for(int i = 0; i < size; i++)
+            theAsteroids.add(new Asteroid(stream));
+    }
+    
+    
 }

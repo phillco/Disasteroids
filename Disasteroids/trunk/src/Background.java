@@ -78,9 +78,9 @@ public class Background
         if ( image == null )
         {
             if ( Settings.hardwareRendering )
-                image = Running.environment().getGraphicsConfiguration().createCompatibleVolatileImage( width, height );
+                image = AsteroidsFrame.frame().getGraphicsConfiguration().createCompatibleVolatileImage( width, height );
             else
-                image = Running.environment().createImage( width, height );
+                image = AsteroidsFrame.frame().createImage( width, height );
         }
 
         // Create the array of stars.
@@ -113,7 +113,7 @@ public class Background
             do
             {
                 // If the resolution has changed causing an incompatibility, re-create the VolatileImage.
-                if ( ( (VolatileImage) image ).validate( Running.environment().getGraphicsConfiguration() ) == VolatileImage.IMAGE_INCOMPATIBLE )
+                if ( ( (VolatileImage) image ).validate( AsteroidsFrame.frame().getGraphicsConfiguration() ) == VolatileImage.IMAGE_INCOMPATIBLE )
                     init();
 
                 // Draw the game's graphics.
@@ -145,7 +145,7 @@ public class Background
 
         // Draw stars.
         for ( Star star : this.theStars )
-            Running.environment().drawPoint( g, star.color, star.x, star.y );
+            AsteroidsFrame.frame().drawPoint( g, star.color, star.x, star.y );
 
         // Draw background messages.
         Iterator<BackgroundMessage> itr = starMessages.iterator();
@@ -226,7 +226,7 @@ public class Background
                     Math.min( col.getRed() * life / 70 + 80, 255 ),
                     col.getGreen() * life / 70,
                     col.getBlue() * life / 70 );            
-            Running.environment().drawString( gBack, (int) ( x + 3 * Math.cos( life / 5.0 ) ), y, message, c );
+            AsteroidsFrame.frame().drawString( gBack, (int) ( x + 3 * Math.cos( life / 5.0 ) ), y, message, c );
         }
     }
 }

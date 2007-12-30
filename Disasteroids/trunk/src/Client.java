@@ -1,83 +1,81 @@
+/*
+ * DISASTEROIDS
+ * Client.java
+ */
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * 
+ * Client side of the C/S networking.
  * @author Phillip Cohen
  * @since December 28, 2007
  */
 public class Client extends DatagramListener
 {
 
+    /**
+     * Location of the server.
+     * @since December 29, 2007
+     */
+    private Machine server;
+
+    /**
+     * Messages that we send to the server.
+     * @since December 29, 2007
+     */
     public enum Message
     {
 
-        CONNECT,
-        KEYSTROKE;
+        /**
+         * We want to connect to the server and join the game.
+         */
+        CONNECT;
 
     }
-    private InetAddress serverAddress;
 
-    private int serverPort;
-
-    public Client( String stringAddress )
+    /**
+     * Binds this client to the given server, and connects to it.
+     * Assumes the default server port.
+     * 
+     * @param serverAddress     the IP address of the server
+     * @throws java.net.UnknownHostException    if the given server can't be found
+     * @since December 29, 2007
+     */
+    public Client( String serverAddress ) throws UnknownHostException
     {
-        try
-        {
-            serverAddress = InetAddress.getByName( stringAddress );
-            serverPort = Server.DEFAULT_PORT;
-            connect();
-        }
-        catch ( UnknownHostException ex )
-        {
-            Logger.getLogger( Client.class.getName() ).log( Level.SEVERE, null, ex );
-        }
+        server = new Machine( InetAddress.getByName( serverAddress ), Server.DEFAULT_PORT );
+        connect();
     }
 
+    /**
+     * Connects to the server by sending it our request packet.
+     * After this, we simply wait for a response, which is handled in <code>parseReceived</code>.
+     * 
+     * @since December 29, 2007
+     */
     private void connect()
     {
         try
         {
-            System.out.println( "Connecting to " + serverAddress );
+            System.out.println( "Connecting to " + server + "." );
             beginListening();
 
             // Send our connection request.
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream d = new DataOutputStream( b );
             d.writeInt( Message.CONNECT.ordinal() );
-            sendCommand( b );
+            sendPacket( server, b );
         }
         catch ( IOException ex )
         {
-            Logger.getLogger( Client.class.getName() ).log( Level.SEVERE, null, ex );
-        }
-    }
-
-    void sendCommand( ByteArrayOutputStream stream )
-    {
-        sendCommand( stream.toByteArray() );
-    }
-
-    void sendCommand( byte[] buf )
-    {
-        try
-        {
-            socket.send( new DatagramPacket( buf, buf.length, serverAddress, serverPort ) );
-        }
-        catch ( IOException ex )
-        {
-            Logger.getLogger( Client.class.getName() ).log( Level.SEVERE, null, ex );
+            ex.printStackTrace();
         }
     }
 
@@ -95,21 +93,21 @@ public class Client extends DatagramListener
             {
                 switch ( Server.Message.values()[command] )
                 {
-                    case OK:
                     case FULL_UPDATE:
                         System.out.println( "Receiving update..." );
-/*
-                        ObjectInputStream is = new ObjectInputStream( new BufferedInputStream( bin ) );
-                        .asteroidManager = (AsteroidManager) is.readObject();
-                        System.out.println(.asteroidManager.size() + " asteroids.");
-*/
+                        new Game();
+
+                        // Receive asteroids.
+                        Game.getInstance().asteroidManager = new AsteroidManager( din );
+                        Game.getInstance().addPlayer( ( Settings.playerName.equals( "" ) ? "Player" : Settings.playerName ) );
+                        new AsteroidsFrame( 0 );
                         break;
                 }
             }
         }
-     catch ( IOException ex )
+        catch ( IOException ex )
         {
-            Logger.getLogger( Client.class.getName() ).log( Level.SEVERE, null, ex );
+            ex.printStackTrace();
         }
     }
 }

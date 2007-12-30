@@ -5,6 +5,9 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -58,7 +61,7 @@ public class Asteroid implements GameElement, Serializable
      * Which player we accelerate towards.
      * @since December 14 2007
      */
-    protected transient Ship victim = null;
+    protected Ship victim = null;
 
     /**
      * The <code>Color</code>s of the inside and outline of <code>this</code>
@@ -144,7 +147,7 @@ public class Asteroid implements GameElement, Serializable
     {
 
         Color f = new Color( fill.getRed() * life / lifeMax, fill.getGreen() * life / lifeMax, fill.getBlue() * life / lifeMax );
-        Running.environment().drawOutlinedCircle( g, f, outline, (int) x, (int) y, radius );
+        AsteroidsFrame.frame().drawOutlinedCircle( g, f, outline, (int) x, (int) y, radius );
     }
 
     /**
@@ -212,7 +215,7 @@ public class Asteroid implements GameElement, Serializable
         }
         killer.increaseScore( radius * 2 );
         killer.setNumAsteroidsKilled( killer.getNumAsteroidsKilled() + 1 );
-        Running.environment().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) x, (int) y, killer.getColor().darker() );
+        AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) x, (int) y, killer.getColor().darker() );
         if ( radius < 12 )
             shouldRemove = true;
         else
@@ -305,5 +308,52 @@ public class Asteroid implements GameElement, Serializable
     public boolean shouldRemove()
     {
         return shouldRemove;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "[Asteroid@ (" + x + "," + y +  "), radius " + radius + "]";
+    }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param d the stream to write to
+     * @since December 29, 2007
+     */
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        stream.writeDouble( x );
+        stream.writeDouble( y );
+        stream.writeDouble( dx );
+        stream.writeDouble( dy );
+        stream.writeInt( radius );
+        stream.writeInt( life );
+        stream.writeInt( lifeMax );
+        stream.writeInt( children );
+        
+        // TODO: Add victim.
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @since December 29, 2007
+     */
+    public Asteroid( DataInputStream stream ) throws IOException
+    {
+        x = stream.readDouble();
+        y = stream.readDouble();
+        dx = stream.readDouble();
+        dy = stream.readDouble();
+        radius = stream.readInt();
+        life = stream.readInt();
+        lifeMax = stream.readInt();
+        children = stream.readInt();
+        
+        // TODO: Add victim
+        environment = Game.getInstance().asteroidManager;
     }
 }

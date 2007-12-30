@@ -1,55 +1,84 @@
 /*
  * DISASTEROIDS
- * Network.java
+ * Server.java
  */
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Server side of the C/S networking.
  * @author Phillip Cohen
  * @since December 25, 2007
  */
 public class Server extends DatagramListener
 {
 
+    /**
+     * The default port that the server runs on.
+     * @since December 29, 2007
+     */
+    public static int DEFAULT_PORT = 4919;
+
+    /**
+     * Messages that we send to the client.
+     * @since December 29, 2007
+     */
     public enum Message
     {
 
-        OK,
+        /**
+         * We send the client all of the game's data to allow him to join.
+         */
         FULL_UPDATE,
-        PLAYER_POSITION,
-        PLAYER_SHOOT,
-        NEXT_LEVEL;
 
     }
-    public static int DEFAULT_PORT = 4919;
+    /**
+     * List of everyone who has sent us a packet.
+     * @since December 29, 2007
+     */
+    private LinkedList<Machine> clients;
 
-    private LinkedList<Connector> clients;
-
+    /**
+     * Starts the server and waits for clients.
+     * 
+     * @since December 28, 2007
+     */
     public Server()
     {
-        clients = new LinkedList<Connector>();
-        beginListening( DEFAULT_PORT );
+        try
+        {
+            System.out.println( "== DISASTEROIDS SERVER ==\nStarted!" );
+            clients = new LinkedList<Machine>();
+            beginListening( DEFAULT_PORT );
+        }
+        catch ( SocketException ex )
+        {
+            Logger.getLogger( Server.class.getName() ).log( Level.SEVERE, null, ex );
+        }
     }
 
+    /**
+     * Called when we receive a packet from a client.
+     * Deciphers what the client is telling us, and responds.
+     * 
+     * @param p the packet
+     * @since December 28, 2007
+     */
     void parseReceived( DatagramPacket p )
     {
         try
         {
             // Ensure this client is on our register.
-            Connector client = registerClient( new Connector( p.getAddress(), p.getPort() ) );
+            Machine client = registerClient( new Machine( p.getAddress(), p.getPort() ) );
 
             // Create streams.
             ByteArrayInputStream bin = new ByteArrayInputStream( p.getData() );
@@ -62,8 +91,8 @@ public class Server extends DatagramListener
                 switch ( Client.Message.values()[command] )
                 {
 
+                    // Client wants to join the game.
                     case CONNECT:
-                        System.out.println( "Client wishes to connect." );
 
                         // Send him a full update.
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
@@ -71,26 +100,12 @@ public class Server extends DatagramListener
                         d.writeInt( Message.FULL_UPDATE.ordinal() );
 
                         // Send asteroids.
-                        ObjectOutputStream os = new ObjectOutputStream( new BufferedOutputStream( b ) );
-                        os.flush();
-                        os.writeObject( Game.getInstance().asteroidManager );
-                        os.flush();
-
-                        sendCommand( client, b );
-                        break;
-
-                    case KEYSTROKE:
-                        System.out.println( "Client sends us a keystroke." );
+                        Game.getInstance().asteroidManager.flatten( d );
+                        d.close();
+                        sendPacket( client, b );
                         break;
                 }
             }
-
-
-        // send request
-//            byte[] buf = "Oddsbolikans".getBytes();
-//            System.out.println( p.getPort() );
-//            DatagramPacket packet = new DatagramPacket( buf, buf.length, p.getAddress(), p.getPort() );
-//            socket.send( packet );
         }
         catch ( IOException ex )
         {
@@ -98,66 +113,27 @@ public class Server extends DatagramListener
             Running.quit();
         }
     }
-
-    void sendCommand( Connector c, ByteArrayOutputStream stream )
+    
+    /**
+     * Takes the prospective client, and ensures he's on our <code>clients</code> list.
+     * Note that clients are always different; the comparison is just of IP addresses.
+     * Thus, even if <code>newbie</code> is already on the list, the version on the list will be returned.
+     * 
+     * @param newbie    the unknown client
+     * @return          the client on the <code>clients</code> list
+     * @since December 29, 2007
+     */
+    Machine registerClient( Machine newbie )
     {
-        sendCommand( c, stream.toByteArray() );
-    }
-
-    void sendCommand( Connector c, byte[] buf )
-    {
-        try
-        {
-            socket.send( new DatagramPacket( buf, buf.length, c.address, c.port ) );
-        }
-        catch ( IOException ex )
-        {
-            Logger.getLogger( Client.class.getName() ).log( Level.SEVERE, null, ex );
-        }
-    }
-
-    Connector registerClient( Connector newbie )
-    {
-        for ( Connector c : clients )
+        // See if he's on the list.
+        for ( Machine c : clients )
         {
             if ( c.equals( newbie ) )
-            {
-                c.numTimesSeen++;
                 return c;
-            }
         }
+        
+        // Nope. Add him.
         clients.addLast( newbie );
         return newbie;
-    }
-
-    private class Connector
-    {
-
-        public InetAddress address;
-
-        public int port;
-
-        public int numTimesSeen = 0;
-
-        public Ship inPlayer;
-
-        public Connector( InetAddress address, int port )
-        {
-            this.address = address;
-            this.port = port;
-            numTimesSeen = 1;
-        }
-
-        public boolean equals( Connector other )
-        {
-            return true;
-//            
-//            for(int i = 0; i < this.address.getAddress().length; i++)
-//            {
-//                if(this.address.getAddress()[i] != other.address.getAddress()[i])
-//                    return false;
-//            }
-//            return true;
-        }
-    }
+    }       
 }

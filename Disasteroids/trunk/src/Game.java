@@ -91,7 +91,6 @@ public class Game implements Serializable
     public Game()
     {
         Game.instance = this;
-        RandNumGen.init( 0 );
         resetEntireGame();                
     }
 
@@ -141,7 +140,7 @@ public class Game implements Serializable
     {
         Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 1, name );
         players.add( s );
-        Running.log( s.getName() + " entered the Game.." );
+        Running.log( s.getName() + " entered the game." );
     }
 
     /**
@@ -350,11 +349,7 @@ public class Game implements Serializable
 
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().nextLevel();
-        restoreBonusValues();
-        System.out.println( "Welcome to level " + newLevel + ". Random asteroid numbers: " +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + " " +
-                            RandNumGen.getAsteroidInstance().nextInt( 9 ) + " (Seed: " + RandNumGen.seed + ")" );
+        restoreBonusValues();    
         asteroidManager.setUpAsteroidField( level );
         AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
         paused = false;

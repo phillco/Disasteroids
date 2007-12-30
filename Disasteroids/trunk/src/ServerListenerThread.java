@@ -79,7 +79,7 @@ public class ServerListenerThread extends Thread
         // Random number seed.
         else if ( command.indexOf( "Seed" ) == 0 )
         {
-            RandNumGen.init( Integer.parseInt( command.substring( 4 ) ) );
+            //RandNumGen.init( Integer.parseInt( command.substring( 4 ) ) );
             return;
         }
         
@@ -93,7 +93,7 @@ public class ServerListenerThread extends Thread
         // New Game.getInstance().
         else if ( command.equals( "ng" ) )
         {
-            Running.environment().newGame();
+            AsteroidsFrame.frame().newGame();
             return;
         }             
     }

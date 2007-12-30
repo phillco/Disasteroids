@@ -186,8 +186,8 @@ public class Ship implements GameElement
         else
             col = myColor;
 
-        int centerX = Running.environment().getWidth() / 2;
-        int centerY = Running.environment().getHeight() / 2;
+        int centerX = AsteroidsFrame.frame().getWidth() / 2;
+        int centerY = AsteroidsFrame.frame().getHeight() / 2;
 
         Polygon outline = new Polygon();
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
@@ -196,7 +196,7 @@ public class Ship implements GameElement
 
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
-            Running.environment().drawPolygon( g, col, Color.black, outline );
+            AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
         }
 
         for ( WeaponManager wm : allWeapons )
@@ -207,7 +207,7 @@ public class Ship implements GameElement
             drawWeaponNameTimer--;
             g.setFont( g.getFont().deriveFont( Font.BOLD ) );
             Graphics2D g2d = (Graphics2D) g;
-            Running.environment().drawString( g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray );
+            AsteroidsFrame.frame().drawString( g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray );
         }
     }
 

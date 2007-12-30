@@ -34,7 +34,6 @@ import javax.swing.JOptionPane;
  */
 public class AsteroidsFrame extends Frame implements KeyListener
 {
-
     /**
      * Dimensions of the window when not in fullscreen mode.
      * @since November 15 2007
@@ -112,7 +111,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public AsteroidsFrame( int localPlayer )
     {
         frame = this;
-        Running.setEnvironment( this );
         this.localPlayer = localPlayer;
 
         // Close when the exit key is pressed.
@@ -120,9 +118,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
-
-        // Create background.
-        background = new Background( Game.getInstance().GAME_WIDTH, Game.getInstance().GAME_HEIGHT );
 
         // Receive key events.
         this.addKeyListener( this );
@@ -166,12 +161,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         if ( !highScoreAchieved && localPlayer().getScore() > Settings.highScore )
         {
-            addNotificationMessage( "New high score of " + insertThousandCommas( localPlayer().getScore() ) + "!", 800 );
+            Running.log( "New high score of " + insertThousandCommas( localPlayer().getScore() ) + "!", 800 );
             highScoreAchieved = true;
         }
 
         // Draw the star background.
-        g.drawImage( background.render(), 0, 0, this );
+        if ( background == null )
+            background = new Background( Game.getInstance().GAME_WIDTH, Game.getInstance().GAME_HEIGHT );
+        else
+            g.drawImage( background.render(), 0, 0, this );
 
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );
@@ -214,8 +212,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         else
             virtualMem = createImage( getWidth(), getHeight() );
 
-        if ( Game.getInstance().state == Game.Netstate.SINGLEPLAYER )
-            Game.getInstance().startGame();
+        Game.getInstance().startGame();
     }
 
     /**
@@ -242,7 +239,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             catch ( NumberFormatException e )
             {
                 // Do nothing with incorrect input or cancel.
-                AsteroidsFrame.addNotificationMessage( "Invalid warp command." );
+                Running.log( "Invalid warp command.", 800 );
             }
             showWarpDialog = false;
         }
@@ -272,7 +269,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
 
-        paintComponents( g );
         // This causes 100% cpu usage, but it's safe to say the game always has to be updated.
         repaint();
     }
@@ -295,7 +291,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Advances to the next level from a static context.
      * 
-     * @deprecated Use <code>Running.environment()</code> to access frame methods.
+     * @deprecated Use <code>AsteroidsFrame.frame()</code> to access frame methods.
      * @since Classic
      */
     @Deprecated
@@ -702,18 +698,21 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_BACK_SLASH:
                 drawScoreboard = !drawScoreboard;
                 break;
+
+            /*
             case KeyEvent.VK_EQUALS:
             case KeyEvent.VK_PLUS:
-                Game.getInstance().gameSpeed++;
-                AsteroidsFrame.addNotificationMessage( "Game speed increased to " + Game.getInstance().gameSpeed + "." );
-                break;
+            Game.getInstance().gameSpeed++;
+            AsteroidsFrame.addNotificationMessage( "Game speed increased to " + Game.getInstance().gameSpeed + "." );
+            break;
             case KeyEvent.VK_MINUS:
-                if ( Game.getInstance().gameSpeed > 1 )
-                {
-                    Game.getInstance().gameSpeed--;
-                    AsteroidsFrame.addNotificationMessage( "Game speed decreased to " + Game.getInstance().gameSpeed + "." );
-                }
-                break;
+            if ( Game.getInstance().gameSpeed > 1 )
+            {
+            Game.getInstance().gameSpeed--;
+            AsteroidsFrame.addNotificationMessage( "Game speed decreased to " + Game.getInstance().gameSpeed + "." );
+            }
+            break;
+             */
 
             // Saving & loading
             case KeyEvent.VK_T:
@@ -737,7 +736,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void toggleMusic()
     {
-        AsteroidsFrame.addNotificationMessage( "Music " + ( Sound.toggleMusic() ? "on." : "off." ) );
+        Running.log( "Music " + ( Sound.toggleMusic() ? "on." : "off." ) );
     }
 
     /**
@@ -747,7 +746,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void toggleSound()
     {
-        AsteroidsFrame.addNotificationMessage( "Sound " + ( Sound.toggleSound() ? "on." : "off." ) );
+        Running.log( "Sound " + ( Sound.toggleSound() ? "on." : "off." ) );
     }
 
     /**
@@ -769,7 +768,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private void toggleReneringQuality()
     {
         Settings.qualityRendering = !Settings.qualityRendering;
-        AsteroidsFrame.addNotificationMessage( ( Settings.qualityRendering ? "Quality rendering." : "Speed rendering." ) );
+        Running.log( ( Settings.qualityRendering ? "Quality rendering." : "Speed rendering." ) );
     }
 
     /**
@@ -1086,7 +1085,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         return Game.getInstance().players.get( localPlayer );
     }
-
     /**
      * A simple handler for the frame's window buttons.
      * 
@@ -1094,7 +1092,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private static class CloseAdapter extends WindowAdapter
     {
-
         /**
          * Invoked when a window has been closed.
          * 
@@ -1115,7 +1112,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
             Running.quit();
         }
     }
-
     /**
      * A small class for the storage of scoreboard colums.
      * 
@@ -1125,7 +1121,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private static class ScoreboardColumn
     {
-
         /**
          * x coordinate of the column's left edge.
          */
@@ -1148,12 +1143,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
             this.title = title;
         }
     }
-
     /**
      */
     private static class NotificationMessage
     {
-
         public String message;
 
         public int life;

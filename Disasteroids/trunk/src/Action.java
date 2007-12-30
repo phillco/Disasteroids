@@ -63,7 +63,7 @@ public class Action implements Serializable
      */
     public void applyAction()
     {
-        Running.environment().performAction( keyCode, actor );
+        AsteroidsFrame.frame().performAction( keyCode, actor );
     }
 
     /**

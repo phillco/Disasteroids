@@ -57,7 +57,7 @@ class Bullet implements Weapon, GameElement {
     }
 
     public void draw(Graphics g) {
-        Running.environment().fillCircle(g, myColor, (int)x, (int)y, env.getRadius());
+        AsteroidsFrame.frame().fillCircle(g, myColor, (int)x, (int)y, env.getRadius());
     }
 
     private void move() {

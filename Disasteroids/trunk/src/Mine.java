@@ -135,11 +135,11 @@ public class Mine implements Weapon {
     public void draw(Graphics g) {
         if(!isExploding)
         {
-            Running.environment().fillCircle(g, color, x, y, 10);
-            Running.environment().fillCircle(g, Color.black, x, y, 4);
+            AsteroidsFrame.frame().fillCircle(g, color, x, y, 10);
+            AsteroidsFrame.frame().fillCircle(g, Color.black, x, y, 4);
         }else
         {
-            Running.environment().fillCircle(g, color, x, y, (5-life)*20);
+            AsteroidsFrame.frame().fillCircle(g, color, x, y, (5-life)*20);
         }
     }
 

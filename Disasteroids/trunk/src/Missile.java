@@ -136,8 +136,8 @@ public class Missile implements Weapon, GameElement
          */
 	public void draw(Graphics g)
 	{
-            Running.environment().drawLine(g, myColor,(int)x,(int)y,10,angle+Math.PI);
-            Running.environment().fillCircle(g, myColor, (int)x,(int)y, radius);
+            AsteroidsFrame.frame().drawLine(g, myColor,(int)x,(int)y,10,angle+Math.PI);
+            AsteroidsFrame.frame().fillCircle(g, myColor, (int)x,(int)y, radius);
             
             // Draw explosion.
             Color col;
@@ -148,7 +148,7 @@ public class Missile implements Weapon, GameElement
 					col=myColor;
 				else
 					col=Color.yellow;
-				 Running.environment().fillCircle(g,col,(int)x,(int)y,radius);
+				 AsteroidsFrame.frame().fillCircle(g,col,(int)x,(int)y,radius);
 				break;
 			case 5:	case 6:	case 7:	case 8:
 				if(explodeCount%2==0)
@@ -156,20 +156,20 @@ public class Missile implements Weapon, GameElement
 				else
 					col=Color.yellow;
 				radius=5;
-				Running.environment().fillCircle(g, col,(int)x,(int)y,radius);
+				AsteroidsFrame.frame().fillCircle(g, col,(int)x,(int)y,radius);
 				break;
 			case 9:	case 10: case 11:
 				if(hugeBlast)
 				{
 					col=myColor;
 					radius=manager.hugeBlastSize();
-                                        Running.environment().fillCircle(g, col,(int)x,(int)y,radius);
+                                        AsteroidsFrame.frame().fillCircle(g, col,(int)x,(int)y,radius);
 				}
 				else
 				{
 					radius=14;
 					col=Color.yellow;
-                                        Running.environment().fillCircle(g, col,(int)x,(int)y,radius);
+                                        AsteroidsFrame.frame().fillCircle(g, col,(int)x,(int)y,radius);
 					this.explodeCount++;
 				}
 				break;

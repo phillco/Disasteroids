@@ -154,8 +154,8 @@ public class Game implements Serializable
         otherPlayerTimeStep = 0;
 
         actionManager = new ActionManager();
-        for ( Ship s : players )
-            s = new Ship( s.getX(), s.getY(), s.getColor(), 0, s.getName() );
+        for ( int index=0; index<players.size(); index++ )
+            players.set(index, new Ship( players.get(index).getX(), players.get(index).getY(), players.get(index).getColor(), 1, players.get(index).getName() ));
 
         // Create the asteroids.
         level = 1;
@@ -311,7 +311,14 @@ public class Game implements Serializable
 
         // Update the ships.
         for ( Ship s : players )
+        {
             s.act();
+            if(s.livesLeft()<0)
+            {
+                AsteroidsFrame.frame().endGame();
+                break;
+            }
+        }
     }
 
     public boolean gameIsActive()

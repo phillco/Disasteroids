@@ -27,7 +27,6 @@ public class Action implements Serializable
 
     /**
      * The game time when the <code>this</code> is executed.
-     * @see AsteroidsFrame#timestep
      * @since Classic
      */
     private long timestep;

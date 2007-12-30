@@ -22,8 +22,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.VolatileImage;
 import java.text.DecimalFormat;
-import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JOptionPane;
 
 /**
@@ -68,7 +68,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * Notification messages always shown in the top-left corner.
      * @since December 19, 2004
      */
-    private LinkedList<NotificationMessage> notificationMessages = new LinkedList<NotificationMessage>();
+    private ConcurrentLinkedQueue<NotificationMessage> notificationMessages = new ConcurrentLinkedQueue<NotificationMessage>();
 
     /**
      * The current amount of FPS. Updated in <code>paint</code>.
@@ -101,6 +101,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @since December 29, 2007
      */
     private boolean showWarpDialog;
+    
+    /**
+     * Whether the endgame should be shown on next paint cycle.
+     * @sinde December 30, 2007
+     */
+    private boolean shouldEnd;
 
     /**
      * Constructs the game frame and game elements.
@@ -133,7 +139,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         highScoreAchieved = false;
         background.clearMessages();
         notificationMessages.clear();
-
+        shouldEnd=false;
         // Reset the background.
         background.init();
     }
@@ -180,13 +186,16 @@ public class AsteroidsFrame extends Frame implements KeyListener
             s.draw( g );
 
             // Game over?
-            if ( s.livesLeft() < 0 )
-            {
+//            if ( s.livesLeft() < 0 )
+//            {
                 // TODO: Divorce
-                endGame( g );
-                continue;
-            }
+//                endGame( g );
+//                continue;
+//            }
         }
+        
+        if(shouldEnd)
+            endGame(g);
 
         Game.getInstance().asteroidManager.draw( g );
 
@@ -378,7 +387,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         y = ( isFullscreen() ? 0 : 30 ) + 20; // Offset for the titlebar (yuck)!
         g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
         g2d.setColor( Color.lightGray );
-        ListIterator<NotificationMessage> itr = notificationMessages.listIterator();
+        Iterator<NotificationMessage> itr = notificationMessages.iterator();
 
         while ( itr.hasNext() )
         {
@@ -496,6 +505,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
         Game.getInstance().resetEntireGame();
         AsteroidsServer.send( "ng" );
     }
+    
+    /**
+     * Indicates to <code>this</code> that the endgame should be shown on 
+     * the next painting cycle.
+     * 
+     * @since December 30, 2007
+     */
+    public void endGame()
+    {
+        shouldEnd=true;
+    }
 
     /**
      * Displays the end game messages.
@@ -505,6 +525,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void endGame( Graphics g )
     {
+        System.out.println(shouldEnd);
+        shouldEnd=false;
         Game.getInstance().paused = true;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
         if ( Settings.soundOn )
@@ -555,6 +577,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         this.setIgnoreRepaint( false );
         Game.getInstance().paused = false;
         repaint();
+        shouldEnd=false;
     }
 
     /**

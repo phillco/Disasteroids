@@ -215,7 +215,9 @@ public class Asteroid implements GameElement, Serializable
         }
         killer.increaseScore( radius * 2 );
         killer.setNumAsteroidsKilled( killer.getNumAsteroidsKilled() + 1 );
-        AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) x, (int) y, killer.getColor().darker() );
+        if( AsteroidsFrame.frame() != null )
+            AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) x, (int) y, killer.getColor().darker() );
+        
         if ( radius < 12 )
             shouldRemove = true;
         else

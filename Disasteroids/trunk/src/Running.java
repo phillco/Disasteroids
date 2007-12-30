@@ -3,6 +3,7 @@
  * Running.java
  */
 
+import java.awt.Canvas;
 import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -95,9 +96,7 @@ public class Running
      */
     public static void startGame( MenuOption option )
     {
-        // Init - but do not start - the Game.
         new Game();
-
         switch ( option )
         {
             case SINGLEPLAYER:

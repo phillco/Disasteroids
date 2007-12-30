@@ -158,6 +158,12 @@ public class Ship implements GameElement
         invulFlash = true;
         invincibilityCount = 200;
     }
+    
+    @Override
+    public String toString()
+    {
+        return "[" + (int) x + "," + (int) y + "]";
+    }
 
     public void clearWeapons()
     {

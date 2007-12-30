@@ -63,7 +63,7 @@ public class Action implements Serializable
      */
     public void applyAction()
     {
-        AsteroidsFrame.frame().performAction( keyCode, actor );
+        Game.getInstance().performAction( keyCode, actor );
     }
 
     /**

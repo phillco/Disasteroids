@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,10 +11,8 @@ import java.util.LinkedList;
 
 public class Game implements Serializable
 {
-
     public enum Netstate
     {
-
         SINGLEPLAYER, SERVER, CLIENT;
 
     }
@@ -79,19 +78,19 @@ public class Game implements Serializable
      */
     int gameSpeed = 1;
 
-    private transient RunnerThread thread;
+    private transient GameLoop thread;
+
     private static Game instance;
 
     public static Game getInstance()
     {
         return instance;
     }
-    
 
     public Game()
     {
         Game.instance = this;
-        resetEntireGame();                
+        resetEntireGame();
     }
 
     public static void saveToFile()
@@ -279,8 +278,6 @@ public class Game implements Serializable
      */
     void act()
     {
-        if ( players.size() < 1 )
-            return;
 
         // Advance to the next level if it's time.
         if ( shouldExitLevel() )
@@ -307,7 +304,7 @@ public class Game implements Serializable
             actionManager.act( timeStep );
         }
         catch ( UnsynchronizedException e )
-        {           
+        {
         }
         ParticleManager.act();
         asteroidManager.act();
@@ -349,7 +346,7 @@ public class Game implements Serializable
 
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().nextLevel();
-        restoreBonusValues();    
+        restoreBonusValues();
         asteroidManager.setUpAsteroidField( level );
         AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
         paused = false;
@@ -357,23 +354,119 @@ public class Game implements Serializable
 
     public void startGame()
     {
-        thread = new RunnerThread();
+        thread = new GameLoop();
+        thread.setPriority( Thread.MAX_PRIORITY );
         thread.start();
     }
 
-    private class RunnerThread extends Thread
+    /**
+     * Performs the action specified by the action as applied to the actor.
+     * 
+     * @param action    the key code for the action
+     * @param actor     the <code>Ship</code> to execute the action
+     * @since Classic
+     */
+    public static void performAction( int action, Ship actor )
     {
-
-        @Override
-        public void run()
+        System.out.println( "Performing " + action + " to " + actor + "." );
+        // Decide what key was pressed.
+        switch ( action )
         {
-            System.out.println( "Game loop started." );
-            while ( true )
+            case KeyEvent.VK_ESCAPE:
+                Running.quit();
+            case KeyEvent.VK_SPACE:
+                actor.startShoot();
+                break;
+            case -KeyEvent.VK_SPACE:
+                actor.stopShoot();
+                break;
+            case KeyEvent.VK_LEFT:
+                actor.left();
+                break;
+            case KeyEvent.VK_RIGHT:
+                actor.right();
+                break;
+            case KeyEvent.VK_UP:
+                actor.forward();
+                break;
+            case KeyEvent.VK_DOWN:
+                actor.backwards();
+                break;
+
+            // Releasing keys.
+            case -KeyEvent.VK_LEFT:
+                actor.unleft();
+                break;
+            case -KeyEvent.VK_RIGHT:
+                actor.unright();
+                break;
+            case -KeyEvent.VK_UP:
+                actor.unforward();
+                break;
+            case -KeyEvent.VK_DOWN:
+                actor.unbackwards();
+                break;
+
+            // Special keys.
+            case KeyEvent.VK_PAGE_UP:
+                actor.fullUp();
+                break;
+            case KeyEvent.VK_PAGE_DOWN:
+                actor.fullDown();
+                break;
+            case KeyEvent.VK_INSERT:
+                actor.fullLeft();
+                break;
+            case KeyEvent.VK_DELETE:
+                actor.fullRight();
+                break;
+            case KeyEvent.VK_END:
+                actor.allStop();
+                break;
+            case 192:	// ~ activates berserk!
+                actor.berserk();
+                break;
+            case KeyEvent.VK_HOME:
+                actor.getWeaponManager().explodeAll();
+                break;
+            case KeyEvent.VK_Q:
+                actor.rotateWeapons();
+                break;
+
+            case KeyEvent.VK_P:
+                if ( Game.getInstance().state == Game.Netstate.SINGLEPLAYER )
+                    Game.getInstance().paused = !Game.getInstance().paused;
+                break;
+
+
+            /*
+            case KeyEvent.VK_EQUALS:
+            case KeyEvent.VK_PLUS:
+            Game.getInstance().gameSpeed++;
+            AsteroidsFrame.addNotificationMessage( "Game speed increased to " + Game.getInstance().gameSpeed + "." );
+            break;
+            case KeyEvent.VK_MINUS:
+            if ( Game.getInstance().gameSpeed > 1 )
             {
-                if ( !paused )
-                    Game.getInstance().act();
-                Game.getInstance().safeSleep( 15 );
+            Game.getInstance().gameSpeed--;
+            AsteroidsFrame.addNotificationMessage( "Game speed decreased to " + Game.getInstance().gameSpeed + "." );
             }
+            break;
+             */
+
+            // Saving & loading
+            case KeyEvent.VK_T:
+                if ( Game.getInstance().state == Game.Netstate.SINGLEPLAYER )
+                    Game.getInstance().saveToFile();
+                break;
+
+            case KeyEvent.VK_Y:
+                if ( Game.getInstance().state == Game.Netstate.SINGLEPLAYER )
+                    Game.getInstance().loadFromFile();
+                break;
+
+            default:
+                break;
         }
     }
 }

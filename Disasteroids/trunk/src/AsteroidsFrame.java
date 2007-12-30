@@ -120,7 +120,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         updateFullscreen();
 
         // Receive key events.
-        this.addKeyListener( this );
+        this.addKeyListener( this );        
     }
 
     /**
@@ -268,9 +268,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
-
-        // This causes 100% cpu usage, but it's safe to say the game always has to be updated.
+        
         repaint();
+
     }
 
     /**
@@ -337,6 +337,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         text = "" + Game.getInstance().level;
         x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth();
         g2d.drawString( text, x, y );
+        g2d.drawString( localPlayer().toString(), 60, 70 );
 
         // Draw the "level" string.
         g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
@@ -564,15 +565,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public synchronized void keyReleased( KeyEvent e )
     {
+
+        if ( ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 ) || e.getKeyCode() == KeyEvent.VK_SPACE )
         {
-            if ( ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 ) || e.getKeyCode() == KeyEvent.VK_SPACE )
-                // Get the raw code from the keyboard
-                //performAction(e.getKeyCode(), ship);
-                Game.getInstance().actionManager.add( new Action( localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
-            AsteroidsServer.send( "k" + String.valueOf( 0 - e.getKeyCode() ) + "," + String.valueOf( Game.getInstance().timeStep + 2 ) );
-        // [AK] moved to a new method to also be called by another class, receiving data from other computer
-        //repaint();
+            Game.getInstance().actionManager.add( new Action( localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+            if ( Game.getInstance().state == Game.Netstate.CLIENT )
+                Client.getInstance().keyStroke( e.getKeyCode() );
         }
+
         repaint();
     }
 
@@ -600,83 +600,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
             return;
         }
 
-        Game.getInstance().actionManager.add( new Action( localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
-        AsteroidsServer.send( "k" + String.valueOf( e.getKeyCode() ) + "," + String.valueOf( Game.getInstance().timeStep + 2 ) );
-        repaint();
-    }
-
-    /**
-     * Performs the action specified by the action as applied to the actor.
-     * 
-     * @param action    the key code for the action
-     * @param actor     the <code>Ship</code> to execute the action
-     * @since Classic
-     */
-    public synchronized void performAction( int action, Ship actor )
-    {
-        // Decide what key was pressed.
-        switch ( action )
+        // Is it a local action?
+        switch ( e.getKeyCode() )
         {
-            case KeyEvent.VK_ESCAPE:
-                Running.quit();
-            case KeyEvent.VK_SPACE:
-                actor.startShoot();
-                break;
-            case -KeyEvent.VK_SPACE:
-                actor.stopShoot();
-                break;
-            case KeyEvent.VK_LEFT:
-                actor.left();
-                break;
-            case KeyEvent.VK_RIGHT:
-                actor.right();
-                break;
-            case KeyEvent.VK_UP:
-                actor.forward();
-                break;
-            case KeyEvent.VK_DOWN:
-                actor.backwards();
-                break;
-
-            // Releasing keys.
-            case -KeyEvent.VK_LEFT:
-                actor.unleft();
-                break;
-            case -KeyEvent.VK_RIGHT:
-                actor.unright();
-                break;
-            case -KeyEvent.VK_UP:
-                actor.unforward();
-                break;
-            case -KeyEvent.VK_DOWN:
-                actor.unbackwards();
-                break;
-
-            // Special keys.
-            case KeyEvent.VK_PAGE_UP:
-                actor.fullUp();
-                break;
-            case KeyEvent.VK_PAGE_DOWN:
-                actor.fullDown();
-                break;
-            case KeyEvent.VK_INSERT:
-                actor.fullLeft();
-                break;
-            case KeyEvent.VK_DELETE:
-                actor.fullRight();
-                break;
-            case KeyEvent.VK_END:
-                actor.allStop();
-                break;
-            case 192:	// ~ activates berserk!
-                actor.berserk();
-                break;
-            case KeyEvent.VK_HOME:
-                actor.getWeaponManager().explodeAll();
-                break;
-            case KeyEvent.VK_Q:
-                actor.rotateWeapons();
-                break;
             case KeyEvent.VK_M:
                 toggleMusic();
                 break;
@@ -686,11 +612,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_F4:
                 toggleFullscreen();
                 break;
-            case KeyEvent.VK_P:
-                Game.getInstance().paused = !Game.getInstance().paused;
-                break;
             case KeyEvent.VK_W:
-                warpDialog();
+                if( Game.getInstance().state == Game.Netstate.SINGLEPLAYER)
+                    AsteroidsFrame.frame().warpDialog();
                 break;
             case KeyEvent.VK_A:
                 toggleReneringQuality();
@@ -698,33 +622,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_BACK_SLASH:
                 drawScoreboard = !drawScoreboard;
                 break;
-
-            /*
-            case KeyEvent.VK_EQUALS:
-            case KeyEvent.VK_PLUS:
-            Game.getInstance().gameSpeed++;
-            AsteroidsFrame.addNotificationMessage( "Game speed increased to " + Game.getInstance().gameSpeed + "." );
-            break;
-            case KeyEvent.VK_MINUS:
-            if ( Game.getInstance().gameSpeed > 1 )
-            {
-            Game.getInstance().gameSpeed--;
-            AsteroidsFrame.addNotificationMessage( "Game speed decreased to " + Game.getInstance().gameSpeed + "." );
-            }
-            break;
-             */
-
-            // Saving & loading
-            case KeyEvent.VK_T:
-                Game.getInstance().saveToFile();
-                break;
-
-            case KeyEvent.VK_Y:
-                Game.getInstance().loadFromFile();
-                break;
-
             default:
-                break;
+
+
+                Game.getInstance().actionManager.add( new Action( localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+
+                if ( Game.getInstance().state == Game.Netstate.CLIENT )
+                    Client.getInstance().keyStroke( e.getKeyCode() );
+
+
         }
         repaint();
     }
@@ -734,7 +640,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since November 15, 2007
      */
-    private void toggleMusic()
+    public void toggleMusic()
     {
         Running.log( "Music " + ( Sound.toggleMusic() ? "on." : "off." ) );
     }
@@ -744,7 +650,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since November 15, 2007
      */
-    private void toggleSound()
+    void toggleSound()
     {
         Running.log( "Sound " + ( Sound.toggleSound() ? "on." : "off." ) );
     }
@@ -892,8 +798,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         if ( frame() != null )
             frame().notificationMessages.add( new NotificationMessage( message, life ) );
-        else
-            System.out.println( message );
     }
 
     /**

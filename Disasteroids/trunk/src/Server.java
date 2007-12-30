@@ -3,6 +3,8 @@
  * Server.java
  */
 
+import java.awt.Canvas;
+import java.awt.event.KeyEvent;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -21,7 +23,6 @@ import java.util.logging.Logger;
  */
 public class Server extends DatagramListener
 {
-
     /**
      * The default port that the server runs on.
      * @since December 29, 2007
@@ -34,11 +35,10 @@ public class Server extends DatagramListener
      */
     public enum Message
     {
-
         /**
          * We send the client all of the game's data to allow him to join.
          */
-        FULL_UPDATE,
+        FULL_UPDATE;
 
     }
     /**
@@ -57,6 +57,7 @@ public class Server extends DatagramListener
         try
         {
             System.out.println( "== DISASTEROIDS SERVER ==\nStarted!" );
+            Game.getInstance().startGame();
             clients = new LinkedList<Machine>();
             beginListening( DEFAULT_PORT );
         }
@@ -103,17 +104,25 @@ public class Server extends DatagramListener
                         Game.getInstance().asteroidManager.flatten( d );
                         d.close();
                         sendPacket( client, b );
+
+                        // Spawn him in.
+                        Game.getInstance().addPlayer( "Player" );
                         break;
+
+                    // Client is sending us a keystroke.
+                    case KEYSTROKE:
+                        int keyCode = din.readInt();
+                        Game.getInstance().actionManager.add(new Action(Game.getInstance().players.getFirst(), keyCode, Game.getInstance().timeStep + 7));
+
                 }
             }
         }
         catch ( IOException ex )
         {
-            ex.printStackTrace();
-            Running.quit();
+            Running.fatalError( "Server parsing exception.", ex );
         }
     }
-    
+
     /**
      * Takes the prospective client, and ensures he's on our <code>clients</code> list.
      * Note that clients are always different; the comparison is just of IP addresses.
@@ -131,9 +140,9 @@ public class Server extends DatagramListener
             if ( c.equals( newbie ) )
                 return c;
         }
-        
+
         // Nope. Add him.
         clients.addLast( newbie );
         return newbie;
-    }       
+    }
 }

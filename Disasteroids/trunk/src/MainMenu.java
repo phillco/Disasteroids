@@ -121,15 +121,6 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             case KeyEvent.VK_SPACE:
                 if ( MenuOption.values()[choice] == MenuOption.OPTIONS )
                 {
-                    // Look pretty in XP.
-                    try
-                    {
-                        UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-                    }
-                    catch ( Exception ex )
-                    {
-
-                    }
                     setVisible( false );
                     new OptionsFrame( this );
                 }

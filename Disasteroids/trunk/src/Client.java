@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Client side of the C/S networking.
@@ -19,7 +21,6 @@ import java.net.UnknownHostException;
  */
 public class Client extends DatagramListener
 {
-
     /**
      * Location of the server.
      * @since December 29, 2007
@@ -32,14 +33,25 @@ public class Client extends DatagramListener
      */
     public enum Message
     {
-
         /**
          * We want to connect to the server and join the game.
          */
-        CONNECT;
+        CONNECT,
+        /**
+         * Sending our keystroke.
+         */
+        KEYSTROKE;
 
     }
+    
+    private static Client instance;
 
+    public static Client getInstance()
+    {
+        return instance;
+    }
+    
+    
     /**
      * Binds this client to the given server, and connects to it.
      * Assumes the default server port.
@@ -50,7 +62,8 @@ public class Client extends DatagramListener
      */
     public Client( String serverAddress ) throws UnknownHostException
     {
-        server = new Machine( InetAddress.getByName( serverAddress ), Server.DEFAULT_PORT );
+        instance = this;
+        server = new Machine( InetAddress.getByName( serverAddress ), Server.DEFAULT_PORT );        
         connect();
     }
 
@@ -100,6 +113,8 @@ public class Client extends DatagramListener
                         // Receive asteroids.
                         Game.getInstance().asteroidManager = new AsteroidManager( din );
                         Game.getInstance().addPlayer( ( Settings.playerName.equals( "" ) ? "Player" : Settings.playerName ) );
+                        Game.getInstance().state = Game.Netstate.CLIENT;            
+        
                         new AsteroidsFrame( 0 );
                         break;
                 }
@@ -109,5 +124,24 @@ public class Client extends DatagramListener
         {
             ex.printStackTrace();
         }
+    }
+
+    void keyStroke( int key )
+    {
+        try
+        {
+            // Send our connection request.
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream d = new DataOutputStream( b );
+
+            d.writeInt( Message.KEYSTROKE.ordinal() );
+            d.writeInt( key );
+            sendPacket( server, b );
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+
     }
 }

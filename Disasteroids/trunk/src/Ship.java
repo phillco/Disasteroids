@@ -490,12 +490,7 @@ public class Ship implements GameElement
         setInvincibilityCount( 300 );
         if ( Settings.soundOn )
             Sound.bleargh();
-        // Disabled, very sensitiuve to lag --> desync
-//		x = origin_x;
-//		y = origin_y;
-//		dx = 0.0;
-//		dy = 0.0;
-//		angle=Math.PI/2;
+
         dx *= -.3;
         dy *= -.3;
         Random rand = RandNumGen.getParticleInstance();
@@ -622,11 +617,13 @@ public class Ship implements GameElement
     }
 
     /**
-     * Writes <code>this</code> to a stream for client/server transmission.
-     * 
-     * @param stream the stream to write to
-     * @since December 30, 2007
+     * Writes
      */
+    public void positionUpdate()
+    {
+        
+    }
+    
     public void flatten( DataOutputStream stream ) throws IOException
     {
         stream.writeInt( id );
@@ -657,7 +654,7 @@ public class Ship implements GameElement
             }
         }
         if ( colorIndex == -1 )
-            Running.fatalError( "Uknown ship color: " + myColor );
+            Running.fatalError( "Unknown ship color: " + myColor );
 
         stream.writeInt( colorIndex );
         stream.writeUTF( name );

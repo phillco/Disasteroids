@@ -102,9 +102,9 @@ public class Running
             case SINGLEPLAYER:
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
                 break;
-            case START_SERVER:                
-                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
+            case START_SERVER:                                
                 new Server();
+                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
                 break;
             case CONNECT:
 

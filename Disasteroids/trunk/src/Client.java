@@ -124,6 +124,12 @@ public class Client extends DatagramListener
                         // Start the game.
                         new AsteroidsFrame( id );
                         break;
+                    case PLAYER_JOINED:                        
+                        Game.getInstance().addPlayer(new Ship(din));
+                        break;
+                    case PAUSE:
+                        Game.getInstance().setPaused(din.readBoolean());
+                        break;
                 }
             }
         }
@@ -143,12 +149,13 @@ public class Client extends DatagramListener
     {
         try
         {
-            // Send our connection request.
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream d = new DataOutputStream( b );
 
+            System.out.println("Sending " + key);
             d.writeInt( Message.KEYSTROKE.ordinal() );
             d.writeInt( key );
+            
             sendPacket( server, b );
         }
         catch ( IOException ex )

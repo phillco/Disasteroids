@@ -10,9 +10,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Game implements Serializable
-{    
+{
     /**
      * Dimensions of the game, regardless of the graphical depiction
      * @since December 17, 2007
@@ -35,7 +37,7 @@ public class Game implements Serializable
      * Stores whether the game is currently paused or not.
      * @since Classic
      */
-    boolean paused = false;
+    private boolean paused = false;
 
     /**
      * The current game time.
@@ -88,13 +90,21 @@ public class Game implements Serializable
         resetEntireGame();
     }
 
-    public Ship getFromId(int id)
+    /**
+     * Returns the <code>Ship</code> with the specified <code>id</code>.
+     * 
+     * @param id    the <code>id</code> to search for
+     * @return      the <code>Ship</code> with that <code>id</code>, or <code>null</code>
+     * @since December 30, 207
+     */
+    public Ship getFromId( int id )
     {
-        for( Ship s : players)
-            if(s.id == id)
+        for ( Ship s : players )
+            if ( s.id == id )
                 return s;
         return null;
     }
+
     public static void saveToFile()
     {
         FileOutputStream fos = null;
@@ -138,7 +148,7 @@ public class Game implements Serializable
     }
 
     /**
-     * Adds a new player into the game.
+     * Creates and adds a new player into the game.
      * 
      * @param name  the player's name
      * @return      the new player's id
@@ -146,10 +156,22 @@ public class Game implements Serializable
      */
     int addPlayer( String name )
     {
-        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 1, name );
+        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 4, name );
         players.add( s );
         Running.log( s.getName() + " entered the game (id " + s.id + ")." );
         return s.id;
+    }
+
+    /**
+     * Adds a player into the game.
+     * 
+     * @param newPlayer     the player
+     * @since December 31, 2007
+     */
+    void addPlayer( Ship newPlayer )
+    {
+        players.add( newPlayer );
+        Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ")." );
     }
 
     /**
@@ -164,8 +186,8 @@ public class Game implements Serializable
         otherPlayerTimeStep = 0;
 
         actionManager = new ActionManager();
-        for ( int index=0; index<players.size(); index++ )
-            players.set(index, new Ship( players.get(index).getX(), players.get(index).getY(), players.get(index).getColor(), 1, players.get(index).getName() ));
+        for ( int index = 0; index < players.size(); index++ )
+            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), 1, players.get( index ).getName() ) );
 
         // Create the asteroids.
         level = 1;
@@ -312,7 +334,7 @@ public class Game implements Serializable
         for ( Ship s : players )
         {
             s.act();
-            if(s.livesLeft()<0)
+            if ( s.livesLeft() < 0 )
             {
                 AsteroidsFrame.frame().endGame();
                 break;
@@ -333,7 +355,6 @@ public class Game implements Serializable
      */
     void warp( int newLevel )
     {
-        paused = true;
         level = newLevel;
 
         // All players get bonuses.
@@ -354,8 +375,7 @@ public class Game implements Serializable
             AsteroidsFrame.frame().nextLevel();
         restoreBonusValues();
         asteroidManager.setUpAsteroidField( level );
-        AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
-        paused = false;
+        AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );       
     }
 
     public void startGame()
@@ -441,7 +461,7 @@ public class Game implements Serializable
 
             case KeyEvent.VK_P:
                 if ( !Client.is() )
-                    Game.getInstance().paused = !Game.getInstance().paused;
+                    Game.getInstance().setPaused( !Game.getInstance().isPaused() );
                 break;
 
 
@@ -475,8 +495,8 @@ public class Game implements Serializable
                 break;
         }
     }
-    
-     /**
+
+    /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
      * @param stream the stream to write to
@@ -484,15 +504,15 @@ public class Game implements Serializable
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt(level);
-        stream.writeLong(timeStep);
-        
-        stream.writeInt(players.size());
-        for( Ship s : players )
-            s.flatten(stream);
-        
-        asteroidManager.flatten(stream);
-        actionManager.flatten(stream);        
+        stream.writeInt( level );
+        stream.writeLong( timeStep );
+
+        stream.writeInt( players.size() );
+        for ( Ship s : players )
+            s.flatten( stream );
+
+        asteroidManager.flatten( stream );
+        actionManager.flatten( stream );
     }
 
     /**
@@ -504,16 +524,48 @@ public class Game implements Serializable
     public Game( DataInputStream stream ) throws IOException
     {
         instance = this;
-        
+
         this.level = stream.readInt();
         this.timeStep = stream.readLong();
-        
+
         players = new LinkedList<Ship>();
         int size = stream.readInt();
-        for(int i = 0; i < size; i++)
-            players.add(new Ship(stream));
-        
-        asteroidManager = new AsteroidManager(stream);
-        actionManager = new ActionManager(stream);        
+        for ( int i = 0; i < size; i++ )
+            players.add( new Ship( stream ) );
+
+        asteroidManager = new AsteroidManager( stream );
+        actionManager = new ActionManager( stream );
+    }
+
+    /**
+     * Whether the game is currently paused.
+     * 
+     * @return  whether the game is paused
+     * @since December 31, 2007
+     */
+    public boolean isPaused()
+    {
+        return paused;
+    }
+
+    /**
+     * Pauses or unpauses the game.
+     * 
+     * @param paused    whether the game should be paused
+     * @since December 31, 2007
+     */
+    public void setPaused( boolean paused )
+    {
+        try
+        {
+            this.paused = paused;
+            Running.log( "Game " + ( paused ? "paused" : "unpaused" ) + "." );
+            if ( Server.is() )
+                Server.getInstance().updatePause( paused );
+        }
+        catch ( IOException ex )
+        {
+            Running.fatalError("Couldn't set pause status in server.", ex);
+        }
     }
 }

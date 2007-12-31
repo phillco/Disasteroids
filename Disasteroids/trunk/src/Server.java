@@ -36,7 +36,15 @@ public class Server extends DatagramListener
         /**
          * We send the client all of the game's data to allow him to join.
          */
-        FULL_UPDATE;
+        FULL_UPDATE,
+        /**
+         * A new player has entered the game.
+         */
+        PLAYER_JOINED,
+        /**
+         * Server is pausing or unpausing the game.
+         */
+        PAUSE;
 
     }
     /**
@@ -45,6 +53,18 @@ public class Server extends DatagramListener
      */
     private LinkedList<ClientMachine> clients;
 
+    private static Server instance;
+
+    public static Server getInstance()
+    {
+        return instance;
+    }
+
+    public static boolean is()
+    {
+        return ( instance != null );
+    }
+
     /**
      * Starts the server and waits for clients.
      * 
@@ -52,10 +72,12 @@ public class Server extends DatagramListener
      */
     public Server()
     {
+        instance = this;
+        System.out.println( "== DISASTEROIDS SERVER == Started!" );
+        clients = new LinkedList<ClientMachine>();
+
         try
         {
-            System.out.println( "== DISASTEROIDS SERVER == Started!" );
-            clients = new LinkedList<ClientMachine>();
             beginListening( DEFAULT_PORT );
         }
         catch ( SocketException ex )
@@ -95,13 +117,13 @@ public class Server extends DatagramListener
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream d = new DataOutputStream( b );
 
-                        // Send him a full update.
-                        d.writeInt( Message.FULL_UPDATE.ordinal() );
-
                         // Spawn him in (so he'll be included in the update).
                         int id = Game.getInstance().addPlayer( din.readUTF() );
 
-                        // Send status of the entire game.
+                        // Send him a full update.
+                        d.writeInt( Message.FULL_UPDATE.ordinal() );
+
+                        // Send the status of the entire game.
                         Game.getInstance().flatten( d );
 
                         // Send him his player ID.
@@ -110,8 +132,16 @@ public class Server extends DatagramListener
                         // Associate this client with the ship.
                         client.inGamePlayer = Game.getInstance().getFromId( id );
 
-                        // Waddle this fat packet out the door.
+                        // Waddle this fat packet out the door!
                         sendPacket( client, b );
+
+                        // Tell everyone else about the player joining.
+                        b = new ByteArrayOutputStream();
+                        d = new DataOutputStream( b );
+
+                        d.writeInt( Message.PLAYER_JOINED.ordinal() );
+                        client.inGamePlayer.flatten( d );
+                        sendPacketToAllButOnePlayer( b, client );
 
                         break;
 
@@ -125,6 +155,60 @@ public class Server extends DatagramListener
         catch ( IOException ex )
         {
             Running.fatalError( "Server parsing exception.", ex );
+        }
+    }
+
+    /**
+     * Sends a packet to all <code>clients</code> who are playing.
+     * 
+     * @param stream    the bytestream of data to be sent
+     * @throws java.io.IOException
+     * @since December 31, 2007
+     */
+    void sendPacketToAllPlayers( ByteArrayOutputStream stream ) throws IOException
+    {
+        byte[] message = stream.toByteArray();
+        for ( ClientMachine c : clients )
+            if ( c.isInGame() )
+                sendPacket( c, message );
+    }
+
+    /**
+     * Sends a packet to all <code>clients</code> who are playing, except <code>excluded</code>.
+     * 
+     * @param stream        the bytestream of data to be sent
+     * @param excluded      <code>ClientMachine</code>s to skip
+     * @throws java.io.IOException
+     * @since December 31, 2007
+     */
+    void sendPacketToAllButOnePlayer( ByteArrayOutputStream stream, ClientMachine excluded ) throws IOException
+    {
+        ClientMachine[] excludeList = new ClientMachine[1];
+        excludeList[0] = excluded;
+        sendPacketToMostPlayers( stream, excludeList );
+    }
+
+    /**
+     * Sends a packet to all <code>clients</code> who are playing, except those on the <code>excludeList</code>.
+     * 
+     * @param stream        the bytestream of data to be sent
+     * @param exludeList    array of <code>ClientMachine</code>s to exclude
+     * @throws java.io.IOException
+     * @since December 31, 2007
+     */
+    void sendPacketToMostPlayers( ByteArrayOutputStream stream, ClientMachine[] exludeList ) throws IOException
+    {
+        byte[] message = stream.toByteArray();
+        for ( ClientMachine c : clients )
+        {
+            for ( ClientMachine ex : exludeList )
+            {
+                if ( c != ex )
+                {
+                    if ( c.isInGame() )
+                        sendPacket( c, message );
+                }
+            }
         }
     }
 
@@ -149,7 +233,24 @@ public class Server extends DatagramListener
         clients.addLast( newClient );
         return newClient;
     }
-    
+
+    /**
+     * Notifies all players about the <code>paused</code> state.
+     * 
+     * @param paused    whether the game is paused
+     * @throws java.io.IOException 
+     * @since December 31, 2007
+     */
+    void updatePause( boolean paused ) throws IOException
+    {
+        // Tell everyone else about the player joining.
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream d = new DataOutputStream( b );
+
+        d.writeInt( Message.PAUSE.ordinal() );
+        d.writeBoolean( paused );
+        sendPacketToAllPlayers( b );
+    }
     /**
      * An extension of <code>Machine</code> that represents anyone who has pinged us.
      * If that person is in the game, he's bound to his <code>Ship</code> here.
@@ -174,9 +275,9 @@ public class Server extends DatagramListener
         {
             super( m.address, m.port );
         }
-        
+
         /**
-         * Returns if this is bound to a <code>Ship</code> in the game.
+         * Returns if this is client is in the game.
          * 
          * @see inGamePlayer
          * @return  if this is bound to a <code>Ship</code> in the game

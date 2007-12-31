@@ -10,7 +10,7 @@ public class GameLoop extends Thread
             try
             {
                 timeOfLast=System.currentTimeMillis();
-                if ( !Game.getInstance().paused )
+                if ( !Game.getInstance().isPaused() )
                     Game.getInstance().act();
 
                 while(System.currentTimeMillis()-timeOfLast<10)

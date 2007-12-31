@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Client side of the C/S networking.
@@ -43,18 +41,20 @@ public class Client extends DatagramListener
         KEYSTROKE;
 
     }
-    
     private static Client instance;
 
     public static Client getInstance()
     {
         return instance;
     }
-    
-    
+
+    public static boolean is()
+    {
+        return ( instance != null );
+    }
+
     /**
-     * Binds this client to the given server, and connects to it.
-     * Assumes the default server port.
+     * Binds this client to the given server, and connects to it. Assumes the default server port.
      * 
      * @param serverAddress     the IP address of the server
      * @throws java.net.UnknownHostException    if the given server can't be found
@@ -63,7 +63,7 @@ public class Client extends DatagramListener
     public Client( String serverAddress ) throws UnknownHostException
     {
         instance = this;
-        server = new Machine( InetAddress.getByName( serverAddress ), Server.DEFAULT_PORT );        
+        server = new Machine( InetAddress.getByName( serverAddress ), Server.DEFAULT_PORT );
         connect();
     }
 
@@ -77,13 +77,18 @@ public class Client extends DatagramListener
     {
         try
         {
-            System.out.println( "Connecting to " + server + "." );
+            System.out.println( "Connecting to " + server + "..." );
             beginListening();
 
-            // Send our connection request.
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream d = new DataOutputStream( b );
+
+            // Send our connection request.
             d.writeInt( Message.CONNECT.ordinal() );
+
+            // Send our name.
+            d.writeUTF( "La cliente" );
+
             sendPacket( server, b );
         }
         catch ( IOException ex )
@@ -107,15 +112,17 @@ public class Client extends DatagramListener
                 switch ( Server.Message.values()[command] )
                 {
                     case FULL_UPDATE:
-                        System.out.println( "Receiving update..." );
-                        new Game();
+                        System.out.print( "Receiving full update..." );
 
-                        // Receive asteroids.
-                        Game.getInstance().asteroidManager = new AsteroidManager( din );
-                        Game.getInstance().addPlayer( ( Settings.playerName.equals( "" ) ? "Player" : Settings.playerName ) );
-                        Game.getInstance().state = Game.Netstate.CLIENT;            
-        
-                        new AsteroidsFrame( 0 );
+                        // Receive status of the entire game.
+                        new Game( din );
+
+                        // Find which player is ours (ID).
+                        int id = din.readInt();
+                        System.out.println( "...done. Our ID is: " + id + "." );
+
+                        // Start the game.
+                        new AsteroidsFrame( id );
                         break;
                 }
             }
@@ -126,6 +133,12 @@ public class Client extends DatagramListener
         }
     }
 
+    /**
+     * Sends a local keystroke to the server.
+     * 
+     * @param key   the keycode (e.getKeyCode)
+     * @since December 31, 2007
+     */
     void keyStroke( int key )
     {
         try
@@ -142,6 +155,5 @@ public class Client extends DatagramListener
         {
             ex.printStackTrace();
         }
-
     }
 }

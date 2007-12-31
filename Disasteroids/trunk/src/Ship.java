@@ -8,6 +8,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -18,6 +21,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Ship implements GameElement
 {
+    public int id;
 
     public final static double SENSITIVITY = 30;
 
@@ -157,12 +161,28 @@ public class Ship implements GameElement
         // Start invincible.
         invulFlash = true;
         invincibilityCount = 200;
+
+        // Assign an unique ID.
+        boolean uniqueId = false;
+        while ( !uniqueId )
+        {
+            uniqueId = true;
+            id = RandNumGen.getMissileInstance().nextInt( 5432 ) + Game.getInstance().players.size() + 4;
+            for ( Ship s : Game.getInstance().players )
+            {
+                if ( s == this )
+                    continue;
+                if ( s.id == this.id )
+                    uniqueId = false;
+            }
+        }
+
     }
-    
+
     @Override
     public String toString()
     {
-        return "[" + (int) x + "," + (int) y + "]";
+        return id + " ~ [" + (int) x + "," + (int) y + "]";
     }
 
     public void clearWeapons()
@@ -184,16 +204,31 @@ public class Ship implements GameElement
 
     public void draw( Graphics g )
     {
-        Color col;
+        for ( WeaponManager wm : allWeapons )
+            wm.draw( g );              
 
-        // Set our color
+        // Set our color.
+        Color col;
         if ( cannotDie() )
             col = myInvicibleColor;
         else
             col = myColor;
 
-        int centerX = AsteroidsFrame.frame().getWidth() / 2;
-        int centerY = AsteroidsFrame.frame().getHeight() / 2;
+        double centerX, centerY;
+
+        if ( this == AsteroidsFrame.frame().localPlayer() )
+        {
+            centerX = AsteroidsFrame.frame().getWidth() / 2;
+            centerY = AsteroidsFrame.frame().getHeight() / 2;
+        }
+        else
+        {
+            centerX = ( x - AsteroidsFrame.frame().localPlayer().getX() + AsteroidsFrame.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
+            centerY = ( y - AsteroidsFrame.frame().localPlayer().getY() + AsteroidsFrame.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+            
+            if ( ! ( centerX > -100 && centerX < Game.getInstance().GAME_WIDTH + 100 && centerY > -100 && centerY < Game.getInstance().GAME_HEIGHT + 100 ) )
+                return;
+        }
 
         Polygon outline = new Polygon();
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
@@ -203,10 +238,7 @@ public class Ship implements GameElement
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
             AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
-        }
-
-        for ( WeaponManager wm : allWeapons )
-            wm.draw( g );
+        }       
 
         if ( drawWeaponNameTimer > 0 )
         {
@@ -587,5 +619,95 @@ public class Ship implements GameElement
     public void setNumShipsKilled( int numShipsKilled )
     {
         this.numShipsKilled = numShipsKilled;
+    }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @since December 30, 2007
+     */
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        stream.writeInt( id );
+
+        stream.writeDouble( x );
+        stream.writeDouble( y );
+        stream.writeDouble( dx );
+        stream.writeDouble( dy );
+        stream.writeDouble( angle );
+
+        stream.writeBoolean( left );
+        stream.writeBoolean( right );
+        stream.writeBoolean( backwards );
+        stream.writeBoolean( forward );
+        stream.writeBoolean( shooting );
+
+        stream.writeInt( invincibilityCount );
+        stream.writeInt( timeTillNextShot );
+
+        // Find our color.
+        int colorIndex = -1;
+        for ( int i = 0; i < Game.getInstance().PLAYER_COLORS.length; i++ )
+        {
+            if ( Game.getInstance().PLAYER_COLORS[i] == myColor )
+            {
+                colorIndex = i;
+                break;
+            }
+        }
+        if ( colorIndex == -1 )
+            Running.fatalError( "Uknown ship color: " + myColor );
+
+        stream.writeInt( colorIndex );
+        stream.writeUTF( name );
+        stream.writeInt( livesLeft );
+        stream.writeInt( weaponIndex );
+        stream.writeInt( numAsteroidsKilled );
+        stream.writeInt( numShipsKilled );
+
+    // (Whew!)
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @since December 30, 2007
+     */
+    public Ship( DataInputStream stream ) throws IOException
+    {
+        id = stream.readInt();
+
+        x = stream.readDouble();
+        y = stream.readDouble();
+        dx = stream.readDouble();
+        dy = stream.readDouble();
+        angle = stream.readDouble();
+
+        left = stream.readBoolean();
+        right = stream.readBoolean();
+        backwards = stream.readBoolean();
+        forward = stream.readBoolean();
+        shooting = stream.readBoolean();
+
+        invincibilityCount = stream.readInt();
+        timeTillNextShot = stream.readInt();
+
+        myColor = Game.getInstance().PLAYER_COLORS[stream.readInt()];
+
+        name = stream.readUTF();
+        livesLeft = stream.readInt();
+        weaponIndex = stream.readInt();
+        numAsteroidsKilled = stream.readInt();
+        numShipsKilled = stream.readInt();
+
+        // Apply basic construction.        
+        double fadePct = 0.6;
+        myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
+        allWeapons = new WeaponManager[3];
+        allWeapons[0] = new MissileManager();
+        allWeapons[1] = new BulletManager();
+        allWeapons[2] = new MineManager();
     }
 }

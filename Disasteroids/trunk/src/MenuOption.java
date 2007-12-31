@@ -11,7 +11,6 @@
 public enum MenuOption
 {
     SINGLEPLAYER( "Singleplayer", "-single" ),
-    LOCALLOOP("Both!", "-ll"),
     START_SERVER( "Start server", "-host" ),
     CONNECT( "Join server", "-join" ),
     OPTIONS( "Options", "-options"),

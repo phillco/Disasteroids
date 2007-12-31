@@ -3,8 +3,6 @@
  * Server.java
  */
 
-import java.awt.Canvas;
-import java.awt.event.KeyEvent;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -45,7 +43,7 @@ public class Server extends DatagramListener
      * List of everyone who has sent us a packet.
      * @since December 29, 2007
      */
-    private LinkedList<Machine> clients;
+    private LinkedList<ClientMachine> clients;
 
     /**
      * Starts the server and waits for clients.
@@ -56,9 +54,8 @@ public class Server extends DatagramListener
     {
         try
         {
-            System.out.println( "== DISASTEROIDS SERVER ==\nStarted!" );
-            Game.getInstance().startGame();
-            clients = new LinkedList<Machine>();
+            System.out.println( "== DISASTEROIDS SERVER == Started!" );
+            clients = new LinkedList<ClientMachine>();
             beginListening( DEFAULT_PORT );
         }
         catch ( SocketException ex )
@@ -79,7 +76,7 @@ public class Server extends DatagramListener
         try
         {
             // Ensure this client is on our register.
-            Machine client = registerClient( new Machine( p.getAddress(), p.getPort() ) );
+            ClientMachine client = registerClient( new Machine( p.getAddress(), p.getPort() ) );
 
             // Create streams.
             ByteArrayInputStream bin = new ByteArrayInputStream( p.getData() );
@@ -95,25 +92,33 @@ public class Server extends DatagramListener
                     // Client wants to join the game.
                     case CONNECT:
 
-                        // Send him a full update.
                         ByteArrayOutputStream b = new ByteArrayOutputStream();
                         DataOutputStream d = new DataOutputStream( b );
+
+                        // Send him a full update.
                         d.writeInt( Message.FULL_UPDATE.ordinal() );
 
-                        // Send asteroids.
-                        Game.getInstance().asteroidManager.flatten( d );
-                        d.close();
+                        // Spawn him in (so he'll be included in the update).
+                        int id = Game.getInstance().addPlayer( din.readUTF() );
+
+                        // Send status of the entire game.
+                        Game.getInstance().flatten( d );
+
+                        // Send him his player ID.
+                        d.writeInt( id );
+
+                        // Associate this client with the ship.
+                        client.inGamePlayer = Game.getInstance().getFromId( id );
+
+                        // Waddle this fat packet out the door.
                         sendPacket( client, b );
 
-                        // Spawn him in.
-                        Game.getInstance().addPlayer( "Player" );
                         break;
 
                     // Client is sending us a keystroke.
                     case KEYSTROKE:
                         int keyCode = din.readInt();
-                        Game.getInstance().actionManager.add(new Action(Game.getInstance().players.getFirst(), keyCode, Game.getInstance().timeStep + 7));
-
+                        Game.getInstance().actionManager.add( new Action( client.inGamePlayer, keyCode, Game.getInstance().timeStep + 2 ) );
                 }
             }
         }
@@ -124,25 +129,62 @@ public class Server extends DatagramListener
     }
 
     /**
-     * Takes the prospective client, and ensures he's on our <code>clients</code> list.
-     * Note that clients are always different; the comparison is just of IP addresses.
-     * Thus, even if <code>newbie</code> is already on the list, the version on the list will be returned.
+     * Takes the unknown IP and matches him to a <code>ClientMachine</code> on our <code>clients</code> list.
      * 
-     * @param newbie    the unknown client
-     * @return          the client on the <code>clients</code> list
+     * @param unknownMachine    the unknown <code>Machine</code>
+     * @return  the client on the <code>clients</code> list
      * @since December 29, 2007
      */
-    Machine registerClient( Machine newbie )
+    ClientMachine registerClient( Machine unknownMachine )
     {
         // See if he's on the list.
-        for ( Machine c : clients )
+        for ( ClientMachine c : clients )
         {
-            if ( c.equals( newbie ) )
+            if ( c.equals( unknownMachine ) )
                 return c;
         }
 
         // Nope. Add him.
-        clients.addLast( newbie );
-        return newbie;
+        ClientMachine newClient = new ClientMachine( unknownMachine );
+        clients.addLast( newClient );
+        return newClient;
+    }
+    
+    /**
+     * An extension of <code>Machine</code> that represents anyone who has pinged us.
+     * If that person is in the game, he's bound to his <code>Ship</code> here.
+     * 
+     * @since December 31, 2007
+     */
+    private class ClientMachine extends Machine
+    {
+        /**
+         * The in-game <code>Ship</code> this client is bound to.
+         * If the client isn't in the game, it's <code>null</code>.
+         */
+        public Ship inGamePlayer;
+
+        /**
+         * Creates <code>this</code> from an existing machine.
+         * 
+         * @param m     the <code>Machine</code> to extend
+         * @since December 31, 2007
+         */
+        public ClientMachine( Machine m )
+        {
+            super( m.address, m.port );
+        }
+        
+        /**
+         * Returns if this is bound to a <code>Ship</code> in the game.
+         * 
+         * @see inGamePlayer
+         * @return  if this is bound to a <code>Ship</code> in the game
+         * @since December 31, 2007
+         */
+        public boolean isInGame()
+        {
+            return ( inGamePlayer != null );
+        }
     }
 }

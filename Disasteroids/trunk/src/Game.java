@@ -1,6 +1,8 @@
 
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,14 +12,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 public class Game implements Serializable
-{
-    public enum Netstate
-    {
-        SINGLEPLAYER, SERVER, CLIENT;
-
-    }
-    Netstate state;
-
+{    
     /**
      * Dimensions of the game, regardless of the graphical depiction
      * @since December 17, 2007
@@ -93,6 +88,13 @@ public class Game implements Serializable
         resetEntireGame();
     }
 
+    public Ship getFromId(int id)
+    {
+        for( Ship s : players)
+            if(s.id == id)
+                return s;
+        return null;
+    }
     public static void saveToFile()
     {
         FileOutputStream fos = null;
@@ -112,7 +114,7 @@ public class Game implements Serializable
         Running.log( "Game saved." );
     }
 
-    public void loadFromFile()
+    public static void loadFromFile()
     {
         FileInputStream fis = null;
         {
@@ -135,11 +137,19 @@ public class Game implements Serializable
         }
     }
 
-    void addPlayer( String name )
+    /**
+     * Adds a new player into the game.
+     * 
+     * @param name  the player's name
+     * @return      the new player's id
+     * @since December ?, 2007
+     */
+    int addPlayer( String name )
     {
         Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 1, name );
         players.add( s );
-        Running.log( s.getName() + " entered the game." );
+        Running.log( s.getName() + " entered the game (id " + s.id + ")." );
+        return s.id;
     }
 
     /**
@@ -283,17 +293,6 @@ public class Game implements Serializable
         if ( shouldExitLevel() )
         {
             nextLevel();
-            return;
-        }
-
-        AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
-
-        // Are we are too far ahead?
-        if ( ( timeStep - otherPlayerTimeStep > 2 ) && ( players.size() > 1 ) )
-        {
-            safeSleep( 20 );
-            AsteroidsServer.send( "t" + String.valueOf( timeStep ) );
-            AsteroidsServer.flush();
             return;
         }
 
@@ -441,7 +440,7 @@ public class Game implements Serializable
                 break;
 
             case KeyEvent.VK_P:
-                if ( Game.getInstance().state == Game.Netstate.SINGLEPLAYER )
+                if ( !Client.is() )
                     Game.getInstance().paused = !Game.getInstance().paused;
                 break;
 
@@ -463,17 +462,58 @@ public class Game implements Serializable
 
             // Saving & loading
             case KeyEvent.VK_T:
-                if ( Game.getInstance().state == Game.Netstate.SINGLEPLAYER )
-                    Game.getInstance().saveToFile();
+                if ( !Client.is() )
+                    Game.saveToFile();
                 break;
 
             case KeyEvent.VK_Y:
-                if ( Game.getInstance().state == Game.Netstate.SINGLEPLAYER )
-                    Game.getInstance().loadFromFile();
+                if ( !Client.is() )
+                    Game.loadFromFile();
                 break;
 
             default:
                 break;
         }
+    }
+    
+     /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @since December 30, 2007
+     */
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        stream.writeInt(level);
+        stream.writeLong(timeStep);
+        
+        stream.writeInt(players.size());
+        for( Ship s : players )
+            s.flatten(stream);
+        
+        asteroidManager.flatten(stream);
+        actionManager.flatten(stream);        
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @since December 30, 2007
+     */
+    public Game( DataInputStream stream ) throws IOException
+    {
+        instance = this;
+        
+        this.level = stream.readInt();
+        this.timeStep = stream.readLong();
+        
+        players = new LinkedList<Ship>();
+        int size = stream.readInt();
+        for(int i = 0; i < size; i++)
+            players.add(new Ship(stream));
+        
+        asteroidManager = new AsteroidManager(stream);
+        actionManager = new ActionManager(stream);        
     }
 }

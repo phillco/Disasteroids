@@ -1,12 +1,14 @@
+
 /**
  * DISASTEROIDS
  * ActionManager.java
  */
-
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Queue;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The game's manager of <code>Ship</code> <code>Action</code>s.
@@ -15,16 +17,10 @@ import java.util.Queue;
  */
 public class ActionManager implements Serializable
 {
-
     /**
      * The list of <code>Action</code> to be performed
      */
-    private LinkedList<Action> theActions;
-
-    /**
-     * The list of <code>Action</code> to be added
-     */
-    private Queue<Action> toBeAdded;
+    private ConcurrentLinkedQueue<Action> theActions;
 
     /**
      * Stores whether theActions should be cleared
@@ -37,8 +33,7 @@ public class ActionManager implements Serializable
      */
     public ActionManager()
     {
-        theActions = new LinkedList<Action>();
-        toBeAdded = new LinkedList<Action>();
+        theActions = new ConcurrentLinkedQueue<Action>();
     }
 
     /**
@@ -49,39 +44,32 @@ public class ActionManager implements Serializable
      */
     public void act( long timestep ) throws UnsynchronizedException
     {
-        //Clear everything if necessary
+        // Clear everything if necessary.
         if ( clearAll )
         {
             theActions.clear();
-            toBeAdded.clear();
             clearAll = false;
             return;
         }
-        //Get the ListIterator
-        ListIterator<Action> itr = theActions.listIterator();
 
-        //Add everything waiting
-        while ( !toBeAdded.isEmpty() )
-        {
-            itr.add( toBeAdded.remove() );
-        }
+        Iterator<Action> itr = theActions.iterator();
         while ( itr.hasNext() )
         {
             Action a = itr.next();
-            //Apply action if necessary
+
+            // Apply action if necessary
             if ( a.timestep() == timestep )
             {
                 a.applyAction();
                 itr.remove();
             }
-            //Check if its too late
+
+            // Check if it's too late.
             if ( a.timestep() < timestep )
             {
                 throw new UnsynchronizedException( "Actor: " + a.actor() );
             }
         }
-        //Dispose of iterator
-        itr = null;
     }
 
     /**
@@ -91,7 +79,7 @@ public class ActionManager implements Serializable
      */
     public void add( Action a )
     {
-        toBeAdded.add( a );
+        theActions.add( a );
     }
 
     /**
@@ -101,5 +89,38 @@ public class ActionManager implements Serializable
     public void clear()
     {
         clearAll = true;
+    }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param d the stream to write to
+     * @since December 30, 2007
+     */
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        // Write the number of elements.
+        stream.writeInt( theActions.size() );
+
+        // Write the elements.
+        for ( Action a : theActions )
+            a.flatten( stream );
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @since December 30, 2007
+     */
+    public ActionManager( DataInputStream stream ) throws IOException
+    {
+        // Create new list.
+        theActions = new ConcurrentLinkedQueue<Action>();
+        int size = stream.readInt();
+
+        // Import actions.
+        for ( int i = 0; i < size; i++ )
+            theActions.add( new Action( stream ) );
     }
 }

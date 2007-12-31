@@ -69,8 +69,8 @@ public class Settings implements Serializable
      * Our local player name.
      * @since December 20, 2007
      */
-    public static String playerName = "";
-    
+    public static String playerName = "Player";
+
     /**
      * Whether the user would like hardware accelerated graphics (true), or software (false).
      * @since December 21, 2007
@@ -118,10 +118,10 @@ public class Settings implements Serializable
 
             if ( p.containsKey( "playerName" ) )
                 playerName = p.getProperty( "playerName" );
-            
+
             if ( p.containsKey( "hardwareRendering" ) )
-                hardwareRendering = Boolean.parseBoolean(p.getProperty( "hardwareRendering" ));
-                        
+                hardwareRendering = Boolean.parseBoolean( p.getProperty( "hardwareRendering" ) );
+
         }
         catch ( IOException ex )
         {
@@ -151,8 +151,13 @@ public class Settings implements Serializable
             p.put( "lastConnectionIP", lastConnectionIP );
             p.put( "highScore", String.valueOf( highScore ) );
             p.put( "highScoreName", highScoreName );
-            p.put( "playerName", playerName );
-            p.put( "hardwareRendering", String.valueOf(hardwareRendering));
+
+            if ( playerName.equals( "" ) )
+                p.put( "playerName", "Player" );
+            else
+                p.put( "playerName", playerName );
+
+            p.put( "hardwareRendering", String.valueOf( hardwareRendering ) );
 
             // Write the settings file.            
             p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );
@@ -164,5 +169,13 @@ public class Settings implements Serializable
 
         // Success!
         return true;
+    }
+
+    public static String getLocalName()
+    {
+        if ( playerName.equals( "" ) )
+            return "Player";
+        else
+            return playerName;
     }
 }

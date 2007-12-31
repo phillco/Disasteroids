@@ -3,6 +3,9 @@
  * Action.java
  */
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -73,5 +76,31 @@ public class Action implements Serializable
     public Ship actor()
     {
         return actor;
+    }
+    
+     /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param d the stream to write to
+     * @since December 30, 2007
+     */
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        stream.writeInt(actor.id);
+        stream.writeInt(keyCode);
+        stream.writeLong(timestep);                        
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @since December 30, 2007
+     */
+    public Action( DataInputStream stream ) throws IOException
+    {
+        actor = Game.getInstance().getFromId(stream.readInt());
+        keyCode = stream.readInt();
+        timestep = stream.readLong();
     }
 }

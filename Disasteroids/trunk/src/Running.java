@@ -100,34 +100,20 @@ public class Running
         switch ( option )
         {
             case SINGLEPLAYER:
-                Game.getInstance().state = Game.Netstate.SINGLEPLAYER;
-                Game.getInstance().addPlayer( Settings.playerName.equals( "" ) ? "Player" : Settings.playerName );
-                new AsteroidsFrame( Game.getInstance().players.size() - 1 );
+                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
                 break;
-            case LOCALLOOP:
-                new Server();
-                Game.getInstance().safeSleep( 900 );
-                try
-                {
-                    new Client( "localhost" );
-                }
-                catch ( UnknownHostException ex )
-                {
-                    fatalError( "Couldn't connect to the local server (o_O)." );
-                }
-                break;
-            case START_SERVER:
-                Game.getInstance().state = Game.Netstate.SERVER;
+            case START_SERVER:                
+                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
                 new Server();
                 break;
             case CONNECT:
-                Game.getInstance().state = Game.Netstate.CLIENT;
 
                 // Get the server address.
-                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", "localhost" );
+                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.lastConnectionIP );
                 if ( ( address == null ) || ( address.equals( "" ) ) )
                     return;
                 Settings.lastConnectionIP = address;
+                Settings.saveToStorage();
 
                 // Connect to it.
                 try
@@ -195,12 +181,10 @@ public class Running
     public static void fatalError( String message, Exception e )
     {
         JOptionPane.showMessageDialog( null, message, "Disasteroids: Very Fatal Error (e)", JOptionPane.ERROR_MESSAGE );
-        System.out.println( "FATAL ERROR: " + message );
+        System.out.println( "FATAL ERROR: " + message + "\n\n" + e.getLocalizedMessage() );
         e.printStackTrace();
         Running.quit();
-    }
-    
-    
+    }        
 
     /**
      * Utility class - no constructor. (Happy, NetBeans?)

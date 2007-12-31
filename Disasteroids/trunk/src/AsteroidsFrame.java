@@ -83,11 +83,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private boolean highScoreAchieved;
 
     /**
-     * Index of the player that's at this computer.
+     * ID of the player that's at this computer.
+     * IDs are used instead of indexes for better reliability.
      * @see <code>players</code>
      * @since December 14 2007
      */
-    private int localPlayer;
+    private int localId;
 
     private static AsteroidsFrame frame;
 
@@ -101,7 +102,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @since December 29, 2007
      */
     private boolean showWarpDialog;
-    
+
     /**
      * Whether the endgame should be shown on next paint cycle.
      * @sinde December 30, 2007
@@ -111,13 +112,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Constructs the game frame and game elements.
      * 
-     * @param localPlayer   index of the player at this computer
+     * @param localId   id of the player at this computer
      * @since December 14, 2007
      */
-    public AsteroidsFrame( int localPlayer )
+    public AsteroidsFrame( int localId )
     {
         frame = this;
-        this.localPlayer = localPlayer;
+        this.localId = localId;
 
         // Close when the exit key is pressed.
         addWindowListener( new CloseAdapter() );
@@ -126,8 +127,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         updateFullscreen();
 
         // Receive key events.
-        this.addKeyListener( this );        
+        this.addKeyListener( this );
     }
+    
 
     /**
      * Resets the background, high score, and notification messages.
@@ -139,7 +141,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         highScoreAchieved = false;
         background.clearMessages();
         notificationMessages.clear();
-        shouldEnd=false;
+        shouldEnd = false;
         // Reset the background.
         background.init();
     }
@@ -185,17 +187,17 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             s.draw( g );
 
-            // Game over?
+        // Game over?
 //            if ( s.livesLeft() < 0 )
 //            {
-                // TODO: Divorce
+        // TODO: Divorce
 //                endGame( g );
 //                continue;
 //            }
         }
-        
-        if(shouldEnd)
-            endGame(g);
+
+        if ( shouldEnd )
+            endGame( g );
 
         Game.getInstance().asteroidManager.draw( g );
 
@@ -277,7 +279,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
-        
+
         repaint();
 
     }
@@ -505,7 +507,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         Game.getInstance().resetEntireGame();
         AsteroidsServer.send( "ng" );
     }
-    
+
     /**
      * Indicates to <code>this</code> that the endgame should be shown on 
      * the next painting cycle.
@@ -514,7 +516,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void endGame()
     {
-        shouldEnd=true;
+        shouldEnd = true;
     }
 
     /**
@@ -525,8 +527,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void endGame( Graphics g )
     {
-        System.out.println(shouldEnd);
-        shouldEnd=false;
+        System.out.println( shouldEnd );
+        shouldEnd = false;
         Game.getInstance().paused = true;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
         if ( Settings.soundOn )
@@ -577,7 +579,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         this.setIgnoreRepaint( false );
         Game.getInstance().paused = false;
         repaint();
-        shouldEnd=false;
+        shouldEnd = false;
     }
 
     /**
@@ -588,15 +590,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public synchronized void keyReleased( KeyEvent e )
     {
-
-        if ( ( e.getKeyCode() >= 37 && e.getKeyCode() <= 40 ) || e.getKeyCode() == KeyEvent.VK_SPACE )
-        {
-            Game.getInstance().actionManager.add( new Action( localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
-            if ( Game.getInstance().state == Game.Netstate.CLIENT )
-                Client.getInstance().keyStroke( e.getKeyCode() );
-        }
-
-        repaint();
+        Game.getInstance().actionManager.add( new Action( localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+        if ( Client.is() )
+            Client.getInstance().keyStroke( e.getKeyCode() );
     }
 
     /**
@@ -636,7 +632,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 toggleFullscreen();
                 break;
             case KeyEvent.VK_W:
-                if( Game.getInstance().state == Game.Netstate.SINGLEPLAYER)
+                if ( !Client.is() )
                     AsteroidsFrame.frame().warpDialog();
                 break;
             case KeyEvent.VK_A:
@@ -650,9 +646,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
                 Game.getInstance().actionManager.add( new Action( localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
 
-                if ( Game.getInstance().state == Game.Netstate.CLIENT )
+                if ( Client.is() )
                     Client.getInstance().keyStroke( e.getKeyCode() );
-
 
         }
         repaint();
@@ -984,7 +979,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public boolean isPlayerOne()
     {
-        return localPlayer == 0;
+        return localId == Game.getInstance().players.getFirst().id;
     }
 
     /**
@@ -1010,7 +1005,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
         if ( Game.getInstance().players == null || Game.getInstance().players.size() < 1 )
             return null;
 
-        return Game.getInstance().players.get( localPlayer );
+        for ( Ship s : Game.getInstance().players )
+            if ( s.id == localId )
+                return s;
+
+        return null;
     }
     /**
      * A simple handler for the frame's window buttons.

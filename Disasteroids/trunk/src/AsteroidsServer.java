@@ -74,7 +74,7 @@ public class AsteroidsServer
     public static void master() throws ConnectException
     {
         // Popup the status screen while the user waits.
-        statusFrame = new NetworkStatus( NetworkStatus.StatusState.SERVER, myIP() );
+        statusFrame = new NetworkStatus( NetworkStatus.StatusState.SERVER, getLocalIP() );
 
         // Start the server.    	
         try
@@ -136,7 +136,7 @@ public class AsteroidsServer
         out.flush();
     }
 
-    public static String myIP()
+    public static String getLocalIP()
     {
         try
         {

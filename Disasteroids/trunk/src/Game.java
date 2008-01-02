@@ -171,7 +171,19 @@ public class Game implements Serializable
     void addPlayer( Ship newPlayer )
     {
         players.add( newPlayer );
-        Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ")." );
+        Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ").", 800 );
+    }
+    
+    /**
+     * Removes a player from the game.
+     * 
+     * @param leavingPlayer     the player
+     * @since January 1, 2007
+     */
+    void removePlayer( Ship leavingPlayer )
+    {
+        players.remove(leavingPlayer);
+        Running.log( leavingPlayer.getName() + " left the game.", 800);
     }
 
     /**
@@ -397,9 +409,7 @@ public class Game implements Serializable
         System.out.println( "Performing " + action + " to " + actor + "." );
         // Decide what key was pressed.
         switch ( action )
-        {
-            case KeyEvent.VK_ESCAPE:
-                Running.quit();
+        {      
             case KeyEvent.VK_SPACE:
                 actor.startShoot();
                 break;
@@ -500,6 +510,7 @@ public class Game implements Serializable
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
      * @param stream the stream to write to
+     * @throws java.io.IOException 
      * @since December 30, 2007
      */
     public void flatten( DataOutputStream stream ) throws IOException
@@ -519,6 +530,7 @@ public class Game implements Serializable
      * Creates <code>this</code> from a stream for client/server transmission.
      * 
      * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
      * @since December 30, 2007
      */
     public Game( DataInputStream stream ) throws IOException

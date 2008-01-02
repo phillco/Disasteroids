@@ -23,6 +23,12 @@ public abstract class DatagramListener
      * @since December 28, 2007
      */
     DatagramSocket socket;
+    
+    /**
+     * Thread that listens for messages.
+     * @since January 1, 2007
+     */
+    private ListenerThread ear;
 
     /**
      * Starts listening for packets on a definite port (typical of servers).
@@ -34,22 +40,34 @@ public abstract class DatagramListener
     void beginListening( int port ) throws SocketException
     {
         socket = new DatagramSocket( port );
-        new ListenerThread( this );
+        ear = new ListenerThread( this );
     }
 
     /**
      * Starts listening for packets on any availible port Java can find us (typical of clients).
+     * 
      * @since December 28, 2007
      * @throws java.net.SocketException
      */
     void beginListening() throws SocketException
     {
         socket = new DatagramSocket();
-        new ListenerThread( this );
+        ear = new ListenerThread( this );
     }
-
+    
+    /**
+     * Stops the listening thread.
+     * 
+     * @since January 1, 2007
+     */
+    void stopListening()
+    {
+        ear.stopListening();
+        ear = null;
+    }
     /**
      * Called whenever we receive a <code>DatagramPacket</code> through our listener.
+     * 
      * @param packet     the <code>DatagramPacket</code>
      */
     abstract void parseReceived( DatagramPacket packet );
@@ -93,6 +111,12 @@ public abstract class DatagramListener
          * @since December 28, 2007
          */
         private DatagramListener parent;
+        
+        /**
+         * Whether we should be listening.
+         * @since January 1, 2007
+         */
+        private boolean enabled = true;
 
         /**
          * Creates the listener and starts it.
@@ -112,17 +136,20 @@ public abstract class DatagramListener
             try
             {
                 // Continuously wait for packets.
-                while ( true )
+                while ( enabled )
                 {
                     // Create a buffer to receive the packet in.
-                    byte[] buffer = new byte[512];
+                    byte[] buffer = new byte[2048];
                     DatagramPacket packet = new DatagramPacket( buffer, buffer.length );
 
-                    // Receive it.
-                    parent.socket.receive( packet );
+                    if( enabled )
+                    {
+                        // Receive it.
+                        parent.socket.receive( packet );
 
-                    // Pass it off.
-                    parent.parseReceived( packet );
+                        // Pass it off.
+                        parent.parseReceived( packet );
+                    }
                 }
             }
             catch ( IOException e )
@@ -130,6 +157,16 @@ public abstract class DatagramListener
                 System.out.println( "Listening error!" );
                 e.printStackTrace();
             }
+        }
+        
+        /**
+         * Stops the listening loop.
+         * 
+         * @since January 1, 2007
+         */
+        public void stopListening()
+        {
+            enabled = false;
         }
     }
     /**

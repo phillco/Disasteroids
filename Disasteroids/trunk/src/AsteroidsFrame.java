@@ -634,6 +634,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Is it a local action?
         switch ( e.getKeyCode() )
         {
+            case KeyEvent.VK_ESCAPE:
+                Running.quit();
+                break;
             case KeyEvent.VK_M:
                 toggleMusic();
                 break;
@@ -787,7 +790,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
 
                 if ( Client.is() )
-                    setLocation( getX() + 3 + WINDOW_WIDTH, getY() );
+                    setLocation( 0 + 3 + WINDOW_WIDTH, 0 );
+                else
+                    setLocation( 0, 0 );
+                    
                 graphicsDevice.setFullScreenWindow( null );
 
                 // Show the cursor.
@@ -1041,15 +1047,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         @Override
         public void windowClosing( WindowEvent e )
         {
-            try
-            {
-                // Tell the other players that we're leaving.
-                AsteroidsServer.send( "exit" );
-                AsteroidsServer.dispose();
-            }
-            catch ( NullPointerException ex )
-            {
-            }
+            frame().dispose();
             Running.quit();
         }
     }

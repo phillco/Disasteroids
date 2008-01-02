@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import javax.swing.JOptionPane;
 
 /**
  * Client side of the C/S networking.
@@ -38,7 +39,11 @@ public class Client extends DatagramListener
         /**
          * Sending our keystroke.
          */
-        KEYSTROKE;
+        KEYSTROKE,
+        /**
+         * Leaving the server.
+         */
+        QUITTING;
 
     }
     private static Client instance;
@@ -124,11 +129,21 @@ public class Client extends DatagramListener
                         // Start the game.
                         new AsteroidsFrame( id );
                         break;
-                    case PLAYER_JOINED:                        
-                        Game.getInstance().addPlayer(new Ship(din));
+                    case PLAYER_JOINED:
+                        Game.getInstance().addPlayer( new Ship( din ) );
+                        break;
+                    case PLAYER_QUIT:
+                        Game.getInstance().removePlayer(Game.getInstance().getFromId(din.readInt()));
                         break;
                     case PAUSE:
-                        Game.getInstance().setPaused(din.readBoolean());
+                        Game.getInstance().setPaused( din.readBoolean() );
+                        break;
+                    case SERVER_QUITTING:
+                        Game.getInstance().setPaused(true);
+                        if( AsteroidsFrame.frame() != null )
+                            AsteroidsFrame.frame().dispose();
+                        JOptionPane.showMessageDialog(null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE);
+                        Running.quit();
                         break;
                 }
             }
@@ -152,15 +167,40 @@ public class Client extends DatagramListener
             ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream d = new DataOutputStream( b );
 
-            System.out.println("Sending " + key);
             d.writeInt( Message.KEYSTROKE.ordinal() );
             d.writeInt( key );
-            
+
             sendPacket( server, b );
         }
         catch ( IOException ex )
         {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * Disconnects from this server.
+     * 
+     * @since January 1, 2007
+     */
+    void quit()
+    {
+        try
+        {
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream d = new DataOutputStream( b );
+
+            d.writeInt( Message.QUITTING.ordinal() );
+
+            sendPacket( server, b );
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+        
+        stopListening();
+        server = null;
+        instance = null;
     }
 }

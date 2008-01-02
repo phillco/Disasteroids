@@ -67,6 +67,14 @@ public class Running
     {
         System.out.println("Shutting down nicely...");
         
+        // Tell the server we're quitting.
+        if( Client.is() )
+            Client.getInstance().quit();    // And I told Bill, that if they move my desk one more time, then, then....
+        
+        // Tell clients we're quitting.
+        else if ( Server.is() )
+            Server.getInstance().quit();
+        
         // Find the player with the highest score.
         if ( AsteroidsFrame.frame() != null )
         {

@@ -42,9 +42,18 @@ public class Server extends DatagramListener
          */
         PLAYER_JOINED,
         /**
+         * An existing player is qutting.
+         */
+        PLAYER_QUIT,
+        /**
          * Server is pausing or unpausing the game.
          */
-        PAUSE;
+        PAUSE,
+        
+        /**
+         * Server's going down!
+         */
+        SERVER_QUITTING;
 
     }
     /**
@@ -149,6 +158,21 @@ public class Server extends DatagramListener
                     case KEYSTROKE:
                         int keyCode = din.readInt();
                         Game.getInstance().actionManager.add( new Action( client.inGamePlayer, keyCode, Game.getInstance().timeStep + 2 ) );
+                        break;
+
+                    // Client wishes to resume life.
+                    case QUITTING:
+                        
+                        if( client.isInGame() )
+                            Game.getInstance().removePlayer( client.inGamePlayer );
+                        
+                        // Tell everyone else.
+                        b = new ByteArrayOutputStream();
+                        d = new DataOutputStream( b );
+
+                        d.writeInt( Message.PLAYER_QUIT.ordinal() );
+                        d.writeInt( client.inGamePlayer.id );
+                        sendPacketToAllButOnePlayer( b, client );
                 }
             }
         }
@@ -251,6 +275,32 @@ public class Server extends DatagramListener
         d.writeBoolean( paused );
         sendPacketToAllPlayers( b );
     }
+    
+    /**
+     * Shuts down the server and tells all clients to quit.
+     * The local game can continue to run after this is called.
+     * 
+     * @since January 1, 2007
+     */
+    void quit()
+    {
+        stopListening();
+        try
+        {
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream d = new DataOutputStream( b );
+
+            d.writeInt( Message.SERVER_QUITTING.ordinal() );
+            sendPacketToAllPlayers( b );
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+        clients = null;
+        socket = null;
+    }
+    
     /**
      * An extension of <code>Machine</code> that represents anyone who has pinged us.
      * If that person is in the game, he's bound to his <code>Ship</code> here.

@@ -6,8 +6,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**

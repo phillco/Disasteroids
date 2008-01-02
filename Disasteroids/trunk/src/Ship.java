@@ -624,22 +624,19 @@ public class Ship implements GameElement
         
     }
     
+     /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since December 30, 2007
+     */
     public void flatten( DataOutputStream stream ) throws IOException
     {
         stream.writeInt( id );
 
-        stream.writeDouble( x );
-        stream.writeDouble( y );
-        stream.writeDouble( dx );
-        stream.writeDouble( dy );
-        stream.writeDouble( angle );
-
-        stream.writeBoolean( left );
-        stream.writeBoolean( right );
-        stream.writeBoolean( backwards );
-        stream.writeBoolean( forward );
-        stream.writeBoolean( shooting );
-
+        flattenPosition(stream);
+        
         stream.writeInt( invincibilityCount );
         stream.writeInt( timeTillNextShot );
 
@@ -665,17 +662,40 @@ public class Ship implements GameElement
 
     // (Whew!)
     }
-
+    
+    
     /**
-     * Creates <code>this</code> from a stream for client/server transmission.
+     * Writes our position, angle, key presses, and speed.
      * 
-     * @param stream    the stream to read from (sent by the server)
-     * @since December 30, 2007
+     * @param stream    the stream to write to
+     * @throws java.io.IOException
+     * @since January 2, 2008
      */
-    public Ship( DataInputStream stream ) throws IOException
+    void flattenPosition( DataOutputStream stream ) throws IOException
     {
-        id = stream.readInt();
+        stream.writeDouble( x );
+        stream.writeDouble( y );
+        stream.writeDouble( dx );
+        stream.writeDouble( dy );
+        stream.writeDouble( angle );
 
+        stream.writeBoolean( left );
+        stream.writeBoolean( right );
+        stream.writeBoolean( backwards );
+        stream.writeBoolean( forward );
+        stream.writeBoolean( shooting );
+    }
+    
+    
+    /**
+     * Reads our position, angle, key presses, and speed.
+     * 
+     * @param stream    the stream to read from
+     * @throws java.io.IOException
+     * @since January 2, 2008
+     */
+    void restorePosition( DataInputStream stream ) throws IOException
+    {
         x = stream.readDouble();
         y = stream.readDouble();
         dx = stream.readDouble();
@@ -687,7 +707,21 @@ public class Ship implements GameElement
         backwards = stream.readBoolean();
         forward = stream.readBoolean();
         shooting = stream.readBoolean();
+    }
 
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
+     * @since December 30, 2007
+     */
+    public Ship( DataInputStream stream ) throws IOException
+    {
+        id = stream.readInt();
+
+        restorePosition(stream);
+        
         invincibilityCount = stream.readInt();
         timeTillNextShot = stream.readInt();
 

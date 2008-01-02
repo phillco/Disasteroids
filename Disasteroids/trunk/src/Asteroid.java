@@ -322,6 +322,7 @@ public class Asteroid implements GameElement, Serializable
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
      * @param stream the stream to write to
+     * @throws java.io.IOException 
      * @since December 29, 2007
      */
     public void flatten( DataOutputStream stream ) throws IOException

@@ -762,7 +762,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
             // Don't change anything if we're already in fullscreen mode.
             if ( graphicsDevice.getFullScreenWindow() != this )
             {
-                setVisible( false );
                 dispose();
                 setUndecorated( true );
                 setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
@@ -793,7 +792,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                     setLocation( 0 + 3 + WINDOW_WIDTH, 0 );
                 else
                     setLocation( 0, 0 );
-                    
+
                 graphicsDevice.setFullScreenWindow( null );
 
                 // Show the cursor.

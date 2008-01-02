@@ -406,7 +406,6 @@ public class Game implements Serializable
      */
     public static void performAction( int action, Ship actor )
     {
-        System.out.println( "Performing " + action + " to " + actor + "." );
         // Decide what key was pressed.
         switch ( action )
         {      
@@ -504,6 +503,9 @@ public class Game implements Serializable
             default:
                 break;
         }
+        
+        if(Server.is())
+            Server.getInstance().updatePlayerPosition(actor);
     }
 
     /**

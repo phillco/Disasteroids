@@ -3,10 +3,6 @@
  * Client.java
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -85,16 +81,15 @@ public class Client extends DatagramListener
             System.out.println( "Connecting to " + server + "..." );
             beginListening();
 
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream d = new DataOutputStream( b );
+            ByteOutputStream out = new ByteOutputStream();
 
             // Send our connection request.
-            d.writeInt( Message.CONNECT.ordinal() );
+            out.writeInt( Message.CONNECT.ordinal() );
 
             // Send our name.
-            d.writeUTF( "La cliente" );
+            out.writeUTF( Settings.getLocalName() );
 
-            sendPacket( server, b );
+            sendPacket( server, out );
         }
         catch ( IOException ex )
         {
@@ -106,12 +101,11 @@ public class Client extends DatagramListener
     {
         try
         {
-            // Create streams.
-            ByteArrayInputStream bin = new ByteArrayInputStream( p.getData() );
-            DataInputStream din = new DataInputStream( bin );
+            // Create stream.
+            ByteInputStream in = new ByteInputStream( p.getData() );
 
             // Determine the type of message.
-            int command = din.readInt();
+            int command = in.readInt();
             if ( ( command >= 0 ) && ( command < Server.Message.values().length ) )
             {
                 switch ( Server.Message.values()[command] )
@@ -120,29 +114,32 @@ public class Client extends DatagramListener
                         System.out.print( "Receiving full update..." );
 
                         // Receive status of the entire game.
-                        new Game( din );
+                        new Game( in );
 
                         // Find which player is ours (ID).
-                        int id = din.readInt();
+                        int id = in.readInt();
                         System.out.println( "...done. Our ID is: " + id + "." );
 
                         // Start the game.
                         new AsteroidsFrame( id );
                         break;
+                    case PLAYER_UPDATE_POSITION:
+                        Game.getInstance().getFromId(in.readInt()).restorePosition(in);
+                        break;
                     case PLAYER_JOINED:
-                        Game.getInstance().addPlayer( new Ship( din ) );
+                        Game.getInstance().addPlayer( new Ship( in ) );
                         break;
                     case PLAYER_QUIT:
-                        Game.getInstance().removePlayer(Game.getInstance().getFromId(din.readInt()));
+                        Game.getInstance().removePlayer( Game.getInstance().getFromId( in.readInt() ) );
                         break;
                     case PAUSE:
-                        Game.getInstance().setPaused( din.readBoolean() );
+                        Game.getInstance().setPaused( in.readBoolean() );
                         break;
                     case SERVER_QUITTING:
-                        Game.getInstance().setPaused(true);
-                        if( AsteroidsFrame.frame() != null )
+                        Game.getInstance().setPaused( true );
+                        if ( AsteroidsFrame.frame() != null )
                             AsteroidsFrame.frame().dispose();
-                        JOptionPane.showMessageDialog(null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog( null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE );
                         Running.quit();
                         break;
                 }
@@ -164,13 +161,12 @@ public class Client extends DatagramListener
     {
         try
         {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream d = new DataOutputStream( b );
+            ByteOutputStream out = new ByteOutputStream();
 
-            d.writeInt( Message.KEYSTROKE.ordinal() );
-            d.writeInt( key );
+            out.writeInt( Message.KEYSTROKE.ordinal() );
+            out.writeInt( key );
 
-            sendPacket( server, b );
+            sendPacket( server, out );
         }
         catch ( IOException ex )
         {
@@ -187,18 +183,17 @@ public class Client extends DatagramListener
     {
         try
         {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream d = new DataOutputStream( b );
+            ByteOutputStream out = new ByteOutputStream();
 
-            d.writeInt( Message.QUITTING.ordinal() );
+            out.writeInt( Message.QUITTING.ordinal() );
 
-            sendPacket( server, b );
+            sendPacket( server, out );
         }
         catch ( IOException ex )
         {
             ex.printStackTrace();
         }
-        
+
         stopListening();
         server = null;
         instance = null;

@@ -3,7 +3,10 @@
  * DatagramListener.java
  */
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -17,13 +20,12 @@ import java.net.SocketException;
  */
 public abstract class DatagramListener
 {
-
     /**
      * Our socket for sending and receiving.
      * @since December 28, 2007
      */
     DatagramSocket socket;
-    
+
     /**
      * Thread that listens for messages.
      * @since January 1, 2007
@@ -54,7 +56,7 @@ public abstract class DatagramListener
         socket = new DatagramSocket();
         ear = new ListenerThread( this );
     }
-    
+
     /**
      * Stops the listening thread.
      * 
@@ -65,6 +67,7 @@ public abstract class DatagramListener
         ear.stopListening();
         ear = null;
     }
+
     /**
      * Called whenever we receive a <code>DatagramPacket</code> through our listener.
      * 
@@ -81,7 +84,7 @@ public abstract class DatagramListener
      * @throws java.io.IOException 
      * @since December 29, 2007
      */
-    void sendPacket( Machine client, ByteArrayOutputStream stream ) throws IOException
+    void sendPacket( Machine client, ByteOutputStream stream ) throws IOException
     {
         sendPacket( client, stream.toByteArray() );
     }
@@ -100,18 +103,64 @@ public abstract class DatagramListener
         socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
     }
     /**
+     * A simple combined class for reading a byte array.
+     * 
+     * @since January 1, 2007
+     */
+    class ByteInputStream extends DataInputStream
+    {
+        /**
+         * Constructs the data stream from a byte array.
+         * 
+         * @param buffer    the array of bytes to read
+         * @since January 1, 2007
+         */
+        public ByteInputStream( byte[] buffer )
+        {
+            super( new ByteArrayInputStream( buffer ) );
+        }
+    }
+    /**
+     * A simple combined class for writing to a byte array.
+     * 
+     * @since January 1, 2007
+     */
+    class ByteOutputStream extends DataOutputStream
+    {
+        /**
+         * Constructs the data stream to write to a byte array.
+         * 
+         * @since January 1, 2007
+         */
+        public ByteOutputStream()
+        {
+            super( new ByteArrayOutputStream() );
+        }
+
+        /**
+         * Converts the written stream into a byte array.
+         *
+         * @return  the current contents of this output stream, as a byte array.
+         * @see     java.io.ByteArrayOutputStream#toByteArray()
+         * @since January 1, 2007
+         */
+        public byte[] toByteArray()
+        {
+            return ( (ByteArrayOutputStream) this.out ).toByteArray();
+        }
+    }
+    /**
      * A <code>Thread</code> that listens for packets and passes them to <code>parseReceived</code>.
      * @since December 28, 2007
      */
     class ListenerThread extends Thread
     {
-
         /**
          * Parent class that implements <code>parseReceived</code>.
          * @since December 28, 2007
          */
         private DatagramListener parent;
-        
+
         /**
          * Whether we should be listening.
          * @since January 1, 2007
@@ -142,7 +191,7 @@ public abstract class DatagramListener
                     byte[] buffer = new byte[2048];
                     DatagramPacket packet = new DatagramPacket( buffer, buffer.length );
 
-                    if( enabled )
+                    if ( enabled )
                     {
                         // Receive it.
                         parent.socket.receive( packet );
@@ -158,7 +207,7 @@ public abstract class DatagramListener
                 e.printStackTrace();
             }
         }
-        
+
         /**
          * Stops the listening loop.
          * 
@@ -176,7 +225,6 @@ public abstract class DatagramListener
      */
     class Machine
     {
-
         /**
          * IP address of this machine.
          * @since December 29, 2007
@@ -221,7 +269,7 @@ public abstract class DatagramListener
             // Same!
             return true;
         }
-        
+
         @Override
         public String toString()
         {

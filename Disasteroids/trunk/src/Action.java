@@ -65,7 +65,7 @@ public class Action implements Serializable
      */
     public void applyAction()
     {
-        Game.getInstance().performAction( keyCode, actor );
+        Game.performAction( keyCode, actor );
     }
 
     /**
@@ -81,8 +81,9 @@ public class Action implements Serializable
      /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
-     * @param d the stream to write to
-     * @since December 30, 2007
+     * @param stream the stream to write to
+      * @throws java.io.IOException 
+      * @since December 30, 2007
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
@@ -95,6 +96,7 @@ public class Action implements Serializable
      * Creates <code>this</code> from a stream for client/server transmission.
      * 
      * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
      * @since December 30, 2007
      */
     public Action( DataInputStream stream ) throws IOException

@@ -3,16 +3,10 @@
  * Server.java
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Server side of the C/S networking.
@@ -38,6 +32,10 @@ public class Server extends DatagramListener
          */
         FULL_UPDATE,
         /**
+         * Updating a player's position and speed.
+         */
+        PLAYER_UPDATE_POSITION,
+        /**
          * A new player has entered the game.
          */
         PLAYER_JOINED,
@@ -49,7 +47,6 @@ public class Server extends DatagramListener
          * Server is pausing or unpausing the game.
          */
         PAUSE,
-        
         /**
          * Server's going down!
          */
@@ -91,7 +88,7 @@ public class Server extends DatagramListener
         }
         catch ( SocketException ex )
         {
-            Logger.getLogger( Server.class.getName() ).log( Level.SEVERE, null, ex );
+            ex.printStackTrace();
         }
     }
 
@@ -110,11 +107,10 @@ public class Server extends DatagramListener
             ClientMachine client = registerClient( new Machine( p.getAddress(), p.getPort() ) );
 
             // Create streams.
-            ByteArrayInputStream bin = new ByteArrayInputStream( p.getData() );
-            DataInputStream din = new DataInputStream( bin );
+            ByteInputStream in = new ByteInputStream( p.getData() );
 
             // Determine the type of message.
-            int command = din.readInt();
+            int command = in.readInt();
             if ( ( command >= 0 ) && ( command < Client.Message.values().length ) )
             {
                 switch ( Client.Message.values()[command] )
@@ -123,56 +119,53 @@ public class Server extends DatagramListener
                     // Client wants to join the game.
                     case CONNECT:
 
-                        ByteArrayOutputStream b = new ByteArrayOutputStream();
-                        DataOutputStream d = new DataOutputStream( b );
+                        ByteOutputStream out = new ByteOutputStream();
 
                         // Spawn him in (so he'll be included in the update).
-                        int id = Game.getInstance().addPlayer( din.readUTF() );
+                        int id = Game.getInstance().addPlayer( in.readUTF() );
 
                         // Send him a full update.
-                        d.writeInt( Message.FULL_UPDATE.ordinal() );
+                        out.writeInt( Message.FULL_UPDATE.ordinal() );
 
                         // Send the status of the entire game.
-                        Game.getInstance().flatten( d );
+                        Game.getInstance().flatten( out );
 
                         // Send him his player ID.
-                        d.writeInt( id );
+                        out.writeInt( id );
 
                         // Associate this client with the ship.
                         client.inGamePlayer = Game.getInstance().getFromId( id );
 
                         // Waddle this fat packet out the door!
-                        sendPacket( client, b );
+                        sendPacket( client, out );
 
                         // Tell everyone else about the player joining.
-                        b = new ByteArrayOutputStream();
-                        d = new DataOutputStream( b );
+                        out = new ByteOutputStream();
 
-                        d.writeInt( Message.PLAYER_JOINED.ordinal() );
-                        client.inGamePlayer.flatten( d );
-                        sendPacketToAllButOnePlayer( b, client );
+                        out.writeInt( Message.PLAYER_JOINED.ordinal() );
+                        client.inGamePlayer.flatten( out );
+                        sendPacketToAllButOnePlayer( out, client );
 
                         break;
 
                     // Client is sending us a keystroke.
                     case KEYSTROKE:
-                        int keyCode = din.readInt();
+                        int keyCode = in.readInt();
                         Game.getInstance().actionManager.add( new Action( client.inGamePlayer, keyCode, Game.getInstance().timeStep + 2 ) );
                         break;
 
                     // Client wishes to resume life.
                     case QUITTING:
-                        
-                        if( client.isInGame() )
-                            Game.getInstance().removePlayer( client.inGamePlayer );
-                        
-                        // Tell everyone else.
-                        b = new ByteArrayOutputStream();
-                        d = new DataOutputStream( b );
 
-                        d.writeInt( Message.PLAYER_QUIT.ordinal() );
-                        d.writeInt( client.inGamePlayer.id );
-                        sendPacketToAllButOnePlayer( b, client );
+                        if ( client.isInGame() )
+                            Game.getInstance().removePlayer( client.inGamePlayer );
+
+                        // Tell everyone else.
+                        out = new ByteOutputStream();
+
+                        out.writeInt( Message.PLAYER_QUIT.ordinal() );
+                        out.writeInt( client.inGamePlayer.id );
+                        sendPacketToAllButOnePlayer( out, client );
                 }
             }
         }
@@ -189,7 +182,7 @@ public class Server extends DatagramListener
      * @throws java.io.IOException
      * @since December 31, 2007
      */
-    void sendPacketToAllPlayers( ByteArrayOutputStream stream ) throws IOException
+    void sendPacketToAllPlayers( ByteOutputStream stream ) throws IOException
     {
         byte[] message = stream.toByteArray();
         for ( ClientMachine c : clients )
@@ -205,7 +198,7 @@ public class Server extends DatagramListener
      * @throws java.io.IOException
      * @since December 31, 2007
      */
-    void sendPacketToAllButOnePlayer( ByteArrayOutputStream stream, ClientMachine excluded ) throws IOException
+    void sendPacketToAllButOnePlayer( ByteOutputStream stream, ClientMachine excluded ) throws IOException
     {
         ClientMachine[] excludeList = new ClientMachine[1];
         excludeList[0] = excluded;
@@ -220,7 +213,7 @@ public class Server extends DatagramListener
      * @throws java.io.IOException
      * @since December 31, 2007
      */
-    void sendPacketToMostPlayers( ByteArrayOutputStream stream, ClientMachine[] exludeList ) throws IOException
+    void sendPacketToMostPlayers( ByteOutputStream stream, ClientMachine[] exludeList ) throws IOException
     {
         byte[] message = stream.toByteArray();
         for ( ClientMachine c : clients )
@@ -267,15 +260,14 @@ public class Server extends DatagramListener
      */
     void updatePause( boolean paused ) throws IOException
     {
-        // Tell everyone else about the player joining.
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        DataOutputStream d = new DataOutputStream( b );
+        ByteOutputStream out = new ByteOutputStream();
 
-        d.writeInt( Message.PAUSE.ordinal() );
-        d.writeBoolean( paused );
-        sendPacketToAllPlayers( b );
+        out.writeInt( Message.PAUSE.ordinal() );
+        out.writeBoolean( paused );
+
+        sendPacketToAllPlayers( out );
     }
-    
+
     /**
      * Shuts down the server and tells all clients to quit.
      * The local game can continue to run after this is called.
@@ -287,11 +279,9 @@ public class Server extends DatagramListener
         stopListening();
         try
         {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream d = new DataOutputStream( b );
-
-            d.writeInt( Message.SERVER_QUITTING.ordinal() );
-            sendPacketToAllPlayers( b );
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt( Message.SERVER_QUITTING.ordinal() );
+            sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )
         {
@@ -300,7 +290,28 @@ public class Server extends DatagramListener
         clients = null;
         socket = null;
     }
-    
+
+    /**
+     * Updates a player's position and speed.
+     * 
+     * @param s player to update
+     * @since January 2, 2008
+     */
+    void updatePlayerPosition( Ship s )
+    {
+        try
+        {
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt( Message.PLAYER_UPDATE_POSITION.ordinal() );
+            out.writeInt( s.id );
+            s.flattenPosition( out );
+            sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+    }
     /**
      * An extension of <code>Machine</code> that represents anyone who has pinged us.
      * If that person is in the game, he's bound to his <code>Ship</code> here.

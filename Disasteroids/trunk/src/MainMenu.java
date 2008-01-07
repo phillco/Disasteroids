@@ -119,12 +119,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             // Selecting a choice?
             case KeyEvent.VK_ENTER:
             case KeyEvent.VK_SPACE:
-                if ( MenuOption.values()[choice] == MenuOption.OPTIONS )
-                {
-                    setVisible( false );
-                    new OptionsFrame( this );
-                }
-                else
+        
                 {
                     dispose();
                     Running.startGame( MenuOption.values()[choice] );

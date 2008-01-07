@@ -17,7 +17,6 @@ import java.util.Random;
  */
 public class Asteroid implements GameElement, Serializable
 {
-
     /**
      * The <code>AsteroidManager</code> to which this <code>Asteroid</code> belongs.
      * @author Andy Kooiman
@@ -118,6 +117,11 @@ public class Asteroid implements GameElement, Serializable
      */
     public Asteroid( Asteroid parent )
     {
+        // Server spawns asteroids.
+        if ( Client.is() )
+            return;
+
+
         parent.children++;
         if ( parent.children > 2 )
             this.radius = 5;
@@ -136,6 +140,9 @@ public class Asteroid implements GameElement, Serializable
 
         // Enforce a mininum speed.
         checkMovement();
+
+        if ( Server.is() )
+            Server.getInstance().newAsteroid( this );
     }
 
     /**
@@ -157,6 +164,7 @@ public class Asteroid implements GameElement, Serializable
      */
     public void act()
     {
+        // Asteroids are removed when split.
         if ( children > 1 || radius == 5 )
             shouldRemove = true;
         move();
@@ -213,11 +221,15 @@ public class Asteroid implements GameElement, Serializable
             shouldRemove = true;
             return;
         }
+        
+        if( killer != null )
+        {
         killer.increaseScore( radius * 2 );
         killer.setNumAsteroidsKilled( killer.getNumAsteroidsKilled() + 1 );
-        if( AsteroidsFrame.frame() != null )
+        }
+        if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) x, (int) y, killer.getColor().darker() );
-        
+
         if ( radius < 12 )
             shouldRemove = true;
         else
@@ -254,8 +266,11 @@ public class Asteroid implements GameElement, Serializable
                     }
                 }
             }
+        }
+        
+        for( ShootingObject s : Game.getInstance().shootingObjects )
 
-            for ( WeaponManager wm : s.allWeapons() )
+            for ( WeaponManager wm : s.getManagers() )
             {
                 // Loop through all this ship's Missiles.
                 for ( Weapon m : wm.getWeapons() )
@@ -269,14 +284,18 @@ public class Asteroid implements GameElement, Serializable
                         life = Math.max( 0, life - m.getDamage() );
                         if ( life <= 0 )
                         {
-                            split( s );
+                            if( s.getClass().isInstance(Game.getInstance().players.getFirst()))
+                            {
+                                Ship other = (Ship) s;
+                                split( other );
+                            }
                             return;
                         }
                     }
                 }
             }
         }
-    }
+    
 
     /**
      * Makes sure that we're moving fast enough.
@@ -311,11 +330,11 @@ public class Asteroid implements GameElement, Serializable
     {
         return shouldRemove;
     }
-    
+
     @Override
     public String toString()
     {
-        return "[Asteroid@ (" + x + "," + y +  "), radius " + radius + "]";
+        return "[Asteroid@ (" + x + "," + y + "), radius " + radius + "]";
     }
 
     /**
@@ -355,7 +374,7 @@ public class Asteroid implements GameElement, Serializable
         life = stream.readInt();
         lifeMax = stream.readInt();
         children = stream.readInt();
-        
+
         // TODO: Add victim
         environment = Game.getInstance().asteroidManager;
     }

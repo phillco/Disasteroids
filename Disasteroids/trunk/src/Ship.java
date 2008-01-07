@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andy Kooiman, Phillip Cohen
  * @since Classic
  */
-public class Ship implements GameElement
+public class Ship implements GameElement, ShootingObject
 {
     public int id;
 
@@ -205,7 +205,7 @@ public class Ship implements GameElement
     public void draw( Graphics g )
     {
         for ( WeaponManager wm : allWeapons )
-            wm.draw( g );              
+            wm.draw( g );
 
         // Set our color.
         Color col;
@@ -225,8 +225,8 @@ public class Ship implements GameElement
         {
             centerX = ( x - AsteroidsFrame.frame().localPlayer().getX() + AsteroidsFrame.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
             centerY = ( y - AsteroidsFrame.frame().localPlayer().getY() + AsteroidsFrame.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
-            
-            if ( ! ( centerX > -100 && centerX < Game.getInstance().GAME_WIDTH + 100 && centerY > -100 && centerY < Game.getInstance().GAME_HEIGHT + 100 ) )
+
+            if ( !( centerX > -100 && centerX < Game.getInstance().GAME_WIDTH + 100 && centerY > -100 && centerY < Game.getInstance().GAME_HEIGHT + 100 ) )
                 return;
         }
 
@@ -238,7 +238,7 @@ public class Ship implements GameElement
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
             AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
-        }       
+        }
 
         if ( drawWeaponNameTimer > 0 )
         {
@@ -379,24 +379,29 @@ public class Ship implements GameElement
 
     private void checkCollision()
     {
-        for ( Ship other : Game.getInstance().players )
+        for ( ShootingObject other : Game.getInstance().shootingObjects )
         {
             if ( other == this )
                 continue;
 
-            ConcurrentLinkedQueue<Weapon> enemyWeapons = other.getWeaponManager().getWeapons();
-
-            for ( Weapon m : enemyWeapons )
+            for ( WeaponManager wm : other.getManagers() )
             {
-                if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y - m.getY(), 2 ) < 400 )
-                    if ( looseLife() )
-                    {
-                        m.explode();
-                        score -= 5000;
-                        other.score += 5000;
-                        other.numShipsKilled++;
-                        other.livesLeft++;
-                    }
+                for ( Weapon m : wm.getWeapons() )
+                {
+                    if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y - m.getY(), 2 ) < 400 )
+                        if ( looseLife() )
+                        {
+                            m.explode();
+                            score -= 5000;
+                            if ( other.getClass().isInstance(this))
+                            {
+                                Ship s = (Ship) other;
+                                s.score += 5000;
+                                s.numShipsKilled++;
+                                s.livesLeft++;
+                            }
+                        }
+                }
             }
         }
     }
@@ -621,10 +626,10 @@ public class Ship implements GameElement
      */
     public void positionUpdate()
     {
-        
+
     }
-    
-     /**
+
+    /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
      * @param stream the stream to write to
@@ -635,8 +640,8 @@ public class Ship implements GameElement
     {
         stream.writeInt( id );
 
-        flattenPosition(stream);
-        
+        flattenPosition( stream );
+
         stream.writeInt( invincibilityCount );
         stream.writeInt( timeTillNextShot );
 
@@ -662,8 +667,7 @@ public class Ship implements GameElement
 
     // (Whew!)
     }
-    
-    
+
     /**
      * Writes our position, angle, key presses, and speed.
      * 
@@ -685,8 +689,7 @@ public class Ship implements GameElement
         stream.writeBoolean( forward );
         stream.writeBoolean( shooting );
     }
-    
-    
+
     /**
      * Reads our position, angle, key presses, and speed.
      * 
@@ -720,8 +723,8 @@ public class Ship implements GameElement
     {
         id = stream.readInt();
 
-        restorePosition(stream);
-        
+        restorePosition( stream );
+
         invincibilityCount = stream.readInt();
         timeTillNextShot = stream.readInt();
 
@@ -740,5 +743,13 @@ public class Ship implements GameElement
         allWeapons[0] = new MissileManager();
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();
+    }
+
+    public ConcurrentLinkedQueue<WeaponManager> getManagers()
+    {
+        ConcurrentLinkedQueue<WeaponManager> c = new ConcurrentLinkedQueue<WeaponManager>();
+        for ( WeaponManager w : allWeapons )
+            c.add( w );
+        return c;
     }
 }

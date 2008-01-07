@@ -268,9 +268,8 @@ public class Missile implements Weapon, GameElement
 
     /**
      * Steps <code>this</code> through the explosion sequence and draws.
+     * 
      * @param explodeCount The current stage of the explosion.
-     * @param g The <code>Graphics</code> context in which to be drawn.
-     * @author Andy Kooiman
      * @since Classic
      */
     private synchronized void explode( int explodeCount)

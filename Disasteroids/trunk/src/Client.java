@@ -126,6 +126,9 @@ public class Client extends DatagramListener
                     case PLAYER_UPDATE_POSITION:
                         Game.getInstance().getFromId(in.readInt()).restorePosition(in);
                         break;
+                    case NEW_ASTEROID:
+                        Game.getInstance().asteroidManager.add(new Asteroid(in));
+                        break;
                     case PLAYER_JOINED:
                         Game.getInstance().addPlayer( new Ship( in ) );
                         break;

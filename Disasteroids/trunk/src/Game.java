@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,7 +69,11 @@ public class Game implements Serializable
      * @since December 14 2007
      */
     public LinkedList<Ship> players = new LinkedList<Ship>();
-
+    
+    public ConcurrentLinkedQueue<GameObject> gameObjects;
+    
+    public LinkedList<ShootingObject> shootingObjects;
+    
     /**
      * How many times we <code>act</code> per paint call. Can be used to make later levels more playable.
      * @since December 23, 2007
@@ -158,6 +163,7 @@ public class Game implements Serializable
     {
         Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 4, name );
         players.add( s );
+        shootingObjects.add(s);
         Running.log( s.getName() + " entered the game (id " + s.id + ")." );
         return s.id;
     }
@@ -171,7 +177,9 @@ public class Game implements Serializable
     void addPlayer( Ship newPlayer )
     {
         players.add( newPlayer );
+        shootingObjects.add(newPlayer);
         Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ").", 800 );
+        
     }
     
     /**
@@ -183,6 +191,7 @@ public class Game implements Serializable
     void removePlayer( Ship leavingPlayer )
     {
         players.remove(leavingPlayer);
+        shootingObjects.remove(leavingPlayer);
         Running.log( leavingPlayer.getName() + " left the game.", 800);
     }
 
@@ -198,13 +207,24 @@ public class Game implements Serializable
         otherPlayerTimeStep = 0;
 
         actionManager = new ActionManager();
+        shootingObjects = new LinkedList<ShootingObject>();
+        
         for ( int index = 0; index < players.size(); index++ )
+        {
             players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), 1, players.get( index ).getName() ) );
+            shootingObjects.add(players.get(index));
+        }
 
         // Create the asteroids.
         level = 1;
         asteroidManager = new AsteroidManager();
         asteroidManager.setUpAsteroidField( level );
+        
+        gameObjects = new ConcurrentLinkedQueue<GameObject>();
+        
+        Station s = new Station(100, 1500);
+        gameObjects.add(s);
+        shootingObjects.add(s);
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
@@ -351,6 +371,11 @@ public class Game implements Serializable
                 AsteroidsFrame.frame().endGame();
                 break;
             }
+        }
+        
+        for( GameObject g : gameObjects )
+        {
+            g.act();
         }
     }
 

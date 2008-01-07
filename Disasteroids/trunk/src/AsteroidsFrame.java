@@ -191,17 +191,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Update the ships.
         for ( Ship s : Game.getInstance().players )
-        {
             s.draw( g );
 
-        // Game over?
-//            if ( s.livesLeft() < 0 )
-//            {
-        // TODO: Divorce
-//                endGame( g );
-//                continue;
-//            }
-        }
+        for ( GameObject go : Game.getInstance().gameObjects )
+            go.draw( g );
 
         if ( shouldEnd )
             endGame( g );
@@ -261,7 +254,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
             }
             showWarpDialog = false;
         }
-
         // Render in hardware mode.
         if ( Settings.hardwareRendering )
         {
@@ -274,8 +266,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 // Draw the game's graphics.
                 draw( virtualMem.getGraphics() );
 
-            }
-            while ( ( (VolatileImage) virtualMem ).contentsLost() );
+            } while ( ( (VolatileImage) virtualMem ).contentsLost() );
         }
         // Render in software mode.
         else
@@ -1031,6 +1022,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         return null;
     }
+
     /**
      * A simple handler for the frame's window buttons.
      * 
@@ -1050,6 +1042,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             Running.quit();
         }
     }
+
     /**
      * A small class for the storage of scoreboard colums.
      * 
@@ -1081,6 +1074,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             this.title = title;
         }
     }
+
     /**
      */
     private static class NotificationMessage

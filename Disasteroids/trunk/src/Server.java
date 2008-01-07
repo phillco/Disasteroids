@@ -19,7 +19,7 @@ public class Server extends DatagramListener
      * The default port that the server runs on.
      * @since December 29, 2007
      */
-    public static int DEFAULT_PORT = 4919;
+    public static int DEFAULT_PORT = 53;
 
     /**
      * Messages that we send to the client.
@@ -35,6 +35,10 @@ public class Server extends DatagramListener
          * Updating a player's position and speed.
          */
         PLAYER_UPDATE_POSITION,
+        /**
+         * Asteroid has split from a parent.
+         */
+        NEW_ASTEROID,
         /**
          * A new player has entered the game.
          */
@@ -80,6 +84,7 @@ public class Server extends DatagramListener
     {
         instance = this;
         System.out.println( "== DISASTEROIDS SERVER == Started!" );
+        System.out.println(AsteroidsServer.getLocalIP());
         clients = new LinkedList<ClientMachine>();
 
         try
@@ -312,6 +317,23 @@ public class Server extends DatagramListener
             ex.printStackTrace();
         }
     }
+
+    void newAsteroid( Asteroid a )
+    {
+        try
+        {
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt( Message.NEW_ASTEROID.ordinal() );
+            a.flatten( out );
+            sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+
+    }
+
     /**
      * An extension of <code>Machine</code> that represents anyone who has pinged us.
      * If that person is in the game, he's bound to his <code>Ship</code> here.

@@ -1,5 +1,22 @@
 public class GameLoop extends Thread
 {
+    
+    /**
+     * The time in milliseconds between each action loop
+     * @since December 30, 2007
+     */
+    private static int period=10;
+    
+    public static void increaseSpeed()
+    {
+        period--;
+    }
+    
+    public static void decreaseSpeed()
+    {
+        period++;
+    }
+    
     @Override
     public void run()
     {
@@ -13,7 +30,7 @@ public class GameLoop extends Thread
                 if ( !Game.getInstance().isPaused() )
                     Game.getInstance().act();
 
-                while(System.currentTimeMillis()-timeOfLast<10)
+                while(System.currentTimeMillis()-timeOfLast<period)
                     Thread.sleep( 1 );
 
             }

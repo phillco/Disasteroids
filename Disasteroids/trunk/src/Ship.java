@@ -246,6 +246,7 @@ public class Ship implements GameElement, ShootingObject
             g.setFont( g.getFont().deriveFont( Font.BOLD ) );
             Graphics2D g2d = (Graphics2D) g;
             AsteroidsFrame.frame().drawString( g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray );
+            allWeapons[weaponIndex].getWeapon((int)x,(int)y+25,Color.gray).draw(g);
         }
     }
 
@@ -744,6 +745,16 @@ public class Ship implements GameElement, ShootingObject
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();
     }
+
+    public double getDx() {
+        return dx;
+    }
+
+    public double getDy() {
+        return dy;
+    }
+    
+    
 
     public ConcurrentLinkedQueue<WeaponManager> getManagers()
     {

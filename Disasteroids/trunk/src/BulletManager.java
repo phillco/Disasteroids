@@ -2,7 +2,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -168,5 +167,9 @@ class BulletManager implements WeaponManager
     public String getWeaponName()
     {
         return "Bullets";
+    }
+
+    public Weapon getWeapon(int x, int y, Color col) {
+        return  new Bullet(this, x, y, 0, 0, 0, col);
     }
 }

@@ -502,14 +502,14 @@ public class Game implements Serializable
             /*
             case KeyEvent.VK_EQUALS:
             case KeyEvent.VK_PLUS:
-            Game.getInstance().gameSpeed++;
-            AsteroidsFrame.addNotificationMessage( "Game speed increased to " + Game.getInstance().gameSpeed + "." );
+            GameLoop.increaseSpeed();
+            AsteroidsFrame.addNotificationMessage( "Game speed increased." );
             break;
             case KeyEvent.VK_MINUS:
             if ( Game.getInstance().gameSpeed > 1 )
             {
-            Game.getInstance().gameSpeed--;
-            AsteroidsFrame.addNotificationMessage( "Game speed decreased to " + Game.getInstance().gameSpeed + "." );
+            GameLoop.decreaseSpeed();
+            AsteroidsFrame.addNotificationMessage( "Game speed decreased." );
             }
             break;
              */

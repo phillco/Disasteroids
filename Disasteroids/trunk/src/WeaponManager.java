@@ -41,4 +41,14 @@ interface WeaponManager extends GameElement
      * @return  plural name of the <code>Weapon</code>
      */
     public String getWeaponName();
+    
+    /**
+     * Gets a new instance of the type of <code>Weapon</code>s held
+     * by this <code>WeaponManager</code>, but does not add it to the 
+     * list of currently valid <code>Weapon</code>s.
+     * 
+     * @return A new instance of the type of <code>Weapon</code> stored
+     * @since December 30, 2007
+     */
+    public Weapon getWeapon(int x, int y, Color col);
 }

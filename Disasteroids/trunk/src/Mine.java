@@ -93,11 +93,21 @@ public class Mine implements Weapon {
      * 
      */
     public void explode() {
-        if(!isExploding)
+        if(!isExploding&&life<9900)
         {
            life=5;
            isExploding=true;
         }
+    }
+    
+    /**
+     * Resets this <code>Mine</code>'s life counter
+     * 
+     * @param newLife The new amount of life, in timesteps
+     */
+    public void setLife(int newLife)
+    {
+        life=newLife;
     }
 
     /**
@@ -124,7 +134,10 @@ public class Mine implements Weapon {
      * @return the damage caused by this <code>Mine</code>.
      */
     public int getDamage() {
-        return 10000;
+        if(life<9900)
+            return 10000;
+        else
+            return 0;
     }
 
     /**
@@ -133,7 +146,12 @@ public class Mine implements Weapon {
      * @param g The <code>Graphics</code> context in which to draw.
      */
     public void draw(Graphics g) {
-        if(!isExploding)
+        if(life>9900){
+            double multiplier=(10000-life)/100.0;
+            Color outline=new Color((int)(color.getRed()*multiplier),(int)(color.getGreen()*multiplier),(int)(color.getBlue()*multiplier));
+            AsteroidsFrame.frame().fillCircle(g, outline, x, y, 10);
+            AsteroidsFrame.frame().fillCircle(g, Color.black, x, y, 4);
+        }else if(!isExploding)
         {
             AsteroidsFrame.frame().fillCircle(g, color, x, y, 10);
             AsteroidsFrame.frame().fillCircle(g, Color.black, x, y, 4);

@@ -368,4 +368,8 @@ public class MissileManager implements WeaponManager
     {
         return "Missiles";
     }
+
+    public Weapon getWeapon(int x, int y, Color col) {
+        return new Missile(this,x, y, 0, 0, 0, col);
+    }
 }

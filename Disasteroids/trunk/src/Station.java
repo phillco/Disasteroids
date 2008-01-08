@@ -62,8 +62,9 @@ public class Station extends GameObject implements ShootingObject
         // Aim towards closest ship.
         if ( closestShip != null )
         {
-            angle = Math.atan( ( closestShip.getY() - getY() ) / ( closestShip.getX() - getX() ) );
-
+            angle = Math.atan( ( closestShip.getY() - getY() ) / (double) ( closestShip.getX() - getX() ) );
+            if(closestShip.getX()-getX()<0)
+                angle+=Math.PI;
             // Fire!
             if(canShoot())
             {

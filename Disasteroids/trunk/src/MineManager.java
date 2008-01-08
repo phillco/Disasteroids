@@ -5,7 +5,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -87,6 +86,12 @@ public class MineManager implements WeaponManager{
     public String getWeaponName()
     {
         return "Mines";
+    }
+
+    public Weapon getWeapon(int x, int y, Color col) {
+        Mine m=new Mine(x,y,col);
+        m.setLife(500);
+        return m;
     }
 
 }

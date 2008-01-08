@@ -152,7 +152,7 @@ public class Asteroid implements GameElement, Serializable
      */
     public void draw( Graphics g )
     {
-
+        lifeMax=Math.max(lifeMax, 1);
         Color f = new Color( fill.getRed() * life / lifeMax, fill.getGreen() * life / lifeMax, fill.getBlue() * life / lifeMax );
         AsteroidsFrame.frame().drawOutlinedCircle( g, f, outline, (int) x, (int) y, radius );
     }
@@ -227,7 +227,7 @@ public class Asteroid implements GameElement, Serializable
         killer.increaseScore( radius * 2 );
         killer.setNumAsteroidsKilled( killer.getNumAsteroidsKilled() + 1 );
         }
-        if ( AsteroidsFrame.frame() != null )
+        if ( AsteroidsFrame.frame() != null && killer!=null)
             AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) x, (int) y, killer.getColor().darker() );
 
         if ( radius < 12 )
@@ -284,11 +284,10 @@ public class Asteroid implements GameElement, Serializable
                         life = Math.max( 0, life - m.getDamage() );
                         if ( life <= 0 )
                         {
-                            if( s.getClass().isInstance(Game.getInstance().players.getFirst()))
-                            {
-                                Ship other = (Ship) s;
-                                split( other );
-                            }
+                            if(s instanceof Ship)
+                                split( (Ship)s );
+                            else
+                                split(null);
                             return;
                         }
                     }
@@ -372,7 +371,7 @@ public class Asteroid implements GameElement, Serializable
         dy = stream.readDouble();
         radius = stream.readInt();
         life = stream.readInt();
-        lifeMax = stream.readInt();
+        lifeMax = Math.max(1, stream.readInt());
         children = stream.readInt();
 
         // TODO: Add victim

@@ -113,12 +113,12 @@ public abstract class GameObject implements GameElement
 
     public void setX( double x )
     {
-        this.x = x;
+        this.x = ( x + Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
     }
 
     public void addToX( double addX )
     {
-        setX( getX() + addX );
+        setX(  getX() + addX );
     }
 
     public double getY()
@@ -128,7 +128,7 @@ public abstract class GameObject implements GameElement
 
     public void setY( double y )
     {
-        this.y = y;
+        this.y = ( y + Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
     }
 
     public void addToY( double addY )

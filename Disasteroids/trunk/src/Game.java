@@ -574,6 +574,12 @@ public class Game implements Serializable
 
         asteroidManager = new AsteroidManager( stream );
         actionManager = new ActionManager( stream );
+        shootingObjects=new LinkedList<ShootingObject>();
+        gameObjects=new ConcurrentLinkedQueue<GameObject>();
+        
+        Station s = new Station(100, 1500);
+        gameObjects.add(s);
+        shootingObjects.add(s);
     }
 
     /**

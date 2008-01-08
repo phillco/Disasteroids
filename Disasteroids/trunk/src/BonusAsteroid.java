@@ -73,6 +73,8 @@ public class BonusAsteroid extends Asteroid
      */
     private void applyBonus( Ship killer )
     {
+        if(killer==null)
+            return;
         String message = "";
         switch ( bonusType )
         {

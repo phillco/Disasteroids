@@ -26,6 +26,8 @@ public class Station extends GameObject implements ShootingObject
     public Station( double x, double y )
     {
         setLocation( x, y );
+        setDx(Math.random()*2-1);
+        setDy(Math.random()*2-1);
         angle = 0;
         manager = new MissileManager();
         manager.setPopQuantity(0);
@@ -46,6 +48,8 @@ public class Station extends GameObject implements ShootingObject
 
     public void act()
     {
+        this.addToX(getDx());
+        this.addToY(getDy());
         int range = 300;
         Ship closestShip = null;
 
@@ -68,7 +72,7 @@ public class Station extends GameObject implements ShootingObject
             // Fire!
             if(canShoot())
             {
-                manager.add( centerX(), centerY(), 0 - angle, getDx(), getDy(), Color.white );
+                manager.add( (int)(centerX()+25*Math.cos(0-angle)), (int)(centerY()-25*Math.sin(0-angle)), 0 - angle, 0d, 0d, Color.white );
                 shootTimer = 10;
             }
         }

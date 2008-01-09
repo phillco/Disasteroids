@@ -57,6 +57,12 @@ public class MissileManager implements WeaponManager
      */
     private ConcurrentLinkedQueue<Weapon> theMissiles = new ConcurrentLinkedQueue<Weapon>();
 
+    /**
+     * The number of timesteps for which the <code>Missile</code>s will live before
+     * self destructing.
+     */
+    private int life=300;
+    
     private int maxShots = 10;
 
     public MissileManager()
@@ -356,6 +362,16 @@ public class MissileManager implements WeaponManager
             default:
                 return "";
         }
+    }
+    
+    public int life()
+    {
+        return life;
+    }
+    
+    public void setLife(int life)
+    {
+        this.life=life;
     }
 
     public void draw( Graphics g )

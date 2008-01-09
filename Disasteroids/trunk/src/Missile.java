@@ -61,11 +61,6 @@ public class Missile implements Weapon, GameElement
      */
     private int radius;
 
-    /**
-     * The age at which <code>this></code> will automatically explode.
-     * @since Classic
-     */
-    private static int life = 300;
 
     /**
      * Whether <code>this</code> will have a huge blast or not.
@@ -244,7 +239,7 @@ public class Missile implements Weapon, GameElement
      */
     private synchronized void checkLeave()
     {
-        if ( age > life )
+        if ( age > manager.life() )
             explode();
     }
 
@@ -306,7 +301,7 @@ public class Missile implements Weapon, GameElement
      */
     private synchronized void pop()
     {
-        for ( double ang = 0; ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
+        for ( double ang = 2 * Math.PI / manager.popQuantity(); ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
             manager.add( (int) x, (int) y, ang, 0, 0, myColor );
         needsRemoval = true;
     }

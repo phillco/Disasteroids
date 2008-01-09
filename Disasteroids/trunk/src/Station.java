@@ -13,8 +13,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Station extends GameObject implements ShootingObject
 {
-    private Ship target;
-
     private int shootTimer = 0;
     
     private double angle;
@@ -26,11 +24,12 @@ public class Station extends GameObject implements ShootingObject
     public Station( double x, double y )
     {
         setLocation( x, y );
-        setDx(Math.random()*2-1);
-        setDy(Math.random()*2-1);
+        setDx(Math.random()*3-1.5);
+        setDy(Math.random()*3-1.5);
         angle = 0;
         manager = new MissileManager();
         manager.setPopQuantity(0);
+        manager.setLife(50);
         shootTimer = 0;
     }
 
@@ -66,12 +65,14 @@ public class Station extends GameObject implements ShootingObject
         // Aim towards closest ship.
         if ( closestShip != null )
         {
-            angle = Math.atan( ( closestShip.getY() - getY() ) / (double) ( closestShip.getX() - getX() ) );
-            if(closestShip.getX()-getX()<0)
+            angle = Math.atan( ( closestShip.getY() - centerY() ) / (double) ( closestShip.getX() - centerX() ) );
+            if(closestShip.getX()-centerX()<=0)
                 angle+=Math.PI;
             // Fire!
             if(canShoot())
             {
+                angle+=Math.random()*.5-.25;
+                angle+=getCorrection(closestShip.getDx(), closestShip.getDy(),closestShip.getX(), closestShip.getX(), centerX(), centerY());
                 manager.add( (int)(centerX()+25*Math.cos(0-angle)), (int)(centerY()-25*Math.sin(0-angle)), 0 - angle, 0d, 0d, Color.white );
                 shootTimer = 10;
             }
@@ -143,5 +144,12 @@ public class Station extends GameObject implements ShootingObject
     public boolean canShoot()
     {
         return ( shootTimer == 0);
+    }
+    
+    public static double getCorrection(double tardX, double tardY, int tarX, int tarY, int sourceX, int sourceY)
+    {
+        //TODO: implement better aiming
+        
+        return 0.0;
     }
 }

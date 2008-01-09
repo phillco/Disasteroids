@@ -857,7 +857,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );
-        if ( x > -100 && x < Game.getInstance().GAME_WIDTH + 100 && y > -100 && y < Game.getInstance().GAME_HEIGHT + 100 )
+        if ( x > -2 && x < Game.getInstance().GAME_WIDTH + 2 && y > -2 && y < Game.getInstance().GAME_HEIGHT + 2 )
             graph.drawRect( x, y, 0, 0 );
     }
 
@@ -903,7 +903,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );
-        if ( x > -100 && x < Game.getInstance().GAME_WIDTH + 100 && y > -100 && y < Game.getInstance().GAME_HEIGHT + 100 )
+        if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
             graph.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
     }
 

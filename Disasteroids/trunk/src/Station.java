@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A satellite that shoots missiles at passing ships.
- * @author Phillip Cohen
+ * @author Phillip Cohen, Andy Kooiman
  * @since January 6, 2008
  */
 public class Station extends GameObject implements ShootingObject
@@ -53,6 +53,7 @@ public class Station extends GameObject implements ShootingObject
         angle = 0;
         manager = new MissileManager();
         manager.setPopQuantity( 0 );
+        manager.setLife( 50 );
         shootTimer = 0;
     }
 

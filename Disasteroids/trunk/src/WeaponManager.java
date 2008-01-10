@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author Owner
  */
-interface WeaponManager extends GameElement
+public interface WeaponManager extends GameElement
 {
 
     public void add( ConcurrentLinkedQueue<Weapon> weapons );

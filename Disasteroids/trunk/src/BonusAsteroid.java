@@ -26,13 +26,12 @@ public class BonusAsteroid extends Asteroid
      * @param dx            the x velocity
      * @param dy            the y velocity (up is negative)
      * @param size          the diameter
-     * @param environment   the <code>AsteroidManager</code> to which it belongs
      * @since Classic
      */
-    public BonusAsteroid( int x, int y, double dx, double dy, int size, int life, AsteroidManager environment )
+    public BonusAsteroid( int x, int y, double dx, double dy, int size, int life )
     {
-        super( x, y, dx, dy, size, life, environment );
-        fill = Color.green;//radioactive?
+        super( x, y, dx, dy, size, life );
+        fill = Color.green; // radioactive?
         outline = Color.white;
 
         // Choose the type of bonus.
@@ -52,17 +51,17 @@ public class BonusAsteroid extends Asteroid
     {
         if ( children > 2 )
         {
-            shouldRemove = true;
+            destroy();
             return;
         }
         if ( radius < 12 )
-            shouldRemove = true;
+            destroy();
         else
         {
-            environment.add( new Asteroid( (Asteroid) this ) );
-            environment.add( new Asteroid( (Asteroid) this ) );
+            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) );
+            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) );
             applyBonus( killer );
-            shouldRemove = true;
+            destroy();
         }
     }
 
@@ -108,11 +107,11 @@ public class BonusAsteroid extends Asteroid
         if ( message.equals( "" ) )
             return;
 
-        if( AsteroidsFrame.frame() != null)
+        if ( AsteroidsFrame.frame() != null )
         {
-        	AsteroidsFrame.frame().writeOnBackground( message, (int) x, (int) y, killer.getColor() );        
-	        if ( killer == AsteroidsFrame.frame().localPlayer() )
-	            Running.log( "Bonus: " + message );
+            AsteroidsFrame.frame().writeOnBackground( message, (int) getX(), (int) getY(), killer.getColor() );
+            if ( killer == AsteroidsFrame.frame().localPlayer() )
+                Running.log( "Bonus: " + message );
         }
     }
 }

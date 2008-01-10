@@ -65,7 +65,7 @@ public class Mine implements Weapon {
      * @return The x coordinate.
      * 
      */
-    public int getX() {
+    public double getX() {
         return x;
     }
 
@@ -75,7 +75,7 @@ public class Mine implements Weapon {
      * @return The y coordinate.
      * 
      */
-    public int getY() {
+    public double getY() {
         return y;
     }
 

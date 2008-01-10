@@ -346,7 +346,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
         text = "" + Game.getInstance().level;
         x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth();
         g2d.drawString( text, x, y );
-        g2d.drawString( localPlayer().toString(), 60, 70 );
 
         // Draw the "level" string.
         g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );

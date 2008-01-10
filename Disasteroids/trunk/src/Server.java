@@ -139,7 +139,7 @@ public class Server extends DatagramListener
                         out.writeInt( id );
 
                         // Associate this client with the ship.
-                        client.inGamePlayer = Game.getInstance().getFromId( id );
+                        client.inGamePlayer = Game.getInstance().getPlayerFromId( id );
 
                         // Waddle this fat packet out the door!
                         sendPacket( client, out );

@@ -9,9 +9,9 @@
  */
 public interface Weapon extends GameElement 
 {
-    public int getX();
+    public double getX();
     
-    public int getY();
+    public double getY();
     
     public int getRadius();
     

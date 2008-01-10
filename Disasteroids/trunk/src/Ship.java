@@ -389,7 +389,7 @@ public class Ship implements GameElement, ShootingObject
             {
                 for ( Weapon m : wm.getWeapons() )
                 {
-                    if ( Math.pow( x - m.getX(), 2 ) + Math.pow( y - m.getY(), 2 ) < 400 )
+                    if ( Math.pow( (int) (x - m.getX()), 2 ) + Math.pow( (int)(y - m.getY()), 2 ) < 400 )
                         if ( looseLife() )
                         {
                             m.explode();

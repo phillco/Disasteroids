@@ -28,12 +28,12 @@ class Bullet implements Weapon, GameElement {
         this.env=env;
     }
 
-    public int getX() {
-        return (int)x;
+    public double getX() {
+        return x;
     }
 
-    public int getY() {
-        return (int)y;
+    public double getY() {
+        return y;
     }
 
     public int getRadius() {

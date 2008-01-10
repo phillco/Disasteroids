@@ -124,7 +124,7 @@ public class Client extends DatagramListener
                         new AsteroidsFrame( id );
                         break;
                     case PLAYER_UPDATE_POSITION:
-                        Game.getInstance().getFromId(in.readInt()).restorePosition(in);
+                        Game.getInstance().getPlayerFromId(in.readInt()).restorePosition(in);
                         break;
                     case NEW_ASTEROID:
                         Game.getInstance().asteroidManager.add(new Asteroid(in));
@@ -133,7 +133,7 @@ public class Client extends DatagramListener
                         Game.getInstance().addPlayer( new Ship( in ) );
                         break;
                     case PLAYER_QUIT:
-                        Game.getInstance().removePlayer( Game.getInstance().getFromId( in.readInt() ) );
+                        Game.getInstance().removePlayer( Game.getInstance().getPlayerFromId( in.readInt() ) );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean() );

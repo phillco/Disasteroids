@@ -101,7 +101,7 @@ public class Action implements Serializable
      */
     public Action( DataInputStream stream ) throws IOException
     {
-        actor = Game.getInstance().getFromId(stream.readInt());
+        actor = Game.getInstance().getPlayerFromId(stream.readInt());
         keyCode = stream.readInt();
         timestep = stream.readLong();
     }

@@ -1,4 +1,8 @@
 
+/**
+ * DISASTEROIDS
+ * Game.java
+ */
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.io.DataInputStream;
@@ -11,13 +15,16 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+/**
+ * Central gameplay class seperate from graphics.
+ * @since December 17, 2007
+ * @author Phillip Cohen
+ */
 public class Game implements Serializable
 {
     /**
-     * Dimensions of the game, regardless of the graphical depiction
+     * Dimensions of the game, regardless of the graphical depiction.
      * @since December 17, 2007
      */
     final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
@@ -29,7 +36,7 @@ public class Game implements Serializable
     final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
 
     /**
-     * The current level of the Game.getInstance().
+     * The current level of the game.
      * @since Classic
      */
     int level = 1;
@@ -65,30 +72,39 @@ public class Game implements Serializable
     ActionManager actionManager = new ActionManager();
 
     /**
-     * Array of players.
-     * @since December 14 2007
+     * List of players.
+     * @since December 14, 2007
      */
     public LinkedList<Ship> players = new LinkedList<Ship>();
-    
-    public ConcurrentLinkedQueue<GameObject> gameObjects;
-    
-    public LinkedList<ShootingObject> shootingObjects;
-    
-    /**
-     * How many times we <code>act</code> per paint call. Can be used to make later levels more playable.
-     * @since December 23, 2007
-     */
-    int gameSpeed = 1;
 
+    /**
+     * List of miscelanius game objects  that aren't players or asteroids.
+     * @since January 7, 2008
+     */
+    public ConcurrentLinkedQueue<GameObject> gameObjects;
+
+    /**
+     * List of all objects that shoot.
+     * @since January 7, 2008
+     */
+    public LinkedList<ShootingObject> shootingObjects;
+
+    /**
+     * The thread that executes the game loop.
+     * @since December 29, 2007
+     */
     private transient GameLoop thread;
 
+    /**
+     * Reference to the Game instance. Game itelf can't be static because of saving/restoring.
+     * @since December 29, 2007
+     */
     private static Game instance;
 
-    public static Game getInstance()
-    {
-        return instance;
-    }
-
+    /**
+     * Sets up the game, but doesn't start it.
+     * @since December 29, 2007
+     */
     public Game()
     {
         Game.instance = this;
@@ -102,7 +118,7 @@ public class Game implements Serializable
      * @return      the <code>Ship</code> with that <code>id</code>, or <code>null</code>
      * @since December 30, 207
      */
-    public Ship getFromId( int id )
+    public Ship getPlayerFromId( int id )
     {
         for ( Ship s : players )
             if ( s.id == id )
@@ -110,6 +126,11 @@ public class Game implements Serializable
         return null;
     }
 
+    /**
+     * Saves the game to <code>Game.ser</code>.
+     * 
+     * @since December 29, 2007
+     */
     public static void saveToFile()
     {
         FileOutputStream fos = null;
@@ -129,6 +150,11 @@ public class Game implements Serializable
         Running.log( "Game saved." );
     }
 
+    /**
+     * Loads the game from <code>Game.ser</code>.
+     * 
+     * @since December 29, 2007
+     */
     public static void loadFromFile()
     {
         FileInputStream fis = null;
@@ -153,17 +179,28 @@ public class Game implements Serializable
     }
 
     /**
+     * Returns the instance of the game.
+     * 
+     * @return  the currently active <code>Game</code>
+     * @since December 29, 2007
+     */
+    public static Game getInstance()
+    {
+        return instance;
+    }
+
+    /**
      * Creates and adds a new player into the game.
      * 
      * @param name  the player's name
      * @return      the new player's id
-     * @since December ?, 2007
+     * @since December 29, 2007
      */
     int addPlayer( String name )
     {
         Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 4, name );
         players.add( s );
-        shootingObjects.add(s);
+        shootingObjects.add( s );
         Running.log( s.getName() + " entered the game (id " + s.id + ")." );
         return s.id;
     }
@@ -177,11 +214,11 @@ public class Game implements Serializable
     void addPlayer( Ship newPlayer )
     {
         players.add( newPlayer );
-        shootingObjects.add(newPlayer);
+        shootingObjects.add( newPlayer );
         Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ").", 800 );
-        
+
     }
-    
+
     /**
      * Removes a player from the game.
      * 
@@ -190,9 +227,9 @@ public class Game implements Serializable
      */
     void removePlayer( Ship leavingPlayer )
     {
-        players.remove(leavingPlayer);
-        shootingObjects.remove(leavingPlayer);
-        Running.log( leavingPlayer.getName() + " left the game.", 800);
+        players.remove( leavingPlayer );
+        shootingObjects.remove( leavingPlayer );
+        Running.log( leavingPlayer.getName() + " left the game.", 800 );
     }
 
     /**
@@ -208,23 +245,23 @@ public class Game implements Serializable
 
         actionManager = new ActionManager();
         shootingObjects = new LinkedList<ShootingObject>();
-        
+
         for ( int index = 0; index < players.size(); index++ )
         {
             players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), 1, players.get( index ).getName() ) );
-            shootingObjects.add(players.get(index));
+            shootingObjects.add( players.get( index ) );
         }
 
         // Create the asteroids.
         level = 1;
         asteroidManager = new AsteroidManager();
         asteroidManager.setUpAsteroidField( level );
-        
+
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
-        
-        Station s = new Station(100, 1500);
-        gameObjects.add(s);
-        shootingObjects.add(s);
+
+        Station s = new Station( 950, 750 );
+        gameObjects.add( s );
+        shootingObjects.add( s );
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
@@ -372,8 +409,8 @@ public class Game implements Serializable
                 break;
             }
         }
-        
-        for( GameObject g : gameObjects )
+
+        for ( GameObject g : gameObjects )
         {
             g.act();
         }
@@ -412,7 +449,7 @@ public class Game implements Serializable
             AsteroidsFrame.frame().nextLevel();
         restoreBonusValues();
         asteroidManager.setUpAsteroidField( level );
-        AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );       
+        AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
     }
 
     public void startGame()
@@ -433,7 +470,7 @@ public class Game implements Serializable
     {
         // Decide what key was pressed.
         switch ( action )
-        {      
+        {
             case KeyEvent.VK_SPACE:
                 actor.startShoot();
                 break;
@@ -528,9 +565,9 @@ public class Game implements Serializable
             default:
                 break;
         }
-        
-        if(Server.is())
-            Server.getInstance().updatePlayerPosition(actor);
+
+        if ( Server.is() )
+            Server.getInstance().updatePlayerPosition( actor );
     }
 
     /**
@@ -574,12 +611,12 @@ public class Game implements Serializable
 
         asteroidManager = new AsteroidManager( stream );
         actionManager = new ActionManager( stream );
-        shootingObjects=new LinkedList<ShootingObject>();
-        gameObjects=new ConcurrentLinkedQueue<GameObject>();
-        
-        Station s = new Station(100, 1500);
-        gameObjects.add(s);
-        shootingObjects.add(s);
+        shootingObjects = new LinkedList<ShootingObject>();
+        gameObjects = new ConcurrentLinkedQueue<GameObject>();
+
+        Station s = new Station( 100, 1500 );
+        gameObjects.add( s );
+        shootingObjects.add( s );
     }
 
     /**
@@ -610,7 +647,7 @@ public class Game implements Serializable
         }
         catch ( IOException ex )
         {
-            Running.fatalError("Couldn't set pause status in server.", ex);
+            Running.fatalError( "Couldn't set pause status in server.", ex );
         }
     }
 }

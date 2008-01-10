@@ -23,6 +23,12 @@ public class AsteroidManager implements Serializable
      * @since Classic
      */
     private ConcurrentLinkedQueue<Asteroid> theAsteroids;
+    
+    /**
+     * The next id number for a new <code>Asteroid</code> created
+     * @since January 10, 2008
+     */
+    private int nextId;
 
     /**
      * Constructs a new <code>AsteroidManager</code>.
@@ -134,20 +140,7 @@ public class AsteroidManager implements Serializable
      */
     public int getId()
     {
-        // Assign an unique ID.
-        boolean uniqueId = false;
-        int id = 0;
-        while ( !uniqueId )
-        {
-            uniqueId = true;
-            id = RandNumGen.getMissileInstance().nextInt( 9786 ) + Game.getInstance().players.size() + 4;
-            for ( Asteroid a : theAsteroids )
-            {
-                if ( a.id == id )
-                    uniqueId = false;
-            }
-        }
-        return id;
+        return nextId++;
     }
 
     /**

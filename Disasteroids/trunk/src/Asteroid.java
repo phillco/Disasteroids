@@ -106,6 +106,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
 
         if ( Server.is() )
             Server.getInstance().newAsteroid( this );
+        id = Game.getInstance().asteroidManager.getId();
     }
 
     /**

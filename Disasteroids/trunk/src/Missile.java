@@ -194,7 +194,7 @@ public class Missile extends GameObject implements Weapon, GameElement
             for ( int i = 0; i < (int) ( 7 - Math.sqrt( getDx() * getDx() + getDy() * getDy() ) ); i++ )
                 ParticleManager.addParticle( new Particle(
                                              getX() + rand.nextInt( 8 ) - 4,
-                                             getX() + rand.nextInt( 8 ) - 4,
+                                             getY() + rand.nextInt( 8 ) - 4,
                                              rand.nextInt( 4 ),
                                              myColor,
                                              rand.nextDouble() * 3,

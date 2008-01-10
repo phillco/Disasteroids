@@ -4,6 +4,9 @@
  */
 
 import java.awt.Color;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -114,4 +117,37 @@ public class BonusAsteroid extends Asteroid
                 Running.log( "Bonus: " + message );
         }
     }
+        
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since January 10, 2008
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten(stream);
+        stream.writeInt(bonusType);
+        
+        
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
+     * @since December 29, 2007
+     */
+    public BonusAsteroid(DataInputStream stream) throws IOException
+    {
+        super(stream);
+        bonusType = stream.readInt();
+        
+        fill = Color.green; // radioactive?
+        outline = Color.white;
+    }
+    
 }

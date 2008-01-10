@@ -202,7 +202,10 @@ public class AsteroidManager implements Serializable
 
         // Write asteroids.
         for ( Asteroid a : theAsteroids )
+        {
+            stream.writeBoolean(a instanceof BonusAsteroid);
             a.flatten( stream );
+        }
     }
 
     /**
@@ -217,6 +220,11 @@ public class AsteroidManager implements Serializable
         this.theAsteroids = new ConcurrentLinkedQueue<Asteroid>();
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-            theAsteroids.add( new Asteroid( stream ) );
+        {
+            if(stream.readBoolean())
+                theAsteroids.add( new BonusAsteroid( stream ) );
+            else
+                theAsteroids.add( new Asteroid( stream ) );
+        }
     }
 }

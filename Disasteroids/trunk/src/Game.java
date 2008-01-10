@@ -258,10 +258,10 @@ public class Game implements Serializable
         asteroidManager.setUpAsteroidField( level );
 
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
-
-        Station s = new Station( 950, 750 );
-        gameObjects.add( s );
-        shootingObjects.add( s );
+//
+//        Station s = new Station( 950, 750 );
+//        gameObjects.add( s );
+//        shootingObjects.add( s );
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
@@ -613,10 +613,10 @@ public class Game implements Serializable
         actionManager = new ActionManager( stream );
         shootingObjects = new LinkedList<ShootingObject>();
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
-
-        Station s = new Station( 100, 1500 );
-        gameObjects.add( s );
-        shootingObjects.add( s );
+//
+//        Station s = new Station( 100, 1500 );
+//        gameObjects.add( s );
+//        shootingObjects.add( s );
     }
 
     /**

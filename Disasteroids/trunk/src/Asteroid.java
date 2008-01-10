@@ -85,10 +85,6 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public Asteroid( Asteroid parent )
     {
-        // Server spawns split asteroids.
-        if ( Client.is() )
-            return;
-
         parent.children++;
         if ( parent.children > 2 )
             this.radius = 5;
@@ -104,8 +100,6 @@ public class Asteroid extends GameObject implements GameElement, Serializable
         // Enforce a mininum speed.
         checkMovement();
 
-        if ( Server.is() )
-            Server.getInstance().newAsteroid( this );
         id = Game.getInstance().asteroidManager.getId();
     }
 
@@ -166,8 +160,8 @@ public class Asteroid extends GameObject implements GameElement, Serializable
             destroy();
         else
         {
-            Game.getInstance().asteroidManager.add( new Asteroid( this ) );
-            Game.getInstance().asteroidManager.add( new Asteroid( this ) );
+            Game.getInstance().asteroidManager.add( new Asteroid( this ) ,true );
+            Game.getInstance().asteroidManager.add( new Asteroid( this ) ,true );
             destroy();
         }
     }
@@ -179,7 +173,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     void destroy()
     {
-        Game.getInstance().asteroidManager.remove( this.id );
+        Game.getInstance().asteroidManager.remove( this.id ,true );
     }
 
     /**

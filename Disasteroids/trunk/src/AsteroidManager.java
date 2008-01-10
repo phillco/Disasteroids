@@ -23,7 +23,7 @@ public class AsteroidManager implements Serializable
      * @since Classic
      */
     private ConcurrentLinkedQueue<Asteroid> theAsteroids;
-    
+
     /**
      * The next id number for a new <code>Asteroid</code> created
      * @since January 10, 2008
@@ -51,7 +51,7 @@ public class AsteroidManager implements Serializable
 
         Random rand = RandNumGen.getAsteroidInstance();
         int numBonuses = 0;
-        
+
         // Create regular asteroids.
         for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
         {
@@ -64,7 +64,7 @@ public class AsteroidManager implements Serializable
             if ( rand.nextInt( 10 ) == 1 )
                 numBonuses++;
         }
-        
+
         // Create bonus asteroids.
         for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
         {
@@ -85,8 +85,8 @@ public class AsteroidManager implements Serializable
      */
     public void act()
     {
-        for( Asteroid a : theAsteroids)
-                a.act();
+        for ( Asteroid a : theAsteroids )
+            a.act();
     }
 
     /**
@@ -104,22 +104,36 @@ public class AsteroidManager implements Serializable
     /**
      * Adds an <code>Asteroid</code> to the game.
      * 
-     * @param a    the <code>Asteroid</code> to be added.
+     * @param a         the <code>Asteroid</code> to be added.
+     * @param fromGame  whether this is a message from the server (<code>false</code>) or the local game (<code>true</code>).
      * @since Classic
      */
-    public void add( Asteroid a )
+    void add( Asteroid a, boolean fromGame )
     {
+        if ( Server.is() )
+            Server.getInstance().newAsteroid( a );
+
+        if ( fromGame && Client.is() )
+            return;
+        
         theAsteroids.add( a );
     }
 
     /**
      * Removes the first asteroid with a given id.
      * 
-     * @param id    the id of the asteroid
+     * @param id        the id of the asteroid
+     * @param fromGame  whether this is a message from the server (<code>false</code>) or the local game (<code>true</code>).
      * @since January 8, 2007
      */
-    public void remove( int id )
+    void remove( int id, boolean fromGame )
     {
+        if ( Server.is() )
+            Server.getInstance().removeAsteroid( id );
+
+        if ( fromGame && Client.is() )
+            return;
+
         Iterator<Asteroid> itr = theAsteroids.iterator();
         while ( itr.hasNext() )
         {

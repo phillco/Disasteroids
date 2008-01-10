@@ -58,8 +58,8 @@ public class BonusAsteroid extends Asteroid
             destroy();
         else
         {
-            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) );
-            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) );
+            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) ,true );
+            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) ,true );
             applyBonus( killer );
             destroy();
         }

@@ -42,6 +42,10 @@ public class Server extends DatagramListener
          */
         NEW_ASTEROID,
         /**
+         * Existing asteroid being removed.
+         */
+        REMOVE_ASTEROID,
+        /**
          * A new player has entered the game.
          */
         PLAYER_JOINED,
@@ -340,6 +344,12 @@ public class Server extends DatagramListener
         }
     }
 
+    /**
+     * Notifies clients of an asteroid being created.
+     * 
+     * @param a the asteriod
+     * @since January 7, 2007
+     */
     void newAsteroid( Asteroid a )
     {
         try
@@ -353,7 +363,28 @@ public class Server extends DatagramListener
         {
             ex.printStackTrace();
         }
+    }
 
+    /**
+     * Notifies clients of an asteroid being removed.
+     * 
+     * @param id the asteriod's ID
+     * @since January 10, 2007
+     */
+    void removeAsteroid( int id )
+    {
+        try
+        {
+            System.out.println("Server: removing " + id);
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt( Message.REMOVE_ASTEROID.ordinal() );
+            out.writeInt( id );
+            sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
     }
 
     /**

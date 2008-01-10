@@ -124,10 +124,15 @@ public class Client extends DatagramListener
                         new AsteroidsFrame( id );
                         break;
                     case PLAYER_UPDATE_POSITION:
-                        Game.getInstance().getPlayerFromId(in.readInt()).restorePosition(in);
+                        Game.getInstance().getPlayerFromId( in.readInt() ).restorePosition( in );
                         break;
                     case NEW_ASTEROID:
-                        Game.getInstance().asteroidManager.add(new Asteroid(in));
+                        Game.getInstance().asteroidManager.add( new Asteroid( in ), false );
+                        break;
+                    case REMOVE_ASTEROID:
+                        int aid = in.readInt();
+                        System.out.println( "Client: removing " + aid );
+                        Game.getInstance().asteroidManager.remove( aid, false );
                         break;
                     case PLAYER_JOINED:
                         Game.getInstance().addPlayer( new Ship( in ) );

@@ -268,6 +268,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
+        stream.writeInt(id);
         stream.writeDouble( getX() );
         stream.writeDouble( getY() );
         stream.writeDouble( getDx() );
@@ -287,6 +288,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public Asteroid( DataInputStream stream ) throws IOException
     {
+        id = stream.readInt();
         setLocation( stream.readDouble(), stream.readDouble() );
         setSpeed( stream.readDouble(), stream.readDouble() );
         radius = stream.readInt();

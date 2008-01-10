@@ -5,7 +5,9 @@
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 /**
@@ -84,7 +86,7 @@ public class Server extends DatagramListener
     {
         instance = this;
         System.out.println( "== DISASTEROIDS SERVER == Started!" );
-        System.out.println(AsteroidsServer.getLocalIP());
+        System.out.println( "IP address: " + getLocalIP() );
         clients = new LinkedList<ClientMachine>();
 
         try
@@ -94,6 +96,26 @@ public class Server extends DatagramListener
         catch ( SocketException ex )
         {
             ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Returns our IP address and port.
+     * 
+     * @return  the IP string ("xxx.xxx.xxx.xxx:1234")
+     * @since Classic
+     */
+    public static String getLocalIP()
+    {
+        try
+        {
+            InetAddress localHost = InetAddress.getLocalHost();
+            InetAddress[] all_IPs = InetAddress.getAllByName( localHost.getHostName() );
+            return ( all_IPs[0].toString().split( "/" ) )[1] + DEFAULT_PORT;
+        }
+        catch ( UnknownHostException e )
+        {
+            return "Unknown";
         }
     }
 

@@ -188,7 +188,6 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     private void checkCollision()
     {
-
         // Go through all of the ships.        
         for ( Ship s : Game.getInstance().players )
         {

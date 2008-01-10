@@ -506,7 +506,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public static void newGame()
     {
         Game.getInstance().resetEntireGame();
-        AsteroidsServer.send( "ng" );
     }
 
     /**
@@ -528,9 +527,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     private void endGame( Graphics g )
     {
-        System.out.println( shouldEnd );
         shouldEnd = false;
-        Game.getInstance().setPaused( true );
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
         if ( Settings.soundOn )
             Sound.wheeeargh();
@@ -578,7 +575,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         newGame();
         this.setIgnoreRepaint( false );
-        Game.getInstance().setPaused( false );
         repaint();
         shouldEnd = false;
     }
@@ -635,6 +631,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 break;
             case KeyEvent.VK_F4:
                 toggleFullscreen();
+                break;
+            case KeyEvent.VK_SCROLL_LOCK:
+                for ( GameObject go : Game.getInstance().gameObjects )
+                {
+                    if ( go instanceof Station )
+                        ( (Station) go ).setEasterEgg();
+                }
                 break;
             case KeyEvent.VK_W:
                 if ( !Client.is() )

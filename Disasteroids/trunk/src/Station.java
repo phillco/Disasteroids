@@ -4,7 +4,9 @@
  */
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.util.Calendar;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -39,6 +41,12 @@ public class Station extends GameObject implements ShootingObject
     int size = 35;
 
     /**
+     * Timer to show the clock easter egg. If 0, the egg should be hidden.
+     * @since January 9, 2008 
+     */
+    private int easterEggCounter = 0;
+
+    /**
      * Creates the station at the given position and random floating speed.
      * 
      * @param x     x coordinate in game
@@ -65,8 +73,17 @@ public class Station extends GameObject implements ShootingObject
     public void act()
     {
         move();
+        checkCollision();
+        manager.act();
 
-        // Find players within our range.
+        // Easter egg.
+        if ( easterEggCounter > 0 )
+        {
+            easterEggCounter--;
+            return;
+        }
+
+        // Find players within our range.        
         int range = 300;
         Ship closestShip = null;
         for ( Ship s : Game.getInstance().players )
@@ -88,8 +105,9 @@ public class Station extends GameObject implements ShootingObject
             // Fire!
             if ( canShoot() )
             {
-                manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0d, 0d, Color.white );
-                shootTimer = 10;
+                Sound.stationFire();
+                manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white );
+                shootTimer = 15;
             }
         }
         else
@@ -98,8 +116,31 @@ public class Station extends GameObject implements ShootingObject
         // Reload.
         if ( !canShoot() )
             shootTimer--;
+    }
 
-        manager.act();
+    /**
+     * Checks if players run into us and takes action.
+     * 
+     * @since January 9, 2007
+     */
+    private void checkCollision()
+    {
+        // Go through all of the ships.        
+        for ( Ship s : Game.getInstance().players )
+        {
+            // Were we hit by the ship's body?
+            if ( s.livesLeft() >= 0 )
+            {
+                if ( ( s.getX() + Ship.RADIUS > getX() && s.getX() - Ship.RADIUS < getX() + size ) &&
+                        ( s.getY() + Ship.RADIUS > getY() && s.getY() - Ship.RADIUS < getY() + size ) )
+                {
+                    if ( s.looseLife() )
+                    {
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -140,15 +181,49 @@ public class Station extends GameObject implements ShootingObject
         g.fillRect( rX + 27, rY, 10, 10 );
         g.fillRect( rX + 27, rY + 27, 10, 10 );
         g.fillRect( rX, rY + 27, 10, 10 );
+        g.setFont( new Font( "Tahoma", Font.PLAIN, 8 ) );
 
-        // Draw the turret.
-        g.setColor( Color.white );
-        int eX = (int) ( cX + 15 * Math.cos( angle ) );
-        int eY = (int) ( cY + 15 * Math.sin( angle ) );
-        g.drawLine( cX, cY, eX, eY );
-        g.drawLine( cX, cY + 1, eX, eY + 1 );
-        g.drawLine( cX + 1, cY, eX + 1, eY );
+        // Draw the easter egg clock.
+        if ( easterEggCounter > 0 )
+        {
+            // Numbers.
+            g.setColor( Color.white );
+            g.drawString( "12", cX - 3, rY + 10 );
+            g.drawString( "3", rX + size - 7, cY + 5 );
+            g.drawString( "6", cX - 1, rY + size - 4 );
+            g.drawString( "9", rX + 4, cY + 5 );
 
+            // Hour hand.
+            double hourAngle = ( ( Calendar.getInstance().get( Calendar.HOUR ) / 12.0 ) * 2 - 0.5 ) * Math.PI;
+            int eX = (int) ( cX + 5 * Math.cos( hourAngle ) );
+            int eY = (int) ( cY + 5 * Math.sin( hourAngle ) );
+            g.drawLine( cX, cY, eX, eY );
+            g.drawLine( cX, cY + 1, eX, eY + 1 );
+            g.drawLine( cX + 1, cY, eX + 1, eY );
+
+            // Minute hand.
+            double minuteAngle = ( ( Calendar.getInstance().get( Calendar.MINUTE ) / 60.0 ) * 2 - 0.5 ) * Math.PI;
+            eX = (int) ( cX + 10 * Math.cos( minuteAngle ) );
+            eY = (int) ( cY + 10 * Math.sin( minuteAngle ) );
+            g.drawLine( cX, cY, eX, eY );
+            g.drawLine( cX, cY + 1, eX, eY + 1 );
+
+            // Second hand.
+            double secondAngle = ( ( Calendar.getInstance().get( Calendar.SECOND ) / 60.0 ) * 2 - 0.5 ) * Math.PI;
+            eX = (int) ( cX + 15 * Math.cos( secondAngle ) );
+            eY = (int) ( cY + 15 * Math.sin( secondAngle ) );
+            g.drawLine( cX, cY, eX, eY );
+        }
+        else
+        {
+            // Draw the turret.
+            g.setColor( Color.white );
+            int eX = (int) ( cX + 15 * Math.cos( angle ) );
+            int eY = (int) ( cY + 15 * Math.sin( angle ) );
+            g.drawLine( cX, cY, eX, eY );
+            g.drawLine( cX, cY + 1, eX, eY + 1 );
+            g.drawLine( cX + 1, cY, eX + 1, eY );
+        }
         manager.draw( g );
     }
 
@@ -196,5 +271,15 @@ public class Station extends GameObject implements ShootingObject
     public boolean canShoot()
     {
         return ( shootTimer == 0 );
+    }
+
+    /**
+     * Shows the easter egg for a short while.
+     * @since January 9, 2008
+     */
+    public void setEasterEgg()
+    {
+        if ( easterEggCounter <= 0 )
+            easterEggCounter = 290;
     }
 }

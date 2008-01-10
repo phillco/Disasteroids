@@ -116,6 +116,24 @@ public class Sound
         s.addCue( new Tone( 50, 400 ) );
         new Thread( s ).start();
     }
+    
+    /**
+     * Makes two low beeps.
+     * 
+     * @since January 9, 2008
+     */
+    static void stationFire()
+    {
+        if( !Settings.soundOn )
+            return;
+        
+        SpeakerThread s = new SpeakerThread();
+        s.addCue( new Tone(150, 20, 2));
+        s.addCue( new Tone(150, 20, 2));
+        s.addCue( new Tone(250, 30, 2));
+        
+        s.start();       
+    }
 
     static void bleargh()
     {

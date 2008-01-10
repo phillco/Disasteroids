@@ -172,4 +172,10 @@ class BulletManager implements WeaponManager
     public Weapon getWeapon(int x, int y, Color col) {
         return  new Bullet(this, x, y, 0, 0, 0, col);
     }
+
+    public void berserk(Ship s) {
+        Sound.kablooie();
+        for(double angle=0; angle<2*Math.PI; angle+=Math.PI/50)
+            add(s.getX(), s.getY(), angle, s.getDx(), s.getDy(), s.getColor());
+    }
 }

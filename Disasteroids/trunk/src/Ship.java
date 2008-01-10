@@ -550,18 +550,9 @@ public class Ship implements GameElement, ShootingObject
 
     public void berserk()
     {
-
         if ( !canShoot() )
             return;
-        double angleBefore = angle;
-        if ( Settings.soundOn )
-            Sound.kablooie();
-        for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
-        {
-            shoot( false );
-            angle = angleBefore + ang;
-        }
-        angle = angleBefore + .1;
+        allWeapons[weaponIndex].berserk(this);
         timeTillNextShot = 100;
     }
 

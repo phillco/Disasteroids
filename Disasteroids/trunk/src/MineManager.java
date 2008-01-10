@@ -16,6 +16,8 @@ public class MineManager implements WeaponManager{
     private ConcurrentLinkedQueue<Weapon> mines;    
     
     private int maxShots=20;
+    
+    private double berserkAngleOffset=0;
 
     public MineManager()
     {
@@ -92,6 +94,13 @@ public class MineManager implements WeaponManager{
         Mine m=new Mine(x,y,col);
         m.setLife(500);
         return m;
+    }
+
+    public void berserk(Ship s) {
+        Sound.kablooie();
+        berserkAngleOffset+=.5;
+        for(double angle=0; angle<Math.PI*2; angle+=Math.PI/4)
+            add((int)(s.getX()+Math.cos(berserkAngleOffset+angle)*50),(int)(s.getY()+Math.sin(berserkAngleOffset+angle)*50), angle, 0, 0, s.getColor());
     }
 
 }

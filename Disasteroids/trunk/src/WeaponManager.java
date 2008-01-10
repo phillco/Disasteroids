@@ -51,4 +51,12 @@ public interface WeaponManager extends GameElement
      * @since December 30, 2007
      */
     public Weapon getWeapon(int x, int y, Color col);
+    
+    /**
+     * Executes a powerful blast of this <code>Weapon</code> type
+     * 
+     * @since January 7, 2008
+     * @param Ship the <code>Ship</code> which is shooting
+     */
+    public void berserk(Ship s);
 }

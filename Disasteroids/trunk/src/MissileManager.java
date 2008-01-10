@@ -388,4 +388,10 @@ public class MissileManager implements WeaponManager
     public Weapon getWeapon(int x, int y, Color col) {
         return new Missile(this,x, y, 0, 0, 0, col);
     }
+
+    public void berserk(Ship s) {
+        Sound.kablooie();
+        for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
+            add( s.getX(), s.getY(), ang, s.getDx(), s.getDy(), s.getColor() );
+    }
 }

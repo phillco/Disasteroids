@@ -4,6 +4,7 @@
  */
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -75,4 +76,12 @@ public interface WeaponManager extends GameElement
      * @param Ship the <code>Ship</code> which is shooting
      */
     public void berserk(Ship s);
+    
+    /**
+     * Draws a timer for how long until the next Berserk
+     * 
+     * @param g The context in which to draw
+     * @param c The color of the ship calling
+     */
+    public void drawTimer(Graphics g, Color c);
 }

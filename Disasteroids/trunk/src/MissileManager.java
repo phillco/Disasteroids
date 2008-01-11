@@ -406,7 +406,7 @@ public class MissileManager implements WeaponManager
     }
 
     public void berserk(Ship s) {
-        if ( timeTillNextBerserk > 0 )
+        if ( timeTillNextBerserk > 0 || theMissiles.size()>maxShots)
             return;
         Sound.kablooie();
         for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
@@ -416,5 +416,12 @@ public class MissileManager implements WeaponManager
 
     public boolean canShoot() {
         return ! ( theMissiles.size() > 100 || timeTillNextShot>0 );
+    }
+
+    public void drawTimer(Graphics g, Color c) {
+        g.setColor(theMissiles.size()<maxShots?c:c.darker().darker());
+        g.drawRect( AsteroidsFrame.frame().getWidth()-120,30,100, 10);
+        int width=(100-Math.max(timeTillNextBerserk,0));
+        g.fillRect( AsteroidsFrame.frame().getWidth()-120,30, width, 10);
     }
 }

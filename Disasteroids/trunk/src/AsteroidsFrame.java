@@ -195,19 +195,18 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );
-
-        // Update the ships.
-        for ( Ship s : Game.getInstance().players )
-            s.draw( g );
+        
+        Game.getInstance().asteroidManager.draw( g );
 
         for ( GameObject go : Game.getInstance().gameObjects )
             go.draw( g );
-
+        
+        // Update the ships.
+        for ( Ship s : Game.getInstance().players )
+            s.draw( g );
+        
         if ( shouldEnd )
             endGame( g );
-
-        Game.getInstance().asteroidManager.draw( g );
-
         // Draw the on-screen HUD.
         drawHud( g );
 

@@ -200,6 +200,7 @@ public class Ship implements GameElement, ShootingObject
     {
         for ( WeaponManager wm : allWeapons )
             wm.draw( g );
+        allWeapons[weaponIndex].drawTimer(g, myColor);
 
         // Set our color.
         Color col;

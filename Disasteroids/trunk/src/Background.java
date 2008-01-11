@@ -85,7 +85,7 @@ public class Background
 
         // Create the array of stars.
         Random rand = RandNumGen.getStarInstance();
-        this.theStars = new Star[width * height / ( rand.nextInt( 1700 ) + 300 )];
+        this.theStars = new Star[(width * height / ( rand.nextInt( 1700 ) + 300 ))/(Settings.qualityRendering?1:3)];
         for ( int star = 0; star < theStars.length; star++ )
         {
             int sat = rand.nextInt( 255 );

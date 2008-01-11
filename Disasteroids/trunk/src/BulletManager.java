@@ -206,4 +206,11 @@ class BulletManager implements WeaponManager
     public boolean canShoot() {
         return ! ( theBullets.size() > 500 || timeTillNextShot > 0 );
     }
+
+    public void drawTimer(Graphics g, Color c) {
+        g.setColor(theBullets.size()<maxShots?c:c.darker().darker());
+        g.drawRect( AsteroidsFrame.frame().getWidth()-120,30,100, 10);
+        int width=(50-Math.max(timeTillNextBerserk,0))*2;
+        g.fillRect( AsteroidsFrame.frame().getWidth()-120,30, width, 10);
+    }
 }

@@ -58,6 +58,10 @@ public class Server extends DatagramListener
          */
         PAUSE,
         /**
+         * A ship has berserked
+         */
+        BERSERK,
+        /**
          * Server's going down!
          */
         SERVER_QUITTING;
@@ -336,6 +340,7 @@ public class Server extends DatagramListener
             out.writeInt( Message.PLAYER_UPDATE_POSITION.ordinal() );
             out.writeInt( s.id );
             s.flattenPosition( out );
+            out.writeInt(s.getWeaponIndex());
             sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )
@@ -380,6 +385,26 @@ public class Server extends DatagramListener
             out.writeInt( Message.REMOVE_ASTEROID.ordinal() );
             out.writeInt( id );
             sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Notifies clients that the <code>Ship</code> with given id has just berserked.
+     * 
+     * @param id The id of the <code>Ship</code>
+     */
+    void berserk( int id )
+    {
+        try
+        {
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt(Message.BERSERK.ordinal());
+            out.writeInt( id );
+            sendPacketToAllPlayers(out);
         }
         catch ( IOException ex )
         {

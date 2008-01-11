@@ -107,7 +107,8 @@ public class Game implements Serializable
      */
     public Game()
     {
-        Game.instance = this;
+        if(instance==null)
+            Game.instance = this;
         resetEntireGame();
     }
 
@@ -248,7 +249,9 @@ public class Game implements Serializable
 
         for ( int index = 0; index < players.size(); index++ )
         {
+            int id=players.get(index).id;
             players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), 1, players.get( index ).getName() ) );
+            players.get(index).id=id;
             shootingObjects.add( players.get( index ) );
         }
 

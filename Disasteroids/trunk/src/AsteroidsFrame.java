@@ -106,6 +106,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * @sinde December 30, 2007
      */
     private boolean shouldEnd;
+    
+    /**
+     * The number of times that the paint method has been called, for FPS
+     * @since January 10, 2008
+     */
+    private int paintCount;
 
     /**
      * Constructs the game frame and game elements.
@@ -115,6 +121,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public AsteroidsFrame( int localId )
     {
+        paintCount=0;
         frame = this;
         this.localId = localId;
 
@@ -167,7 +174,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         updateQualityRendering( g, Settings.qualityRendering );
 
         // Calculate FPS.
-        if ( Game.getInstance().timeStep % 10 == 0 )
+        if ( ++paintCount % 10 == 0 )
         {
             long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
             if ( timeSinceLast > 0 )

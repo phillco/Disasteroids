@@ -134,6 +134,9 @@ public class Client extends DatagramListener
                         System.out.println( "Client: removing " + aid );
                         Game.getInstance().asteroidManager.remove( aid, false );
                         break;
+                    case BERSERK:
+                        Game.getInstance().getPlayerFromId( in.readInt() ).berserk();
+                        break;
                     case PLAYER_JOINED:
                         Game.getInstance().addPlayer( new Ship( in ) );
                         break;

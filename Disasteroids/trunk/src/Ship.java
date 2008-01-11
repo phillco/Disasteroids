@@ -240,7 +240,7 @@ public class Ship implements GameElement, ShootingObject
             AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
         }
 
-        if ( drawWeaponNameTimer > 0 )
+        if ( this == AsteroidsFrame.frame().localPlayer()&& drawWeaponNameTimer > 0 )
         {
             drawWeaponNameTimer--;
             g.setFont( g.getFont().deriveFont( Font.BOLD ) );
@@ -527,7 +527,7 @@ public class Ship implements GameElement, ShootingObject
         score += points;
     }
 
-    public int getScore()
+    public int getScore() 
     {
         return score;
     }
@@ -552,6 +552,10 @@ public class Ship implements GameElement, ShootingObject
     {
         if ( !canShoot() )
             return;
+        if( Server.is() )
+        {
+            Server.getInstance().berserk(id);
+        }
         allWeapons[weaponIndex].berserk(this);
         timeTillNextShot = 100;
     }
@@ -633,6 +637,8 @@ public class Ship implements GameElement, ShootingObject
         stream.writeInt( id );
 
         flattenPosition( stream );
+        
+        stream.writeInt(weaponIndex);
 
         stream.writeInt( invincibilityCount );
         stream.writeInt( timeTillNextShot );
@@ -702,6 +708,8 @@ public class Ship implements GameElement, ShootingObject
         backwards = stream.readBoolean();
         forward = stream.readBoolean();
         shooting = stream.readBoolean();
+        
+        weaponIndex=stream.readInt();
     }
 
     /**
@@ -744,9 +752,12 @@ public class Ship implements GameElement, ShootingObject
     public double getDy() {
         return dy;
     }
-    
-    
 
+    public int getWeaponIndex() {
+        return weaponIndex;
+    }
+    
+    
     public ConcurrentLinkedQueue<WeaponManager> getManagers()
     {
         ConcurrentLinkedQueue<WeaponManager> c = new ConcurrentLinkedQueue<WeaponManager>();

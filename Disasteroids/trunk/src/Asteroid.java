@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.Random;
 
 /**
- * A game object which the players destroy to score.
+ * A game object which the players remove to score.
  * @author Andy Kooiman, Phillip Cohen
  */
 public class Asteroid extends GameObject implements GameElement, Serializable
@@ -47,6 +47,8 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     int id;
 
+    Ship killer;
+
     /**
      * Constructs a new Asteroid from scratch.
      * 
@@ -80,7 +82,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      * Constructs a new <code>Asteroid</code> from a parent <code>Asteroid</code>.
      * This is used when a missile splits an <code>Asteroid</code>.
      * 
-     * @param parent	the parent <code>Asteroid</code> to split from
+     * @param parent	the parent <code>Asteroid</code> to kill from
      * @since Classic
      */
     public Asteroid( Asteroid parent )
@@ -123,46 +125,41 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public void act()
     {
-        // Asteroids are removed when split.
+        // Asteroids are removed when kill.
         if ( children > 1 || radius == 5 )
-            destroy();
+            remove();
 
         if ( life <= 0 )
-            destroy();
+            remove();
 
         move();
         checkCollision();
     }
 
     /**
-     * Called when the <code>Asteroid</code> is killed, as an indication to split into two new <code>Asteroid</code>s.
+     * Kills us: splits and awards points.
      * 
-     * @param killer The <code>Ship</code> which killed <code>this</code>.
      * @since Classic
      */
-    protected void split( Ship killer )
+    protected void kill()
     {
         if ( children > 2 )
-        {
-            destroy();
             return;
-        }
 
         if ( killer != null )
         {
             killer.increaseScore( radius * 2 );
             killer.setNumAsteroidsKilled( killer.getNumAsteroidsKilled() + 1 );
-        }
-        if ( AsteroidsFrame.frame() != null && killer != null )
-            AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) getX(), (int) getY(), killer.getColor().darker() );
 
-        if ( radius < 12 )
-            destroy();
-        else
+            // Write the score on the background.
+            if ( AsteroidsFrame.frame() != null )
+                AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) getX(), (int) getY(), killer.getColor().darker() );
+        }
+
+        if ( radius >= 12 )
         {
-            Game.getInstance().asteroidManager.add( new Asteroid( this ) ,true );
-            Game.getInstance().asteroidManager.add( new Asteroid( this ) ,true );
-            destroy();
+            Game.getInstance().asteroidManager.add( new Asteroid( this ), true );
+            Game.getInstance().asteroidManager.add( new Asteroid( this ), true );
         }
     }
 
@@ -171,9 +168,9 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      * 
      * @since January 8, 2007
      */
-    void destroy()
+    void remove()
     {
-        Game.getInstance().asteroidManager.remove( this.id ,true );
+        Game.getInstance().asteroidManager.remove( this.id, killer, true );
     }
 
     /**
@@ -193,7 +190,9 @@ public class Asteroid extends GameObject implements GameElement, Serializable
                 {
                     if ( s.looseLife() )
                     {
-                        split( s );
+                        killer = s;
+                        kill();
+                        remove();
                         return;
                     }
                 }
@@ -216,10 +215,11 @@ public class Asteroid extends GameObject implements GameElement, Serializable
                         life = Math.max( 0, life - m.getDamage() );
                         if ( life <= 0 )
                         {
+                            killer = null;
                             if ( s instanceof Ship )
-                                split( (Ship) s );
-                            else
-                                split( null );
+                                killer = ( (Ship) s );
+                            kill();
+                            remove();
                             return;
                         }
                     }
@@ -268,7 +268,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt(id);
+        stream.writeInt( id );
         stream.writeDouble( getX() );
         stream.writeDouble( getY() );
         stream.writeDouble( getDx() );

@@ -115,7 +115,7 @@ public class AsteroidManager implements Serializable
 
         if ( fromGame && Client.is() )
             return;
-        
+
         theAsteroids.add( a );
     }
 
@@ -126,10 +126,10 @@ public class AsteroidManager implements Serializable
      * @param fromGame  whether this is a message from the server (<code>false</code>) or the local game (<code>true</code>).
      * @since January 8, 2007
      */
-    void remove( int id, boolean fromGame )
+    void remove( int id, Ship killer, boolean fromGame )
     {
         if ( Server.is() )
-            Server.getInstance().removeAsteroid( id );
+            Server.getInstance().removeAsteroid( id, killer );
 
         if ( fromGame && Client.is() )
             return;
@@ -140,6 +140,11 @@ public class AsteroidManager implements Serializable
             Asteroid a = itr.next();
             if ( a.id == id )
             {
+                if ( !fromGame )
+                {
+                    a.killer = killer;
+                    a.kill();
+                }
                 itr.remove();
                 return;
             }
@@ -203,7 +208,7 @@ public class AsteroidManager implements Serializable
         // Write asteroids.
         for ( Asteroid a : theAsteroids )
         {
-            stream.writeBoolean(a instanceof BonusAsteroid);
+            stream.writeBoolean( a instanceof BonusAsteroid );
             a.flatten( stream );
         }
     }
@@ -221,7 +226,7 @@ public class AsteroidManager implements Serializable
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
         {
-            if(stream.readBoolean())
+            if ( stream.readBoolean() )
                 theAsteroids.add( new BonusAsteroid( stream ) );
             else
                 theAsteroids.add( new Asteroid( stream ) );

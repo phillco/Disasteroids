@@ -44,27 +44,22 @@ public class BonusAsteroid extends Asteroid
 
     /**
      * Called when the <code>BonusAsteroid</code> is killed.
-     * Splits into two normal <code>Asteroid</code>s and applies bonus.
-     * @param killer The <code>Ship</code> which killed <code>this</code>.
+     * Splits into two normal <code>Asteroid</code>s and applies bonus.    
      * @author Andy Kooiman
      * @since Classic
      */
     @Override
-    protected void split( Ship killer )
+    protected void kill()
     {
         if ( children > 2 )
-        {
-            destroy();
             return;
-        }
-        if ( radius < 12 )
-            destroy();
-        else
+
+        if ( radius >= 12 )
         {
-            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) ,true );
-            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ) ,true );
-            applyBonus( killer );
-            destroy();
+            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ), true );
+            Game.getInstance().asteroidManager.add( new Asteroid( (Asteroid) this ), true );
+            if ( killer != null )
+                applyBonus( killer );
         }
     }
 
@@ -75,7 +70,7 @@ public class BonusAsteroid extends Asteroid
      */
     private void applyBonus( Ship killer )
     {
-        if(killer==null)
+        if ( killer == null )
             return;
         String message = "";
         switch ( bonusType )
@@ -117,7 +112,7 @@ public class BonusAsteroid extends Asteroid
                 Running.log( "Bonus: " + message );
         }
     }
-        
+
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
@@ -128,10 +123,10 @@ public class BonusAsteroid extends Asteroid
     @Override
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        super.flatten(stream);
-        stream.writeInt(bonusType);
-        
-        
+        super.flatten( stream );
+        stream.writeInt( bonusType );
+
+
     }
 
     /**
@@ -141,13 +136,12 @@ public class BonusAsteroid extends Asteroid
      * @throws java.io.IOException 
      * @since December 29, 2007
      */
-    public BonusAsteroid(DataInputStream stream) throws IOException
+    public BonusAsteroid( DataInputStream stream ) throws IOException
     {
-        super(stream);
+        super( stream );
         bonusType = stream.readInt();
-        
+
         fill = Color.green; // radioactive?
         outline = Color.white;
     }
-    
 }

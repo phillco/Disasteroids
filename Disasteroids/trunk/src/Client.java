@@ -130,9 +130,7 @@ public class Client extends DatagramListener
                         Game.getInstance().asteroidManager.add( new Asteroid( in ), false );
                         break;
                     case REMOVE_ASTEROID:
-                        int aid = in.readInt();
-                        System.out.println( "Client: removing " + aid );
-                        Game.getInstance().asteroidManager.remove( aid, false );
+                        Game.getInstance().asteroidManager.remove( in.readInt(), Game.getInstance().getPlayerFromId( in.readInt() ), false );
                         break;
                     case BERSERK:
                         Game.getInstance().getPlayerFromId( in.readInt() ).berserk();

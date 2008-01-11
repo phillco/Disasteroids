@@ -38,7 +38,7 @@ public class Server extends DatagramListener
          */
         PLAYER_UPDATE_POSITION,
         /**
-         * Asteroid has split from a parent.
+         * Asteroid has kill from a parent.
          */
         NEW_ASTEROID,
         /**
@@ -376,14 +376,14 @@ public class Server extends DatagramListener
      * @param id the asteriod's ID
      * @since January 10, 2007
      */
-    void removeAsteroid( int id )
+    void removeAsteroid( int id, Ship killer )
     {
         try
         {
-            System.out.println("Server: removing " + id);
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Message.REMOVE_ASTEROID.ordinal() );
             out.writeInt( id );
+            out.writeInt( killer.id );            
             sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )

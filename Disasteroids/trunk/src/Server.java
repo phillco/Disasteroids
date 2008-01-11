@@ -8,7 +8,10 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Server side of the C/S networking.
@@ -96,6 +99,7 @@ public class Server extends DatagramListener
         System.out.println( "== DISASTEROIDS SERVER == Started!" );
         System.out.println( "IP address: " + getLocalIP() );
         clients = new LinkedList<ClientMachine>();
+        new TimeoutCheckThread().start();
 
         try
         {
@@ -200,6 +204,7 @@ public class Server extends DatagramListener
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
                         out.writeInt( client.inGamePlayer.id );
+                        out.writeBoolean( false ); // Not a timeout.
                         sendPacketToAllButOnePlayer( out, client );
                 }
             }
@@ -283,7 +288,36 @@ public class Server extends DatagramListener
         // Nope. Add him.
         ClientMachine newClient = new ClientMachine( unknownMachine );
         clients.addLast( newClient );
+
+        newClient.see();
         return newClient;
+    }
+
+    void checkForTimeout() throws IOException
+    {
+        Iterator<ClientMachine> i = clients.iterator();
+        while ( i.hasNext() )
+        {
+            ClientMachine cm = i.next();
+            if ( cm.shouldTimeout() )
+            {
+                // Remove the player.
+                if ( cm.isInGame() )
+                {
+                    Game.getInstance().removePlayer( cm.inGamePlayer );
+                    Running.log( cm.inGamePlayer.getName() + " timed out." );
+
+                    // Tell clients.
+                    ByteOutputStream out = new ByteOutputStream();
+
+                    out.writeInt( Message.PLAYER_QUIT.ordinal() );
+                    out.writeInt( cm.inGamePlayer.id );
+                    out.writeBoolean( true ); // A timeout.
+                    sendPacketToAllButOnePlayer( out, cm );
+                }
+                i.remove();
+            }
+        }
     }
 
     /**
@@ -340,7 +374,7 @@ public class Server extends DatagramListener
             out.writeInt( Message.PLAYER_UPDATE_POSITION.ordinal() );
             out.writeInt( s.id );
             s.flattenPosition( out );
-            out.writeInt(s.getWeaponIndex());
+            out.writeInt( s.getWeaponIndex() );
             sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )
@@ -383,7 +417,7 @@ public class Server extends DatagramListener
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Message.REMOVE_ASTEROID.ordinal() );
             out.writeInt( id );
-            out.writeInt( killer.id );            
+            out.writeInt( killer.id );
             sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )
@@ -391,7 +425,7 @@ public class Server extends DatagramListener
             ex.printStackTrace();
         }
     }
-    
+
     /**
      * Notifies clients that the <code>Ship</code> with given id has just berserked.
      * 
@@ -402,9 +436,9 @@ public class Server extends DatagramListener
         try
         {
             ByteOutputStream out = new ByteOutputStream();
-            out.writeInt(Message.BERSERK.ordinal());
+            out.writeInt( Message.BERSERK.ordinal() );
             out.writeInt( id );
-            sendPacketToAllPlayers(out);
+            sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )
         {
@@ -426,6 +460,8 @@ public class Server extends DatagramListener
          */
         public Ship inGamePlayer;
 
+        public long lastSeen;
+
         /**
          * Creates <code>this</code> from an existing machine.
          * 
@@ -435,6 +471,17 @@ public class Server extends DatagramListener
         public ClientMachine( Machine m )
         {
             super( m.address, m.port );
+            lastSeen = System.currentTimeMillis();
+        }
+
+        public void see()
+        {
+            lastSeen = System.currentTimeMillis();
+        }
+
+        public boolean shouldTimeout()
+        {
+            return ( System.currentTimeMillis() - lastSeen >= 15000 );
         }
 
         /**
@@ -447,6 +494,33 @@ public class Server extends DatagramListener
         public boolean isInGame()
         {
             return ( inGamePlayer != null );
+        }
+    }
+
+    private class TimeoutCheckThread extends Thread
+    {
+        public TimeoutCheckThread()
+        {
+            setPriority( MIN_PRIORITY );
+        }
+
+        @Override
+        public void run()
+        {
+            while ( Server.is() )
+            {
+                try
+                {
+                    Server.getInstance().checkForTimeout();
+                    Thread.sleep( 5000 );
+                }
+                catch ( IOException ex )
+                {
+                }
+                catch ( InterruptedException ex )
+                {
+                }
+            }
         }
     }
 }

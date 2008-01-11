@@ -139,7 +139,8 @@ public class Client extends DatagramListener
                         Game.getInstance().addPlayer( new Ship( in ) );
                         break;
                     case PLAYER_QUIT:
-                        Game.getInstance().removePlayer( Game.getInstance().getPlayerFromId( in.readInt() ) );
+                        String quitReason = in.readBoolean() ? " timed out." : " quit.";
+                        Game.getInstance().removePlayer( Game.getInstance().getPlayerFromId( in.readInt() ), quitReason );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean() );

@@ -15,7 +15,23 @@ public interface WeaponManager extends GameElement
 
     public void add( ConcurrentLinkedQueue<Weapon> weapons );
 
+    /**
+     * Returns whether a call to add at this instant will succede or fail
+     * 
+     * @return If this <code>WeaponManager</code> can shoot
+     * @since January 10, 2008
+     */
+    public boolean canShoot();
+
     public void clear();
+    
+    /**
+     * Executes one timestep, but only steps timers if it is active
+     * 
+     * @param active If <code>this</code> is the current <code>WeaponManager</code> of its parent ship
+     * @since January 10, 2008
+     */
+    public void act(boolean active);
 
     public void explodeAll();
 

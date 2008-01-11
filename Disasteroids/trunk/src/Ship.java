@@ -57,11 +57,6 @@ public class Ship implements GameElement, ShootingObject
      */
     private String name;
 
-    /**
-     * Time left until we can shoot.
-     * @since Classic
-     */
-    private int timeTillNextShot;
 
     /**
      * Our color. The ship, missiles, <code>StarMissile</code>s, and explosions are drawn in this.
@@ -142,7 +137,6 @@ public class Ship implements GameElement, ShootingObject
         numAsteroidsKilled = 0;
         drawWeaponNameTimer = 0;
         numShipsKilled = 0;
-        timeTillNextShot = 0;
         angle = Math.PI / 2;
         dx = 0;
         dy = 0;
@@ -320,12 +314,15 @@ public class Ship implements GameElement, ShootingObject
             shoot( Settings.soundOn );
 
         for ( WeaponManager wm : allWeapons )
-            wm.act();
+        {
+            if(wm==this.allWeapons[weaponIndex])
+                wm.act(true);
+            else
+                wm.act(false);
+        }
 
         if ( livesLeft < 0 )
             return;
-
-        timeTillNextShot--;
         invincibilityCount--;
         move();
         checkBounce();
@@ -465,16 +462,14 @@ public class Ship implements GameElement, ShootingObject
     {
         if ( livesLeft < 0 )
             return;
-        timeTillNextShot = getWeaponManager().getIntervalShoot();
-        getWeaponManager().add( (int) x, (int) y, angle, dx, dy, myColor );
 
-        if ( useSound )
+        if ( getWeaponManager().add( (int) x, (int) y, angle, dx, dy, myColor ) && useSound )
             Sound.click();
     }
 
     public boolean canShoot()
     {
-        return ( getWeaponManager().getNumLiving() < getWeaponManager().getMaxShots() && timeTillNextShot < 1 && invincibilityCount < 400 && livesLeft >= 0 );
+        return ( livesLeft >= 0 && getWeaponManager().canShoot() );
     }
 
     public Color getColor()
@@ -490,8 +485,6 @@ public class Ship implements GameElement, ShootingObject
     {
         if ( cannotDie() )
             return false;//died too soon, second chance
-        timeTillNextShot = 0;
-        //	berserk();
         livesLeft--;
         setInvincibilityCount( 300 );
         if ( Settings.soundOn )
@@ -557,7 +550,6 @@ public class Ship implements GameElement, ShootingObject
             Server.getInstance().berserk(id);
         }
         allWeapons[weaponIndex].berserk(this);
-        timeTillNextShot = 100;
     }
 
     /**
@@ -641,7 +633,6 @@ public class Ship implements GameElement, ShootingObject
         stream.writeInt(weaponIndex);
 
         stream.writeInt( invincibilityCount );
-        stream.writeInt( timeTillNextShot );
 
         // Find our color.
         int colorIndex = -1;
@@ -726,7 +717,6 @@ public class Ship implements GameElement, ShootingObject
         restorePosition( stream );
 
         invincibilityCount = stream.readInt();
-        timeTillNextShot = stream.readInt();
 
         myColor = Game.getInstance().PLAYER_COLORS[stream.readInt()];
 

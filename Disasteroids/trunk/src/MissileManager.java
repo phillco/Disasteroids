@@ -63,6 +63,10 @@ public class MissileManager implements WeaponManager
      */
     private int life=300;
     
+    private int timeTillNextShot=0;
+    
+    private int timeTillNextBerserk;
+    
     private int maxShots = 10;
 
     public MissileManager()
@@ -85,6 +89,17 @@ public class MissileManager implements WeaponManager
     {
         return theMissiles;
     }
+    
+    public void act(boolean active)
+    {
+        act();
+        if(active)
+        {
+            timeTillNextShot--;
+            timeTillNextBerserk--;
+        }
+    }
+
 
     /**
      * Iterates through each <code>Missile</code> and either removes it or instructs it to act.
@@ -132,8 +147,9 @@ public class MissileManager implements WeaponManager
      */
     public boolean add( int x, int y, double angle, double dx, double dy, Color col )
     {
-        if ( theMissiles.size() > 100 )
+        if ( theMissiles.size() > 100 || timeTillNextShot>0 )
             return false;
+        timeTillNextShot=getIntervalShoot();
         return theMissiles.add( new Missile( this, x, y, angle, dx, dy, col ) );
     }
 
@@ -390,8 +406,15 @@ public class MissileManager implements WeaponManager
     }
 
     public void berserk(Ship s) {
+        if ( timeTillNextBerserk > 0 )
+            return;
         Sound.kablooie();
         for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
-            add( s.getX(), s.getY(), ang, s.getDx(), s.getDy(), s.getColor() );
+            theMissiles.add(new Missile( this, s.getX(), s.getY(), ang, s.getDx(), s.getDy(), s.getColor() ) );
+        timeTillNextBerserk=100;
+    }
+
+    public boolean canShoot() {
+        return ! ( theMissiles.size() > 100 || timeTillNextShot>0 );
     }
 }

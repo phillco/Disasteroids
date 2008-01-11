@@ -18,11 +18,26 @@ public class MineManager implements WeaponManager{
     private int maxShots=20;
     
     private double berserkAngleOffset=0;
+    
+    private int timeTillNextBerserk=0;
+    
+    private int timeTillNextShot=0;
 
     public MineManager()
     {
         mines=new ConcurrentLinkedQueue<Weapon>();
     }
+    
+    public void act(boolean active)
+    {
+        act();
+        if(active)
+        {
+            timeTillNextShot--;
+            timeTillNextBerserk--;
+        }
+    }
+
     
 
     public void act() {
@@ -53,10 +68,13 @@ public class MineManager implements WeaponManager{
     }
 
     public int getIntervalShoot() {
-        return 10;
+        return 20;
     }
 
     public boolean add(int x, int y, double angle, double dx, double dy, Color col) {
+        if(mines.size()>maxShots||timeTillNextShot>0)
+            return false;
+        timeTillNextShot=getIntervalShoot();
         return mines.add(new Mine(x,y,col));
     }
 
@@ -97,10 +115,23 @@ public class MineManager implements WeaponManager{
     }
 
     public void berserk(Ship s) {
+        if(timeTillNextBerserk>0)
+            return;
         Sound.kablooie();
         berserkAngleOffset+=.5;
+        int temp=timeTillNextShot;
+        timeTillNextShot=0;
         for(double angle=0; angle<Math.PI*2; angle+=Math.PI/4)
+        {
             add((int)(s.getX()+Math.cos(berserkAngleOffset+angle)*50),(int)(s.getY()+Math.sin(berserkAngleOffset+angle)*50), angle, 0, 0, s.getColor());
+            timeTillNextShot=0;
+        }
+        timeTillNextShot=temp;
+        timeTillNextBerserk=200;
+    }
+
+    public boolean canShoot() {
+        return ! ( mines.size()>maxShots || timeTillNextShot>0 );
     }
 
 }

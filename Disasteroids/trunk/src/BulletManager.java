@@ -24,6 +24,10 @@ class BulletManager implements WeaponManager
     private int radius = 2;
 
     private int damage = 10;
+    
+    private int timeTillNextShot=0;
+    
+    private int timeTillNextBerserk=0;
 
     public BulletManager()
     {
@@ -33,6 +37,16 @@ class BulletManager implements WeaponManager
     public BulletManager( ConcurrentLinkedQueue<Weapon> start )
     {
         theBullets = start;
+    }
+    
+    public void act(boolean active)
+    {
+        act();
+        if(active)
+        {
+            timeTillNextShot--;
+            timeTillNextBerserk--;
+        }
     }
 
     public void act()
@@ -66,13 +80,14 @@ class BulletManager implements WeaponManager
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col )
     {
-        if ( theBullets.size() > 500 )
+        if ( theBullets.size() > 500 || timeTillNextShot > 0)
             return false;
         if ( threeWayShot )
         {
             theBullets.add( new Bullet( this, x, y, angle + Math.PI / 8, dx, dy, col ) );
             theBullets.add( new Bullet( this, x, y, angle - Math.PI / 8, dx, dy, col ) );
         }
+        timeTillNextShot=intervalShoot;
 
         return theBullets.add( new Bullet( this, x, y, angle, dx, dy, col ) );
     }
@@ -174,8 +189,21 @@ class BulletManager implements WeaponManager
     }
 
     public void berserk(Ship s) {
+        if(timeTillNextBerserk>0)
+            return;
+        int temp=timeTillNextShot;
         Sound.kablooie();
+        timeTillNextShot=0;
         for(double angle=0; angle<2*Math.PI; angle+=Math.PI/50)
+        {
             add(s.getX(), s.getY(), angle, s.getDx(), s.getDy(), s.getColor());
+            timeTillNextShot=0;
+        }
+        timeTillNextShot=temp;
+        timeTillNextBerserk=50;
+    }
+
+    public boolean canShoot() {
+        return ! ( theBullets.size() > 500 || timeTillNextShot > 0 );
     }
 }

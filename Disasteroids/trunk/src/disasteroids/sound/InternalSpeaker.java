@@ -17,8 +17,13 @@ package disasteroids.sound;
  * @author Phillip Cohen, Martin Mosisch
  * @version 2.00 2007/4/17
  */
+import disasteroids.Running;
 import disasteroids.Settings;
 import java.awt.Toolkit;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 
 class InternalSpeaker
 {
@@ -89,7 +94,9 @@ class InternalSpeaker
         if ( !Settings.soundOn )
             return;
 
-        InternalSpeaker.beepPCSpeaker( frequency, duration );
+        sound(frequency, duration);
+        
+//        InternalSpeaker.beepPCSpeaker( frequency, duration );
         try
         {
             Thread.sleep( duration );
@@ -97,9 +104,38 @@ class InternalSpeaker
         catch ( InterruptedException interruptedexception )
         {
         }
-        InternalSpeaker.beepPCSpeaker( 0, 0 );
+//        InternalSpeaker.beepPCSpeaker( 0, 0 );
     }
+    
+    public static synchronized void play(byte[] vals)
+    {
+        try {
+            AudioFormat af = new AudioFormat(8000f, 8, 1, true, false);
+            SourceDataLine sdl = AudioSystem.getSourceDataLine(af);
+            sdl.open(af);
+            sdl.write(vals, 0, vals.length);
+            sdl.start();
+            sdl.drain();
+            sdl.stop();
+            sdl.close();
 
+        } catch (LineUnavailableException lineUnavailableException) {
+            Running.log(lineUnavailableException.getMessage());
+        }
+
+    }
+    
+      private static void sound(int frequency, int duration)
+      {
+         //Create a dummy array for the single byte
+         byte[] buf = new byte[duration*8];
+         for (int i=0; i<duration*8; i++)
+         {
+             double angle = i / (8000f / frequency) * 2.0 * Math.PI;
+             buf[i] = (byte)(Math.sin(angle) * 127.0);
+         }
+         play(buf);
+      }
     // Interface to the DLL
     static
     {

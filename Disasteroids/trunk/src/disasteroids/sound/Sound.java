@@ -20,7 +20,7 @@ public class Sound
      * A simple click.
      * @since Classic
      */
-    public static final Tone[] SHIP_SHOOT_SOUND = { new Tone( 200, 25 ) };
+    public static final Tone[] SHIP_SHOOT_SOUND = { new Tone( 200, 10 ) };
 
     /**
      * Three low beeps.
@@ -32,7 +32,7 @@ public class Sound
      * A long, low wail.
      * @since Classic
      */
-    public static final Tone[] ASTEROID_DIE_SOUND = { new Tone( 50, 350 ) };
+    public static final Tone[] ASTEROID_DIE_SOUND = { new Tone( 50, 30 ) };
 
     /**
      * A descending cresendo with capping beeps.
@@ -75,7 +75,7 @@ public class Sound
     {
         int idx = 0;
         for ( int i = 0; i < 1400; i += 100 )
-            BERSERK_SOUND[idx++] = new Tone( i, 20 );
+            BERSERK_SOUND[idx++] = new Tone( i, 15 );
     }
     /**
      * A low, climbing hum.
@@ -180,6 +180,11 @@ public class Sound
          * @since Classic
          */
         private List<Tone> tones;
+        
+        /**
+         * The ID number of the next thread created
+         */
+        private static int ID=0;
 
         /**
          * Creates the thread with a pre-made list of tones.
@@ -189,6 +194,7 @@ public class Sound
          */
         public SpeakerThread( Tone[] toneList )
         {
+            super( "Speaker Thread #" + ID++ );
             tones = (List<Tone>) Arrays.asList( toneList );
         }
 

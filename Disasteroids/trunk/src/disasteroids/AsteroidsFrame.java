@@ -1029,7 +1029,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
     {
-        graph.setFont( new Font( "Tahoma", graph.getFont().getStyle(), graph.getFont().getSize() ) );
+//        graph.setFont( new Font( "Tahoma", graph.getFont().getStyle(), graph.getFont().getSize() ) );
         x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );

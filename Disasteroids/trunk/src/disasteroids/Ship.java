@@ -240,7 +240,7 @@ public class Ship implements GameElement, ShootingObject
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
         {
             drawWeaponNameTimer--;
-            g.setFont( g.getFont().deriveFont( Font.BOLD ) );
+            g.setFont( new Font("Century Gothic", Font.BOLD, 14) );
             Graphics2D g2d = (Graphics2D) g;
             AsteroidsFrame.frame().drawString( g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray );
             allWeapons[weaponIndex].getWeapon( (int) x, (int) y + 25, Color.gray ).draw( g );

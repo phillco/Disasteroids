@@ -4,6 +4,8 @@
  */
 package disasteroids;
 
+import disasteroids.networking.Client;
+
 /**
  * The thread that runs the game.
  * @author Phillip Cohen
@@ -42,7 +44,8 @@ public class GameLoop extends Thread
             try
             {
                 timeOfLast = System.currentTimeMillis();
-                if ( !Game.getInstance().isPaused() )
+                
+                if ( shouldRun() )
                     Game.getInstance().act();
 
                 while ( System.currentTimeMillis() - timeOfLast < period )
@@ -54,5 +57,24 @@ public class GameLoop extends Thread
                 Running.fatalError( "Game loop interrupted while sleeping.", ex );
             }
         }
+    }
+    
+    /**
+     * Returnds whether the game should run.
+     * 
+     * @return  whether we should run the next timestep
+     * @since January 13, 2007
+     */
+    public boolean shouldRun()
+    {
+        // Don't run if the game is paused.
+        if( Game.getInstance().isPaused() )
+            return false;
+        
+        // If we're the cliient and the server isn't responding, hold up.
+        if( Client.is() && Client.getInstance().serverTimeout() )
+            return false;
+        
+        return true;
     }
 }

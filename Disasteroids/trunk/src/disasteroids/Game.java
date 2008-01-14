@@ -246,7 +246,9 @@ public class Game implements Serializable
     {
         players.remove( leavingPlayer );
         shootingObjects.remove( leavingPlayer );
-        Running.log( leavingPlayer.getName() + quitReason, 800 );
+        
+        if( quitReason.length() > 0 )
+            Running.log( leavingPlayer.getName() + quitReason, 800 );
     }
 
     /**
@@ -277,10 +279,10 @@ public class Game implements Serializable
         asteroidManager.setUpAsteroidField( level );
 
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
-
-        Station s = new Station( 950, 750 );
-        gameObjects.add( s );
-        shootingObjects.add( s );
+//
+//        Station s = new Station( 950, 750 );
+//        gameObjects.add( s );
+//        shootingObjects.add( s );
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
@@ -492,6 +494,10 @@ public class Game implements Serializable
      */
     public static void performAction( int action, Ship actor )
     {
+        // Ignore actions about players that have left the game.
+        if ( actor == null || !getInstance().players.contains( actor ) )
+            return;
+
         // Decide what key was pressed.
         switch ( action )
         {

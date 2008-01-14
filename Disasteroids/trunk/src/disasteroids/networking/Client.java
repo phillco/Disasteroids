@@ -4,7 +4,6 @@
  */
 package disasteroids.networking;
 
-
 import disasteroids.Asteroid;
 import disasteroids.AsteroidsFrame;
 import disasteroids.Game;
@@ -72,7 +71,7 @@ public class Client extends DatagramListener
     public Client( String serverAddress ) throws UnknownHostException
     {
         instance = this;
-        server = new Machine( InetAddress.getByName( serverAddress ), Server.DEFAULT_PORT );
+        server = new Machine( InetAddress.getByName( serverAddress ), Constants.DEFAULT_PORT );
         connect();
     }
 
@@ -109,6 +108,15 @@ public class Client extends DatagramListener
     {
         try
         {
+            if ( server == null )
+                return;
+            
+            // Ignore anything that isn't from the server.
+            if ( new Machine( p.getAddress(), p.getPort() ).equals( server ) )
+                server.see();
+            else
+                return;
+
             // Create stream.
             ByteInputStream in = new ByteInputStream( p.getData() );
 
@@ -167,6 +175,17 @@ public class Client extends DatagramListener
         {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * Checks for a server timeout.
+     * 
+     * @return  whether the server has timed out
+     * @since January 13, 2008
+     */
+    public boolean serverTimeout()
+    {
+        return server.shouldTimeout();
     }
 
     /**

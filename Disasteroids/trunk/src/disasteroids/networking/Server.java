@@ -25,12 +25,6 @@ import java.util.LinkedList;
 public class Server extends DatagramListener
 {
     /**
-     * The default port that the server runs on.
-     * @since December 29, 2007
-     */
-    public static int DEFAULT_PORT = 53;
-
-    /**
      * Messages that we send to the client.
      * @since December 29, 2007
      */
@@ -103,11 +97,10 @@ public class Server extends DatagramListener
         System.out.println( "== DISASTEROIDS SERVER == Started!" );
         System.out.println( "IP address: " + getLocalIP() );
         clients = new LinkedList<ClientMachine>();
-        new TimeoutCheckThread().start();
 
         try
         {
-            beginListening( DEFAULT_PORT );
+            beginListening( Constants.DEFAULT_PORT );
         }
         catch ( SocketException ex )
         {
@@ -127,7 +120,7 @@ public class Server extends DatagramListener
         {
             InetAddress localHost = InetAddress.getLocalHost();
             InetAddress[] all_IPs = InetAddress.getAllByName( localHost.getHostName() );
-            return ( all_IPs[0].toString().split( "/" ) )[1] + DEFAULT_PORT;
+            return ( all_IPs[0].toString().split( "/" ) )[1] + Constants.DEFAULT_PORT;
         }
         catch ( UnknownHostException e )
         {
@@ -193,6 +186,10 @@ public class Server extends DatagramListener
 
                     // Client is sending us a keystroke.
                     case KEYSTROKE:
+
+                        if ( !client.isInGame() )
+                            break;
+
                         int keyCode = in.readInt();
                         Game.getInstance().actionManager().add( new Action( client.inGamePlayer, keyCode, Game.getInstance().timeStep + 2 ) );
                         break;
@@ -200,8 +197,10 @@ public class Server extends DatagramListener
                     // Client wishes to resume life.
                     case QUITTING:
 
-                        if ( client.isInGame() )
-                            Game.getInstance().removePlayer( client.inGamePlayer );
+                        if ( !client.isInGame() )
+                            break;
+                        
+                        Game.getInstance().removePlayer( client.inGamePlayer );
 
                         // Tell everyone else.
                         out = new ByteOutputStream();
@@ -281,23 +280,25 @@ public class Server extends DatagramListener
      * @since December 29, 2007
      */
     ClientMachine registerClient( Machine unknownMachine )
-    {
+    {        
         // See if he's on the list.
         for ( ClientMachine c : clients )
         {
             if ( c.equals( unknownMachine ) )
+            {
+                c.see();
                 return c;
+            }
         }
 
         // Nope. Add him.
         ClientMachine newClient = new ClientMachine( unknownMachine );
         clients.addLast( newClient );
-
-        newClient.see();
         return newClient;
     }
 
-    void checkForTimeout() throws IOException
+    @Override
+    void intervalLogic()
     {
         Iterator<ClientMachine> i = clients.iterator();
         while ( i.hasNext() )
@@ -308,16 +309,23 @@ public class Server extends DatagramListener
                 // Remove the player.
                 if ( cm.isInGame() )
                 {
-                    Game.getInstance().removePlayer( cm.inGamePlayer );
+                    Game.getInstance().removePlayer( cm.inGamePlayer, "" );
                     Running.log( cm.inGamePlayer.getName() + " timed out." );
 
-                    // Tell clients.
-                    ByteOutputStream out = new ByteOutputStream();
+                    try
+                    {
+                        // Tell clients.
+                        ByteOutputStream out = new ByteOutputStream();
 
-                    out.writeInt( Message.PLAYER_QUIT.ordinal() );
-                    out.writeInt( cm.inGamePlayer.id );
-                    out.writeBoolean( true ); // A timeout.
-                    sendPacketToAllButOnePlayer( out, cm );
+                        out.writeInt( Message.PLAYER_QUIT.ordinal() );
+                        out.writeInt( cm.inGamePlayer.id );
+                        out.writeBoolean( true );
+                        sendPacketToAllButOnePlayer( out, cm );
+                    }
+                    catch (  IOException ex )
+                    {
+
+                    }
                 }
                 i.remove();
             }
@@ -464,8 +472,6 @@ public class Server extends DatagramListener
          */
         public Ship inGamePlayer;
 
-        public long lastSeen;
-
         /**
          * Creates <code>this</code> from an existing machine.
          * 
@@ -475,17 +481,6 @@ public class Server extends DatagramListener
         public ClientMachine( Machine m )
         {
             super( m.address, m.port );
-            lastSeen = System.currentTimeMillis();
-        }
-
-        public void see()
-        {
-            lastSeen = System.currentTimeMillis();
-        }
-
-        public boolean shouldTimeout()
-        {
-            return ( System.currentTimeMillis() - lastSeen >= 15000 );
         }
 
         /**
@@ -498,33 +493,6 @@ public class Server extends DatagramListener
         public boolean isInGame()
         {
             return ( inGamePlayer != null );
-        }
-    }
-
-    private class TimeoutCheckThread extends Thread
-    {
-        public TimeoutCheckThread()
-        {
-            setPriority( MIN_PRIORITY );
-        }
-
-        @Override
-        public void run()
-        {
-            while ( Server.is() )
-            {
-                try
-                {
-                    Server.getInstance().checkForTimeout();
-                    Thread.sleep( 5000 );
-                }
-                catch ( IOException ex )
-                {
-                }
-                catch ( InterruptedException ex )
-                {
-                }
-            }
         }
     }
 }

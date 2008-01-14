@@ -443,6 +443,19 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 itr.remove();
             }
         }
+
+        // Draw "waiting for server...".
+        if ( Client.is() && Client.getInstance().serverTimeout() )
+        {
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 18 ) );
+            g2d.setColor( Color.GREEN );
+
+            text = "Waiting for server...";
+            x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+            y = getHeight() / 2 - 50;
+
+            g2d.drawString( text, x, y );
+        }
     }
 
     /**

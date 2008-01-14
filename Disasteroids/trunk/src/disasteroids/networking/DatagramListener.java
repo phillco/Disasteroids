@@ -4,7 +4,7 @@ package disasteroids.networking;
  * DISASTEROIDS
  * DatagramListener.java
  */
-
+import disasteroids.Running;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -33,18 +33,25 @@ public abstract class DatagramListener
      * @since January 1, 2007
      */
     private ListenerThread ear;
+    
+    /**
+     * Thread that calls <code>intervalLogic()</code> periodically.
+     * @since January 13, 2008
+     */
+    private IntervalThread heart;
 
     /**
      * Starts listening for packets on a definite port (typical of servers).
      * 
      * @param port  port to listen on
-     * @throws java.net.SocketException     if the port is taken, or a general error
+     * @throws java.net.SocketException
      * @since December 28, 2007
      */
     void beginListening( int port ) throws SocketException
     {
         socket = new DatagramSocket( port );
         ear = new ListenerThread( this );
+        heart = new IntervalThread( this );
     }
 
     /**
@@ -57,17 +64,20 @@ public abstract class DatagramListener
     {
         socket = new DatagramSocket();
         ear = new ListenerThread( this );
+        heart = new IntervalThread( this );
     }
 
     /**
-     * Stops the listening thread.
+     * Stops our listening and interval threads.
      * 
      * @since January 1, 2007
      */
     void stopListening()
     {
-        ear.stopListening();
+        ear.disable();        
+        heart.disable();
         ear = null;
+        heart = null;
     }
 
     /**
@@ -76,6 +86,17 @@ public abstract class DatagramListener
      * @param packet     the <code>DatagramPacket</code>
      */
     abstract void parseReceived( DatagramPacket packet );
+
+    /**
+     * Called every few seconds. You can use this method for logic (such as timeout checking) that should be independent of packets.
+     * 
+     * @see Constants#INTERVAL_TIME
+     * @since January 13, 2008
+     */
+    void intervalLogic()
+    {
+        
+    }
 
     /**
      * Sends a packet to a machine (a shortcut for stream.toByteArray).
@@ -104,6 +125,7 @@ public abstract class DatagramListener
     {
         socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
     }
+
     /**
      * A simple combined class for reading a byte array.
      * 
@@ -122,6 +144,7 @@ public abstract class DatagramListener
             super( new ByteArrayInputStream( buffer ) );
         }
     }
+
     /**
      * A simple combined class for writing to a byte array.
      * 
@@ -151,24 +174,58 @@ public abstract class DatagramListener
             return ( (ByteArrayOutputStream) this.out ).toByteArray();
         }
     }
+
     /**
-     * A <code>Thread</code> that listens for packets and passes them to <code>parseReceived</code>.
-     * @since December 28, 2007
+     * Child thread for DatagtramListener that can call its methods and be disabled.
+     * @since January 13, 2008
      */
-    class ListenerThread extends Thread
+    class DatagramThread extends Thread
     {
         /**
-         * Parent class that implements <code>parseReceived</code>.
+         * Parent class that created this.
          * @since December 28, 2007
          */
-        private DatagramListener parent;
+        DatagramListener parent;
 
         /**
-         * Whether we should be listening.
+         * Whether we should continue running.
          * @since January 1, 2007
          */
         private boolean enabled = true;
 
+        /**
+         * Creates the thread.
+         * 
+         * @param parent    parent class
+         * @since December 28, 2007
+         */
+        public DatagramThread( DatagramListener parent )
+        {
+            this.parent = parent;
+        }
+
+        /**
+         * Stops the thread as soon as possible.
+         * 
+         * @since January 1, 2007
+         */
+        public void disable()
+        {
+            enabled = false;
+        }
+
+        public boolean shouldRun()
+        {
+            return enabled && ( parent != null );
+        }
+    }
+
+    /**
+     * A <code>Thread</code> that listens for packets and passes them to <code>parseReceived</code>.
+     * @since December 28, 2007
+     */
+    class ListenerThread extends DatagramThread
+    {
         /**
          * Creates the listener and starts it.
          * 
@@ -177,7 +234,7 @@ public abstract class DatagramListener
          */
         public ListenerThread( DatagramListener parent )
         {
-            this.parent = parent;
+            super( parent );
             start();
         }
 
@@ -187,13 +244,13 @@ public abstract class DatagramListener
             try
             {
                 // Continuously wait for packets.
-                while ( enabled )
+                while ( shouldRun() )
                 {
                     // Create a buffer to receive the packet in.
                     byte[] buffer = new byte[2048];
                     DatagramPacket packet = new DatagramPacket( buffer, buffer.length );
 
-                    if ( enabled )
+                    if ( shouldRun() )
                     {
                         // Receive it.
                         parent.socket.receive( packet );
@@ -205,77 +262,34 @@ public abstract class DatagramListener
             }
             catch ( IOException e )
             {
-                System.out.println( "Listening error!" );
-                e.printStackTrace();
+                Running.fatalError( "Listening error.", e );
             }
-        }
-
-        /**
-         * Stops the listening loop.
-         * 
-         * @since January 1, 2007
-         */
-        public void stopListening()
-        {
-            enabled = false;
         }
     }
-    /**
-     * Represents an IP address and a port.
-     * 
-     * @since December 29, 2007
-     */
-    class Machine
+
+    private class IntervalThread extends DatagramThread
     {
-        /**
-         * IP address of this machine.
-         * @since December 29, 2007
-         */
-        public InetAddress address;
-
-        /**
-         * Port of this machine.
-         * @since December 29, 2007
-         */
-        public int port;
-
-        /**
-         * Constructs the machine.
-         * @param address   its IP address
-         * @param port      its port
-         */
-        public Machine( InetAddress address, int port )
+        public IntervalThread( DatagramListener parent )
         {
-            this.address = address;
-            this.port = port;
-        }
-
-        /**
-         * Returns if our IP and port are equal to another's.
-         * @param other     the <code>Machine</code> to compare to
-         * @return  <code>true</code> if we have the same IP and port; <code>false</code> otherwise.
-         */
-        public boolean equals( Machine other )
-        {
-            // Compare ports first.
-            if ( this.port != other.port )
-                return false;
-
-            // Compare IP addresses. Inetaddress doesn't implement this (JDK 6).
-            for ( int i = 0; i < this.address.getAddress().length; i++ )
-            {
-                if ( this.address.getAddress()[i] != other.address.getAddress()[i] )
-                    return false;
-            }
-
-            // Same!
-            return true;
+            super( parent );
+            setPriority( MIN_PRIORITY );
+            start();
         }
 
         @Override
-        public String toString()
+        public void run()
         {
-            return address.toString() + ":" + port;
+            while ( shouldRun() )
+            {
+                try
+                {
+                    parent.intervalLogic();
+                    Thread.sleep( Constants.INTERVAL_TIME * 1000 );
+                }
+                catch ( InterruptedException ex )
+                {
+                }
+            }
         }
     }
 }

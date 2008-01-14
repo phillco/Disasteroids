@@ -4,7 +4,6 @@
  */
 package disasteroids;
 
-import disasteroids.sound.Tone;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -74,7 +73,7 @@ public interface WeaponManager extends GameElement
      * Executes a powerful blast of this <code>Weapon</code> type
      * 
      * @since January 7, 2008
-     * @param Ship the <code>Ship</code> which is shooting
+     * @param s the <code>Ship</code> which is shooting
      */
     public void berserk( Ship s );
 
@@ -91,12 +90,12 @@ public interface WeaponManager extends GameElement
      * 
      * @since January 11, 2008
      */
-    public Tone[] getShootSound();
+    public byte[] getShootSound();
 
     /**
      * Returns the sound to play when the berserk is activated.
      * 
      * @since January 11, 2008
      */
-    public Tone[] getBerserkSound();
+    public byte[] getBerserkSound();
 }

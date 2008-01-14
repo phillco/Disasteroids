@@ -84,7 +84,7 @@ public class ActionManager implements Serializable
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
-     * @param d the stream to write to
+     * @param stream the stream to write to
      * @since December 30, 2007
      */
     public void flatten( DataOutputStream stream ) throws IOException

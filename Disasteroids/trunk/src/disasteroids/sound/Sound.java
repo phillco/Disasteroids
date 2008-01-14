@@ -5,8 +5,6 @@
 package disasteroids.sound;
 
 import disasteroids.Settings;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * The central sound and music class.
@@ -20,76 +18,80 @@ public class Sound
      * A simple click.
      * @since Classic
      */
-    public static final Tone[] SHIP_SHOOT_SOUND = { new Tone( 200, 10 ) };
+    public static final byte[] SHIP_SHOOT_SOUND = new Tone( 200, 10 ).toByteArray() ;
 
     /**
      * Three low beeps.
      * @since January 9, 2008
      */
-    public static final Tone[] STATION_SHOOT_SOUND = { new Tone( 150, 20, 2 ), new Tone( 150, 20, 2 ), new Tone( 250, 30, 2 ) };
+    public static final byte[] STATION_SHOOT_SOUND;
+    
+    static
+    {
+        Tone[] temp= { new Tone( 150, 20, 2 ), new Tone( 150, 20, 2 ), new Tone( 250, 30, 2 ) };
+        STATION_SHOOT_SOUND=Tone.toByteArray(temp);
+    }
 
     /**
      * A long, low wail.
      * @since Classic
      */
-    public static final Tone[] ASTEROID_DIE_SOUND = { new Tone( 50, 30 ) };
+    public static final byte[] ASTEROID_DIE_SOUND = new Tone( 50, 30 ).toByteArray();
 
     /**
      * A descending cresendo with capping beeps.
      * @since Classic
      */
-    public static final Tone[] SHIP_LOSE_LIFE_SOUND = new Tone[65];
+    public static final byte[] SHIP_LOSE_LIFE_SOUND = new byte[8000];
 
     static
     {
-        int idx = 0;
-        SHIP_LOSE_LIFE_SOUND[idx++] = new Tone( 600, 20, 5 );
-        SHIP_LOSE_LIFE_SOUND[idx++] = new Tone( 600, 20, 5 );
-        SHIP_LOSE_LIFE_SOUND[idx++] = new Tone( 600, 20, 5 );
-
-        for ( int i = 500; i > 0; i -= 10 )
-            SHIP_LOSE_LIFE_SOUND[idx++] = new Tone( i, 5 );
-
-        for ( int i = 0; i < 200; i += 20 )
-            SHIP_LOSE_LIFE_SOUND[idx++] = new Tone( i, 5 );
+        for(int index=0; index<8000; index++)
+             SHIP_LOSE_LIFE_SOUND[index]=(byte)(Math.sin(880f*Math.pow(index,.8)/8000.0*6.28)*127*8000/(8100-index));
     }
     /**
      * A simple rising whine.
      * @since Classic
      */
-    public static final Tone[] GAME_OVER_SOUND = new Tone[11];
+    public static final byte[] GAME_OVER_SOUND;
 
     static
     {
+        Tone[] temp=new Tone[11];
         int idx = 0;
         for ( float i = 0; i <= 1; i += .1 )
-            GAME_OVER_SOUND[idx++] = new Tone( (int) ( 220 - 70 * i ), 25 );
+            temp[idx++] = new Tone( (int) ( 220 - 70 * i ), 25 );
+        GAME_OVER_SOUND=Tone.toByteArray(temp);
     }
     /**
      * A surging, high blast.
      * @since Classic
      */
-    public static final Tone[] BERSERK_SOUND = new Tone[15];
+    public static final byte[] BERSERK_SOUND;
 
     static
     {
+        Tone[] temp=new Tone[15];
         int idx = 0;
         for ( int i = 0; i < 1400; i += 100 )
-            BERSERK_SOUND[idx++] = new Tone( i, 15 );
+            temp[idx++] = new Tone( i, 15 );
+        BERSERK_SOUND=Tone.toByteArray(temp);
     }
     /**
      * A low, climbing hum.
      * 
      * @since January 11, 2008
      */
-    public static final Tone[] MINE_ARM_SOUND = new Tone[10];
+    public static final byte[] MINE_ARM_SOUND;
 
     static
     {
+        Tone[] temp=new Tone[10];
         int idx = 0;
         for ( int i = 40; i < 70; i += 10 )
-            MINE_ARM_SOUND[idx++] = new Tone( i, 60, 0 );
-        MINE_ARM_SOUND[idx++] = new Tone( 72, 200, 0 );
+            temp[idx++] = new Tone( i, 60, 0 );
+        temp[idx++] = new Tone( 72, 200, 0 );
+        MINE_ARM_SOUND=Tone.toByteArray(temp);
     }
 
     /**
@@ -172,6 +174,15 @@ public class Sound
         if ( Settings.soundOn )
             new SpeakerThread( tones ).start();
     }
+    
+    /**
+     * 
+     */
+    public static void playInternal( byte[] vals)
+    {
+        if( Settings.soundOn )
+            new SpeakerThread( vals ).start();
+    }
 
     private static class SpeakerThread extends Thread
     {
@@ -179,7 +190,14 @@ public class Sound
          * The list of tones to play.
          * @since Classic
          */
-        private List<Tone> tones;
+        private Tone[] tones;
+        
+        /**
+         * The set of values to be passed in to the speaker, for higher quality
+         * sounds
+         * @since January 13, 2008
+         */
+        private byte[] vals;
         
         /**
          * The ID number of the next thread created
@@ -195,33 +213,27 @@ public class Sound
         public SpeakerThread( Tone[] toneList )
         {
             super( "Speaker Thread #" + ID++ );
-            tones = (List<Tone>) Arrays.asList( toneList );
+            tones=toneList;
+        }
+        
+        /**
+         * Creates a new thread with the sound clip specified by the array.
+         * 
+         * @param The array of values to be passed directly to the speaker
+         * @since January 13, 2008
+         */
+        public SpeakerThread( byte[] vals )
+        {
+            super( "Speaker Thread #" + ID++ );
+            this.vals=vals;
         }
 
         @Override
         public void run()
         {
-            InternalSpeaker is = new InternalSpeaker();
-            for ( Tone a : tones )
-            {
-                if ( a == null )
-                    continue;
-
-                // Play this tone. IS will sleep the thread for the duration of the tone.
-                is.play( a.frequency, a.duration );
-
-                // Additionally, tones can have a delay after they're played.
-                if ( a.delayAfter > 0 )
-                {
-                    try
-                    {
-                        Thread.sleep( a.delayAfter );
-                    }
-                    catch ( InterruptedException e )
-                    {
-                    }
-                }
-            }
+            if( tones != null )
+                vals=Tone.toByteArray(tones);
+            InternalSpeaker.play(vals);
         }
     }
 }

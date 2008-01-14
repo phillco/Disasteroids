@@ -5,7 +5,6 @@
 package disasteroids;
 
 import disasteroids.sound.Sound;
-import disasteroids.sound.Tone;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Iterator;
@@ -227,12 +226,12 @@ class BulletManager implements WeaponManager
         g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
     }
 
-    public Tone[] getShootSound()
+    public byte[] getShootSound()
     {
         return Sound.SHIP_SHOOT_SOUND;
     }
 
-    public Tone[] getBerserkSound()
+    public byte[] getBerserkSound()
     {
         return Sound.BERSERK_SOUND;
     }

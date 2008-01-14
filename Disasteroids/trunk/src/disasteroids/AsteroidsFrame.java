@@ -107,7 +107,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     /**
      * Whether the endgame should be shown on next paint cycle.
-     * @sinde December 30, 2007
+     * @since December 30, 2007
      */
     private boolean shouldEnd;
 

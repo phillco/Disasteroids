@@ -93,10 +93,7 @@ public class Station extends GameObject implements ShootingObject
         // Aim towards closest ship.
         if ( closestShip != null )
         {
-            angle = Math.atan( ( closestShip.getY() - centerY() ) / (double) ( closestShip.getX() - centerX() ) );
-            if ( closestShip.getX() - getX() < 0 )
-                angle += Math.PI;
-
+            angle=calculateAngle(closestShip);
             // Fire!
             if ( manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
                 Sound.playInternal( Sound.STATION_SHOOT_SOUND );  // Play a custom sound.
@@ -257,5 +254,24 @@ public class Station extends GameObject implements ShootingObject
     {
         if ( easterEggCounter <= 0 )
             easterEggCounter = 290;
+    }
+    
+    /**
+     * Calculates and returns the necessary angle to hit the target
+     * 
+     * @param target The <code>Ship</code> to shoot at
+     * @return The angle, in radians in standard position, with 
+     * counter-clockwise=positive
+     * @since January 15, 2008
+     */
+    private double calculateAngle(Ship target)
+    {
+        double distance=getProximity(target);
+        double time=Math.log(distance)*6;
+        double nextAngle = Math.atan( ( target.getY()+time*target.getDy() - centerY() ) / (double) ( target.getX()+time*target.getDx() - centerX() ) );
+            if ( target.getX()+time*target.getDx() - ((int)centerX()) < 0 )
+                nextAngle += Math.PI;
+        
+        return nextAngle;
     }
 }

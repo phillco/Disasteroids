@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * MenuOption.java
  */
-package disasteroids;
+package disasteroids.gui;
 
 /**
  * An enum for the main menu selections.

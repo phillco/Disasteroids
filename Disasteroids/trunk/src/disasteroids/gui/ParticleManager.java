@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * ParticleManager.java
  */
-package disasteroids;
+package disasteroids.gui;
 
+import disasteroids.*;
 import java.awt.Graphics;
 import java.io.Serializable;
 import java.util.Iterator;

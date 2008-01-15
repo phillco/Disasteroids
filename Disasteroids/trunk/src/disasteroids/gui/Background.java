@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Background.java
  */
-package disasteroids;
+package disasteroids.gui;
 
+import disasteroids.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;

@@ -4,7 +4,7 @@
  */
 package disasteroids.networking;
 
-import disasteroids.AsteroidsMenu;
+import disasteroids.gui.AsteroidsMenu;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;

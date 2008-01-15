@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.gui.AsteroidsFrame;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -1,9 +1,10 @@
-package disasteroids;
+package disasteroids.gui;
 
 /*
  * DISASTEROIDS
  * MainMenu.java
  */
+import disasteroids.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;

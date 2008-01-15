@@ -4,6 +4,9 @@
  */
 package disasteroids;
 
+import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.ParticleManager;
+import disasteroids.gui.Particle;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;

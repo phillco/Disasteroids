@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
 import java.awt.Color;
 import java.awt.Font;

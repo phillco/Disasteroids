@@ -4,6 +4,8 @@
  */
 package disasteroids;
 
+import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.ParticleManager;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
 import java.awt.Color;
@@ -30,19 +32,20 @@ public class Game implements Serializable
      * Dimensions of the game, regardless of the graphical depiction.
      * @since December 17, 2007
      */
-    final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
+    public final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
 
     /**
      * Default player colors. Inspired from AOE2.
      * @since December 14 2007
      */
-    final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
+    public static final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
 
     /**
      * The current level of the game.
      * @since Classic
      */
-    int level = 1;
+    public int level = 1;
+        
 
     /**
      * Stores whether the game is currently paused or not.
@@ -112,7 +115,7 @@ public class Game implements Serializable
     {
         if ( instance == null )
             Game.instance = this;
-        resetEntireGame();
+        newGame();
     }
 
     /**
@@ -257,7 +260,7 @@ public class Game implements Serializable
      * 
      * @since December 16, 2007
      */
-    void resetEntireGame()
+    public void newGame()
     {
         timeStep = 0;
         otherPlayerTimeStep = 0;
@@ -453,7 +456,7 @@ public class Game implements Serializable
      * @param newLevel  the level to warp to
      * @since November 15 2007
      */
-    void warp( int newLevel )
+    public void warp( int newLevel )
     {
         level = newLevel;
 

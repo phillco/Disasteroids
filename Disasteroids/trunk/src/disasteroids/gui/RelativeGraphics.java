@@ -2,7 +2,9 @@
  * DISASTEROIDS
  * RelativeGraphics.java
  */
-package disasteroids;
+package disasteroids.gui;
+
+import disasteroids.*;
 
 /**
  * Utility class for drawing graphics around the localPlayer.

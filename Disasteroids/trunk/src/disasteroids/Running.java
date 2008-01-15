@@ -4,6 +4,9 @@
  */
 package disasteroids;
 
+import disasteroids.gui.MenuOption;
+import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainMenu;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
 import java.net.UnknownHostException;

@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * AsteroidsFrame.java
  */
-package disasteroids;
+package disasteroids.gui;
 
+import disasteroids.*;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
 import disasteroids.sound.Sound;
@@ -131,18 +132,13 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Reflect the network state.
         if ( Server.is() )
-        {
             setTitle( "Disateroids (server)" );
-        }
         else if ( Client.is() )
-        {
             setTitle( "Disasteroids (client)" );
-        }
         else
-        {
             setTitle( "Disasteroids" );
-        }
 
+        setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
         setResizable( false );
 
         // Close when the exit key is pressed.
@@ -160,7 +156,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since December 25, 2007
      */
-    void resetGame()
+    public void resetGame()
     {
         highScoreAchieved = false;
         background.clearMessages();
@@ -178,9 +174,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private void draw( Graphics g )
     {
         if ( localPlayer() == null )
-        {
             return;
-        }
 
         // Anti-alias, if the user wants it.
         updateQualityRendering( g, Settings.qualityRendering );
@@ -190,9 +184,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
             if ( timeSinceLast > 0 )
-            {
                 lastFPS = (int) ( 10000.0 / timeSinceLast );
-            }
         }
 
         if ( !highScoreAchieved && localPlayer().getScore() > Settings.highScore )
@@ -203,42 +195,30 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Draw the star background.
         if ( background == null )
-        {
             background = new Background( Game.getInstance().GAME_WIDTH, Game.getInstance().GAME_HEIGHT );
-        }
         else
-        {
             g.drawImage( background.render(), 0, 0, this );
-        }
 
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );
 
-        Game.getInstance().asteroidManager.draw( g );
+        Game.getInstance().asteroidManager().draw( g );
 
         for ( GameObject go : Game.getInstance().gameObjects )
-        {
             go.draw( g );
-        }
 
         // Update the ships.
         for ( Ship s : Game.getInstance().players )
-        {
             s.draw( g );
-        }
 
         if ( shouldEnd )
-        {
             endGame( g );
-        }
         // Draw the on-screen HUD.
         drawHud( g );
 
         // Draw the entire scoreboard.
         if ( drawScoreboard )
-        {
             drawScoreboard( g );
-        }
     }
 
     /**
@@ -251,13 +231,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         // Create the buffer.
         if ( Settings.hardwareRendering )
-        {
             virtualMem = getGraphicsConfiguration().createCompatibleVolatileImage( getWidth(), getHeight() );
-        }
         else
-        {
             virtualMem = createImage( getWidth(), getHeight() );
-        }
 
         Game.getInstance().startGame();
     }
@@ -274,16 +250,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         // Create the image if needed.
         if ( virtualMem == null )
-        {
             initBuffering();
-        }
 
         if ( showWarpDialog )
         {
             try
             {
                 Game.getInstance().setPaused( false );
-                Game.getInstance().warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", Game.getInstance().level ) ) );
+                Game.getInstance().warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", Game.getInstance().getLevel() ) ) );
             }
             catch ( NumberFormatException e )
             {
@@ -294,26 +268,20 @@ public class AsteroidsFrame extends Frame implements KeyListener
         }
         // Render in hardware mode.
         if ( Settings.hardwareRendering )
-        {
             do
             {
                 // If the resolution has changed causing an incompatibility, re-create the VolatileImage.
                 if ( ( (VolatileImage) virtualMem ).validate( getGraphicsConfiguration() ) == VolatileImage.IMAGE_INCOMPATIBLE )
-                {
                     initBuffering();
-                }
 
                 // Draw the game's graphics.
                 draw( virtualMem.getGraphics() );
 
             }
-            while ( ( (VolatileImage) virtualMem ).contentsLost() );
-        } // Render in software mode.
+            while ( ( (VolatileImage) virtualMem ).contentsLost() ); // Render in software mode.
         else
-        {
             // Draw the game's graphics.
             draw( virtualMem.getGraphics() );
-        }
 
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
@@ -332,21 +300,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         showWarpDialog = true;
     }
 
-    void nextLevel()
+    public void nextLevel()
     {
         background.init();
-    }
-
-    /**
-     * Advances to the next level from a static context.
-     * 
-     * @deprecated Use <code>AsteroidsFrame.frame()</code> to access frame methods.
-     * @since Classic
-     */
-    @Deprecated
-    public static void staticNextLevel()
-    {
-        Game.getInstance().nextLevel();
     }
 
     /**
@@ -365,13 +321,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         g2d.setColor( localPlayer().getColor() );
         g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
         if ( localPlayer().livesLeft() == 1 )
-        {
             text = "life";
-        }
         else
-        {
             text = "lives";
-        }
         x = getWidth() - 40;
         y = getHeight() - 15;
         g2d.drawString( text, x, y );
@@ -439,9 +391,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             g2d.drawString( text, x, y );
             y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 2;
             if ( m.life-- <= 0 )
-            {
                 itr.remove();
-            }
         }
 
         // Draw "waiting for server...".
@@ -482,7 +432,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Draw the asteroid count.
         g2d.setColor( Color.lightGray );
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
-        text = insertThousandCommas( Game.getInstance().asteroidManager.size() ) + " asteroid" + ( Game.getInstance().asteroidManager.size() == 1 ? " remains" : "s remain" );
+        text = insertThousandCommas( Game.getInstance().asteroidManager().size() ) + " asteroid" + ( Game.getInstance().asteroidManager().size() == 1 ? " remains" : "s remain" );
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         g2d.drawString( text, x, y );
         y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
@@ -499,9 +449,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         g2d.setColor( Color.darkGray );
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 14 ) );
         for ( ScoreboardColumn c : columns )
-        {
             g2d.drawString( c.title, c.x, y );
-        }
 
         g2d.drawLine( columns[0].x, y + 5, columns[columns.length - 1].x + (int) g2d.getFont().getStringBounds( columns[columns.length - 1].title, g2d.getFontRenderContext() ).getWidth(), y + 5 );
         y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
@@ -511,13 +459,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             g2d.setColor( s.getColor() );
             if ( s == localPlayer() )
-            {
                 g2d.setFont( g2d.getFont().deriveFont( Font.BOLD ) );
-            }
             else
-            {
                 g2d.setFont( g2d.getFont().deriveFont( Font.PLAIN ) );
-            }
             for ( int i = 0; i < columns.length; i++ )
             {
                 switch ( i )
@@ -555,26 +499,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
         {
             y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
             if ( localPlayer().getName().equals( Settings.highScoreName ) )
-            {
                 text = "But hey, everyone likes to beat their own score.";
-            }
             else
-            {
                 text = "But you're much better with your shiny " + insertThousandCommas( localPlayer().getScore() ) + "!";
-            }
             x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
             g2d.drawString( text, x, y );
         }
-    }
-
-    /**
-     * Starts a new Game.getInstance().
-     * 
-     * @since Classic
-     */
-    public static void newGame()
-    {
-        Game.getInstance().resetEntireGame();
     }
 
     /**
@@ -599,9 +529,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         shouldEnd = false;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
         if ( Settings.soundOn )
-        {
             Sound.playInternal( Sound.GAME_OVER_SOUND );
-        }
         for ( float sat = 0; sat <= 1; sat += .005 )
         {
             g.setColor( Color.getHSBColor( sat, sat, sat ) );
@@ -612,12 +540,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Find the player with the highest score.
         Ship highestScorer = Game.getInstance().players.getFirst();
         for ( Ship s : Game.getInstance().players )
-        {
             if ( s.getScore() > highestScorer.getScore() )
-            {
                 highestScorer = s;
-            }
-        }
 
         String victoryMessage = ( Game.getInstance().players.size() > 1 ) ? highestScorer.getName() + " wins" : "You died";
         victoryMessage += " with a score of " + insertThousandCommas( highestScorer.getScore() ) + "!";
@@ -646,7 +570,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         //            }
         //        }
 
-        newGame();
+        Game.getInstance().newGame();
         this.setIgnoreRepaint( false );
         repaint();
         shouldEnd = false;
@@ -661,11 +585,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public synchronized void keyReleased( KeyEvent e )
     {
-        Game.getInstance().actionManager.add( new Action( localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+        Game.getInstance().actionManager().add( new Action( localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
         if ( Client.is() )
-        {
             Client.getInstance().keyStroke( 0 - e.getKeyCode() );
-        }
     }
 
     /**
@@ -709,18 +631,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 break;
             case KeyEvent.VK_SCROLL_LOCK:
                 for ( GameObject go : Game.getInstance().gameObjects )
-                {
                     if ( go instanceof Station )
-                    {
                         ( (Station) go ).setEasterEgg();
-                    }
-                }
                 break;
             case KeyEvent.VK_W:
                 if ( !Client.is() )
-                {
                     AsteroidsFrame.frame().warpDialog();
-                }
                 break;
             case KeyEvent.VK_A:
                 toggleReneringQuality();
@@ -731,12 +647,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
             default:
 
 
-                Game.getInstance().actionManager.add( new Action( localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+                Game.getInstance().actionManager().add( new Action( localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
 
                 if ( Client.is() )
-                {
                     Client.getInstance().keyStroke( e.getKeyCode() );
-                }
 
         }
         repaint();
@@ -832,7 +746,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Set fullscreen mode.
         if ( Settings.useFullscreen )
-        {
             // Don't change anything if we're already in fullscreen mode.
             if ( graphicsDevice.getFullScreenWindow() != this )
             {
@@ -848,13 +761,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
                 // Re-create the background.
                 if ( background != null )
-                {
                     background.init();
-                }
-            }
-        } // Set windowed mode.
+            } // Set windowed mode.
         else
-        {
             // Don't change anything if we're already in windowed mode.
             if ( ( getSize().width != WINDOW_WIDTH ) || ( getSize().height != WINDOW_HEIGHT ) )
             {
@@ -864,13 +773,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
 
                 if ( Client.is() )
-                {
                     setLocation( 0 + 3 + WINDOW_WIDTH, 0 );
-                }
                 else
-                {
                     setLocation( 0, 0 );
-                }
 
                 graphicsDevice.setFullScreenWindow( null );
 
@@ -879,11 +784,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
                 // Re-create the background.
                 if ( background != null )
-                {
                     background.init();
-                }
             }
-        }
         setVisible( true );
     }
 
@@ -913,14 +815,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public static void addNotificationMessage( String message, int life )
     {
         if ( message.equals( "" ) )
-        {
             return;
-        }
 
         if ( frame() != null )
-        {
             frame().notificationMessages.add( new NotificationMessage( message, life ) );
-        }
     }
 
     /**
@@ -952,9 +850,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );
         if ( x > -2 && x < Game.getInstance().GAME_WIDTH + 2 && y > -2 && y < Game.getInstance().GAME_HEIGHT + 2 )
-        {
             graph.drawRect( x, y, 0, 0 );
-        }
     }
 
     /**
@@ -971,9 +867,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );
         if ( x > -radius * 2 && x < Game.getInstance().GAME_WIDTH + radius * 2 && y > -radius * 2 && y < Game.getInstance().GAME_HEIGHT + radius * 2 )
-        {
             graph.drawOval( x - radius, y - radius, radius * 2, radius * 2 );
-        }
     }
 
     /**
@@ -1002,9 +896,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );
         if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
-        {
             graph.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
-        }
     }
 
     /**
@@ -1022,9 +914,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );
         if ( x > -2 * radius && x < Game.getInstance().GAME_WIDTH + radius * 2 && y > -radius * 2 && y < Game.getInstance().GAME_HEIGHT + radius * 2 )
-        {
             graph.fillOval( x - radius, y - radius, radius * 2, radius * 2 );
-        }
     }
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
@@ -1034,9 +924,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
         graph.setColor( col );
         if ( x > -50 && x < Game.getInstance().GAME_WIDTH && y > -50 && y < Game.getInstance().GAME_HEIGHT )
-        {
             graph.drawString( str, x, y );
-        }
     }
 
     /**
@@ -1080,9 +968,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public static void addNotificationMessage( String message )
     {
         if ( message.equals( "" ) )
-        {
             return;
-        }
 
         addNotificationMessage( message, 250 );
     }
@@ -1120,17 +1006,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public Ship localPlayer()
     {
         if ( Game.getInstance().players == null || Game.getInstance().players.size() < 1 )
-        {
             return null;
-        }
 
         for ( Ship s : Game.getInstance().players )
-        {
             if ( s.id == localId )
-            {
                 return s;
-            }
-        }
 
         return null;
     }

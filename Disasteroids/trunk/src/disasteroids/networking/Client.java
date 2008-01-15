@@ -5,7 +5,7 @@
 package disasteroids.networking;
 
 import disasteroids.Asteroid;
-import disasteroids.AsteroidsFrame;
+import disasteroids.gui.AsteroidsFrame;
 import disasteroids.Game;
 import disasteroids.Running;
 import disasteroids.Settings;

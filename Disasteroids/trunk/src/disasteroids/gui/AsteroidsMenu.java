@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * AsteroidsMenu.java
  */
-package disasteroids;
+package disasteroids.gui;
 
+import disasteroids.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;

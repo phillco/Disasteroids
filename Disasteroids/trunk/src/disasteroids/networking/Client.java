@@ -110,7 +110,7 @@ public class Client extends DatagramListener
         {
             if ( server == null )
                 return;
-            
+
             // Ignore anything that isn't from the server.
             if ( new Machine( p.getAddress(), p.getPort() ).equals( server ) )
                 server.see();
@@ -146,8 +146,14 @@ public class Client extends DatagramListener
                         Game.getInstance().asteroidManager().add( new Asteroid( in ), false );
                         break;
                     case REMOVE_ASTEROID:
-                        Game.getInstance().asteroidManager().remove( in.readInt(), Game.getInstance().getPlayerFromId( in.readInt() ), false );
+                    {
+                        int aId = in.readInt();
+                        Ship s = null;
+                        if ( in.readBoolean() )
+                            s = Game.getInstance().getPlayerFromId( in.readInt() );
+                        Game.getInstance().asteroidManager().remove( aId, s, false );
                         break;
+                    }
                     case BERSERK:
                         Game.getInstance().getPlayerFromId( in.readInt() ).berserk();
                         break;

@@ -187,7 +187,7 @@ public class Server extends DatagramListener
                     // Client is sending us a keystroke.
                     case KEYSTROKE:
 
-                        if ( !client.isInGame() )
+                        if (  ! client.isInGame() )
                             break;
 
                         int keyCode = in.readInt();
@@ -197,9 +197,9 @@ public class Server extends DatagramListener
                     // Client wishes to resume life.
                     case QUITTING:
 
-                        if ( !client.isInGame() )
+                        if (  ! client.isInGame() )
                             break;
-                        
+
                         Game.getInstance().removePlayer( client.inGamePlayer );
 
                         // Tell everyone else.
@@ -280,7 +280,7 @@ public class Server extends DatagramListener
      * @since December 29, 2007
      */
     ClientMachine registerClient( Machine unknownMachine )
-    {        
+    {
         // See if he's on the list.
         for ( ClientMachine c : clients )
         {
@@ -429,7 +429,15 @@ public class Server extends DatagramListener
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Message.REMOVE_ASTEROID.ordinal() );
             out.writeInt( id );
-            out.writeInt( killer.id );
+            
+            if ( killer == null )
+                out.writeBoolean( false );
+            else
+            {
+                out.writeBoolean( true );
+                out.writeInt( killer.id );
+            }
+            
             sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )

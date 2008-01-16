@@ -4,12 +4,15 @@
  */
 package disasteroids;
 
+import disasteroids.gui.Particle;
 import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
+import disasteroids.gui.ParticleManager;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Calendar;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -42,6 +45,18 @@ public class Station extends GameObject implements ShootingObject
      * @since January 9, 2008 
      */
     private int easterEggCounter = 0;
+
+    /**
+     * If above 0, we've been disabled by a Ship and can't fire.
+     * @since January 16, 2008
+     */
+    private int disableCounter = 0;
+
+    /**
+     * Whether we should be hidden in the next tick. Used for our flashing when disabled.
+     * @since January 16, 2008
+     */
+    private boolean disableFlash = false;
 
     /**
      * Creates the station at the given position and random floating speed.
@@ -79,12 +94,27 @@ public class Station extends GameObject implements ShootingObject
             return;
         }
 
+        // Disabled.
+        if ( disableCounter > 0 )
+        {
+            disableCounter--;
+
+            // Smoke and spin the turret.
+            Random r = RandNumGen.getAsteroidInstance();
+            angle += 0.07 + r.nextDouble() / 7;
+            ParticleManager.addParticle( new Particle( getX() + r.nextInt( size ), centerY(),
+                                                       r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.gray : Color.darkGray,
+                                                       r.nextInt( 3 ) + 1, r.nextDouble() * 1.4 + 0.5,
+                                                       50, 30 ) );
+            return;
+        }
+
         // Find players within our range.        
         int range = 300;
         Ship closestShip = null;
         for ( Ship s : Game.getInstance().players )
         {
-            if ( getProximity( s ) < range )
+            if ( getProximity( s ) < range && !s.cannotDie() )
             {
                 if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
                     closestShip = s;
@@ -94,7 +124,7 @@ public class Station extends GameObject implements ShootingObject
         // Aim towards closest ship.
         if ( closestShip != null )
         {
-            angle=calculateAngle(closestShip);
+            angle = calculateAngle( closestShip );
             // Fire!
             if ( manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
                 Sound.playInternal( Sound.STATION_SHOOT_SOUND );  // Play a custom sound.
@@ -126,6 +156,28 @@ public class Station extends GameObject implements ShootingObject
                 }
             }
         }
+
+        // Go through ships, stations, etc.
+        for ( ShootingObject s : Game.getInstance().shootingObjects )
+        {
+            if ( s == this )
+                continue;
+
+            for ( WeaponManager wm : s.getManagers() )
+            {
+                // Loop through all this ship's Missiles.
+                for ( Weapon m : wm.getWeapons() )
+                {
+                    // Were we hit by a missile?
+                    if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
+                            ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
+                    {
+                        m.explode();
+                        disable();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -148,6 +200,13 @@ public class Station extends GameObject implements ShootingObject
      */
     public void draw( Graphics g )
     {
+        if ( disableCounter > 0 )
+        {
+            disableFlash = !disableFlash;
+            if ( disableFlash )
+                return;
+        }
+
         int rX = RelativeGraphics.translateX( getX() );
         int rY = RelativeGraphics.translateY( getY() );
 
@@ -256,7 +315,15 @@ public class Station extends GameObject implements ShootingObject
         if ( easterEggCounter <= 0 )
             easterEggCounter = 290;
     }
-    
+
+    public void disable()
+    {
+        if ( disableCounter <= 0 )
+            disableCounter = 290;
+
+        Sound.playInternal( Sound.ASTEROID_DIE_SOUND );
+    }
+
     /**
      * Calculates and returns the necessary angle to hit the target
      * 
@@ -265,14 +332,14 @@ public class Station extends GameObject implements ShootingObject
      * counter-clockwise=positive
      * @since January 15, 2008
      */
-    private double calculateAngle(Ship target)
+    private double calculateAngle( Ship target )
     {
-        double distance=getProximity(target);
-        double time=Math.log(distance)*6;
-        double nextAngle = Math.atan( ( target.getY()+time*target.getDy() - centerY() ) / (double) ( target.getX()+time*target.getDx() - centerX() ) );
-            if ( target.getX()+time*target.getDx() - ((int)centerX()) < 0 )
-                nextAngle += Math.PI;
-        
+        double distance = getProximity( target );
+        double time = Math.log( distance ) * 6;
+        double nextAngle = Math.atan( ( target.getY() + time * target.getDy() - centerY() ) / (double) ( target.getX() + time * target.getDx() - centerX() ) );
+        if ( target.getX() + time * target.getDx() - ( (int) centerX() ) < 0 )
+            nextAngle += Math.PI;
+
         return nextAngle;
     }
 }

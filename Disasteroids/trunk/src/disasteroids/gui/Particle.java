@@ -55,6 +55,12 @@ public class Particle implements GameElement
      * @since Classic
      */
     public double[] rgb = new double[3];
+    
+    /**
+     * The rate at which we grow or shrink.
+     * @since January 16, 2008
+     */
+    private double deltaSize;
 
     /**
      * Creates a new <code>Particle</code>.
@@ -83,6 +89,8 @@ public class Particle implements GameElement
         rgb[0] = c.getRed();
         rgb[1] = c.getGreen();
         rgb[2] = c.getBlue();
+        
+        deltaSize = RandNumGen.getParticleInstance().nextDouble() - 0.6;
     }
 
     /**
@@ -101,6 +109,7 @@ public class Particle implements GameElement
         life--;
         x += dx;
         y += dy;
+        size += deltaSize;
         dx *= 0.998;
         dy *= 0.998;
     }

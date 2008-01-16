@@ -11,6 +11,7 @@ import disasteroids.gui.ParticleManager;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -57,6 +58,14 @@ public class Station extends GameObject implements ShootingObject
      * @since January 16, 2008
      */
     private boolean disableFlash = false;
+
+    /**
+     * The angle we're turning towards.
+     * @since January 16, 2008
+     */
+    private double desiredAngle = 0.0;
+
+    final double SWEEP_SPEED = 0.05;
 
     /**
      * Creates the station at the given position and random floating speed.
@@ -112,22 +121,33 @@ public class Station extends GameObject implements ShootingObject
         // Find players within our range.        
         int range = 300;
         Ship closestShip = null;
-        for ( Ship s : Game.getInstance().players )
         {
-            if ( getProximity( s ) < range && !s.cannotDie() )
+            Ship closestInvincible = null;
+            for ( Ship s : Game.getInstance().players )
             {
-                if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
-                    closestShip = s;
+                if ( getProximity( s ) < range )
+                {
+                    if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
+                        closestShip = s;
+                    if ( closestInvincible == null || getProximity( s ) > getProximity( closestInvincible ) )
+                        closestInvincible = s;
+                }
             }
+            if ( closestShip == null && closestInvincible != null )
+                closestShip = closestInvincible;
         }
 
         // Aim towards closest ship.
         if ( closestShip != null )
         {
-            angle = calculateAngle( closestShip );
+            calculateAngle( closestShip );
+
             // Fire!
-            if ( manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
-                Sound.playInternal( Sound.STATION_SHOOT_SOUND );  // Play a custom sound.
+            if ( Math.abs( angle - desiredAngle ) < SWEEP_SPEED * 5 && !closestShip.cannotDie() )
+            {
+                if ( manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
+                    Sound.playInternal( Sound.STATION_SHOOT_SOUND );  // Play a custom sound.
+            }
         }
         else
             angle += 0.01;
@@ -225,11 +245,17 @@ public class Station extends GameObject implements ShootingObject
         g.fillRect( rX + 27, rY, 10, 10 );
         g.fillRect( rX + 27, rY + 27, 10, 10 );
         g.fillRect( rX, rY + 27, 10, 10 );
-        g.setFont( new Font( "Tahoma", Font.PLAIN, 8 ) );
+        g.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
+        g.setColor( Color.white );
+        g.drawString( new DecimalFormat( "0.00" ).format( angle / Math.PI ), rX, rY - 9 );
+        g.drawString( new DecimalFormat( "0.00" ).format( desiredAngle / Math.PI ), rX + size, rY - 9 );
+
 
         // Draw the easter egg clock.
         if ( easterEggCounter > 0 )
         {
+            g.setFont( new Font( "Tahoma", Font.PLAIN, 8 ) );
+
             // Numbers.
             g.setColor( Color.white );
             g.drawString( "12", cX - 3, rY + 10 );
@@ -332,14 +358,34 @@ public class Station extends GameObject implements ShootingObject
      * counter-clockwise=positive
      * @since January 15, 2008
      */
-    private double calculateAngle( Ship target )
+    private void calculateAngle( Ship target )
     {
         double distance = getProximity( target );
         double time = Math.log( distance ) * 6;
-        double nextAngle = Math.atan( ( target.getY() + time * target.getDy() - centerY() ) / (double) ( target.getX() + time * target.getDx() - centerX() ) );
-        if ( target.getX() + time * target.getDx() - ( (int) centerX() ) < 0 )
-            nextAngle += Math.PI;
+        double projectedX = target.getX() + time * target.getDx();
+        double projectedY = target.getY() + time * target.getDy();
 
-        return nextAngle;
+        desiredAngle = Math.atan( ( projectedY - centerY() ) / (double) ( projectedX - centerX() ) );
+        if ( projectedX - ( (int) centerX() ) < 0 )
+        {
+            //if ( angle <= 0)
+            //angle = Math.PI * 2 + angle;
+            desiredAngle += Math.PI;
+        }
+
+        if ( desiredAngle > angle )
+        {
+            if ( desiredAngle - angle < SWEEP_SPEED )
+                angle = desiredAngle;
+            else
+                angle += SWEEP_SPEED;
+        }
+        else if ( desiredAngle < angle )
+        {
+            if ( angle - desiredAngle < SWEEP_SPEED )
+                angle = desiredAngle;
+            else
+                angle -= SWEEP_SPEED;
+        }
     }
 }

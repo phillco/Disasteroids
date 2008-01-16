@@ -95,7 +95,8 @@ public class Station extends GameObject implements ShootingObject
         move();
         checkCollision();
         manager.act( true );
-
+        
+        angle%=2*Math.PI; //Make sure the angle does not grow without bound
         // Easter egg.
         if ( easterEggCounter > 0 )
         {
@@ -354,8 +355,6 @@ public class Station extends GameObject implements ShootingObject
      * Calculates and returns the necessary angle to hit the target
      * 
      * @param target The <code>Ship</code> to shoot at
-     * @return The angle, in radians in standard position, with 
-     * counter-clockwise=positive
      * @since January 15, 2008
      */
     private void calculateAngle( Ship target )
@@ -373,16 +372,16 @@ public class Station extends GameObject implements ShootingObject
             desiredAngle += Math.PI;
         }
 
-        if ( desiredAngle > angle )
+        if ( ( ( desiredAngle-angle ) + 2 * Math.PI) % ( 2 * Math.PI ) < Math.PI  )
         {
-            if ( desiredAngle - angle < SWEEP_SPEED )
+            if ( Math.abs( desiredAngle - angle ) < SWEEP_SPEED )
                 angle = desiredAngle;
             else
                 angle += SWEEP_SPEED;
         }
-        else if ( desiredAngle < angle )
+        else //if it shouldn't move counterclockwise, moveclockwise
         {
-            if ( angle - desiredAngle < SWEEP_SPEED )
+            if ( Math.abs( angle - desiredAngle ) < SWEEP_SPEED )
                 angle = desiredAngle;
             else
                 angle -= SWEEP_SPEED;

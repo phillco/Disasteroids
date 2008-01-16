@@ -77,7 +77,7 @@ public class LayeredSound {
                 byte[] buffer=new byte[8000];
                 for(Sound s: theSounds)
                     for(int index=0; index<8000; index++)
-                        buffer[index]+=s.getValue()/5;
+                        buffer[index]+=s.getValue()/(Math.max(theSounds.size(),1));
                 sdl.write(buffer, 0, 8000);
             }while(theSounds.size()>0);
             sdl.drain();

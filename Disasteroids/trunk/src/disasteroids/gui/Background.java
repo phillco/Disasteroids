@@ -86,11 +86,18 @@ public class Background
 
         // Create the array of stars.
         Random rand = RandNumGen.getStarInstance();
-        this.theStars = new Star[( width * height / ( rand.nextInt( 1700 ) + 300 ) ) / ( Settings.qualityRendering ? 1 : 3 )];
+        this.theStars = new Star[( width * height / ( rand.nextInt( 800 ) + 1000 ) ) / ( Settings.qualityRendering ? 1 : 3 )];
         for ( int star = 0; star < theStars.length; star++ )
         {
             int sat = rand.nextInt( 255 );
-            Color col = new Color( sat, sat, sat );
+            int rgb[] = new int[3];
+            for ( int i = 0; i < rgb.length; i++ )
+            {
+                int deviance = rand.nextInt( 90 );
+                rgb[i] = Math.max( Math.min( sat + ( deviance - deviance / 2 ), 255 ), 0 );
+            }
+
+            Color col = new Color( rgb[0], rgb[1], rgb[2] );
             theStars[star] = new Star( rand.nextInt( width ), rand.nextInt( height ), col );
         }
     }
@@ -146,7 +153,17 @@ public class Background
 
         // Draw stars.
         for ( Star star : this.theStars )
+        {
+            // Move them.
+            star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+            star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+
+            // Wrap them.
+            star.checkWrap();
+
             AsteroidsFrame.frame().drawPoint( g, star.color, star.x, star.y );
+        }
+
 
         // Draw background messages.
         Iterator<BackgroundMessage> itr = starMessages.iterator();
@@ -184,13 +201,44 @@ public class Background
     {
         public int x,  y;
 
+        public double dx,  dy;
+
         public Color color;
+
+        public double depth;
 
         public Star( int x, int y, Color col )
         {
             this.x = x;
             this.y = y;
             this.color = col;
+            
+            // Simulated depth. Multiplied by the localPlayer's dx and dy to determine speed.
+            depth = RandNumGen.getStarInstance().nextDouble() * 5;
+
+            // Force some to the 'background'.
+            if ( RandNumGen.getStarInstance().nextInt( 15 ) == 0 )
+                depth /= 3;
+            
+            // Some stars also move.
+            if ( RandNumGen.getStarInstance().nextInt( 10 ) == 0 )
+            {
+                dx = RandNumGen.getStarInstance().nextDouble() - 0.5;
+                dy = RandNumGen.getStarInstance().nextDouble() - 0.5;
+            }
+        }
+
+        public void checkWrap()
+        {
+            // Wrap to stay inside the level.
+            if ( x <= Math.abs( dx ) )
+                x += Game.getInstance().GAME_WIDTH - 1;
+            if ( y <= Math.abs( dy ) )
+                y += Game.getInstance().GAME_HEIGHT - 1;
+            if ( x > Game.getInstance().GAME_WIDTH - Math.abs( dx ) )
+                x -= Game.getInstance().GAME_WIDTH - 1;
+            if ( y > Game.getInstance().GAME_HEIGHT - Math.abs( dy ) )
+                y -= Game.getInstance().GAME_HEIGHT - 1;
         }
     }
 

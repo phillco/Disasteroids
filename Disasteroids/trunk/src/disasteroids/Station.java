@@ -95,8 +95,8 @@ public class Station extends GameObject implements ShootingObject
         move();
         checkCollision();
         manager.act( true );
-        
-        angle%=2*Math.PI; //Make sure the angle does not grow without bound
+
+        angle %= 2 * Math.PI; //Make sure the angle does not grow without bound
         // Easter egg.
         if ( easterEggCounter > 0 )
         {
@@ -144,7 +144,7 @@ public class Station extends GameObject implements ShootingObject
             calculateAngle( closestShip );
 
             // Fire!
-            if ( Math.abs( angle - desiredAngle ) < SWEEP_SPEED * 5 && !closestShip.cannotDie() )
+            if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI )  < SWEEP_SPEED * 6  && !closestShip.cannotDie() )
             {
                 if ( manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
                     Sound.playInternal( Sound.STATION_SHOOT_SOUND );  // Play a custom sound.
@@ -161,7 +161,33 @@ public class Station extends GameObject implements ShootingObject
      */
     private void checkCollision()
     {
-        // Go through all of the ships.        
+        // Check for missile collision.
+        for ( ShootingObject s : Game.getInstance().shootingObjects )
+        {
+            if ( s == this )
+                continue;
+
+            // Loop through the mangers.
+            for ( WeaponManager wm : s.getManagers() )
+            {
+                // Loop through the bullets.
+                for ( Weapon m : wm.getWeapons() )
+                {
+                    // Were we hit by a bullet?
+                    if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
+                            ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
+                    {
+                        m.explode();
+                        disable();
+                    }
+                }
+            }
+        }
+
+        if ( disableCounter > 0 )
+            return;
+        
+        // Check for ship collision.  
         for ( Ship s : Game.getInstance().players )
         {
             // Were we hit by the ship's body?
@@ -173,28 +199,6 @@ public class Station extends GameObject implements ShootingObject
                     if ( s.looseLife() )
                     {
                         return;
-                    }
-                }
-            }
-        }
-
-        // Go through ships, stations, etc.
-        for ( ShootingObject s : Game.getInstance().shootingObjects )
-        {
-            if ( s == this )
-                continue;
-
-            for ( WeaponManager wm : s.getManagers() )
-            {
-                // Loop through all this ship's Missiles.
-                for ( Weapon m : wm.getWeapons() )
-                {
-                    // Were we hit by a missile?
-                    if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
-                            ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
-                    {
-                        m.explode();
-                        disable();
                     }
                 }
             }
@@ -246,11 +250,11 @@ public class Station extends GameObject implements ShootingObject
         g.fillRect( rX + 27, rY, 10, 10 );
         g.fillRect( rX + 27, rY + 27, 10, 10 );
         g.fillRect( rX, rY + 27, 10, 10 );
-        g.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
-        g.setColor( Color.white );
-        g.drawString( new DecimalFormat( "0.00" ).format( angle / Math.PI ), rX, rY - 9 );
-        g.drawString( new DecimalFormat( "0.00" ).format( desiredAngle / Math.PI ), rX + size, rY - 9 );
 
+//        g.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
+//        g.setColor( Color.white );
+//        g.drawString( new DecimalFormat( "0.00" ).format( angle / Math.PI ), rX, rY - 9 );
+//        g.drawString( new DecimalFormat( "0.00" ).format( desiredAngle / Math.PI ), rX + size, rY - 9 );
 
         // Draw the easter egg clock.
         if ( easterEggCounter > 0 )
@@ -348,6 +352,9 @@ public class Station extends GameObject implements ShootingObject
         if ( disableCounter <= 0 )
             disableCounter = 290;
 
+        for ( Weapon w : manager.getWeapons() )
+            w.explode();
+
         Sound.playInternal( Sound.ASTEROID_DIE_SOUND );
     }
 
@@ -360,19 +367,16 @@ public class Station extends GameObject implements ShootingObject
     private void calculateAngle( Ship target )
     {
         double distance = getProximity( target );
-        double time = Math.log( distance ) * 6;
+        double time = Math.log( distance ) * ( 5 + RandNumGen.getAsteroidInstance().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 
         desiredAngle = Math.atan( ( projectedY - centerY() ) / (double) ( projectedX - centerX() ) );
         if ( projectedX - ( (int) centerX() ) < 0 )
-        {
-            //if ( angle <= 0)
-            //angle = Math.PI * 2 + angle;
             desiredAngle += Math.PI;
-        }
 
-        if ( ( ( desiredAngle-angle ) + 2 * Math.PI) % ( 2 * Math.PI ) < Math.PI  )
+
+        if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI ) < Math.PI )
         {
             if ( Math.abs( desiredAngle - angle ) < SWEEP_SPEED )
                 angle = desiredAngle;

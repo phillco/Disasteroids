@@ -227,6 +227,9 @@ public class Server extends DatagramListener
      */
     void sendPacketToAllPlayers( ByteOutputStream stream ) throws IOException
     {
+        if ( clients == null )
+            return;
+        
         byte[] message = stream.toByteArray();
         for ( ClientMachine c : clients )
             if ( c.isInGame() )

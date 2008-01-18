@@ -6,6 +6,7 @@ package disasteroids.gui;
 
 import disasteroids.*;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.VolatileImage;
@@ -212,14 +213,14 @@ public class Background
             this.x = x;
             this.y = y;
             this.color = col;
-            
+
             // Simulated depth. Multiplied by the localPlayer's dx and dy to determine speed.
             depth = RandNumGen.getStarInstance().nextDouble() * 5;
 
             // Force some to the 'background'.
             if ( RandNumGen.getStarInstance().nextInt( 15 ) == 0 )
                 depth /= 3;
-            
+
             // Some stars also move.
             if ( RandNumGen.getStarInstance().nextInt( 10 ) == 0 )
             {
@@ -257,7 +258,7 @@ public class Background
 
         public Color col;
 
-        public int life = 70;
+        public int life,  lifeMax;
 
         public BackgroundMessage( int x, int y, String message, Color col )
         {
@@ -265,6 +266,8 @@ public class Background
             this.y = y;
             this.message = message;
             this.col = col;
+
+            life = lifeMax = RandNumGen.getStarInstance().nextInt( 30 ) + 40;
             dy = -RandNumGen.getStarInstance().nextDouble() * 4;
         }
 
@@ -273,8 +276,9 @@ public class Background
             y += dy;
             Color c = new Color(
                     Math.min( col.getRed() * life / 70 + 80, 255 ),
-                    col.getGreen() * life / 70,
-                    col.getBlue() * life / 70 );
+                    col.getGreen() * life / lifeMax,
+                    col.getBlue() * life / lifeMax );
+            gBack.setFont(new Font("Century Gothic", Font.BOLD, 10));
             AsteroidsFrame.frame().drawString( gBack, (int) ( x + 3 * Math.cos( life / 5.0 ) ), y, message, c );
         }
     }

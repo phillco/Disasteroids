@@ -119,6 +119,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private int paintCount;
 
     /**
+     * Whether to show localPlayer's coordinates.
+     * @since January 18, 2008
+     */
+    private boolean showTracker = false;
+
+    /**
      * Constructs the game frame and game elements.
      * 
      * @param localId   id of the player at this computer
@@ -252,6 +258,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
         if ( virtualMem == null )
             initBuffering();
 
+        // Don't render if we're minimized.
+        if ( isFullscreen() && !isActive() )
+            return;
+            
         if ( showWarpDialog )
         {
             try
@@ -356,8 +366,9 @@ public class AsteroidsFrame extends Frame implements KeyListener
         y = ( isFullscreen() ? 0 : 30 ) + 20; // Offset for the titlebar (yuck)!
         x = getWidth() - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() - 12;
         g2d.drawString( text, x, y );
-        
-        g2d.drawString(localPlayer().toString(), 60, 60);
+
+        if ( showTracker )
+            g2d.drawString( localPlayer().toString(), 60, 60 );
 
         // Draw the "score" string.
         g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
@@ -646,14 +657,14 @@ public class AsteroidsFrame extends Frame implements KeyListener
             case KeyEvent.VK_BACK_SLASH:
                 drawScoreboard = !drawScoreboard;
                 break;
+            case KeyEvent.VK_F12:
+                showTracker = !showTracker;
+                break;
             default:
-
-
                 Game.getInstance().actionManager().add( new Action( localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
 
                 if ( Client.is() )
                     Client.getInstance().keyStroke( e.getKeyCode() );
-
         }
         repaint();
     }
@@ -765,8 +776,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
                 if ( background != null )
                     background.init();
             } // Set windowed mode.
-        else
-            // Don't change anything if we're already in windowed mode.
+            else // Don't change anything if we're already in windowed mode.
             if ( ( getSize().width != WINDOW_WIDTH ) || ( getSize().height != WINDOW_HEIGHT ) )
             {
                 setVisible( false );

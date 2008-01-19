@@ -20,6 +20,14 @@ import javax.swing.UIManager;
 public class Running
 {
     /**
+     * Small counters that are incremented each time <code>warning</code> or <code>fatalError</code> is called.
+     * Shown when Disasteroids shuts down.
+     * 
+     * @since January 18, 2008
+     */
+    private static int errorCount = 0,  warningCount = 0;
+
+    /**
      * The application entry point. Loads user settings and runs the menu.
      * Users can skip the menu and select a <code>MenuOption</code> via the command line.
      * 
@@ -28,7 +36,9 @@ public class Running
      */
     public static void main( String[] args )
     {
-        // Look like the local operating system.
+        System.out.println( "DISASTEROIDS started!" );
+
+        // Make swing dialogs like the local operating system.
         try
         {
             UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
@@ -64,13 +74,14 @@ public class Running
 
     /**
      * The main quit method that should replace <code>System.exit</code>.
-     * It saves user settings before closing down.
+     * It saves user settings, notifies clients/server, updates high score, and shows warning and error count.
+     * And then it calls <code>System.exit()</code>.
      * 
      * @since December 7, 2007
      */
     public static void quit()
     {
-        System.out.println( "Shutting down nicely..." );
+        System.out.println( "\nShutting down nicely..." );
 
         // Tell the server we're quitting.
         if ( Client.is() )
@@ -96,6 +107,15 @@ public class Running
         // Write our settings.
         Settings.saveToStorage();
 
+        // Show warning / error count.
+        System.out.print( "Disasteroids concluded." );
+
+        if ( errorCount > 0 )
+            System.out.print( " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." ) );
+
+        if ( warningCount > 0 )
+            System.out.print( " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." ) );
+
         // Daisy.....daisy....
         System.exit( 0 );
     }
@@ -108,22 +128,23 @@ public class Running
      */
     public static void startGame( MenuOption option )
     {
-        new Game();
         switch ( option )
         {
-            case SINGLEPLAYER:
-                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
-                break;
             case START_SERVER:
                 new Server();
+            // Fall-through
+
+            case SINGLEPLAYER:
+                new Game();
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
                 break;
-            case CONNECT:
 
+            case CONNECT:
                 // Get the server address.
                 String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.lastConnectionIP );
                 if ( ( address == null ) || ( address.equals( "" ) ) )
                     return;
+
                 Settings.lastConnectionIP = address;
                 Settings.saveToStorage();
 
@@ -140,7 +161,6 @@ public class Running
             default:
                 Running.quit();
             }
-
     }
 
     /**
@@ -160,7 +180,7 @@ public class Running
      * Logs a message to <code>println</code> and the <code>AsteroidsFrame</code> (if it exists).
      * 
      * @param message   the message to log
-     * @param life     life of the message in <code>AsteroidsFrame</code>
+     * @param life      life of the message in <code>AsteroidsFrame</code>
      * @since December 29, 2007
      */
     public static void log( String message, int life )
@@ -168,6 +188,32 @@ public class Running
         System.out.println( message );
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.addNotificationMessage( message, life );
+    }
+
+    /**
+     * Logs a warning to the console and bumps the warningCount.
+     * 
+     * @param message   the message
+     * @since January 18, 2008
+     */
+    public static void warning( String message )
+    {
+        log( "WARNING: " + message, 1200 );
+        warningCount++;
+    }
+
+    /**
+     * Logs a warning and exception to the console and bumps the warningCount.
+     * 
+     * @param message   the message
+     * @param e         the exception
+     * @since January 18, 2008
+     */
+    public static void warning( String message, Exception e )
+    {
+        log( "WARNING: " + message, 1200 );
+        e.printStackTrace();
+        warningCount++;
     }
 
     /**
@@ -180,6 +226,7 @@ public class Running
     {
         JOptionPane.showMessageDialog( null, message, "Disasteroids: Very Fatal Error", JOptionPane.ERROR_MESSAGE );
         System.out.println( "FATAL ERROR: " + message );
+        errorCount++;
         Running.quit();
     }
 
@@ -192,10 +239,8 @@ public class Running
      */
     public static void fatalError( String message, Exception e )
     {
-        JOptionPane.showMessageDialog( null, message, "Disasteroids: Very Fatal Error (e)", JOptionPane.ERROR_MESSAGE );
-        System.out.println( "FATAL ERROR: " + message + "\n\n" + e.getLocalizedMessage() );
         e.printStackTrace();
-        Running.quit();
+        fatalError( message + "\n\nWith exception: " + e.getLocalizedMessage() );
     }
 
     /**

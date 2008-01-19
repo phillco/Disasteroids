@@ -57,7 +57,7 @@ public class ActionManager implements Serializable
             else if ( a.timestep() < timestep )
             {
                 // Not critical, but notable.
-                System.out.println("Warning: Unsyncronized action at timestep " + timestep + " for actor " + a.actor() + ".");
+                Running.warning("Unsyncronized action at timestep " + timestep + " for actor " + a.actor() + ".");
             }
         }
     }

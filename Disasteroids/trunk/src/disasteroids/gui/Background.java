@@ -86,7 +86,7 @@ public class Background
         }
 
         // Create the array of stars.
-        Random rand = RandNumGen.getStarInstance();
+        Random rand = RandomGenerator.get();
         this.theStars = new Star[( width * height / ( rand.nextInt( 800 ) + 1000 ) ) / ( Settings.qualityRendering ? 1 : 3 )];
         for ( int star = 0; star < theStars.length; star++ )
         {
@@ -215,17 +215,17 @@ public class Background
             this.color = col;
 
             // Simulated depth. Multiplied by the localPlayer's dx and dy to determine speed.
-            depth = RandNumGen.getStarInstance().nextDouble() * 5;
+            depth = RandomGenerator.get().nextDouble() * 5;
 
             // Force some to the 'background'.
-            if ( RandNumGen.getStarInstance().nextInt( 15 ) == 0 )
+            if ( RandomGenerator.get().nextInt( 15 ) == 0 )
                 depth /= 3;
 
             // Some stars also move.
-            if ( RandNumGen.getStarInstance().nextInt( 10 ) == 0 )
+            if ( RandomGenerator.get().nextInt( 10 ) == 0 )
             {
-                dx = RandNumGen.getStarInstance().nextDouble() - 0.5;
-                dy = RandNumGen.getStarInstance().nextDouble() - 0.5;
+                dx = RandomGenerator.get().nextDouble() - 0.5;
+                dy = RandomGenerator.get().nextDouble() - 0.5;
             }
         }
 
@@ -267,8 +267,8 @@ public class Background
             this.message = message;
             this.col = col;
 
-            life = lifeMax = RandNumGen.getStarInstance().nextInt( 30 ) + 40;
-            dy = -RandNumGen.getStarInstance().nextDouble() * 4;
+            life = lifeMax = RandomGenerator.get().nextInt( 30 ) + 40;
+            dy = -RandomGenerator.get().nextDouble() * 4;
         }
 
         private void draw( Graphics gBack )

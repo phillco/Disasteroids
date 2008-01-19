@@ -40,7 +40,7 @@ public class BonusAsteroid extends Asteroid
         outline = Color.white;
 
         // Choose the type of bonus.
-        Random rand = RandNumGen.getAsteroidInstance();
+        Random rand = RandomGenerator.get();
         bonusType = rand.nextInt( 8 );
     }
 

@@ -115,6 +115,7 @@ public class Game implements Serializable
     {
         if ( instance == null )
             Game.instance = this;
+        
         newGame();
     }
 

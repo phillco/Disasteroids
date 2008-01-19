@@ -51,8 +51,7 @@ public class AsteroidManager implements Serializable
      */
     public void setUpAsteroidField( int level )
     {
-
-        Random rand = RandNumGen.getAsteroidInstance();
+        Random rand = RandomGenerator.get();
         int numBonuses = 0;
 
         // Create regular asteroids.

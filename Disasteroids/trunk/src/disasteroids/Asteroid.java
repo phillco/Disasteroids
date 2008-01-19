@@ -65,7 +65,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public Asteroid( int x, int y, double dx, double dy, int size, int lifeMax )
     {
-        Random rand = RandNumGen.getAsteroidInstance();
+        Random rand = RandomGenerator.get();
         setLocation( x, y );
         setSpeed( dx, dy );
         this.radius = size / 2;
@@ -101,7 +101,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
         {
             this.radius = parent.radius / 2;
         }
-        Random rand = RandNumGen.getAsteroidInstance();
+        Random rand = RandomGenerator.get();
         setLocation( parent.getX(), parent.getY() );
         setSpeed( rand.nextDouble() * 2 - 1, rand.nextDouble() * 2 - 1 );
 

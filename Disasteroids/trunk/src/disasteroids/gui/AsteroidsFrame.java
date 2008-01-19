@@ -67,7 +67,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
         // Reflect the network state.
         if ( Server.is() )
-            setTitle( "Disateroids (server)" );
+            setTitle( "Disasteroids (server)" );
         else if ( Client.is() )
             setTitle( "Disasteroids (client)" );
         else

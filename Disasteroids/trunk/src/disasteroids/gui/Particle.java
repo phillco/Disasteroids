@@ -77,7 +77,7 @@ public class Particle implements GameElement
      */
     public Particle( double x, double y, double size, Color c, double speed, double angle, double lifemax, double lifemin )
     {
-        life = ( RandNumGen.getParticleInstance().nextDouble() ) * lifemax + lifemin;
+        life = ( RandomGenerator.get().nextDouble() ) * lifemax + lifemin;
         this.life_max = life;
         this.x = x;
         this.y = y;
@@ -90,7 +90,7 @@ public class Particle implements GameElement
         rgb[1] = c.getGreen();
         rgb[2] = c.getBlue();
         
-        deltaSize = RandNumGen.getParticleInstance().nextDouble() - 0.6;
+        deltaSize = RandomGenerator.get().nextDouble() - 0.6;
     }
 
     /**

@@ -110,7 +110,7 @@ public class Station extends GameObject implements ShootingObject
             disableCounter--;
 
             // Smoke and spin the turret.
-            Random r = RandNumGen.getAsteroidInstance();
+            Random r = RandomGenerator.get();
             angle += 0.07 + r.nextDouble() / 7;
             ParticleManager.addParticle( new Particle( getX() + r.nextInt( size ), centerY(),
                                                        r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.gray : Color.darkGray,
@@ -367,7 +367,7 @@ public class Station extends GameObject implements ShootingObject
     private void calculateAngle( Ship target )
     {
         double distance = getProximity( target );
-        double time = Math.log( distance ) * ( 5 + RandNumGen.getAsteroidInstance().nextInt( 2 ) );
+        double time = Math.log( distance ) * ( 5 + RandomGenerator.get().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 

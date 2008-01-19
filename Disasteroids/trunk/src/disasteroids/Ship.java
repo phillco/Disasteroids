@@ -29,7 +29,7 @@ public class Ship implements GameElement, ShootingObject
 {
     public int id;
 
-    public final static double SENSITIVITY = 30;
+    public final static double SENSITIVITY = 20;
 
     public final static int RADIUS = 10;
 
@@ -166,7 +166,7 @@ public class Ship implements GameElement, ShootingObject
         while ( !uniqueId )
         {
             uniqueId = true;
-            id = RandNumGen.getMissileInstance().nextInt( 5432 ) + Game.getInstance().players.size() + 4;
+            id = RandomGenerator.get().nextInt( 5432 ) + Game.getInstance().players.size() + 4;
             for ( Ship s : Game.getInstance().players )
             {
                 if ( s == this )
@@ -418,7 +418,7 @@ public class Ship implements GameElement, ShootingObject
     {
         if ( forward && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
         {
-            Random rand = RandNumGen.getParticleInstance();
+            Random rand = RandomGenerator.get();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
                                              -15 * Math.cos( angle ) + x + rand.nextInt( 8 ) - 4,
@@ -432,7 +432,7 @@ public class Ship implements GameElement, ShootingObject
 
         if ( backwards && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
         {
-            Random rand = RandNumGen.getParticleInstance();
+            Random rand = RandomGenerator.get();
             for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
                 ParticleManager.addParticle( new Particle(
                                              15 * Math.cos( angle ) + x + rand.nextInt( 8 ) - 4,
@@ -497,7 +497,7 @@ public class Ship implements GameElement, ShootingObject
 
         dx *= -.3;
         dy *= -.3;
-        Random rand = RandNumGen.getParticleInstance();
+        Random rand = RandomGenerator.get();
         for ( int i = 0; i < 80; i++ )
             ParticleManager.addParticle( new Particle(
                                          x + rand.nextInt( 16 ) - 8 - RADIUS,

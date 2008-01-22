@@ -243,7 +243,7 @@ public class Ship implements GameElement, ShootingObject
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
         {
             drawWeaponNameTimer--;
-            g.setFont( new Font("Century Gothic", Font.BOLD, 14) );
+            g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
             Graphics2D g2d = (Graphics2D) g;
             AsteroidsFrame.frame().drawString( g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray );
             allWeapons[weaponIndex].getWeapon( (int) x, (int) y + 25, Color.gray ).draw( g );
@@ -393,7 +393,14 @@ public class Ship implements GameElement, ShootingObject
                 for ( Weapon m : wm.getWeapons() )
                 {
                     if ( Math.pow( (int) ( x - m.getX() ), 2 ) + Math.pow( (int) ( y - m.getY() ), 2 ) < 400 )
-                        if ( looseLife() )
+                    {
+                        String obit = "";
+                        if ( other instanceof Ship )
+                            obit = getName() + " was blasted by " + ( (Ship) other ).getName() + ".";
+                        else if ( other instanceof Station )
+                            obit = getName() + " was shot down by a satellite.";
+
+                        if ( looseLife( obit ) )
                         {
                             m.explode();
                             score -= 5000;
@@ -405,6 +412,7 @@ public class Ship implements GameElement, ShootingObject
                                 s.livesLeft++;
                             }
                         }
+                    }
                 }
             }
         }
@@ -486,17 +494,29 @@ public class Ship implements GameElement, ShootingObject
         invincibilityCount = num;
     }
 
-    public boolean looseLife()
+    /**
+     * If this ship isn't invincible, executes the 'killing': takes a life, creates particles, etc.
+     * 
+     * @param obituary  the string to announce to the game. For example, <code>ship.getName() + " played with fire."</code>
+     * @return  whether the live was taken
+     * @since Classic
+     */
+    public boolean looseLife( String obituary )
     {
+        // We're invincible and can't die.
         if ( cannotDie() )
-            return false;//died too soon, second chance
+            return false;
+
         livesLeft--;
         setInvincibilityCount( 300 );
         if ( Settings.soundOn )
             Sound.playInternal( Sound.SHIP_LOSE_LIFE_SOUND );
 
+        // Bounce.
         dx *= -.3;
         dy *= -.3;
+
+        // Create particles.
         Random rand = RandomGenerator.get();
         for ( int i = 0; i < 80; i++ )
             ParticleManager.addParticle( new Particle(
@@ -507,6 +527,11 @@ public class Ship implements GameElement, ShootingObject
                                          rand.nextDouble() * 6,
                                          rand.nextDouble() * 2 * Math.PI,
                                          30, 10 ) );
+
+        // Print the obit.
+        if ( obituary.length() > 0 )
+            Running.log( obituary );
+
         return true;
     }
 
@@ -752,5 +777,18 @@ public class Ship implements GameElement, ShootingObject
         for ( WeaponManager w : allWeapons )
             c.add( w );
         return c;
+    }
+
+    public static enum MeansOfDeath
+    {
+        HIT_ASTEROID( "%s hit an asteroid." ),
+        SHOT_BY_PLAYER( "" );
+
+        String obituary;
+
+        private MeansOfDeath( String obituary )
+        {
+            this.obituary = obituary;
+        }
     }
 }

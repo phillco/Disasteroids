@@ -196,10 +196,8 @@ public class Station extends GameObject implements ShootingObject
                 if ( ( s.getX() + Ship.RADIUS > getX() && s.getX() - Ship.RADIUS < getX() + size ) &&
                         ( s.getY() + Ship.RADIUS > getY() && s.getY() - Ship.RADIUS < getY() + size ) )
                 {
-                    if ( s.looseLife() )
-                    {
+                    if ( s.looseLife(s.getName() + " learns to steer.") )
                         return;
-                    }
                 }
             }
         }

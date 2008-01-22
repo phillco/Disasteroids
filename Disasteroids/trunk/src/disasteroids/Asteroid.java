@@ -205,7 +205,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
             {
                 if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < ( radius + Ship.RADIUS ) * ( radius + Ship.RADIUS ) )
                 {
-                    if ( s.looseLife() )
+                    if ( s.looseLife(s.getName() + " slammed into an asteroid.") )
                     {
                         killer = s;
                         kill();

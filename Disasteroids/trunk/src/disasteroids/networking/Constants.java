@@ -28,5 +28,11 @@ public class Constants
      * @since January 13, 2008
      */
     public static int INTERVAL_TIME = 5;
+    
+    /**
+     * The max size of a packet (bytes).
+     * @since January 22, 2008
+     */
+    public static int MAX_PACKET_SIZE = 1024;
 
 }

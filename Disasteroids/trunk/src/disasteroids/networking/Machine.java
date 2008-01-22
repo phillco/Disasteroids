@@ -4,6 +4,7 @@
  */
 package disasteroids.networking;
 
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 
 /**
@@ -32,7 +33,9 @@ public class Machine
      * @since January 10, 2007
      */
     public long lastSeen;
-
+    
+    public DatagramPacket multiPackets[];
+    
     /**
      * Constructs the machine.
      * 
@@ -96,4 +99,4 @@ public class Machine
     {
         return address.toString() + ":" + port;
     }
-    }
+}

@@ -12,7 +12,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
 
 /**
@@ -33,7 +32,7 @@ public abstract class DatagramListener
      * @since January 1, 2007
      */
     private ListenerThread ear;
-    
+
     /**
      * Thread that calls <code>intervalLogic()</code> periodically.
      * @since January 13, 2008
@@ -42,7 +41,7 @@ public abstract class DatagramListener
 
     /**
      * Starts listening for packets on a definite port (typical of servers).
-     * 
+     *
      * @param port  port to listen on
      * @throws java.net.SocketException
      * @since December 28, 2007
@@ -56,7 +55,7 @@ public abstract class DatagramListener
 
     /**
      * Starts listening for packets on any availible port Java can find us (typical of clients).
-     * 
+     *
      * @since December 28, 2007
      * @throws java.net.SocketException
      */
@@ -69,12 +68,12 @@ public abstract class DatagramListener
 
     /**
      * Stops our listening and interval threads.
-     * 
+     *
      * @since January 1, 2007
      */
     void stopListening()
     {
-        ear.disable();        
+        ear.disable();
         heart.disable();
         ear = null;
         heart = null;
@@ -82,29 +81,29 @@ public abstract class DatagramListener
 
     /**
      * Called whenever we receive a <code>DatagramPacket</code> through our listener.
-     * 
+     *
      * @param packet     the <code>DatagramPacket</code>
      */
     abstract void parseReceived( DatagramPacket packet );
 
     /**
      * Called every few seconds. You can use this method for logic (such as timeout checking) that should be independent of packets.
-     * 
+     *
      * @see Constants#INTERVAL_TIME
      * @since January 13, 2008
      */
     void intervalLogic()
     {
-        
+
     }
 
     /**
      * Sends a packet to a machine (a shortcut for stream.toByteArray).
      * bytestream->buffer->packet->machine
-     * 
+     *
      * @param client    the client to send to
      * @param stream    the bytestream of data to be sent
-     * @throws java.io.IOException 
+     * @throws java.io.IOException
      * @since December 29, 2007
      */
     void sendPacket( Machine client, ByteOutputStream stream ) throws IOException
@@ -115,27 +114,53 @@ public abstract class DatagramListener
     /**
      * Sends a packet to a machine.
      * buffer->packet->machine
-     * 
+     *
      * @param client    the client to send to
      * @param buffer    the buffer of data to be sent
-     * @throws java.io.IOException 
+     * @throws java.io.IOException
      * @since December 29, 2007
      */
     void sendPacket( Machine client, byte[] buffer ) throws IOException
-    {
-        socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
+    {        
+        if ( buffer.length > Constants.MAX_PACKET_SIZE )
+        {
+            System.out.println("Oversize packet!");
+            final int NEW_HEADER_SIZE = (2 * Integer.SIZE / 8);
+
+            int packetCount = 0;
+            int packetSize = buffer.length;
+            while ( packetCount != packetSize / Constants.MAX_PACKET_SIZE)
+            {
+                packetCount = packetSize / Constants.MAX_PACKET_SIZE;
+
+                // Add space for the markers.
+                packetSize += packetCount * NEW_HEADER_SIZE;
+            }
+
+            // Create each packet and write it.
+            for ( int i = 0; i < packetCount; i++)
+            {
+                ByteOutputStream out = new ByteOutputStream();
+                out.writeInt(Server.Message.MULTI_PACKET.ordinal());
+                out.writeInt(i);
+                out.write(buffer, i * (Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE), Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE );                
+                sendPacket(client, out);
+            }
+        }
+        else
+            socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
     }
 
     /**
      * A simple combined class for reading a byte array.
-     * 
+     *
      * @since January 1, 2007
      */
     class ByteInputStream extends DataInputStream
     {
         /**
          * Constructs the data stream from a byte array.
-         * 
+         *
          * @param buffer    the array of bytes to read
          * @since January 1, 2007
          */
@@ -147,14 +172,14 @@ public abstract class DatagramListener
 
     /**
      * A simple combined class for writing to a byte array.
-     * 
+     *
      * @since January 1, 2007
      */
     class ByteOutputStream extends DataOutputStream
     {
         /**
          * Constructs the data stream to write to a byte array.
-         * 
+         *
          * @since January 1, 2007
          */
         public ByteOutputStream()
@@ -195,7 +220,7 @@ public abstract class DatagramListener
 
         /**
          * Creates the thread.
-         * 
+         *
          * @param parent    parent class
          * @since December 28, 2007
          */
@@ -206,7 +231,7 @@ public abstract class DatagramListener
 
         /**
          * Stops the thread as soon as possible.
-         * 
+         *
          * @since January 1, 2007
          */
         public void disable()
@@ -228,7 +253,7 @@ public abstract class DatagramListener
     {
         /**
          * Creates the listener and starts it.
-         * 
+         *
          * @param parent    parent class that implements <code>parseReceived</code>
          * @since December 28, 2007
          */
@@ -291,5 +316,5 @@ public abstract class DatagramListener
                 }
             }
         }
-    }
+    }    
 }

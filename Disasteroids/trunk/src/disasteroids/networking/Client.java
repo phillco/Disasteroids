@@ -126,6 +126,9 @@ public class Client extends DatagramListener
             {
                 switch ( Server.Message.values()[command] )
                 {
+                    case MULTI_PACKET:
+                        System.out.println("Received multi packet # " + in.readInt());
+                        break;
                     case FULL_UPDATE:
                         System.out.print( "Receiving full update..." );
 

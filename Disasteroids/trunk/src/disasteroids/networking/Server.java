@@ -30,6 +30,7 @@ public class Server extends DatagramListener
      */
     public enum Message
     {
+        MULTI_PACKET,
         /**
          * We send the client all of the game's data to allow him to join.
          */

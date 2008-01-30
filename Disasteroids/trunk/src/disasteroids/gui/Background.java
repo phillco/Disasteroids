@@ -98,7 +98,8 @@ public class Background
                 rgb[i] = Math.max( Math.min( sat + ( deviance - deviance / 2 ), 255 ), 0 );
             }
 
-            Color col = new Color( rgb[0], rgb[1], rgb[2] );
+            //Color col = new Color( rgb[0], rgb[1], rgb[2] );
+            Color col=Color.getHSBColor(rand.nextFloat(), rand.nextFloat()/3f, .7f+.3f*rand.nextFloat());
             theStars[star] = new Star( rand.nextInt( width ), rand.nextInt( height ), col );
         }
     }

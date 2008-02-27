@@ -122,32 +122,32 @@ public abstract class DatagramListener
      */
     void sendPacket( Machine client, byte[] buffer ) throws IOException
     {        
-        if ( buffer.length > Constants.MAX_PACKET_SIZE )
-        {
-            System.out.println("Oversize packet!");
-            final int NEW_HEADER_SIZE = (2 * Integer.SIZE / 8);
-
-            int packetCount = 0;
-            int packetSize = buffer.length;
-            while ( packetCount != packetSize / Constants.MAX_PACKET_SIZE)
-            {
-                packetCount = packetSize / Constants.MAX_PACKET_SIZE;
-
-                // Add space for the markers.
-                packetSize += packetCount * NEW_HEADER_SIZE;
-            }
-
-            // Create each packet and write it.
-            for ( int i = 0; i < packetCount; i++)
-            {
-                ByteOutputStream out = new ByteOutputStream();
-                out.writeInt(Server.Message.MULTI_PACKET.ordinal());
-                out.writeInt(i);
-                out.write(buffer, i * (Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE), Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE );                
-                sendPacket(client, out);
-            }
-        }
-        else
+//        if ( buffer.length > Constants.MAX_PACKET_SIZE )
+//        {
+//            System.out.println("Oversize packet!");
+//            final int NEW_HEADER_SIZE = (2 * Integer.SIZE / 8);
+//
+//            int packetCount = 0;
+//            int packetSize = buffer.length;
+//            while ( packetCount != packetSize / Constants.MAX_PACKET_SIZE)
+//            {
+//                packetCount = packetSize / Constants.MAX_PACKET_SIZE;
+//
+//                // Add space for the markers.
+//                packetSize += packetCount * NEW_HEADER_SIZE;
+//            }
+//
+//            // Create each packet and write it.
+//            for ( int i = 0; i < packetCount; i++)
+//            {
+//                ByteOutputStream out = new ByteOutputStream();
+//                out.writeInt(Server.Message.MULTI_PACKET.ordinal());
+//                out.writeInt(i);
+//                out.write(buffer, i * (Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE), Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE );                
+//                sendPacket(client, out);
+//            }
+//        }
+//        else
             socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
     }
 

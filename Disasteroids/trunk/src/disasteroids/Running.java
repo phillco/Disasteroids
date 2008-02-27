@@ -126,6 +126,7 @@ public class Running
      * @param option    the selected game choice
      * @since Classic
      */
+    @SuppressWarnings ( "fallthrough" )
     public static void startGame( MenuOption option )
     {
         switch ( option )

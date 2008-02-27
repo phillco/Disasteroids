@@ -52,7 +52,7 @@ public class Missile extends GameObject implements Weapon, GameElement
      * The current radius of <code>this</code>.
      * @since Classic
      */
-    private int radius;
+    private double radius;
 
     /**
      * Whether <code>this</code> will have a huge blast or not.
@@ -122,7 +122,7 @@ public class Missile extends GameObject implements Weapon, GameElement
     public void draw( Graphics g )
     {
         AsteroidsFrame.frame().drawLine( g, myColor, (int) getX(), (int) getY(), 10, angle + Math.PI );
-        AsteroidsFrame.frame().fillCircle( g, myColor, (int) getX(), (int) getY(), radius );
+        AsteroidsFrame.frame().fillCircle( g, myColor, (int) getX(), (int) getY(), (int) radius );
 
         // Draw explosion.
         Color col;
@@ -136,7 +136,7 @@ public class Missile extends GameObject implements Weapon, GameElement
                     col = myColor;
                 else
                     col = Color.yellow;
-                AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), radius );
+                AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                 break;
             case 5:
             case 6:
@@ -147,7 +147,7 @@ public class Missile extends GameObject implements Weapon, GameElement
                 else
                     col = Color.yellow;
                 radius = 5;
-                AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), radius );
+                AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                 break;
             case 9:
             case 10:
@@ -156,13 +156,13 @@ public class Missile extends GameObject implements Weapon, GameElement
                 {
                     col = myColor;
                     radius = manager.hugeBlastSize();
-                    AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), radius );
+                    AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                 }
                 else
                 {
                     radius = 14;
                     col = Color.yellow;
-                    AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), radius );
+                    AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                     this.explodeCount++;
                 }
                 break;
@@ -292,17 +292,6 @@ public class Missile extends GameObject implements Weapon, GameElement
     }
 
     /**
-     * Gets the current radius.
-     * @return The current radius.
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    public int getRadius()
-    {
-        return radius;
-    }
-
-    /**
      * Sets the current stage of explosion
      * @param count The new stage of explosion.
      * @author Andy Kooiman
@@ -344,4 +333,48 @@ public class Missile extends GameObject implements Weapon, GameElement
     {
         return 100;
     }
+
+    public double getAngle()
+    {
+        return angle;
+    }
+
+    public Color getMyColor()
+    {
+        return myColor;
+    }
+
+    public int getAge()
+    {
+        return age;
+    }
+
+    public void setAge( int age )
+    {
+        this.age = age;
+    }
+
+    public double getRadiusDouble()
+    {
+        return radius;
+    }
+
+    public int getRadius()
+    {
+        return (int) radius;
+    }
+    
+    
+
+    public void setRadius( double radius )
+    {
+        this.radius = radius;
+    }
+
+    public MissileManager getManager()
+    {
+        return manager;
+    }
+    
+    
 }

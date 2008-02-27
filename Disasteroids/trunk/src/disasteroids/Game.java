@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Central gameplay class that's seperate from graphics.
+ * Central gameplay class that's separate from graphics.
  * @since December 17, 2007
  * @author Phillip Cohen
  */
@@ -45,7 +45,6 @@ public class Game implements Serializable
      * @since Classic
      */
     public int level = 1;
-        
 
     /**
      * Stores whether the game is currently paused or not.
@@ -84,7 +83,7 @@ public class Game implements Serializable
     public LinkedList<Ship> players = new LinkedList<Ship>();
 
     /**
-     * List of miscelanius game objects  that aren't players or asteroids.
+     * List of miscellaneous game objects that aren't players or asteroids.
      * @since January 7, 2008
      */
     public ConcurrentLinkedQueue<GameObject> gameObjects;
@@ -102,7 +101,7 @@ public class Game implements Serializable
     private transient GameLoop thread;
 
     /**
-     * Reference to the Game instance. Game itelf can't be static because of saving/restoring.
+     * Reference to the Game instance. Game itself can't be static because of saving/restoring.
      * @since December 29, 2007
      */
     private static Game instance;
@@ -115,7 +114,7 @@ public class Game implements Serializable
     {
         if ( instance == null )
             Game.instance = this;
-        
+
         newGame();
     }
 
@@ -250,8 +249,8 @@ public class Game implements Serializable
     {
         players.remove( leavingPlayer );
         shootingObjects.remove( leavingPlayer );
-        
-        if( quitReason.length() > 0 )
+
+        if ( quitReason.length() > 0 )
             Running.log( leavingPlayer.getName() + quitReason, 800 );
     }
 
@@ -288,6 +287,10 @@ public class Game implements Serializable
         gameObjects.add( s );
         shootingObjects.add( s );
 
+        Alien a = new Alien();
+        gameObjects.add( a );
+        shootingObjects.add( a);
+
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().resetGame();
@@ -322,13 +325,9 @@ public class Game implements Serializable
 
         // The user can choose to wait for missiles.
         if ( Settings.waitForMissiles )
-        {
             for ( Ship s : players )
-            {
                 if ( s.getWeaponManager().getNumLiving() > 0 )
                     return false;
-            }
-        }
 
         // Ready to advance!
         return true;
@@ -342,9 +341,7 @@ public class Game implements Serializable
     void restoreBonusValues()
     {
         for ( Ship ship : players )
-        {
             ship.restoreBonusValues();
-        }
     }
 
     /**
@@ -441,9 +438,7 @@ public class Game implements Serializable
         }
 
         for ( GameObject g : gameObjects )
-        {
             g.act();
-        }
     }
 
     public boolean gameIsActive()

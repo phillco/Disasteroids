@@ -149,6 +149,11 @@ public class MissileManager implements WeaponManager
      */
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
+        return add( new Missile( this, x, y, angle, dx, dy, col ), playShootSound );
+    }
+
+    public boolean add( Weapon a, boolean playShootSound )
+    {
         if ( theMissiles.size() > 100 || timeTillNextShot > 0 )
             return false;
         timeTillNextShot = getIntervalShoot();
@@ -156,7 +161,7 @@ public class MissileManager implements WeaponManager
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 
-        return theMissiles.add( new Missile( this, x, y, angle, dx, dy, col ) );
+        return theMissiles.add( a );
     }
 
     /**

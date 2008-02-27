@@ -369,8 +369,8 @@ public class Station extends GameObject implements ShootingObject
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 
-        desiredAngle = Math.atan( ( projectedY - centerY() ) / (double) ( projectedX - centerX() ) );
-        if ( projectedX - ( (int) centerX() ) < 0 )
+        desiredAngle = Math.atan( ( projectedY - centerY() ) / ( projectedX - centerX() ) );
+        if ( projectedX - ( centerX() ) < 0 )
             desiredAngle += Math.PI;
 
 

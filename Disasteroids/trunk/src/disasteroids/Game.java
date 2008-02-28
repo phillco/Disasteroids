@@ -281,7 +281,7 @@ public class Game implements Serializable
         }
 
         // Set up the game.
-        gameMode = new LinearGameplay(); 
+        gameMode = new /* WaveGameplay() */ LinearGameplay(); 
 
         Station s = new Station( 950, 750 );
         gameObjects.add( s );

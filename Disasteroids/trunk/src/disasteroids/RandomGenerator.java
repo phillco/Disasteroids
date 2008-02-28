@@ -26,4 +26,9 @@ public class RandomGenerator
     {
         return instance;
     }
+    
+    public static double nextMidpointDouble()
+    {
+        return instance.nextDouble() * 2 - 1;
+    }
 }

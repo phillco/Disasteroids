@@ -6,6 +6,7 @@ package disasteroids.gui;
 
 import disasteroids.Game;
 import disasteroids.GameObject;
+import disasteroids.LinearGameplay;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
@@ -82,7 +83,7 @@ public class AsteroidsPanel extends Panel
      * @since December 30, 2007
      */
     boolean shouldEnd;
-        
+
     /**
      * Whether to show localPlayer's coordinates.
      * @since January 18, 2008
@@ -151,7 +152,7 @@ public class AsteroidsPanel extends Panel
 
         if ( shouldEnd )
             endGame( g );
-        
+
         // Draw the on-screen HUD.
         drawHud( g );
 
@@ -195,8 +196,11 @@ public class AsteroidsPanel extends Panel
         {
             try
             {
-                Game.getInstance().setPaused( false );
-                Game.getInstance().warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", Game.getInstance().getLevel() ) ) );
+                if ( Game.getInstance().getGameMode() instanceof LinearGameplay )
+                {
+                    LinearGameplay l = (LinearGameplay) Game.getInstance().getGameMode();
+                    l.warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", l.getLevel() ) ) );
+                }
             }
             catch ( NumberFormatException e )
             {
@@ -216,7 +220,8 @@ public class AsteroidsPanel extends Panel
                 // Draw the game's graphics.
                 draw( virtualMem.getGraphics() );
 
-            } while ( ( (VolatileImage) virtualMem ).contentsLost() ); // Render in software mode.
+            }
+            while ( ( (VolatileImage) virtualMem ).contentsLost() ); // Render in software mode.
         else
             // Draw the game's graphics.
             draw( virtualMem.getGraphics() );
@@ -255,37 +260,8 @@ public class AsteroidsPanel extends Panel
         String text = "";
         int x = 0, y = 0;
 
-        // Draw the "lives" string.
-        g2d.setColor( parent.localPlayer().getColor() );
-        g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
-        if ( parent.localPlayer().livesLeft() == 1 )
-            text = "life";
-        else
-            text = "lives";
-        x = getWidth() - 40;
-        y = getHeight() - 15;
-        g2d.drawString( text, x, y );
-        x -= 10;
-
-        // Draw the lives counter.
-        g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
-        text = "" + parent.localPlayer().livesLeft();
-        x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth();
-        g2d.drawString( text, x, y );
-        x -= 15;
-
-        // Draw the level counter.
-        g2d.setColor( Color.lightGray );
-        g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
-        text = "" + Game.getInstance().level;
-        x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth();
-        g2d.drawString( text, x, y );
-
-        // Draw the "level" string.
-        g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
-        text = "level";
-        x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() + 8;
-        g2d.drawString( text, x, y );
+        // Draw game mode status.
+        Game.getInstance().getGameMode().draw( g );
 
         // Draw the score counter.
         g2d.setColor( Color.gray );
@@ -300,9 +276,28 @@ public class AsteroidsPanel extends Panel
         text = "score";
         x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() + 8;
         g2d.drawString( text, x, y );
+        x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() + 8;
 
         if ( showTracker )
             g2d.drawString( parent.localPlayer().toString(), 60, 60 );
+
+        // Draw the "lives" string.
+        g2d.setColor( parent.localPlayer().getColor() );
+        g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
+        if ( parent.localPlayer().livesLeft() == 1 )
+            text = "life";
+        else
+            text = "lives";
+
+        g2d.drawString( text, x, y );
+        x -= 10;
+
+        // Draw the lives counter.
+        g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
+        text = "" + parent.localPlayer().livesLeft();
+        x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth();
+        g2d.drawString( text, x, y );
+        x -= 15;
 
         // Draw the fps counter.
         g2d.setColor( Color.darkGray );

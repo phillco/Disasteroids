@@ -41,12 +41,6 @@ public class Game implements Serializable
     public static final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
 
     /**
-     * The current level of the game.
-     * @since Classic
-     */
-    public int level = 1;
-
-    /**
      * Stores whether the game is currently paused or not.
      * @since Classic
      */
@@ -93,6 +87,12 @@ public class Game implements Serializable
      * @since January 7, 2008
      */
     public LinkedList<ShootingObject> shootingObjects;
+
+    /**
+     * The game mode that we're playing.
+     * @since February 28, 2008
+     */
+    private GameMode gameMode;
 
     /**
      * The thread that executes the game loop.
@@ -262,12 +262,16 @@ public class Game implements Serializable
      */
     public void newGame()
     {
+        // Create thr lists.
         timeStep = 0;
         otherPlayerTimeStep = 0;
 
+        asteroidManager = new AsteroidManager();
         actionManager = new ActionManager();
         shootingObjects = new LinkedList<ShootingObject>();
+        gameObjects = new ConcurrentLinkedQueue<GameObject>();
 
+        // Spawn players.
         for ( int index = 0; index < players.size(); index++ )
         {
             int id = players.get( index ).id;
@@ -276,12 +280,8 @@ public class Game implements Serializable
             shootingObjects.add( players.get( index ) );
         }
 
-        // Create the asteroids.
-        level = 1;
-        asteroidManager = new AsteroidManager();
-        asteroidManager.setUpAsteroidField( level );
-
-        gameObjects = new ConcurrentLinkedQueue<GameObject>();
+        // Set up the game.
+        gameMode = new LinearGameplay(); 
 
         Station s = new Station( 950, 750 );
         gameObjects.add( s );
@@ -289,48 +289,11 @@ public class Game implements Serializable
 
         Alien a = new Alien();
         gameObjects.add( a );
-        shootingObjects.add( a);
+        shootingObjects.add( a );
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().resetGame();
-    }
-
-    /**
-     * Advances to the next level.
-     * @author Phillip Cohen
-     * @since November 15 2007
-     */
-    void nextLevel()
-    {
-        Game.getInstance().warp( level + 1 );
-    }
-
-    /**
-     * Returns if the game is ready to advance levels.
-     * Checks if the <code>Asteroids</code> have been cleared, then if we're on the sandbox level, and finally if the <code>Missile</code>s have been cleared.
-     * 
-     * @see Settings#waitForMissiles
-     * @return  whether the game should advance to the next level
-     */
-    public boolean shouldExitLevel()
-    {
-        // Have the asteroids been cleared?
-        if ( asteroidManager.size() > 0 )
-            return false;
-
-        // Level -999 is a sandbox and never exits.
-        if ( level == -999 )
-            return false;
-
-        // The user can choose to wait for missiles.
-        if ( Settings.waitForMissiles )
-            for ( Ship s : players )
-                if ( s.getWeaponManager().getNumLiving() > 0 )
-                    return false;
-
-        // Ready to advance!
-        return true;
     }
 
     /**
@@ -373,17 +336,6 @@ public class Game implements Serializable
     }
 
     /**
-     * Returns the current level.
-     * 
-     * @return  the current level
-     * @since Classic
-     */
-    public int getLevel()
-    {
-        return level;
-    }
-
-    /**
      * Returns the game's <code>ActionManager</code>.
      * 
      * @return  the <code>ActionManager</code>
@@ -412,14 +364,9 @@ public class Game implements Serializable
      */
     void act()
     {
-
-        // Advance to the next level if it's time.
-        if ( shouldExitLevel() )
-        {
-            nextLevel();
-            return;
-        }
-
+        // Update the game mode.
+        gameMode.act();
+        
         // Execute game actions.
         timeStep++;
         actionManager.act( timeStep );
@@ -444,37 +391,6 @@ public class Game implements Serializable
     public boolean gameIsActive()
     {
         return ( Game.getInstance().players.size() > 1 );
-    }
-
-    /**
-     * Advances the game to a new level.
-     * 
-     * @param newLevel  the level to warp to
-     * @since November 15 2007
-     */
-    public void warp( int newLevel )
-    {
-        level = newLevel;
-
-        // All players get bonuses.
-        for ( Ship s : players )
-        {
-            s.addLife();
-            s.setInvincibilityCount( 100 );
-            s.increaseScore( 2500 );
-            s.clearWeapons();
-            s.setNumAsteroidsKilled( 0 );
-            s.setNumShipsKilled( 0 );
-        }
-
-        asteroidManager.clear();
-        actionManager.clear();
-
-        if ( AsteroidsFrame.frame() != null )
-            AsteroidsFrame.frame().nextLevel();
-        restoreBonusValues();
-        asteroidManager.setUpAsteroidField( level );
-        AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
     }
 
     public void startGame()
@@ -608,7 +524,7 @@ public class Game implements Serializable
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt( level );
+        gameMode.flatten(stream);
         stream.writeLong( timeStep );
 
         stream.writeInt( players.size() );
@@ -630,7 +546,7 @@ public class Game implements Serializable
     {
         instance = this;
 
-        this.level = stream.readInt();
+        gameMode = new LinearGameplay(stream);
         this.timeStep = stream.readLong();
 
         players = new LinkedList<Ship>();
@@ -679,4 +595,9 @@ public class Game implements Serializable
             Running.fatalError( "Couldn't set pause status in server.", ex );
         }
     }
+
+    public GameMode getGameMode()
+    {
+        return gameMode;
+    }   
 }

@@ -4,7 +4,13 @@
  */
 package disasteroids.gui;
 
-import disasteroids.*;
+import disasteroids.Action;
+import disasteroids.Game;
+import disasteroids.GameObject;
+import disasteroids.Running;
+import disasteroids.Settings;
+import disasteroids.Ship;
+import disasteroids.Station;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
 import java.awt.Color;
@@ -38,6 +44,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
     private static final int WINDOW_WIDTH = 500,  WINDOW_HEIGHT = 750;
 
     private AsteroidsPanel panel;
+
+    public AsteroidsPanel getPanel()
+    {
+        return panel;
+    }
 
     /**
      * ID of the player that's at this computer.

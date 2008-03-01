@@ -657,9 +657,9 @@ public class Ship implements GameElement, ShootingObject
 
         // Find our color.
         int colorIndex = -1;
-        for ( int i = 0; i < Game.getInstance().PLAYER_COLORS.length; i++ )
+        for ( int i = 0; i < Game.PLAYER_COLORS.length; i++ )
         {
-            if ( Game.getInstance().PLAYER_COLORS[i] == myColor )
+            if ( Game.PLAYER_COLORS[i] == myColor )
             {
                 colorIndex = i;
                 break;
@@ -739,7 +739,7 @@ public class Ship implements GameElement, ShootingObject
 
         invincibilityCount = stream.readInt();
 
-        myColor = Game.getInstance().PLAYER_COLORS[stream.readInt()];
+        myColor = Game.PLAYER_COLORS[stream.readInt()];
 
         name = stream.readUTF();
         livesLeft = stream.readInt();
@@ -779,16 +779,8 @@ public class Ship implements GameElement, ShootingObject
         return c;
     }
 
-    public static enum MeansOfDeath
+    public double getSpeed()
     {
-        HIT_ASTEROID( "%s hit an asteroid." ),
-        SHOT_BY_PLAYER( "" );
-
-        String obituary;
-
-        private MeansOfDeath( String obituary )
-        {
-            this.obituary = obituary;
-        }
+        return Math.sqrt( getDx() * getDx() + getDy() * getDy() );
     }
 }

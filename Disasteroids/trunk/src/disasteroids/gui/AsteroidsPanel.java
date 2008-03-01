@@ -201,19 +201,7 @@ public class AsteroidsPanel extends Panel
 
         if ( showWarpDialog )
         {
-            try
-            {
-                if ( Game.getInstance().getGameMode() instanceof LinearGameplay )
-                {
-                    LinearGameplay l = (LinearGameplay) Game.getInstance().getGameMode();
-                    l.warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", l.getLevel() ) ) );
-                }
-            }
-            catch ( NumberFormatException e )
-            {
-                // Do nothing with incorrect input or cancel.
-                Running.log( "Invalid warp command.", 800 );
-            }
+            Game.getInstance().getGameMode().optionsKey();
             showWarpDialog = false;
         }
         // Render in hardware mode.

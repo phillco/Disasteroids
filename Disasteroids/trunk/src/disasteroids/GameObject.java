@@ -101,4 +101,9 @@ public abstract class GameObject implements GameElement
         setDx( dx );
         setDy( dy );
     }
+    
+    public double getSpeed()
+    {
+        return Math.sqrt(getDx() * getDx() + getDy() * getDy());
+    }
 }

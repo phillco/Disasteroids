@@ -24,16 +24,23 @@ public class Alien extends GameObject implements ShootingObject
      */
     private MissileManager manager;
 
-    public Alien()
+    private Color color;
+
+    private int size;
+
+    public Alien( int x, int y, double dx, double dy )
     {
-        setSpeed( 2, 1 );
-        setLocation( 1050, 900 );
-        manager = new AlienMissileManager();
+        setSpeed( dx, dy );
+        setLocation( x, y );
+        size = RandomGenerator.get().nextInt( 90 ) + 10;
+        manager = new AlienMissileManager( size );
+        color = new Color( RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ) );
     }
 
     public void act()
     {
         move();
+        checkCollision();
         manager.act( true );
 
         // Find players within our range.        
@@ -57,7 +64,29 @@ public class Alien extends GameObject implements ShootingObject
         if ( closestShip != null )
         {
             double angle = calculateAngle( closestShip );
-            manager.add( (int) centerX(), (int) centerY(), 0 - randomizeAngle( angle ), Math.cos( 0 - angle ) * 5, Math.sin( 0 - angle ) * 5, Color.pink, false );
+            manager.add( (int) centerX(), (int) centerY(), 0 - randomizeAngle( angle ), Math.cos( 0 - angle ) * 5, Math.sin( 0 - angle ) * 5, color, false );
+        }
+    }
+
+    private void checkCollision()
+    {
+        for ( GameObject o : Game.getInstance().gameObjects )
+        {
+            // Colliding aliens merge.
+            if ( o instanceof Alien )
+            {
+                Alien a = (Alien) o;
+                if ( Math.pow( getX() - a.getX(), 2 ) + ( Math.pow( getY() - a.getY(), 2 ) ) < Math.pow( size, 2 ) )
+                {
+                    if ( size > a.size )
+                    {
+                        Game.getInstance().gameObjects.remove( a );
+                        size += a.size;
+                        a.size = 0;
+                        manager.setLife( (int) ( size * 1.2 ) );
+                    }
+                }
+            }
         }
     }
 
@@ -110,17 +139,16 @@ public class Alien extends GameObject implements ShootingObject
 
         manager.draw( g );
 
-        Color base = new Color( 50, 138, 80 );
-        g.setColor( base );
-        g.fillOval( rX, rY, 30, 20 );
-        g.setColor( base.darker() );
-        g.drawOval( rX, rY, 30, 20 );
+        g.setColor( color );
+        g.fillOval( rX, rY, size, (int) ( size * 0.6 ) );
+        g.setColor( color.darker() );
+        g.drawOval( rX, rY, size, (int) ( size * 0.6 ) );
 
         Color window = new Color( 40, 40, 45 );
         g.setColor( window );
-        g.fillOval( rX + 5, rY - 4, 20, 18 );
+        g.fillOval( rX + (int) ( size * 0.22 ), (int) ( rY - size / 7.5 ), (int) ( size * 0.6 ), (int) ( size * 0.58 ) );
         g.setColor( window.brighter().brighter() );
-        g.drawOval( rX + 5, rY - 4, 20, 18 );
+        g.drawOval( rX + (int) ( size * 0.22 ), (int) ( rY - size / 7.5 ), (int) ( size * 0.6 ), (int) ( size * 0.58 ) );
     }
 
     /**
@@ -140,10 +168,10 @@ public class Alien extends GameObject implements ShootingObject
     {
         double finRotation = 0.0;
 
-        public AlienMissileManager()
+        public AlienMissileManager( int size )
         {
             setPopQuantity( 0 );
-            setLife( 100 );
+            setLife( (int) ( size * 1.2 ) );
         }
 
         /**
@@ -161,7 +189,7 @@ public class Alien extends GameObject implements ShootingObject
         @Override
         public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
         {
-            return add( new AlienBullet( this, x, y, angle, dx *10, dy *10, col ), playShootSound );
+            return add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
         }
 
         @Override
@@ -175,9 +203,7 @@ public class Alien extends GameObject implements ShootingObject
             public AlienBullet( MissileManager m, int x, int y, double angle, double dx, double dy, Color c )
             {
                 super( m, x, y, angle, dx, dy, c );
-//                if ( RandomGenerator.get().nextBoolean() && RandomGenerator.get().nextBoolean() )
-//                    setSpeed( getDy(), getDx() );
-                setRadius( 8 );
+                setRadius( 1 );
             }
 
             @Override
@@ -190,7 +216,7 @@ public class Alien extends GameObject implements ShootingObject
             public void act()
             {
                 super.act();
-                setRadius( 5 + ( getAge() - getManager().life() * .2 ) * ( getManager().life() - getAge() ) * 0.05);
+                setRadius( 5 + ( getAge() - getManager().life() * .2 ) * ( getManager().life() - getAge() ) * 0.05 );
                 finRotation += ( 0.002 * Math.PI ) % Math.PI * 2;
             }
 
@@ -198,7 +224,7 @@ public class Alien extends GameObject implements ShootingObject
             public void move()
             {
                 super.move();
-                setDx( ( getDx() + getDy() * -0.2 ) * 0.7 ) ;
+                setDx( ( getDx() + getDy() * -0.2 ) * 0.7 );
                 setDy( ( getDy() + getDx() * 0.2 ) * 0.7 );
             }
 

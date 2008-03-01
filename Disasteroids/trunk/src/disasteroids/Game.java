@@ -262,7 +262,7 @@ public class Game implements Serializable
      */
     public void newGame()
     {
-        // Create thr lists.
+        // Create the lists.
         timeStep = 0;
         otherPlayerTimeStep = 0;
 
@@ -281,7 +281,7 @@ public class Game implements Serializable
         }
 
         // Set up the game.
-        gameMode = new /* WaveGameplay() */ LinearGameplay(); 
+        gameMode = new WaveGameplay(); // LinearGameplay(); 
 
 //        Station s = new Station( 950, 750 );
 //        gameObjects.add( s );

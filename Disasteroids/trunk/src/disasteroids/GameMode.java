@@ -21,5 +21,7 @@ public interface GameMode
     public void draw(Graphics g);
     
     public void flatten( DataOutputStream stream ) throws IOException;
+    
+    public void optionsKey();
 
 }

@@ -12,6 +12,7 @@ import java.awt.Graphics2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import javax.swing.JOptionPane;
 
 /**
  * The classic game mode of level-based gameplay.
@@ -51,8 +52,8 @@ public class LinearGameplay implements GameMode
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";
-        int x = AsteroidsFrame.frame().getPanel().getWidth(), y = AsteroidsFrame.frame().getPanel().getHeight() - 15;
-        
+        int x = AsteroidsFrame.frame().getPanel().getWidth(), y = AsteroidsFrame.frame().getPanel().getHeight() - 18;
+
         // Draw the level counter.
         g2d.setColor( Color.lightGray );
         g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
@@ -149,5 +150,18 @@ public class LinearGameplay implements GameMode
     public void flatten( DataOutputStream stream ) throws IOException
     {
         stream.writeInt( level );
+    }
+
+    public void optionsKey()
+    {
+        try
+        {
+            warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", level ) ) );
+        }
+        catch ( NumberFormatException e )
+        {
+            // Do nothing with incorrect or cancelled input.
+            Running.log( "Invalid warp command.", 800 );
+        }
     }
 }

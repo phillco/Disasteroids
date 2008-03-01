@@ -4,8 +4,8 @@
  */
 package disasteroids.networking;
 
-import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.util.LinkedList;
 
 /**
  * Represents an IP address, port, and a last seen time.
@@ -34,7 +34,7 @@ public class Machine
      */
     public long lastSeen;
     
-    public DatagramPacket multiPackets[];
+    public static int multPacketId = 0;
     
     /**
      * Constructs the machine.

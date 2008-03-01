@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 /**
  * A superclass for both client and server. Implements all shared code.
@@ -112,6 +113,18 @@ public abstract class DatagramListener
     }
 
     /**
+     * Returns a string with the packet's length and data (for debugging use).
+     * 
+     * @param data  the packet's data
+     * @return      the debugging string
+     * @since February 28, 2008
+     */
+    String hashPacket( byte[] data )
+    {
+        return "Length " + data.length + " bytes. " + Arrays.toString( data );
+    }
+
+    /**
      * Sends a packet to a machine.
      * buffer->packet->machine
      *
@@ -121,33 +134,30 @@ public abstract class DatagramListener
      * @since December 29, 2007
      */
     void sendPacket( Machine client, byte[] buffer ) throws IOException
-    {        
-//        if ( buffer.length > Constants.MAX_PACKET_SIZE )
-//        {
-//            System.out.println("Oversize packet!");
-//            final int NEW_HEADER_SIZE = (2 * Integer.SIZE / 8);
-//
-//            int packetCount = 0;
-//            int packetSize = buffer.length;
-//            while ( packetCount != packetSize / Constants.MAX_PACKET_SIZE)
-//            {
-//                packetCount = packetSize / Constants.MAX_PACKET_SIZE;
-//
-//                // Add space for the markers.
-//                packetSize += packetCount * NEW_HEADER_SIZE;
-//            }
-//
-//            // Create each packet and write it.
-//            for ( int i = 0; i < packetCount; i++)
-//            {
-//                ByteOutputStream out = new ByteOutputStream();
-//                out.writeInt(Server.Message.MULTI_PACKET.ordinal());
-//                out.writeInt(i);
-//                out.write(buffer, i * (Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE), Constants.MAX_PACKET_SIZE - NEW_HEADER_SIZE );                
-//                sendPacket(client, out);
-//            }
-//        }
-//        else
+    {
+        // Will this packet have to be split?
+        if ( buffer.length > Constants.MAX_PACKET_SIZE )
+        {
+            int packetCount = (int) Math.ceil( (double) buffer.length / Constants.MULTIPACKET_DATA_SIZE );
+                 //System.out.println( "Original contiguous data: " + hashPacket( buffer ) + "\nWill need " + packetCount + " packets ( each containing " + Constants.MULTIPACKET_DATA_SIZE + " bytes)." );
+
+            // Create the series of packets.
+            int seriesId = Machine.multPacketId++;
+            for ( int i = 0; i < packetCount; i++ )
+            {
+                ByteOutputStream out = new ByteOutputStream();
+                out.writeInt( Server.Message.MULTI_PACKET.ordinal() );
+                out.writeInt( seriesId );
+                out.writeInt( packetCount );
+                out.writeInt( i );
+
+                out.write( buffer, i * Constants.MULTIPACKET_DATA_SIZE, Math.min( buffer.length - i * Constants.MULTIPACKET_DATA_SIZE, Constants.MULTIPACKET_DATA_SIZE ) );
+                    //System.out.println( "Sending packet " + i + "/" + packetCount + " in series " + seriesId + " - " + hashPacket( out.toByteArray() ) );
+                sendPacket( client, out );
+            }
+            System.out.println();
+        }
+        else
             socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
     }
 
@@ -156,7 +166,7 @@ public abstract class DatagramListener
      *
      * @since January 1, 2007
      */
-    class ByteInputStream extends DataInputStream
+    static class ByteInputStream extends DataInputStream
     {
         /**
          * Constructs the data stream from a byte array.
@@ -175,7 +185,7 @@ public abstract class DatagramListener
      *
      * @since January 1, 2007
      */
-    class ByteOutputStream extends DataOutputStream
+    static class ByteOutputStream extends DataOutputStream
     {
         /**
          * Constructs the data stream to write to a byte array.
@@ -272,16 +282,16 @@ public abstract class DatagramListener
                 while ( shouldRun() )
                 {
                     // Create a buffer to receive the packet in.
-                    byte[] buffer = new byte[2048];
+                    byte[] buffer = new byte[Constants.MAX_PACKET_SIZE];
                     DatagramPacket packet = new DatagramPacket( buffer, buffer.length );
 
                     if ( shouldRun() )
                     {
                         // Receive it.
-                        parent.socket.receive( packet );
+                        socket.receive( packet );
 
                         // Pass it off.
-                        parent.parseReceived( packet );
+                        parseReceived( packet );
                     }
                 }
             }
@@ -308,7 +318,7 @@ public abstract class DatagramListener
             {
                 try
                 {
-                    parent.intervalLogic();
+                    intervalLogic();
                     Thread.sleep( Constants.INTERVAL_TIME * 1000 );
                 }
                 catch ( InterruptedException ex )
@@ -316,5 +326,5 @@ public abstract class DatagramListener
                 }
             }
         }
-    }    
+    }
 }

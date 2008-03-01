@@ -283,13 +283,13 @@ public class Game implements Serializable
         // Set up the game.
         gameMode = new /* WaveGameplay() */ LinearGameplay(); 
 
-        Station s = new Station( 950, 750 );
-        gameObjects.add( s );
-        shootingObjects.add( s );
-
-        Alien a = new Alien();
-        gameObjects.add( a );
-        shootingObjects.add( a );
+//        Station s = new Station( 950, 750 );
+//        gameObjects.add( s );
+//        shootingObjects.add( s );
+//
+//        Alien a = new Alien();
+//        gameObjects.add( a );
+//        shootingObjects.add( a );
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )

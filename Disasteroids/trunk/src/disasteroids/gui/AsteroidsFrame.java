@@ -28,6 +28,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The big momma class up in the sky.
@@ -130,7 +132,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         panel.shouldEnd = true;
     }
-
     /**
      * Called automatically by key listener when keys are released.
      * The keyCodes are made negative to show this.

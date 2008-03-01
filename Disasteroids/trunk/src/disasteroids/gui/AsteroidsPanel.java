@@ -115,6 +115,13 @@ public class AsteroidsPanel extends Panel
         if ( parent.localPlayer() == null )
             return;
 
+        // Adjust the thread's priority if it's in the foreground/background.
+        if ( parent.isActive() && Thread.currentThread().getPriority() != Thread.NORM_PRIORITY )
+            Thread.currentThread().setPriority( Thread.NORM_PRIORITY );
+        else if ( Thread.currentThread().getPriority() != Thread.MIN_PRIORITY )
+            Thread.currentThread().setPriority( Thread.MIN_PRIORITY );
+
+
         // Anti-alias, if the user wants it.
         updateQualityRendering( g, Settings.qualityRendering );
 

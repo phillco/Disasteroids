@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import javax.swing.JOptionPane;
 
 /**
@@ -60,6 +62,7 @@ public class Client extends DatagramListener
     {
         return ( instance != null );
     }
+    LinkedList<PacketSeries> packetSeries;
 
     /**
      * Binds this client to the given server, and connects to it. Assumes the default server port.
@@ -71,6 +74,7 @@ public class Client extends DatagramListener
     public Client( String serverAddress ) throws UnknownHostException
     {
         instance = this;
+        packetSeries = new LinkedList<PacketSeries>();
         server = new Machine( InetAddress.getByName( serverAddress ), Constants.DEFAULT_PORT );
         connect();
     }
@@ -127,7 +131,40 @@ public class Client extends DatagramListener
                 switch ( Server.Message.values()[command] )
                 {
                     case MULTI_PACKET:
-                        System.out.println("Received multi packet # " + in.readInt());
+                        
+                        int seriesId = in.readInt();
+                        int count = in.readInt();
+                        int index = in.readInt();
+
+                        // Are we continuing an existing series?
+                        PacketSeries series = null;
+                        for ( PacketSeries s : packetSeries )
+                        {
+                            if ( s.getSeriesId() == seriesId )
+                            {
+                                series = s;
+                                break;
+                            }
+                        }                        
+                                                
+                        if ( series == null )
+                        {
+                            // No, so start a new one.
+                            series = new PacketSeries( seriesId, count );
+                            packetSeries.add( series );
+                        }
+
+                        // Plug in this packet.
+                        series.addPacket(index, p);
+                            // System.out.println("Received packet " + index + "/" + count + " in series " + seriesId + " - " + hashPacket(p.getData()));
+                        
+                        // Does this complete the series? Rejoice!
+                        if ( series.isComplete() )
+                        {
+                                // System.out.println( "Series complete!\nContigous data: " + hashPacket(series.contiguousData));
+                            parseReceived( new DatagramPacket( series.getContiguousData(), 0, series.getContiguousData().length, server.address, server.port ) );
+                            packetSeries.remove( series );
+                        }
                         break;
                     case FULL_UPDATE:
                         System.out.print( "Receiving full update..." );
@@ -177,6 +214,9 @@ public class Client extends DatagramListener
                         JOptionPane.showMessageDialog( null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE );
                         Running.quit();
                         break;
+                    default:
+                        System.out.println("Weird packet - " + command + ".");
+                            
                 }
             }
         }

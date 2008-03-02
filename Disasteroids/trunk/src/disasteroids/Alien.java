@@ -7,6 +7,8 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.Particle;
+import disasteroids.gui.ParticleManager;
 import disasteroids.gui.RelativeGraphics;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -28,13 +30,19 @@ public class Alien extends GameObject implements ShootingObject
 
     private int size;
 
+    private int life;
+
+    private int explosionTime;
+
     public Alien( int x, int y, double dx, double dy )
     {
         setSpeed( dx, dy );
         setLocation( x, y );
-        size = RandomGenerator.get().nextInt( 90 ) + 10;
+        size = RandomGenerator.get().nextInt( 50 ) + 30;
         manager = new AlienMissileManager( size );
         color = new Color( RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ) );
+        life = 100;
+        explosionTime = 0;
     }
 
     public void act()
@@ -42,6 +50,37 @@ public class Alien extends GameObject implements ShootingObject
         move();
         checkCollision();
         manager.act( true );
+
+        // Prepare to flash.
+        if ( life <= 0 )
+        {
+            if ( explosionTime == 0 )
+                explosionTime = 20;
+
+            if ( explosionTime == 1 )
+                Game.getInstance().removeObject( this );
+
+            explosionTime--;
+        }
+
+        // Smoke when low on health.
+        if ( life < 80 )
+        {
+            ParticleManager.addParticle( new Particle( getX() + RandomGenerator.get().nextInt( size ), centerY(),
+                                                       RandomGenerator.get().nextInt( 5 ) + 2, RandomGenerator.get().nextBoolean() ? Color.gray : Color.darkGray,
+                                                       RandomGenerator.get().nextInt( 3 ) + 1, RandomGenerator.get().nextDouble() * 1.4 + 0.5,
+                                                       50, 30 ) );
+        }
+
+        // Flames!
+        if ( life < 40 )
+        {
+            ParticleManager.addParticle( new Particle( getX() + RandomGenerator.get().nextInt( size ), centerY(),
+                                                       RandomGenerator.get().nextInt( 5 ) + 2, new Color( RandomGenerator.get().nextInt( 63 ) + 192, RandomGenerator.get().nextInt( 128 ), 0 ),
+                                                       RandomGenerator.get().nextInt( 3 ) + 1, RandomGenerator.get().nextDouble() * 1.4 + 0.5,
+                                                       50, 30 ) );
+        }
+
 
         // Find players within our range.        
         int range = 300;
@@ -70,21 +109,43 @@ public class Alien extends GameObject implements ShootingObject
 
     private void checkCollision()
     {
-        for ( GameObject o : Game.getInstance().gameObjects )
+        if ( explosionTime > 0 )
+            return;
+
+        // Check for missile collision.
+        for ( ShootingObject s : Game.getInstance().shootingObjects )
         {
-            // Colliding aliens merge.
-            if ( o instanceof Alien )
+            if ( s == this )
+                continue;
+
+            // Loop through the mangers.
+            for ( WeaponManager wm : s.getManagers() )
             {
-                Alien a = (Alien) o;
-                if ( Math.pow( getX() - a.getX(), 2 ) + ( Math.pow( getY() - a.getY(), 2 ) ) < Math.pow( size, 2 ) )
+                // Loop through the bullets.
+                for ( Weapon m : wm.getWeapons() )
                 {
-                    if ( size > a.size )
+                    // Were we hit by a bullet?
+                    if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
+                            ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
                     {
-                        Game.getInstance().gameObjects.remove( a );
-                        size += a.size;
-                        a.size = 0;
-                        manager.setLife( (int) ( size * 1.2 ) );
+                        m.explode();
+                        life -= m.getDamage();
                     }
+                }
+            }
+        }
+
+        // Check for ship collision.  
+        for ( Ship s : Game.getInstance().players )
+        {
+            // Were we hit by the ship's body?
+            if ( s.livesLeft() >= 0 )
+            {
+                if ( ( s.getX() + Ship.RADIUS > getX() && s.getX() - Ship.RADIUS < getX() + size ) &&
+                        ( s.getY() + Ship.RADIUS > getY() && s.getY() - Ship.RADIUS < getY() + size ) )
+                {
+                    if ( s.looseLife( s.getName() + " was abducted." ) )
+                        return;
                 }
             }
         }
@@ -138,6 +199,12 @@ public class Alien extends GameObject implements ShootingObject
         int rY = RelativeGraphics.translateY( getY() );
 
         manager.draw( g );
+
+        if ( explosionTime > 0 )
+        {
+            AsteroidsFrame.frame().fillCircle( g, Color.orange, (int) getX(), (int) getY(), (int) ( size * 0.1 * ( explosionTime - 1 ) ) );
+            return;
+        }
 
         g.setColor( color );
         g.fillOval( rX, rY, size, (int) ( size * 0.6 ) );

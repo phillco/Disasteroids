@@ -236,6 +236,18 @@ public class Game implements Serializable
     {
         removePlayer( leavingPlayer, " left the game." );
     }
+    
+    /**
+     * Removes an object from the game.
+     * 
+     * @param o the object
+     * @since March 2, 2008
+     */
+    public void removeObject(GameObject o)
+    {
+        gameObjects.remove(o);
+        shootingObjects.remove(o);
+    }
 
     /**
      * Removes a player from the game with a custom message.

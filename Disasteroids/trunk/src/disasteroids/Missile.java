@@ -286,8 +286,10 @@ public class Missile extends GameObject implements Weapon, GameElement
      */
     private void pop()
     {
-        for ( double ang = 2 * Math.PI / manager.popQuantity(); ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
-            manager.add( (int) getX(), (int) getY(), ang, 0, 0, myColor, true );
+        if ( needsRemoval )
+            return;
+        for ( double ang = 0; ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
+            manager.add( new Missile( manager, (int) getX(), (int) getY(), ang, 0, 0, myColor ) );
         needsRemoval = true;
     }
 

@@ -130,6 +130,18 @@ public class Ship implements GameElement, ShootingObject
      */
     private int drawWeaponNameTimer;
 
+    /**
+     * How many acceleration particles should be emitted out the front. Used for smooth effects.
+     * @since March 3, 2008
+     */
+    private double particleRateForward = 0.0;
+
+    /**
+     * How many acceleration particles should be emitted out the back. Used for smooth effects.
+     * @since March 3, 2008
+     */
+    private double particleRateBackward = 0.0;
+
     public Ship( int x, int y, Color c, int lives, String name )
     {
         this.x = x;
@@ -419,47 +431,59 @@ public class Ship implements GameElement, ShootingObject
     }
 
     /**
-     * Generates particles for the ships boosters, moved from act metod
-     * @snice December 16, 2007
+     * Generates particles for the ship's boosters.
+     * 
+     * @since December 16, 2007
      */
     private void generateParticles()
     {
+        // System.out.println( 9 * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- 8 ); // :O
+
         if ( forward && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
-        {
-            Random rand = RandomGenerator.get();
-            for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
-                ParticleManager.addParticle( new Particle(
-                                             -15 * Math.cos( angle ) + x + rand.nextInt( 8 ) - 4,
-                                             15 * Math.sin( angle ) + y + rand.nextInt( 8 ) - 4,
-                                             rand.nextInt( 4 ) + 3,
-                                             myColor,
-                                             rand.nextDouble() * 4,
-                                             angle + rand.nextDouble() * .4 - .2 + Math.PI,
-                                             30, 10 ) );
-        }
+            particleRateForward = Math.min( 1, Math.max( 0.4, particleRateForward + 0.05 ) );
+        else
+            particleRateForward = Math.max( 0, particleRateForward - 0.03 );
 
         if ( backwards && !( Math.abs( dx ) < 0.1 && Math.abs( dy ) < 0.15 ) )
-        {
-            Random rand = RandomGenerator.get();
-            for ( int i = 0; i < (int) ( Math.sqrt( dx * dx + dy * dy ) ); i++ )
-                ParticleManager.addParticle( new Particle(
-                                             15 * Math.cos( angle ) + x + rand.nextInt( 8 ) - 4,
-                                             -15 * Math.sin( angle ) + y + rand.nextInt( 8 ) - 4,
-                                             rand.nextInt( 4 ) + 3,
-                                             myColor,
-                                             rand.nextDouble() * 4,
-                                             angle + rand.nextDouble() * .4 - .2,
-                                             30, 10 ) );
-        }
+            particleRateBackward = Math.min( 1, Math.max( 0.4, particleRateBackward + 0.05 ) );
+        else
+            particleRateBackward = Math.max( 0, particleRateBackward - 0.03 );
+
+
+        for ( int i = 0; i < (int) ( particleRateForward * 3 ); i++ )
+            ParticleManager.addParticle( new Particle(
+                                         -15 * Math.cos( angle ) + x + RandomGenerator.get().nextInt( 8 ) - 4,
+                                         15 * Math.sin( angle ) + y + RandomGenerator.get().nextInt( 8 ) - 4,
+                                         RandomGenerator.get().nextInt( 4 ) + 3,
+                                         myColor,
+                                         RandomGenerator.get().nextDouble() * 4,
+                                         angle + RandomGenerator.get().nextDouble() * .4 - .2 + Math.PI,
+                                         30, 10 ) );
+
+        for ( int i = 0; i < (int) ( particleRateBackward * 3 ); i++ )
+            ParticleManager.addParticle( new Particle(
+                                         15 * Math.cos( angle ) + x + RandomGenerator.get().nextInt( 8 ) - 4,
+                                         -15 * Math.sin( angle ) + y + RandomGenerator.get().nextInt( 8 ) - 4,
+                                         RandomGenerator.get().nextInt( 4 ) + 3,
+                                         myColor,
+                                         RandomGenerator.get().nextDouble() * 4,
+                                         angle + RandomGenerator.get().nextDouble() * .4 - .2,
+                                         30, 10 ) );
+
+
+
     }
 
     private void move()
     {
         x += dx;
-        y += dy;
+        y +=
+                dy;
 
-        dx *= .996;
-        dy *= .996;
+        dx *=
+                .996;
+        dy *=
+                .996;
     }
 
     public int getX()
@@ -508,17 +532,22 @@ public class Ship implements GameElement, ShootingObject
             return false;
 
         livesLeft--;
-        setInvincibilityCount( 300 );
+
+        setInvincibilityCount(
+                300 );
         if ( Settings.soundOn )
             Sound.playInternal( Sound.SHIP_LOSE_LIFE_SOUND );
 
         // Bounce.
-        dx *= -.3;
-        dy *= -.3;
+        dx *=
+                -.3;
+        dy *=
+                -.3;
 
         // Create particles.
         Random rand = RandomGenerator.get();
-        for ( int i = 0; i < 80; i++ )
+        for ( int i = 0; i <
+                80; i++ )
             ParticleManager.addParticle( new Particle(
                                          x + rand.nextInt( 16 ) - 8 - RADIUS,
                                          y + rand.nextInt( 16 ) - 8 - RADIUS,
@@ -649,7 +678,8 @@ public class Ship implements GameElement, ShootingObject
     {
         stream.writeInt( id );
 
-        flattenPosition( stream );
+        flattenPosition(
+                stream );
 
         stream.writeInt( weaponIndex );
 
@@ -657,13 +687,15 @@ public class Ship implements GameElement, ShootingObject
 
         // Find our color.
         int colorIndex = -1;
-        for ( int i = 0; i < Game.PLAYER_COLORS.length; i++ )
+        for ( int i = 0; i <
+                Game.PLAYER_COLORS.length; i++ )
         {
             if ( Game.PLAYER_COLORS[i] == myColor )
             {
                 colorIndex = i;
                 break;
             }
+
         }
         if ( colorIndex == -1 )
             Running.fatalError( "Unknown ship color: " + myColor );
@@ -710,18 +742,28 @@ public class Ship implements GameElement, ShootingObject
     public void restorePosition( DataInputStream stream ) throws IOException
     {
         x = stream.readDouble();
-        y = stream.readDouble();
-        dx = stream.readDouble();
-        dy = stream.readDouble();
-        angle = stream.readDouble();
+        y =
+                stream.readDouble();
+        dx =
+                stream.readDouble();
+        dy =
+                stream.readDouble();
+        angle =
+                stream.readDouble();
 
-        left = stream.readBoolean();
-        right = stream.readBoolean();
-        backwards = stream.readBoolean();
-        forward = stream.readBoolean();
-        shooting = stream.readBoolean();
+        left =
+                stream.readBoolean();
+        right =
+                stream.readBoolean();
+        backwards =
+                stream.readBoolean();
+        forward =
+                stream.readBoolean();
+        shooting =
+                stream.readBoolean();
 
-        weaponIndex = stream.readInt();
+        weaponIndex =
+                stream.readInt();
     }
 
     /**
@@ -731,26 +773,37 @@ public class Ship implements GameElement, ShootingObject
      * @throws java.io.IOException 
      * @since December 30, 2007
      */
-    public Ship( DataInputStream stream ) throws IOException
+    public Ship(
+            DataInputStream stream ) throws IOException
     {
         id = stream.readInt();
 
-        restorePosition( stream );
+        restorePosition(
+                stream );
 
-        invincibilityCount = stream.readInt();
+        invincibilityCount =
+                stream.readInt();
 
-        myColor = Game.PLAYER_COLORS[stream.readInt()];
+        myColor =
+                Game.PLAYER_COLORS[stream.readInt()];
 
-        name = stream.readUTF();
-        livesLeft = stream.readInt();
-        weaponIndex = stream.readInt();
-        numAsteroidsKilled = stream.readInt();
-        numShipsKilled = stream.readInt();
+        name =
+                stream.readUTF();
+        livesLeft =
+                stream.readInt();
+        weaponIndex =
+                stream.readInt();
+        numAsteroidsKilled =
+                stream.readInt();
+        numShipsKilled =
+                stream.readInt();
 
         // Apply basic construction.        
         double fadePct = 0.6;
-        myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
-        allWeapons = new WeaponManager[3];
+        myInvicibleColor =
+                new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
+        allWeapons =
+                new WeaponManager[3];
         allWeapons[0] = new MissileManager();
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();

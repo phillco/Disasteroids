@@ -156,6 +156,8 @@ public class Background
         // Draw stars.
         for ( Star star : this.theStars )
         {
+            if(star==null)
+                continue;
             // Move them.
             star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
             star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;

@@ -280,7 +280,7 @@ public class Missile extends GameObject implements Weapon, GameElement
     }
 
     /**
-     * Splits <code>this</code> into seveal new <code>Missile</code>s.
+     * Splits <code>this</code> into several new <code>Missile</code>s.
      * @author Andy Kooiman
      * @since Classic
      */
@@ -289,7 +289,7 @@ public class Missile extends GameObject implements Weapon, GameElement
         if ( needsRemoval )
             return;
         for ( double ang = 0; ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
-            manager.add( new Missile( manager, (int) getX(), (int) getY(), ang, 0, 0, myColor ) );
+            manager.add( new Missile( manager, (int) getX(), (int) getY(), ang, 0, 0, myColor ), false );
         needsRemoval = true;
     }
 

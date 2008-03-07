@@ -16,7 +16,7 @@ import java.util.Random;
  * @author Andy Kooiman
  * @since Classic
  */
-public class Missile extends GameObject implements Weapon, GameElement
+public class Missile extends Weapon
 {
     /**
      * The <code>Color</code> to be drawn in.
@@ -276,7 +276,7 @@ public class Missile extends GameObject implements Weapon, GameElement
                 break;
             default:
                 needsRemoval = true;
-                manager.remove(this);
+                manager.remove( this );
         }
     }
 
@@ -366,8 +366,6 @@ public class Missile extends GameObject implements Weapon, GameElement
     {
         return (int) radius;
     }
-    
-    
 
     public void setRadius( double radius )
     {
@@ -378,6 +376,4 @@ public class Missile extends GameObject implements Weapon, GameElement
     {
         return manager;
     }
-    
-    
 }

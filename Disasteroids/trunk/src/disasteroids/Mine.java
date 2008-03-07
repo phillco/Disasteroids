@@ -14,13 +14,8 @@ import java.awt.Graphics;
  * 
  * @author Andy Kooiman
  */
-public class Mine implements Weapon
+public class Mine extends Weapon
 {
-    /**
-     * The coordinates of the center of this <code>Mine</code>
-     */
-    private int x,  y;
-
     /**
      * How long until this <code>Mine</code> is removed.  It will explode on its
      * own if it has 5 or fewer timesteps to live.
@@ -43,7 +38,7 @@ public class Mine implements Weapon
      * Whether this <code>Mine</code> needs removing.
      */
     private boolean needsRemoval;
-    
+
     private WeaponManager env;
 
     /**
@@ -56,35 +51,12 @@ public class Mine implements Weapon
      */
     Mine( int x, int y, Color col, WeaponManager env )
     {
-        this.x = x;
-        this.y = y;
+        setLocation( x, y );
         this.isExploding = false;
         this.needsRemoval = false;
         this.color = col;
         life = 10000;
-        this.env=env;
-    }
-
-    /**
-     * Returns the x coordinate.
-     * 
-     * @return The x coordinate.
-     * 
-     */
-    public double getX()
-    {
-        return x;
-    }
-
-    /**
-     * Returns the y coordinate.
-     * 
-     * @return The y coordinate.
-     * 
-     */
-    public double getY()
-    {
-        return y;
+        this.env = env;
     }
 
     /**
@@ -123,12 +95,12 @@ public class Mine implements Weapon
     /**
      * Returns whether this <code>Mine</code> thinks it should be removed.
      * 
-     * @return whetyer this <code>Mine</code> thinks it should be removed.
+     * @return whether this <code>Mine</code> thinks it should be removed.
      */
     public boolean needsRemoval()
     {
-        if(needsRemoval)
-            env.remove(this);
+        if ( needsRemoval )
+            env.remove( this );
         return needsRemoval;
     }
 
@@ -142,7 +114,7 @@ public class Mine implements Weapon
         if ( life <= 0 )
         {
             needsRemoval = true;
-            env.remove(this);
+            env.remove( this );
         }
     }
 
@@ -170,17 +142,15 @@ public class Mine implements Weapon
         {
             double multiplier = ( 10000 - life ) / 100.0;
             Color outline = new Color( (int) ( color.getRed() * multiplier ), (int) ( color.getGreen() * multiplier ), (int) ( color.getBlue() * multiplier ) );
-            AsteroidsFrame.frame().fillCircle( g, outline, x, y, 10 );
-            AsteroidsFrame.frame().fillCircle( g, Color.black, x, y, 4 );
+            AsteroidsFrame.frame().fillCircle( g, outline, (int) getX(), (int) getY(), 10 );
+            AsteroidsFrame.frame().fillCircle( g, Color.black, (int) getX(), (int) getY(), 4 );
         }
         else if ( !isExploding )
         {
-            AsteroidsFrame.frame().fillCircle( g, color, x, y, 10 );
-            AsteroidsFrame.frame().fillCircle( g, Color.black, x, y, 4 );
+            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), 10 );
+            AsteroidsFrame.frame().fillCircle( g, Color.black, (int) getX(), (int) getY(), 4 );
         }
         else
-        {
-            AsteroidsFrame.frame().fillCircle( g, color, x, y, ( 5 - life ) * 20 );
-        }
+            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), ( 5 - life ) * 20 );
     }
 }

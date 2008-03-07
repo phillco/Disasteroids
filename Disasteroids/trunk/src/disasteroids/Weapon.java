@@ -5,20 +5,16 @@
 package disasteroids;
 
 /**
- * Interface for a weapon manger's individual bullets/missiles/mines/etc.
+ * A weapon manager's individual bullets.
  * @author Andy Kooiman
  */
-public interface Weapon extends GameElement 
+public abstract class Weapon extends GameObject
 {
-    public double getX();
+    public abstract int getRadius();
     
-    public double getY();
+    public abstract void explode();
     
-    public int getRadius();
+    public abstract boolean needsRemoval();   
     
-    public void explode();
-    
-    public boolean needsRemoval();   
-    
-    public int getDamage();
+    public abstract int getDamage();
 }

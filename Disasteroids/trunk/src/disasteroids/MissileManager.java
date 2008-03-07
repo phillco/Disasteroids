@@ -54,13 +54,11 @@ public class MissileManager extends WeaponManager
      */
     private int popQuantity = 5;
 
-
     /**
      * The number of timesteps for which the <code>Missile</code>s will live before
      * self destructing.
      */
     private int life = 300;
-
 
     private int maxShots = 10;
 
@@ -81,16 +79,16 @@ public class MissileManager extends WeaponManager
      */
     public void act()
     {
-        super.act(true);/*
-        Iterator<Weapon> iter = theMissiles.iterator();
-        while ( iter.hasNext() )
-        {
-            Weapon w = iter.next();
-            if ( w.needsRemoval() )
-                iter.remove();
-            else
-                w.act();
-        }*/
+        super.act( true );/*
+    Iterator<Weapon> iter = theMissiles.iterator();
+    while ( iter.hasNext() )
+    {
+    Weapon w = iter.next();
+    if ( w.needsRemoval() )
+    iter.remove();
+    else
+    w.act();
+    }*/
     }
 
     /**
@@ -367,9 +365,8 @@ public class MissileManager extends WeaponManager
     @Override
     public boolean canShoot()
     {
-        return super.canShoot()&& weapons.size() < 100;
+        return super.canShoot() && weapons.size() < 100;
     }
-
 
     public SoundClip getShootSound()
     {

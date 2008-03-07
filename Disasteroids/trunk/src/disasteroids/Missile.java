@@ -289,8 +289,10 @@ public class Missile extends WeaponManager.Unit
     {
         if ( needsRemoval )
             return;
-        for ( double ang = 0; ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
-            manager.add( new Missile( manager, (int) getX(), (int) getY(), ang, 0, 0, myColor ), false );
+        //for ( double ang = 0; ang < 2 * Math.PI; ang += 2 * Math.PI / manager.popQuantity() )
+            //manager.add( new Missile( manager, (int) getX(), (int) getY(), ang, 0, 0, myColor ), true );
+        for(int missile=0; missile<manager.popQuantity(); missile++)
+            manager.add(new Missile(manager, (int)getX(), (int)getY(),missile*2*Math.PI/manager.popQuantity()+missile*Math.PI, 0,0,myColor),true);
         needsRemoval = true;
     }
 

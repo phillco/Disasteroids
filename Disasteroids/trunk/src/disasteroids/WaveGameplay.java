@@ -39,8 +39,8 @@ public class WaveGameplay implements GameMode
             currentWave += 1;
             wavePoints = getWavePoints( currentWave );
         }
-        int x = RandomGenerator.get().nextBoolean() ? -1999 : 1999;
-        int y = RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+        int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+        int y = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
         /*
         // Choose a spawn spot.
         switch ( RandomGenerator.get().nextInt( 3 ) )

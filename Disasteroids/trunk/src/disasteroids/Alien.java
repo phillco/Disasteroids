@@ -10,6 +10,8 @@ import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.RelativeGraphics;
+import disasteroids.sound.Sound;
+import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -58,7 +60,10 @@ public class Alien extends GameObject implements ShootingObject
                 explosionTime = 20;
 
             if ( explosionTime == 1 )
+            {
                 Game.getInstance().removeObject( this );
+                Sound.playInternal(SoundLibrary.ALIEN_DIE);
+            }
 
             explosionTime--;
         }
@@ -234,6 +239,7 @@ public class Alien extends GameObject implements ShootingObject
     private class AlienMissileManager extends MissileManager
     {
         double finRotation = 0.0;
+        private int timeTillNextShot;
 
         public AlienMissileManager( int size )
         {
@@ -256,13 +262,23 @@ public class Alien extends GameObject implements ShootingObject
         @Override
         public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
         {
+            if(timeTillNextShot>0)
+                return false;
+            timeTillNextShot=getIntervalShoot();
             return add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
+        }
+        
+        @Override
+        public void act()
+        {
+            super.act();
+            timeTillNextShot--;
         }
 
         @Override
         public int getIntervalShoot()
         {
-            return 60;
+            return Math.max(life,3);
         }
 
         private class AlienBullet extends Missile

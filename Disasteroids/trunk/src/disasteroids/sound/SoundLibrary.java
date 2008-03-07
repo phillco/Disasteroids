@@ -41,11 +41,13 @@ public class SoundLibrary
         return new SoundClip( new Tone( 500, 8 ).toByteArray() );
     }
 
+    //:)
     private static SoundClip missileShoot()
     {
         return new SoundClip( new Tone( 200, 10 ).toByteArray() );
     }
 
+    //:)
     private static SoundClip mineArm()
     {
         Tone[] temp = new Tone[10];
@@ -56,9 +58,21 @@ public class SoundLibrary
         return new LayeredSound.SoundClip( Tone.toByteArray( temp ) );
     }
 
+    //:)
     private static SoundClip alienDie()
     {
-        return new SoundClip( new Tone( 0, 0 ).toByteArray() );
+        byte[] temp = new byte[8000];
+        int phase = 0;
+        int freqPhase = 0;
+        int frequency = 440;
+        for ( int index = 0; index < 8000; index++ )
+        {
+            temp[index] = (byte) ( 100 * Math.sin( phase ) );
+            phase += frequency;
+            frequency = (int) ( 440 + 220 * Math.sin( freqPhase / 300 ) );
+            freqPhase++;
+        }
+        return new SoundClip( temp );
     }
 
     private static SoundClip alienShoot()
@@ -66,11 +80,13 @@ public class SoundLibrary
         return new SoundClip( new Tone( 0, 0 ).toByteArray() );
     }
 
+    //:)
     private static SoundClip asteroidDie()
     {
         return new SoundClip( new Tone( 50, 30 ).toByteArray() );
     }
 
+    //:)
     private static SoundClip shipDie()
     {
         byte[] temp = new byte[8000];
@@ -84,12 +100,14 @@ public class SoundLibrary
         return new SoundClip( new Tone( 0, 0 ).toByteArray() );
     }
 
+    //:)
     private static SoundClip stationShoot()
     {
         Tone[] temp = { new Tone( 150, 20, 2 ), new Tone( 150, 20, 2 ), new Tone( 250, 30, 2 ) };
         return new SoundClip( Tone.toByteArray( temp ) );
     }
 
+    //:)
     private static SoundClip berserkSound()
     {
         Tone[] temp = new Tone[15];
@@ -99,6 +117,7 @@ public class SoundLibrary
         return new SoundClip( Tone.toByteArray( temp ) );
     }
 
+    //:)
     private static SoundClip gameOver()
     {
         Tone[] temp = new Tone[11];

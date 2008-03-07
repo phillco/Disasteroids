@@ -16,7 +16,7 @@ import java.util.Random;
  * @author Andy Kooiman
  * @since Classic
  */
-public class Missile extends Weapon
+public class Missile extends WeaponManager.Unit
 {
     /**
      * The <code>Color</code> to be drawn in.
@@ -328,9 +328,9 @@ public class Missile extends Weapon
     }
 
     /**
-     * Returns the damage this <code>Weapon</code> will do.
+     * Returns the damage this <code>Unit</code> will do.
      * 
-     * @return The damage done by this <code>Weapon</code>
+     * @return The damage done by this <code>Unit</code>
      */
     public int getDamage()
     {

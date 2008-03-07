@@ -25,7 +25,7 @@ public class MineManager extends WeaponManager
 
     public MineManager()
     {
-        weapons = new ConcurrentLinkedQueue<Weapon>();
+        weapons = new ConcurrentLinkedQueue<Unit>();
     }
 
 
@@ -33,10 +33,10 @@ public class MineManager extends WeaponManager
     public void act()
     {
         super.act(true);/*
-        Iterator<Weapon> itr = mines.iterator();
+        Iterator<Unit> itr = mines.iterator();
         while ( itr.hasNext() )
         {
-            Weapon w = itr.next();
+            Unit w = itr.next();
             if ( w.needsRemoval() )
                 itr.remove();
             else
@@ -80,7 +80,7 @@ public class MineManager extends WeaponManager
 
     public void draw( Graphics g )
     {
-        for ( Weapon w : weapons )
+        for ( Unit w : weapons )
             w.draw( g );
     }
 
@@ -89,7 +89,7 @@ public class MineManager extends WeaponManager
         return "Mines";
     }
 
-    public Weapon getWeapon( int x, int y, Color col )
+    public Unit getWeapon( int x, int y, Color col )
     {
         Mine m = new Mine( x, y, col, this);
         m.setLife( 500 );

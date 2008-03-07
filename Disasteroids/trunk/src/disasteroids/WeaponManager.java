@@ -16,16 +16,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public abstract class WeaponManager implements GameElement
 {
-    protected ConcurrentLinkedQueue<Weapon> weapons;
-    
+    protected ConcurrentLinkedQueue<Unit> weapons;
+
     protected int timeTillNextBerserk = 0;
 
     protected int timeTillNextShot = 0;
-    
-    public void add( ConcurrentLinkedQueue<Weapon> weap )
+
+    public void add( ConcurrentLinkedQueue<Unit> weap )
     {
-        while(!weap.isEmpty())
-            weapons.add(weap.remove());
+        while ( !weap.isEmpty() )
+            weapons.add( weap.remove() );
     }
 
     /**
@@ -36,7 +36,7 @@ public abstract class WeaponManager implements GameElement
      */
     public boolean canShoot()
     {
-        return timeTillNextShot<=0;
+        return timeTillNextShot <= 0;
     }
 
     public void clear()
@@ -52,9 +52,9 @@ public abstract class WeaponManager implements GameElement
      */
     public void act( boolean active )
     {
-        for(Weapon w: weapons)
+        for ( Unit w : weapons )
             w.act();
-        if(active)
+        if ( active )
         {
             timeTillNextShot--;
             timeTillNextBerserk--;
@@ -63,18 +63,17 @@ public abstract class WeaponManager implements GameElement
 
     public void explodeAll()
     {
-        for(Weapon w: weapons)
+        for ( Unit w : weapons )
             w.explode();
     }
-            
 
     public abstract int getIntervalShoot();
 
     public abstract boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound );
-    
-    public void remove(Weapon w)
+
+    public void remove( Unit w )
     {
-        weapons.remove(w);
+        weapons.remove( w );
     }
 
     public int getNumLiving()
@@ -82,7 +81,7 @@ public abstract class WeaponManager implements GameElement
         return weapons.size();
     }
 
-    public ConcurrentLinkedQueue<Weapon> getWeapons()
+    public ConcurrentLinkedQueue<Unit> getWeapons()
     {
         return weapons;
     }
@@ -94,26 +93,26 @@ public abstract class WeaponManager implements GameElement
     public abstract int getMaxShots();
 
     /**
-     * Returns the name of the <code>Weapon</code>.
+     * Returns the name of the <code>Unit</code>.
      * Examples: "Missiles", "Bullets".
      * 
      * @since December 25, 2007
-     * @return  plural name of the <code>Weapon</code>
+     * @return  plural name of the <code>Unit</code>
      */
     public abstract String getWeaponName();
 
     /**
-     * Gets a new instance of the type of <code>Weapon</code>s held
+     * Gets a new instance of the type of <code>Unit</code>s held
      * by this <code>WeaponManager</code>, but does not add it to the 
-     * list of currently valid <code>Weapon</code>s.
+     * list of currently valid <code>Unit</code>s.
      * 
-     * @return A new instance of the type of <code>Weapon</code> stored
+     * @return A new instance of the type of <code>Unit</code> stored
      * @since December 30, 2007
      */
-    public abstract Weapon getWeapon( int x, int y, Color col );
+    public abstract Unit getWeapon( int x, int y, Color col );
 
     /**
-     * Executes a powerful blast of this <code>Weapon</code> type
+     * Executes a powerful blast of this <code>Unit</code> type
      * 
      * @since January 7, 2008
      * @param s the <code>Ship</code> which is shooting
@@ -147,4 +146,19 @@ public abstract class WeaponManager implements GameElement
      * @since January 11, 2008
      */
     public abstract SoundClip getBerserkSound();
+
+    /**
+     * A weapon manager's individual bullets.
+     * @author Andy Kooiman
+     */
+    public static abstract class Unit extends GameObject
+    {
+        public abstract int getRadius();
+
+        public abstract void explode();
+
+        public abstract boolean needsRemoval();
+
+        public abstract int getDamage();
+    }
 }

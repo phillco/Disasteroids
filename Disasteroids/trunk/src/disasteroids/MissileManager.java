@@ -64,10 +64,10 @@ public class MissileManager extends WeaponManager
 
     public MissileManager()
     {
-        weapons = new ConcurrentLinkedQueue<Weapon>();
+        weapons = new ConcurrentLinkedQueue<Unit>();
     }
 
-    public MissileManager( ConcurrentLinkedQueue<Weapon> start )
+    public MissileManager( ConcurrentLinkedQueue<Unit> start )
     {
         weapons = start;
     }
@@ -80,10 +80,10 @@ public class MissileManager extends WeaponManager
     public void act()
     {
         super.act( true );/*
-    Iterator<Weapon> iter = theMissiles.iterator();
+    Iterator<Unit> iter = theMissiles.iterator();
     while ( iter.hasNext() )
     {
-    Weapon w = iter.next();
+    Unit w = iter.next();
     if ( w.needsRemoval() )
     iter.remove();
     else
@@ -101,7 +101,7 @@ public class MissileManager extends WeaponManager
     {
         int probPopTemp = probPop;
         probPop = Integer.MAX_VALUE;
-        for ( Weapon w : weapons )
+        for ( Unit w : weapons )
             w.explode();
         probPop = probPopTemp;
     }
@@ -123,7 +123,7 @@ public class MissileManager extends WeaponManager
         return add( new Missile( this, x, y, angle, dx, dy, col ), playShootSound );
     }
 
-    public boolean add( Weapon a, boolean playShootSound )
+    public boolean add( Unit a, boolean playShootSound )
     {
         if ( weapons.size() > 100 || timeTillNextShot > 0 )
             return false;
@@ -338,7 +338,7 @@ public class MissileManager extends WeaponManager
 
     public void draw( Graphics g )
     {
-        for ( Weapon w : weapons )
+        for ( Unit w : weapons )
             w.draw( g );
     }
 
@@ -347,7 +347,7 @@ public class MissileManager extends WeaponManager
         return "Missiles";
     }
 
-    public Weapon getWeapon( int x, int y, Color col )
+    public Unit getWeapon( int x, int y, Color col )
     {
         return new Missile( this, x, y, 0, 0, 0, col );
     }

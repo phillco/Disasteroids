@@ -14,7 +14,7 @@ import java.awt.Graphics;
  * 
  * @author Andy Kooiman
  */
-public class Mine extends Weapon
+public class Mine extends WeaponManager.Unit
 {
     /**
      * How long until this <code>Mine</code> is removed.  It will explode on its

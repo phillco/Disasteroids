@@ -32,10 +32,10 @@ class BulletManager extends WeaponManager
 
     public BulletManager()
     {
-        weapons = new ConcurrentLinkedQueue<Weapon>();
+        weapons = new ConcurrentLinkedQueue<Unit>();
     }
 
-    public BulletManager( ConcurrentLinkedQueue<Weapon> start )
+    public BulletManager( ConcurrentLinkedQueue<Unit> start )
     {
         weapons = start;
     }
@@ -43,10 +43,10 @@ class BulletManager extends WeaponManager
     public void act()
     {
         super.act(true);
-        /*Iterator<Weapon> iter = theBullets.iterator();
+        /*Iterator<Unit> iter = theBullets.iterator();
         while ( iter.hasNext() )
         {
-            Weapon w = iter.next();
+            Unit w = iter.next();
             if ( w.needsRemoval() )
                 iter.remove();
             else
@@ -135,7 +135,7 @@ class BulletManager extends WeaponManager
 
     public void draw( Graphics g )
     {
-        for ( Weapon w : weapons )
+        for ( Unit w : weapons )
             w.draw( g );
 
     }
@@ -145,7 +145,7 @@ class BulletManager extends WeaponManager
         return "Bullets";
     }
 
-    public Weapon getWeapon( int x, int y, Color col )
+    public Unit getWeapon( int x, int y, Color col )
     {
         return new Bullet( this, x, y, 0, 0, 0, col );
     }

@@ -403,7 +403,7 @@ public class Ship implements GameElement, ShootingObject
 
             for ( WeaponManager wm : other.getManagers() )
             {
-                for ( Weapon m : wm.getWeapons() )
+                for ( WeaponManager.Unit m : wm.getWeapons() )
                 {
                     if ( Math.pow( (int) ( x - m.getX() ), 2 ) + Math.pow( (int) ( y - m.getY() ), 2 ) < 400 )
                     {

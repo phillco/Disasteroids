@@ -171,7 +171,7 @@ public class Station extends GameObject implements ShootingObject
             for ( WeaponManager wm : s.getManagers() )
             {
                 // Loop through the bullets.
-                for ( Weapon m : wm.getWeapons() )
+                for ( WeaponManager.Unit m : wm.getWeapons() )
                 {
                     // Were we hit by a bullet?
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
@@ -350,7 +350,7 @@ public class Station extends GameObject implements ShootingObject
         if ( disableCounter <= 0 )
             disableCounter = 290;
 
-        for ( Weapon w : manager.getWeapons() )
+        for ( WeaponManager.Unit w : manager.getWeapons() )
             w.explode();
 
         Sound.playInternal( SoundLibrary.STATION_DIE );

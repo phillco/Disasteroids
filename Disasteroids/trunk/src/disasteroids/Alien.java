@@ -122,7 +122,7 @@ public class Alien extends GameObject implements ShootingObject
             for ( WeaponManager wm : s.getManagers() )
             {
                 // Loop through the bullets.
-                for ( Weapon m : wm.getWeapons() )
+                for ( WeaponManager.Unit m : wm.getWeapons() )
                 {
                     // Were we hit by a bullet?
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&

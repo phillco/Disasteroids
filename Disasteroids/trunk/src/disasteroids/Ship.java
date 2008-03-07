@@ -9,6 +9,7 @@ import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
 import disasteroids.networking.Server;
 import disasteroids.sound.Sound;
+import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -536,7 +537,7 @@ public class Ship implements GameElement, ShootingObject
         setInvincibilityCount(
                 300 );
         if ( Settings.soundOn )
-            Sound.playInternal( Sound.SHIP_LOSE_LIFE_SOUND );
+            Sound.playInternal( SoundLibrary.SHIP_DIE );
 
         // Bounce.
         dx *=

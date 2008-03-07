@@ -8,10 +8,10 @@ import disasteroids.gui.Particle;
 import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
 import disasteroids.gui.ParticleManager;
+import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -147,7 +147,7 @@ public class Station extends GameObject implements ShootingObject
             if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI )  < SWEEP_SPEED * 6  && !closestShip.cannotDie() )
             {
                 if ( manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
-                    Sound.playInternal( Sound.STATION_SHOOT_SOUND );  // Play a custom sound.
+                    Sound.playInternal( SoundLibrary.STATION_SHOOT );  // Play a custom sound.
             }
         }
         else
@@ -353,7 +353,7 @@ public class Station extends GameObject implements ShootingObject
         for ( Weapon w : manager.getWeapons() )
             w.explode();
 
-        Sound.playInternal( Sound.ASTEROID_DIE_SOUND );
+        Sound.playInternal( SoundLibrary.STATION_DIE );
     }
 
     /**

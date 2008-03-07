@@ -6,12 +6,12 @@ package disasteroids.gui;
 
 import disasteroids.Game;
 import disasteroids.GameObject;
-import disasteroids.LinearGameplay;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
 import disasteroids.networking.Client;
 import disasteroids.sound.Sound;
+import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -449,7 +449,7 @@ public class AsteroidsPanel extends Panel
         shouldEnd = false;
         g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
         if ( Settings.soundOn )
-            Sound.playInternal( Sound.GAME_OVER_SOUND );
+            Sound.playInternal( SoundLibrary.GAME_OVER );
         for ( float sat = 0; sat <= 1; sat += .005 )
         {
             g.setColor( Color.getHSBColor( sat, sat, sat ) );

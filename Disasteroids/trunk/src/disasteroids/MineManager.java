@@ -5,7 +5,9 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
+import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Iterator;
@@ -137,7 +139,7 @@ public class MineManager implements WeaponManager
     {
         if ( timeTillNextBerserk > 0 )
             return;
-        Sound.playInternal( Sound.BERSERK_SOUND );
+        Sound.playInternal( SoundLibrary.MINE_ARM );
         berserkAngleOffset += .5;
         int temp = timeTillNextShot;
         timeTillNextShot = 0;
@@ -163,13 +165,13 @@ public class MineManager implements WeaponManager
         g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
     }
 
-    public byte[] getShootSound()
+    public SoundClip getShootSound()
     {
-        return Sound.MINE_ARM_SOUND;
+        return SoundLibrary.MINE_ARM;
     }
 
-    public byte[] getBerserkSound()
+    public SoundClip getBerserkSound()
     {
-        return Sound.BERSERK_SOUND;
+        return SoundLibrary.MINE_ARM;
     }
 }

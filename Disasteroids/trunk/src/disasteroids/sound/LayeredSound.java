@@ -22,7 +22,7 @@ public class LayeredSound {
      * All of the sounds waiting to be played
      * @since January 13, 2007
      */
-    private ConcurrentLinkedQueue<Sound> theSounds;
+    private ConcurrentLinkedQueue<SoundClip> theSounds;
     
     /**
      * The one instance of this class to be used in all cases
@@ -38,7 +38,7 @@ public class LayeredSound {
     {
         if( instance == null )
             instance=this;
-        theSounds=new ConcurrentLinkedQueue<LayeredSound.Sound>();
+        theSounds=new ConcurrentLinkedQueue<LayeredSound.SoundClip>();
     }
     
     /**
@@ -51,7 +51,7 @@ public class LayeredSound {
      * @param s The sound to be played
      * @since January 13, 2007
      */
-    public void add(Sound s)
+    public void add(SoundClip s)
     {
         theSounds.add(s);
         if(theSounds.size()==1)
@@ -75,7 +75,7 @@ public class LayeredSound {
             {
                 //get 1 second of sound prepared
                 byte[] buffer=new byte[8000];
-                for(Sound s: theSounds)
+                for(SoundClip s: theSounds)
                     for(int index=0; index<8000; index++)
                         buffer[index]+=s.getValue()/(Math.max(theSounds.size(),1));
                 sdl.write(buffer, 0, 8000);
@@ -95,7 +95,7 @@ public class LayeredSound {
      * @param s The sound to be removed
      * @since January 13, 2008
      */
-    public void remove(Sound s)
+    public void remove(SoundClip s)
     {
         theSounds.remove(s);
     }
@@ -115,7 +115,7 @@ public class LayeredSound {
      * Internal class to hold and manipulate a large array of bytes (sorry for 
      * same name as Sound.java, will change when I think of a better one)
      */
-    public static class Sound
+    public static class SoundClip
     {
         /**
          * The data being stored
@@ -141,9 +141,16 @@ public class LayeredSound {
          * @param vals The data to be stored
          * @since January 13, 2008
          */
-        public Sound(byte[] vals)
+        public SoundClip(byte[] vals)
         {
             this.vals=vals;
+            index=0;
+            isDone=false;
+        }
+        
+        public SoundClip(SoundClip s)
+        {
+            this.vals=s.vals;
             index=0;
             isDone=false;
         }

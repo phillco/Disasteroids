@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.sound.Sound;
+import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
@@ -227,7 +228,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
                     // Were we hit by a missile?
                     if ( Math.pow( getX() - m.getX(), 2 ) + Math.pow( getY() - m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )
                     {
-                        Sound.playInternal( Sound.ASTEROID_DIE_SOUND );
+                        Sound.playInternal( SoundLibrary.ASTEROID_DIE );
 
                         m.explode();
                         life = Math.max( 0, life - m.getDamage() );

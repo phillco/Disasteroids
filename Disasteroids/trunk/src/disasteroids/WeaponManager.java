@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.sound.LayeredSound.SoundClip;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -90,12 +91,12 @@ public interface WeaponManager extends GameElement
      * 
      * @since January 11, 2008
      */
-    public byte[] getShootSound();
+    public SoundClip getShootSound();
 
     /**
      * Returns the sound to play when the berserk is activated.
      * 
      * @since January 11, 2008
      */
-    public byte[] getBerserkSound();
+    public SoundClip getBerserkSound();
 }

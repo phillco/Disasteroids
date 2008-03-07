@@ -5,7 +5,9 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
+import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Iterator;
@@ -440,13 +442,13 @@ public class MissileManager implements WeaponManager
         g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
     }
 
-    public byte[] getShootSound()
+    public SoundClip getShootSound()
     {
-        return Sound.SHIP_SHOOT_SOUND;
+        return SoundLibrary.MISSILE_SHOOT;
     }
 
-    public byte[] getBerserkSound()
+    public SoundClip getBerserkSound()
     {
-        return Sound.BERSERK_SOUND;
+        return SoundLibrary.BERSERK;
     }
 }

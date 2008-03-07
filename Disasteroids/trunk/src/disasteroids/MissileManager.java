@@ -4,13 +4,11 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
 import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -18,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andy Kooiman
  * @since Classic
  */
-public class MissileManager implements WeaponManager
+public class MissileManager extends WeaponManager
 {
     /**
      * The time between each shot
@@ -56,11 +54,6 @@ public class MissileManager implements WeaponManager
      */
     private int popQuantity = 5;
 
-    /**
-     * The list of currently valid <code>Missile</code>s.
-     * @since Classic
-     */
-    private ConcurrentLinkedQueue<Weapon> theMissiles = new ConcurrentLinkedQueue<Weapon>();
 
     /**
      * The number of timesteps for which the <code>Missile</code>s will live before
@@ -68,41 +61,17 @@ public class MissileManager implements WeaponManager
      */
     private int life = 300;
 
-    private int timeTillNextShot = 0;
-
-    private int timeTillNextBerserk;
 
     private int maxShots = 10;
 
     public MissileManager()
     {
-        theMissiles = new ConcurrentLinkedQueue<Weapon>();
+        weapons = new ConcurrentLinkedQueue<Weapon>();
     }
 
     public MissileManager( ConcurrentLinkedQueue<Weapon> start )
     {
-        theMissiles = start;
-    }
-
-    /**
-     * Gets all currently valid <code>Missile</code>s.
-     * @return All currently valid <code>Missile</code>s.
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    public ConcurrentLinkedQueue<Weapon> getWeapons()
-    {
-        return theMissiles;
-    }
-
-    public void act( boolean active )
-    {
-        act();
-        if ( active )
-        {
-            timeTillNextShot--;
-            timeTillNextBerserk--;
-        }
+        weapons = start;
     }
 
     /**
@@ -112,6 +81,7 @@ public class MissileManager implements WeaponManager
      */
     public void act()
     {
+        super.act(true);/*
         Iterator<Weapon> iter = theMissiles.iterator();
         while ( iter.hasNext() )
         {
@@ -120,7 +90,7 @@ public class MissileManager implements WeaponManager
                 iter.remove();
             else
                 w.act();
-        }
+        }*/
     }
 
     /**
@@ -128,11 +98,12 @@ public class MissileManager implements WeaponManager
      * @author Andy Kooiman
      * @since Classic
      */
+    @Override
     public void explodeAll()
     {
         int probPopTemp = probPop;
         probPop = Integer.MAX_VALUE;
-        for ( Weapon w : theMissiles )
+        for ( Weapon w : weapons )
             w.explode();
         probPop = probPopTemp;
     }
@@ -156,29 +127,14 @@ public class MissileManager implements WeaponManager
 
     public boolean add( Weapon a, boolean playShootSound )
     {
-        if ( theMissiles.size() > 100 || timeTillNextShot > 0 )
+        if ( weapons.size() > 100 || timeTillNextShot > 0 )
             return false;
         timeTillNextShot = getIntervalShoot();
 
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 
-        return theMissiles.add( a );
-    }
-
-    /**
-     * Adds all elements of a <code>LinkedList</code> to this <code>MissileManager</code>.
-     * These elements need not be <code>Missile</code>s, and will be removed from their
-     * current location by this method.
-     * 
-     * @param others The <code>LinkedList</code> of <code>Weapon</code>s to be added
-     */
-    public void add( ConcurrentLinkedQueue<Weapon> others )
-    {
-        for ( Weapon w : others )
-            theMissiles.add( w );
-
-        others.clear();
+        return weapons.add( a );
     }
 
     /**
@@ -257,27 +213,6 @@ public class MissileManager implements WeaponManager
     public void setPopQuantity( int newQuantity )
     {
         popQuantity = newQuantity;
-    }
-
-    /**
-     * Removes all Missiles from this manager.
-     * @author Andy Kooiman.
-     * @since Classic
-     */
-    public void clear()
-    {
-        theMissiles = new ConcurrentLinkedQueue<Weapon>();
-    }
-
-    /**
-     * Gets the number of currently valid <code>Missile</code>s in this manager.
-     * @return The number of <code>Missile</code>s.
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    public int getNumLiving()
-    {
-        return theMissiles.size();
     }
 
     /**
@@ -405,7 +340,7 @@ public class MissileManager implements WeaponManager
 
     public void draw( Graphics g )
     {
-        for ( Weapon w : theMissiles )
+        for ( Weapon w : weapons )
             w.draw( g );
     }
 
@@ -421,26 +356,20 @@ public class MissileManager implements WeaponManager
 
     public void berserk( Ship s )
     {
-        if ( timeTillNextBerserk > 0 || theMissiles.size() > maxShots )
+        if ( timeTillNextBerserk > 0 || weapons.size() > maxShots )
             return;
         Sound.playInternal( getBerserkSound() );
         for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
-            theMissiles.add( new Missile( this, s.getX(), s.getY(), ang, s.getDx(), s.getDy(), s.getColor() ) );
+            weapons.add( new Missile( this, s.getX(), s.getY(), ang, s.getDx(), s.getDy(), s.getColor() ) );
         timeTillNextBerserk = 100;
     }
 
+    @Override
     public boolean canShoot()
     {
-        return !( theMissiles.size() > 100 || timeTillNextShot > 0 );
+        return super.canShoot()&& weapons.size() < 100;
     }
 
-    public void drawTimer( Graphics g, Color c )
-    {
-        g.setColor( theMissiles.size() < maxShots ? c : c.darker().darker() );
-        g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
-        int width = ( 100 - Math.max( timeTillNextBerserk, 0 ) );
-        g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
-    }
 
     public SoundClip getShootSound()
     {

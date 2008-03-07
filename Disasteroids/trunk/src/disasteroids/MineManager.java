@@ -4,48 +4,35 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
 import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A weapon that lays dangerous <code>Mine</code>s.
  * @author Andy Kooiman
  */
-public class MineManager implements WeaponManager
+public class MineManager extends WeaponManager
 {
-    private ConcurrentLinkedQueue<Weapon> mines;
 
     private int maxShots = 20;
 
     private double berserkAngleOffset = 0;
 
-    private int timeTillNextBerserk = 0;
-
-    private int timeTillNextShot = 0;
 
     public MineManager()
     {
-        mines = new ConcurrentLinkedQueue<Weapon>();
+        weapons = new ConcurrentLinkedQueue<Weapon>();
     }
 
-    public void act( boolean active )
-    {
-        act();
-        if ( active )
-        {
-            timeTillNextShot--;
-            timeTillNextBerserk--;
-        }
-    }
+
 
     public void act()
     {
+        super.act(true);/*
         Iterator<Weapon> itr = mines.iterator();
         while ( itr.hasNext() )
         {
@@ -56,23 +43,7 @@ public class MineManager implements WeaponManager
                 w.act();
 
         }
-    }
-
-    public void add( ConcurrentLinkedQueue<Weapon> weapons )
-    {
-        while ( !weapons.isEmpty() )
-            mines.add( weapons.remove() );
-    }
-
-    public void clear()
-    {
-        mines = new ConcurrentLinkedQueue<Weapon>();
-    }
-
-    public void explodeAll()
-    {
-        for ( Weapon w : mines )
-            w.explode();
+        */
     }
 
     public int getIntervalShoot()
@@ -82,24 +53,14 @@ public class MineManager implements WeaponManager
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( mines.size() > maxShots || timeTillNextShot > 0 )
+        if ( weapons.size() > maxShots || timeTillNextShot > 0 )
             return false;
         timeTillNextShot = getIntervalShoot();
 
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 
-        return mines.add( new Mine( x, y, col ) );
-    }
-
-    public int getNumLiving()
-    {
-        return mines.size();
-    }
-
-    public ConcurrentLinkedQueue<Weapon> getWeapons()
-    {
-        return mines;
+        return weapons.add( new Mine( x, y, col, this ) );
     }
 
     public void restoreBonusValues()
@@ -119,7 +80,7 @@ public class MineManager implements WeaponManager
 
     public void draw( Graphics g )
     {
-        for ( Weapon w : mines )
+        for ( Weapon w : weapons )
             w.draw( g );
     }
 
@@ -130,7 +91,7 @@ public class MineManager implements WeaponManager
 
     public Weapon getWeapon( int x, int y, Color col )
     {
-        Mine m = new Mine( x, y, col );
+        Mine m = new Mine( x, y, col, this);
         m.setLife( 500 );
         return m;
     }
@@ -152,18 +113,13 @@ public class MineManager implements WeaponManager
         timeTillNextBerserk = 200;
     }
 
+    @Override
     public boolean canShoot()
     {
-        return !( mines.size() > maxShots || timeTillNextShot > 0 );
+        return super.canShoot()&& weapons.size() < maxShots;
     }
 
-    public void drawTimer( Graphics g, Color c )
-    {
-        g.setColor( mines.size() < maxShots ? c : c.darker().darker() );
-        g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
-        int width = ( 200 - Math.max( timeTillNextBerserk, 0 ) ) / 2;
-        g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
-    }
+
 
     public SoundClip getShootSound()
     {

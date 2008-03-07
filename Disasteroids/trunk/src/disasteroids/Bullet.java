@@ -26,8 +26,6 @@ class Bullet implements Weapon, GameElement
 
     private int age = 0;
 
-    private int damage = 10;
-
     public Bullet( BulletManager env, int x, int y, double angle, double dx, double dy, Color col )
     {
         this.x = x;
@@ -55,11 +53,13 @@ class Bullet implements Weapon, GameElement
 
     public void explode()
     {
-        needsRemoval = true;
+        env.remove(this);
     }
 
     public boolean needsRemoval()
     {
+        if(needsRemoval)
+            env.remove(this);
         return needsRemoval;
     }
 
@@ -67,7 +67,10 @@ class Bullet implements Weapon, GameElement
     {
         age++;
         if ( age > 50 )
+        {
             needsRemoval = true;
+            env.remove(this);
+        }
         move();
         checkWrap();
     }

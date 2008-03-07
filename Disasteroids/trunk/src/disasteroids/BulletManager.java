@@ -4,22 +4,19 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
 import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A weapon manager that rapidly fires weak bullets.
  * @author Andy Kooiman
  */
-class BulletManager implements WeaponManager
+class BulletManager extends WeaponManager
 {
-    private ConcurrentLinkedQueue<Weapon> theBullets;
 
     private int speed = 20;
 
@@ -33,33 +30,20 @@ class BulletManager implements WeaponManager
 
     private int damage = 10;
 
-    private int timeTillNextShot = 0;
-
-    private int timeTillNextBerserk = 0;
-
     public BulletManager()
     {
-        theBullets = new ConcurrentLinkedQueue<Weapon>();
+        weapons = new ConcurrentLinkedQueue<Weapon>();
     }
 
     public BulletManager( ConcurrentLinkedQueue<Weapon> start )
     {
-        theBullets = start;
-    }
-
-    public void act( boolean active )
-    {
-        act();
-        if ( active )
-        {
-            timeTillNextShot--;
-            timeTillNextBerserk--;
-        }
+        weapons = start;
     }
 
     public void act()
     {
-        Iterator<Weapon> iter = theBullets.iterator();
+        super.act(true);
+        /*Iterator<Weapon> iter = theBullets.iterator();
         while ( iter.hasNext() )
         {
             Weapon w = iter.next();
@@ -67,64 +51,30 @@ class BulletManager implements WeaponManager
                 iter.remove();
             else
                 w.act();
-        }
+        }*/
     }
 
-    public void clear()
-    {
-        theBullets = new ConcurrentLinkedQueue<Weapon>();
-    }
-
-    public void explodeAll()
-    {
-        for ( Weapon w : theBullets )
-            w.explode();
-    }
-
-    public int getIntervalShoot()
+  
+      public int getIntervalShoot()
     {
         return intervalShoot;
     }
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( theBullets.size() > 500 || timeTillNextShot > 0 )
+        if ( weapons.size() > 500 || timeTillNextShot > 0 )
             return false;
         if ( threeWayShot )
         {
-            theBullets.add( new Bullet( this, x, y, angle + Math.PI / 8, dx, dy, col ) );
-            theBullets.add( new Bullet( this, x, y, angle - Math.PI / 8, dx, dy, col ) );
+            weapons.add( new Bullet( this, x, y, angle + Math.PI / 8, dx, dy, col ) );
+            weapons.add( new Bullet( this, x, y, angle - Math.PI / 8, dx, dy, col ) );
         }
         timeTillNextShot = intervalShoot;
 
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 
-        return theBullets.add( new Bullet( this, x, y, angle, dx, dy, col ) );
-    }
-
-    /**
-     * Adds all elements of a <code>ConcurrentLinkedQueue</code> to this <code>MissileManager</code>.
-     * These elements need not be <code>Missile</code>s, and will be removed from their
-     * current location by this method.
-     * 
-     * @param others The <code>ConcurrentLinkedQueue</code> of <code>Weapon</code>s to be added
-     * @since December 17, 2007
-     */
-    public void add( ConcurrentLinkedQueue<Weapon> others )
-    {
-        while ( !others.isEmpty() )
-            theBullets.add( others.remove() );
-    }
-
-    public int getNumLiving()
-    {
-        return theBullets.size();
-    }
-
-    public ConcurrentLinkedQueue<Weapon> getWeapons()
-    {
-        return theBullets;
+        return weapons.add( new Bullet( this, x, y, angle, dx, dy, col ) );
     }
 
     public void restoreBonusValues()
@@ -185,7 +135,7 @@ class BulletManager implements WeaponManager
 
     public void draw( Graphics g )
     {
-        for ( Weapon w : theBullets )
+        for ( Weapon w : weapons )
             w.draw( g );
 
     }
@@ -216,18 +166,12 @@ class BulletManager implements WeaponManager
         timeTillNextBerserk = 50;
     }
 
+    @Override
     public boolean canShoot()
     {
-        return !( theBullets.size() > 500 || timeTillNextShot > 0 );
+        return super.canShoot()&& weapons.size() < 500 ;
     }
 
-    public void drawTimer( Graphics g, Color c )
-    {
-        g.setColor( theBullets.size() < maxShots ? c : c.darker().darker() );
-        g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
-        int width = ( 50 - Math.max( timeTillNextBerserk, 0 ) ) * 2;
-        g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
-    }
 
     public SoundClip getShootSound()
     {

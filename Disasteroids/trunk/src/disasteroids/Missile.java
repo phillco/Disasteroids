@@ -276,6 +276,7 @@ public class Missile extends GameObject implements Weapon, GameElement
                 break;
             default:
                 needsRemoval = true;
+                manager.remove(this);
         }
     }
 

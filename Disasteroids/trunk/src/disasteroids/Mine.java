@@ -43,6 +43,8 @@ public class Mine implements Weapon
      * Whether this <code>Mine</code> needs removing.
      */
     private boolean needsRemoval;
+    
+    private WeaponManager env;
 
     /**
      * Creates a new <code>Minde</code>
@@ -52,7 +54,7 @@ public class Mine implements Weapon
      * @param col The <code>Color</code> of the outside ring.
      * @author Andy Kooiman
      */
-    Mine( int x, int y, Color col )
+    Mine( int x, int y, Color col, WeaponManager env )
     {
         this.x = x;
         this.y = y;
@@ -60,6 +62,7 @@ public class Mine implements Weapon
         this.needsRemoval = false;
         this.color = col;
         life = 10000;
+        this.env=env;
     }
 
     /**
@@ -124,6 +127,8 @@ public class Mine implements Weapon
      */
     public boolean needsRemoval()
     {
+        if(needsRemoval)
+            env.remove(this);
         return needsRemoval;
     }
 
@@ -135,7 +140,10 @@ public class Mine implements Weapon
     {
         life -= 2;
         if ( life <= 0 )
+        {
             needsRemoval = true;
+            env.remove(this);
+        }
     }
 
     /**

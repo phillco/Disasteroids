@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.gui.AsteroidsFrame;
 import disasteroids.sound.LayeredSound.SoundClip;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -13,9 +14,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Interface for a Ship's weapon.
  * @author Andy Kooiman
  */
-public interface WeaponManager extends GameElement
+public abstract class WeaponManager implements GameElement
 {
-    public void add( ConcurrentLinkedQueue<Weapon> weapons );
+    protected ConcurrentLinkedQueue<Weapon> weapons;
+    
+    protected int timeTillNextBerserk = 0;
+
+    protected int timeTillNextShot = 0;
+    
+    public void add( ConcurrentLinkedQueue<Weapon> weap )
+    {
+        while(!weap.isEmpty())
+            weapons.add(weap.remove());
+    }
 
     /**
      * Returns whether we've finished reloading.
@@ -23,9 +34,15 @@ public interface WeaponManager extends GameElement
      * @return  if this <code>WeaponManager</code> can shoot
      * @since January 10, 2008
      */
-    public boolean canShoot();
+    public boolean canShoot()
+    {
+        return timeTillNextShot<=0;
+    }
 
-    public void clear();
+    public void clear()
+    {
+        weapons.clear();
+    }
 
     /**
      * Executes one timestep, but only steps the timer if it is active.
@@ -33,23 +50,48 @@ public interface WeaponManager extends GameElement
      * @param active    if <code>this</code> is the current <code>WeaponManager</code> of its parent ship
      * @since January 10, 2008
      */
-    public void act( boolean active );
+    public void act( boolean active )
+    {
+        for(Weapon w: weapons)
+            w.act();
+        if(active)
+        {
+            timeTillNextShot--;
+            timeTillNextBerserk--;
+        }
+    }
 
-    public void explodeAll();
+    public void explodeAll()
+    {
+        for(Weapon w: weapons)
+            w.explode();
+    }
+            
 
-    public int getIntervalShoot();
+    public abstract int getIntervalShoot();
 
-    public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound );
+    public abstract boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound );
+    
+    public void remove(Weapon w)
+    {
+        weapons.remove(w);
+    }
 
-    public int getNumLiving();
+    public int getNumLiving()
+    {
+        return weapons.size();
+    }
 
-    public ConcurrentLinkedQueue<Weapon> getWeapons();
+    public ConcurrentLinkedQueue<Weapon> getWeapons()
+    {
+        return weapons;
+    }
 
-    public void restoreBonusValues();
+    public abstract void restoreBonusValues();
 
-    public String ApplyBonus( int key );
+    public abstract String ApplyBonus( int key );
 
-    public int getMaxShots();
+    public abstract int getMaxShots();
 
     /**
      * Returns the name of the <code>Weapon</code>.
@@ -58,7 +100,7 @@ public interface WeaponManager extends GameElement
      * @since December 25, 2007
      * @return  plural name of the <code>Weapon</code>
      */
-    public String getWeaponName();
+    public abstract String getWeaponName();
 
     /**
      * Gets a new instance of the type of <code>Weapon</code>s held
@@ -68,7 +110,7 @@ public interface WeaponManager extends GameElement
      * @return A new instance of the type of <code>Weapon</code> stored
      * @since December 30, 2007
      */
-    public Weapon getWeapon( int x, int y, Color col );
+    public abstract Weapon getWeapon( int x, int y, Color col );
 
     /**
      * Executes a powerful blast of this <code>Weapon</code> type
@@ -76,7 +118,7 @@ public interface WeaponManager extends GameElement
      * @since January 7, 2008
      * @param s the <code>Ship</code> which is shooting
      */
-    public void berserk( Ship s );
+    public abstract void berserk( Ship s );
 
     /**
      * Draws a timer for how long until the next Berserk
@@ -84,19 +126,25 @@ public interface WeaponManager extends GameElement
      * @param g The context in which to draw
      * @param c The color of the ship calling
      */
-    public void drawTimer( Graphics g, Color c );
+    public void drawTimer( Graphics g, Color c )
+    {
+        g.setColor( weapons.size() < getMaxShots() ? c : c.darker().darker() );
+        g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
+        int width = ( 200 - Math.max( timeTillNextBerserk, 0 ) ) / 2;
+        g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
+    }
 
     /**
      * Returns the sound to play when the weapon is fired.
      * 
      * @since January 11, 2008
      */
-    public SoundClip getShootSound();
+    public abstract SoundClip getShootSound();
 
     /**
      * Returns the sound to play when the berserk is activated.
      * 
      * @since January 11, 2008
      */
-    public SoundClip getBerserkSound();
+    public abstract SoundClip getBerserkSound();
 }

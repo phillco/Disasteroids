@@ -120,10 +120,9 @@ public class SoundLibrary
     //:)
     private static SoundClip gameOver()
     {
-        Tone[] temp = new Tone[11];
-        int idx = 0;
-        for ( float i = 0; i <= 1; i += .1 )
-            temp[idx++] = new Tone( (int) ( 220 - 70 * i ), 25 );
-        return new SoundClip( Tone.toByteArray( temp ) );
+        byte[] temp = new byte[28000];
+        for ( int index = 0; index < 28000; index++ )
+            temp[index] = (byte) ( Math.tan( 880f * Math.pow( index, .85 ) / 4000.0 * 6.28 ) * 127 * 28000 / ( 28100 - index ) );
+        return new SoundClip( temp );
     }
 }

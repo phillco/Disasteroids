@@ -5,6 +5,7 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
 import disasteroids.networking.Server;
@@ -18,7 +19,6 @@ import java.awt.Polygon;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -143,6 +143,12 @@ public class Ship implements GameElement, ShootingObject
      */
     private double particleRateBackward = 0.0;
 
+    /**
+     * Timer for the endgame sequence.
+     * @since March 8, 2008
+     */
+    private int explosionTime = 0;
+
     public Ship( int x, int y, Color c, int lives, String name )
     {
         this.x = x;
@@ -218,14 +224,14 @@ public class Ship implements GameElement, ShootingObject
     {
         for ( WeaponManager wm : allWeapons )
             wm.draw( g );
+
+        if ( livesLeft < 0 )
+            return;
+
         allWeapons[weaponIndex].drawTimer( g, myColor );
 
         // Set our color.
-        Color col;
-        if ( cannotDie() )
-            col = myInvicibleColor;
-        else
-            col = myColor;
+        Color col = ( cannotDie() ? myInvicibleColor : myColor );
 
         double centerX, centerY;
 
@@ -315,23 +321,46 @@ public class Ship implements GameElement, ShootingObject
 
     public void act()
     {
-        if ( forward )
+        if ( livesLeft >= 0 )
         {
-            dx += Math.cos( angle ) / SENSITIVITY * 2;
-            dy -= Math.sin( angle ) / SENSITIVITY * 2;
+            if ( forward )
+            {
+                dx += Math.cos( angle ) / SENSITIVITY * 2;
+                dy -= Math.sin( angle ) / SENSITIVITY * 2;
+            }
+            if ( backwards )
+            {
+                dx -= Math.cos( angle ) / SENSITIVITY * 2;
+                dy += Math.sin( angle ) / SENSITIVITY * 2;
+            }
+            if ( left )
+                angle += Math.PI / SENSITIVITY / 2;
+            if ( right )
+                angle -= Math.PI / SENSITIVITY / 2;
+            if ( shooting && canShoot() )
+                shoot();
+            invincibilityCount--;
+            checkCollision();
+            generateParticles();
+            move();
         }
-        if ( backwards )
+        else
         {
-            dx -= Math.cos( angle ) / SENSITIVITY * 2;
-            dy += Math.sin( angle ) / SENSITIVITY * 2;
-        }
-        if ( left )
-            angle += Math.PI / SENSITIVITY / 2;
-        if ( right )
-            angle -= Math.PI / SENSITIVITY / 2;
-        if ( shooting && canShoot() )
-            shoot();
+            explosionTime--;
 
+            // Create particles.
+            for ( int i = 0; i < explosionTime / 12; i++ )
+            {
+                ParticleManager.addParticle( new Particle(
+                                             x + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             y + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             RandomGenerator.get().nextInt( 4 ) + 3,
+                                             RandomGenerator.get().nextBoolean() ? myColor : myInvicibleColor,
+                                             RandomGenerator.get().nextDouble() * 6,
+                                             RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                             25 + explosionTime / 10, 10 ) );
+            }
+        }
         for ( WeaponManager wm : allWeapons )
         {
             if ( wm == this.allWeapons[weaponIndex] )
@@ -340,13 +369,9 @@ public class Ship implements GameElement, ShootingObject
                 wm.act( false );
         }
 
-        if ( livesLeft < 0 )
-            return;
-        invincibilityCount--;
-        move();
+
         checkBounce();
-        checkCollision();
-        generateParticles();
+
     }
 
     public void fullRight()
@@ -533,30 +558,51 @@ public class Ship implements GameElement, ShootingObject
             return false;
 
         livesLeft--;
+        if ( livesLeft >= 0 )
+        {
+            setInvincibilityCount( 300 );
+            if ( Settings.soundOn )
+                Sound.playInternal( SoundLibrary.SHIP_DIE );
 
-        setInvincibilityCount(
-                300 );
-        if ( Settings.soundOn )
-            Sound.playInternal( SoundLibrary.SHIP_DIE );
+            // Bounce.
+            dx *= -.3;
+            dy *= -.3;
 
-        // Bounce.
-        dx *=
-                -.3;
-        dy *=
-                -.3;
+            // Create particles.
+            for ( int i = 0; i < 80; i++ )
+            {
+                ParticleManager.addParticle( new Particle(
+                                             x + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             y + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             RandomGenerator.get().nextInt( 4 ) + 3,
+                                             myColor,
+                                             RandomGenerator.get().nextDouble() * 6,
+                                             RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                             30, 10 ) );
+            }
+        }
+        else
+        {
+            invincibilityCount = Integer.MAX_VALUE;
+            explosionTime = 230;
+            allStop();
 
-        // Create particles.
-        Random rand = RandomGenerator.get();
-        for ( int i = 0; i <
-                80; i++ )
-            ParticleManager.addParticle( new Particle(
-                                         x + rand.nextInt( 16 ) - 8 - RADIUS,
-                                         y + rand.nextInt( 16 ) - 8 - RADIUS,
-                                         rand.nextInt( 4 ) + 3,
-                                         myColor,
-                                         rand.nextDouble() * 6,
-                                         rand.nextDouble() * 2 * Math.PI,
-                                         30, 10 ) );
+            if ( Settings.soundOn && this == AsteroidsFrame.frame().localPlayer() )
+                Sound.playInternal( SoundLibrary.GAME_OVER );
+
+            // Create lots of particles.
+            for ( int i = 0; i < 500; i++ )
+            {
+                ParticleManager.addParticle( new Particle(
+                                             x + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             y + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             RandomGenerator.get().nextInt( 4 ) + 3,
+                                             myColor,
+                                             RandomGenerator.get().nextDouble() * 4,
+                                             RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                             60, 5 ) );
+            }
+        }
 
         // Print the obit.
         if ( obituary.length() > 0 )
@@ -837,4 +883,11 @@ public class Ship implements GameElement, ShootingObject
     {
         return Math.sqrt( getDx() * getDx() + getDy() * getDy() );
     }
+
+    public int getExplosionTime()
+    {
+        return explosionTime;
+    }
+    
+    
 }

@@ -114,22 +114,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
         panel.highScoreAchieved = false;
         panel.background.clearMessages();
         panel.notificationMessages.clear();
-        panel.shouldEnd = false;
 
         // Reset the background.
         panel.background.init();
     }
 
-    /**
-     * Indicates to <code>this</code> that the endgame should be shown on 
-     * the next painting cycle.
-     * 
-     * @since December 30, 2007
-     */
-    public void endGame()
-    {
-        panel.shouldEnd = true;
-    }
     /**
      * Called automatically by key listener when keys are released.
      * The keyCodes are made negative to show this.

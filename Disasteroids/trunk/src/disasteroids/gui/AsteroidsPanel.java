@@ -78,13 +78,7 @@ public class AsteroidsPanel extends Panel
      */
     boolean showWarpDialog;
 
-    /**
-     * Whether the endgame should be shown on next paint cycle.
-     * @since December 30, 2007
-     */
-    boolean shouldEnd;
-
-    /**
+    /*
      * Whether to show localPlayer's coordinates.
      * @since January 18, 2008
      */
@@ -156,10 +150,7 @@ public class AsteroidsPanel extends Panel
         // Update the ships.
         for ( Ship s : Game.getInstance().players )
             s.draw( g );
-
-        if ( shouldEnd )
-            endGame( g );
-
+        
         // Draw the on-screen HUD.
         drawHud( g );
 
@@ -257,6 +248,17 @@ public class AsteroidsPanel extends Panel
 
         // Draw game mode status.
         Game.getInstance().getGameMode().draw( g );
+
+        if ( parent.localPlayer().livesLeft() < 0 )
+        {
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
+            g2d.setColor( parent.localPlayer().getColor() );
+            text = "GAME OVER!";
+            x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+            y = (int) ( getHeight() / 2 - g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() ) - 32;
+            g2d.drawString( text, x, y );
+            return;
+        }
 
         // Draw the score counter.
         g2d.setColor( Color.gray );
@@ -436,64 +438,6 @@ public class AsteroidsPanel extends Panel
             x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
             g2d.drawString( text, x, y );
         }
-    }
-
-    /**
-     * Displays the end game messages.
-     * @param g the <code>Graphics</code> context of the screen
-     * 
-     * @since Classic
-     */
-    private void endGame( Graphics g )
-    {
-        shouldEnd = false;
-        g.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
-        if ( Settings.soundOn )
-            Sound.playInternal( SoundLibrary.GAME_OVER );
-        for ( float sat = 0; sat <= 1; sat += .005 )
-        {
-            g.setColor( Color.getHSBColor( sat, sat, sat ) );
-            g.drawString( "Game Over", 250, 400 );
-        }
-        this.setIgnoreRepaint( true );
-
-        // Find the player with the highest score.
-        Ship highestScorer = Game.getInstance().players.getFirst();
-        for ( Ship s : Game.getInstance().players )
-            if ( s.getScore() > highestScorer.getScore() )
-                highestScorer = s;
-
-        String victoryMessage = ( Game.getInstance().players.size() > 1 ) ? highestScorer.getName() + " wins" : "You died";
-        victoryMessage += " with a score of " + AsteroidsFrame.insertThousandCommas( highestScorer.getScore() ) + "!";
-
-        // Is this a new high score?
-        if ( highestScorer.getScore() > Settings.highScore )
-        {
-            victoryMessage += "\nThis is a new high score!";
-            Settings.highScoreName = highestScorer.getName();
-            Settings.highScore = highestScorer.getScore();
-        }
-
-        // Show the message box declaring victory!
-        JOptionPane.showMessageDialog( this, victoryMessage );
-
-        // Easter egg!
-        //        if ( highScore > 1000000 )
-        //        {
-        //            try
-        //            {
-        //                JOptionPane.showMessageDialog( null, "HOLY CRAP!!!! YOUR SCORE IS HIGH!!!\nI NEED HELP TO COMPUTE IT" );
-        //                Runtime.getRuntime().exec( "C:/Windows/system32/calc" );
-        //            }
-        //            catch ( Exception e )
-        //            {
-        //            }
-        //        }
-
-        Game.getInstance().newGame();
-        this.setIgnoreRepaint( false );
-        repaint();
-        shouldEnd = false;
     }
 
     /**

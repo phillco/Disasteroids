@@ -205,7 +205,7 @@ public class Game implements Serializable
      */
     public int addPlayer( String name )
     {
-        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 4, name );
+        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 1, name );
         players.add( s );
         shootingObjects.add( s );
         Running.log( s.getName() + " entered the game (id " + s.id + ")." );
@@ -236,17 +236,17 @@ public class Game implements Serializable
     {
         removePlayer( leavingPlayer, " left the game." );
     }
-    
+
     /**
      * Removes an object from the game.
      * 
      * @param o the object
      * @since March 2, 2008
      */
-    public void removeObject(GameObject o)
+    public void removeObject( GameObject o )
     {
-        gameObjects.remove(o);
-        shootingObjects.remove(o);
+        gameObjects.remove( o );
+        shootingObjects.remove( o );
     }
 
     /**
@@ -378,7 +378,7 @@ public class Game implements Serializable
     {
         // Update the game mode.
         gameMode.act();
-        
+
         // Execute game actions.
         timeStep++;
         actionManager.act( timeStep );
@@ -389,10 +389,10 @@ public class Game implements Serializable
         for ( Ship s : players )
         {
             s.act();
-            if ( s.livesLeft() < 0 )
+            if ( s.livesLeft() < 0 & s.getExplosionTime() < 0 && !Client.is() )
             {
-                AsteroidsFrame.frame().endGame();
-                break;
+                newGame();
+                return;
             }
         }
 
@@ -536,7 +536,7 @@ public class Game implements Serializable
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        gameMode.flatten(stream);
+        gameMode.flatten( stream );
         stream.writeLong( timeStep );
 
         stream.writeInt( players.size() );
@@ -558,7 +558,7 @@ public class Game implements Serializable
     {
         instance = this;
 
-        gameMode = new LinearGameplay(stream);
+        gameMode = new LinearGameplay( stream );
         this.timeStep = stream.readLong();
 
         players = new LinkedList<Ship>();
@@ -611,5 +611,5 @@ public class Game implements Serializable
     public GameMode getGameMode()
     {
         return gameMode;
-    }   
+    }
 }

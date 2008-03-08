@@ -39,30 +39,9 @@ public class WaveGameplay implements GameMode
             currentWave += 1;
             wavePoints = getWavePoints( currentWave );
         }
-        int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
-        int y = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
-        /*
-        // Choose a spawn spot.
-        switch ( RandomGenerator.get().nextInt( 3 ) )
-        {
-        case 0:
-        x = -250;
-        y = 300;
-        break;
-        case 1:
-        x = 600;
-        y = -100;
-        break;
-        case 2:
-        x = -900;
-        y = 600;
-        break;
-        case 3:
-        x = 50;
-        y = -400;
-        break;
-        }
-         */
+        int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 60 ) - 30;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+        int y = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 60 ) - 30;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+
         // Spawn an asteroid.
         if ( wavePoints >= 50 && RandomGenerator.get().nextInt( 20 ) == 0 )
         {
@@ -72,13 +51,13 @@ public class WaveGameplay implements GameMode
             if ( RandomGenerator.get().nextInt( 10 ) == 0 )
             {
                 Game.getInstance().asteroidManager().add(
-                        new BonusAsteroid( x, y, RandomGenerator.nextMidpointDouble() * x * -.002, RandomGenerator.nextMidpointDouble() * y * -.002,
+                        new BonusAsteroid( x, y, RandomGenerator.get().nextInt(6) - 3, RandomGenerator.get().nextInt(6) - 3,
                                            RandomGenerator.get().nextInt( 60 ) + 40, 15 ), true );
             }
             else
             {
                 Game.getInstance().asteroidManager().add(
-                        new Asteroid( x, y, RandomGenerator.nextMidpointDouble() * x * -.002, RandomGenerator.nextMidpointDouble() * y * -.002,
+                        new Asteroid( x, y, RandomGenerator.get().nextInt(6) - 3, RandomGenerator.get().nextInt(6) - 3,
                                       RandomGenerator.get().nextInt( 70 ) + 10, 15 ), true );
 
             }
@@ -88,7 +67,7 @@ public class WaveGameplay implements GameMode
         if ( wavePoints >= 100 && RandomGenerator.get().nextInt( 60 ) == 0 )
         {
             wavePoints -= 100;
-            Alien a = new Alien( x, y, RandomGenerator.nextMidpointDouble() * x * -.002, RandomGenerator.nextMidpointDouble() * y * -.002 );
+            Alien a = new Alien( x, y, RandomGenerator.get().nextInt(6) - 3, RandomGenerator.get().nextInt(6) - 3 );
             Game.getInstance().gameObjects.add( a );
             Game.getInstance().shootingObjects.add( a );
         }

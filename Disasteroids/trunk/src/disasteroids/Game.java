@@ -476,6 +476,12 @@ public class Game implements Serializable
             case 192:	// ~ activates berserk!
                 actor.berserk();
                 break;
+            case KeyEvent.VK_NUMPAD0:
+                actor.strafe( true );
+                break;
+            case KeyEvent.VK_CONTROL:
+                actor.strafe( false );
+                break;
             case KeyEvent.VK_HOME:
                 actor.getWeaponManager().explodeAll();
                 break;

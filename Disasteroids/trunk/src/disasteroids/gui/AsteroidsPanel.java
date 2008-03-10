@@ -11,7 +11,6 @@ import disasteroids.Settings;
 import disasteroids.Ship;
 import disasteroids.networking.Client;
 import disasteroids.sound.Sound;
-import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -22,7 +21,6 @@ import java.awt.RenderingHints;
 import java.awt.image.VolatileImage;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import javax.swing.JOptionPane;
 
 /**
  *

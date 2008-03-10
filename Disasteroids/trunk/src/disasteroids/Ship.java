@@ -149,6 +149,12 @@ public class Ship implements GameElement, ShootingObject
      */
     private int explosionTime = 0;
 
+    /**
+     * How much acceleration should occur due to strafing. Positive is to the ship's right.
+     * @since March 9, 2008
+     */
+    private double strafeSpeed = 0;
+
     public Ship( int x, int y, Color c, int lives, String name )
     {
         this.x = x;
@@ -510,6 +516,16 @@ public class Ship implements GameElement, ShootingObject
                 .996;
         dy *=
                 .996;
+
+        if ( Math.abs( strafeSpeed ) > 0 )
+        {
+            strafeSpeed *= 0.97;
+            x += Math.sin( angle ) * strafeSpeed;
+            y += Math.cos( angle ) * strafeSpeed;
+
+            if ( Math.abs( strafeSpeed ) <= 0.11 )
+                strafeSpeed = 0;
+        }
     }
 
     public int getX()
@@ -888,6 +904,28 @@ public class Ship implements GameElement, ShootingObject
     {
         return explosionTime;
     }
-    
-    
+
+    /**
+     * Starts strafing, if we can.
+     * 
+     * @param toRight   whether we should strafe right (true) or left (false)
+     * @since March 9, 2008
+     */
+    public void strafe( boolean toRight )
+    {
+        if ( Math.abs( strafeSpeed ) > 3 )
+            return;
+
+        strafeSpeed += ( toRight ? 1 : -1 ) * 7;
+
+        for ( int i = 0; i < 9; i++ )
+            ParticleManager.addParticle( new Particle(
+                                         x + RandomGenerator.get().nextInt( 8 ) - 4,
+                                         y + RandomGenerator.get().nextInt( 8 ) - 4,
+                                         RandomGenerator.get().nextInt( 4 ) + 3,
+                                         myColor,
+                                         RandomGenerator.get().nextDouble() * 4,
+                                         angle + RandomGenerator.get().nextDouble() * .8 - .2 + Math.PI,
+                                         35, 35 ) );
+    }
 }

@@ -67,6 +67,14 @@ public class Station extends GameObject implements ShootingObject
 
     final double SWEEP_SPEED = 0.05;
 
+    final int HITS_TO_KILL = 3;
+
+    /**
+     * How many missile hits we've taken. Reset after the disableCounter runs out.
+     * @since March 9, 2008
+     */
+    private int hitsWhileDisabled = 0;
+
     /**
      * Creates the station at the given position and random floating speed.
      * 
@@ -74,11 +82,11 @@ public class Station extends GameObject implements ShootingObject
      * @param y     y coordinate in game
      * @since January 6, 2008
      */
-    public Station( double x, double y )
+    public Station( double x, double y, double dx, double dy )
     {
         setLocation( x, y );
-        setDx( Math.random() * 2 - 1 );
-        setDy( Math.random() * 2 - 1 );
+        setDx( dx );
+        setDy( dy );
         angle = 0;
         manager = new MissileManager();
         manager.setPopQuantity( 0 );
@@ -97,6 +105,7 @@ public class Station extends GameObject implements ShootingObject
         manager.act( true );
 
         angle %= 2 * Math.PI; //Make sure the angle does not grow without bound
+
         // Easter egg.
         if ( easterEggCounter > 0 )
         {
@@ -116,6 +125,16 @@ public class Station extends GameObject implements ShootingObject
                                                        r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.gray : Color.darkGray,
                                                        r.nextInt( 3 ) + 1, r.nextDouble() * 1.4 + 0.5,
                                                        50, 30 ) );
+
+            for ( int i = 0; i < hitsWhileDisabled; i++ )
+                ParticleManager.addParticle( new Particle( getX() + r.nextInt( size ), centerY(),
+                                                           r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.red : Color.orange,
+                                                           r.nextInt( 3 ) + 1, r.nextDouble() * 1.4 + 0.5,
+                                                           50, 30 ) );
+
+
+            if ( disableCounter == 0 )
+                hitsWhileDisabled = 0;
             return;
         }
 
@@ -144,9 +163,9 @@ public class Station extends GameObject implements ShootingObject
             calculateAngle( closestShip );
 
             // Fire!
-            if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI )  < SWEEP_SPEED * 6  && !closestShip.cannotDie() )
+            if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI ) < SWEEP_SPEED * 6 && !closestShip.cannotDie() )
             {
-                if ( manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
+                if ( manager.canShoot() && manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
                     Sound.playInternal( SoundLibrary.STATION_SHOOT );  // Play a custom sound.
             }
         }
@@ -177,6 +196,16 @@ public class Station extends GameObject implements ShootingObject
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
                             ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
                     {
+                        if ( m instanceof Missile && disableCounter > 0 && !( (Missile) m ).isExploding() )
+                        {
+                            hitsWhileDisabled++;
+                            if ( hitsWhileDisabled > 3 )
+                            {
+                                destroy();
+                                return;
+                            }       
+                        }
+                        
                         m.explode();
                         disable();
                     }
@@ -186,7 +215,7 @@ public class Station extends GameObject implements ShootingObject
 
         if ( disableCounter > 0 )
             return;
-        
+
         // Check for ship collision.  
         for ( Ship s : Game.getInstance().players )
         {
@@ -196,7 +225,7 @@ public class Station extends GameObject implements ShootingObject
                 if ( ( s.getX() + Ship.RADIUS > getX() && s.getX() - Ship.RADIUS < getX() + size ) &&
                         ( s.getY() + Ship.RADIUS > getY() && s.getY() - Ship.RADIUS < getY() + size ) )
                 {
-                    if ( s.looseLife(s.getName() + " learns to steer.") )
+                    if ( s.looseLife( s.getName() + " learns to steer." ) )
                         return;
                 }
             }
@@ -352,6 +381,22 @@ public class Station extends GameObject implements ShootingObject
 
         for ( WeaponManager.Unit w : manager.getWeapons() )
             w.explode();
+
+        Sound.playInternal( SoundLibrary.STATION_DISABLED );
+    }
+
+    public void destroy()
+    {
+        Game.getInstance().removeObject( this );
+        Random r = RandomGenerator.get();
+        for ( int i = 0; i < 120; i++ )
+        {
+            ParticleManager.addParticle( new Particle( getX() + r.nextInt( size ), centerY(),
+                                                       r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.red : Color.orange,
+                                                       RandomGenerator.get().nextDouble() * 6,
+                                                       RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                                       30, 10 ) );
+        }
 
         Sound.playInternal( SoundLibrary.STATION_DIE );
     }

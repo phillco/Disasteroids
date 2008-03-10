@@ -11,7 +11,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.swing.JOptionPane;
 
 /**
@@ -51,13 +51,13 @@ public class WaveGameplay implements GameMode
             if ( RandomGenerator.get().nextInt( 10 ) == 0 )
             {
                 Game.getInstance().asteroidManager().add(
-                        new BonusAsteroid( x, y, RandomGenerator.get().nextInt(6) - 3, RandomGenerator.get().nextInt(6) - 3,
+                        new BonusAsteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
                                            RandomGenerator.get().nextInt( 60 ) + 40, 15 ), true );
             }
             else
             {
                 Game.getInstance().asteroidManager().add(
-                        new Asteroid( x, y, RandomGenerator.get().nextInt(6) - 3, RandomGenerator.get().nextInt(6) - 3,
+                        new Asteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
                                       RandomGenerator.get().nextInt( 70 ) + 10, 15 ), true );
 
             }
@@ -67,9 +67,18 @@ public class WaveGameplay implements GameMode
         if ( wavePoints >= 100 && RandomGenerator.get().nextInt( 60 ) == 0 )
         {
             wavePoints -= 100;
-            Alien a = new Alien( x, y, RandomGenerator.get().nextInt(6) - 3, RandomGenerator.get().nextInt(6) - 3 );
+            Alien a = new Alien( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3 );
             Game.getInstance().gameObjects.add( a );
             Game.getInstance().shootingObjects.add( a );
+        }
+
+        // Spawn a station.
+        if ( wavePoints >= 150 && RandomGenerator.get().nextInt( 90 ) == 0 )
+        {
+            wavePoints -= 150;
+            Station s = new Station( x, y, RandomGenerator.get().nextInt( 4 ) - 2, RandomGenerator.get().nextInt( 4 ) - 2 );
+            Game.getInstance().gameObjects.add( s );
+            Game.getInstance().shootingObjects.add( s );
         }
 
     }
@@ -121,7 +130,7 @@ public class WaveGameplay implements GameMode
             int newWave = Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the wave to start.", currentWave ) );
             Game.getInstance().asteroidManager().clear();
             Game.getInstance().gameObjects.clear();
-            Game.getInstance().shootingObjects = new LinkedList<ShootingObject>( Game.getInstance().players );
+            Game.getInstance().shootingObjects = new ConcurrentLinkedQueue<ShootingObject>( Game.getInstance().players );
             currentWave = newWave;
             wavePoints = getWavePoints( currentWave );
         }

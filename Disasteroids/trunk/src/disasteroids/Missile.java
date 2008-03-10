@@ -378,4 +378,11 @@ public class Missile extends WeaponManager.Unit
     {
         return manager;
     }
+
+    public boolean isExploding()
+    {
+        return isExploding;
+    }
+    
+    
 }

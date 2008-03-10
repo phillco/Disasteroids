@@ -17,14 +17,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ParticleManager implements Serializable
 {
     /**
-     * A list of all <code>Particle</code>s of all <code>Ship</code>s.
+     * A list of all current <code>Particle</code>s.
      * @since Classic
      */
     private static ConcurrentLinkedQueue<Particle> allParticles = new ConcurrentLinkedQueue<Particle>();
 
     /**
      * Adds the specified <code>Particle</code>.
-     * @param p The <code>Particle</code> to be added.
+     * 
+     * @param p the <code>Particle</code> to be added
      * @since Classic
      */
     public static void addParticle( Particle p )
@@ -32,6 +33,11 @@ public class ParticleManager implements Serializable
         allParticles.add( p );
     }
 
+    /**
+     * Instructs all <code>Particle</code>s to act and removes old ones. 
+     * 
+     * @since Classic
+     */
     public static void act()
     {
         Iterator<Particle> itr = allParticles.iterator();
@@ -46,8 +52,8 @@ public class ParticleManager implements Serializable
     }
 
     /**
-     * Instructs all <code>Particle</code>s to act, removes old ones, and draws the rest.
-     * @author Phillip Cohen
+     * Draws all particles.
+     * 
      * @since Classic
      */
     public static void draw( Graphics g )
@@ -57,5 +63,15 @@ public class ParticleManager implements Serializable
 
         for ( Particle p : allParticles )
             p.draw( g );
+    }
+    
+    /**
+     * Removes all particles.
+     * 
+     * @since March 9, 2008
+     */
+    public static void clear()
+    {
+        allParticles.clear();
     }
 }

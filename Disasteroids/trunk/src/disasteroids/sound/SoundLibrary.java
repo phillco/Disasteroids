@@ -29,6 +29,8 @@ public class SoundLibrary
 
     public static final SoundClip STATION_SHOOT = stationShoot();
 
+    public static final SoundClip STATION_DISABLED = stationDisabled();
+    
     public static final SoundClip STATION_DIE = stationDie();
 
     public static final SoundClip GAME_OVER = gameOver();
@@ -61,15 +63,15 @@ public class SoundLibrary
     //:)
     private static SoundClip alienDie()
     {
-        byte[] temp = new byte[8000];
+        byte[] temp = new byte[3000];
         int phase = 0;
         int freqPhase = 0;
         int frequency = 440;
-        for ( int index = 0; index < 8000; index++ )
+        for ( int index = 0; index < 3000; index++ )
         {
             temp[index] = (byte) ( 100 * Math.sin( phase ) );
             phase += frequency;
-            frequency = (int) ( 440 + 220 * Math.sin( freqPhase / 300 ) );
+            frequency = (int) ( 440 + 220 * Math.tan( freqPhase / 50 ) );
             freqPhase++;
         }
         return new SoundClip( temp );
@@ -95,10 +97,23 @@ public class SoundLibrary
         return new SoundClip( temp );
     }
 
+    private static SoundClip stationDisabled()
+    {
+        Tone[] temp = new Tone[11];
+        int idx = 0;
+        for ( float i = 0; i <= 1; i += .1 )
+            temp[idx++] = new Tone( (int) ( 220 - 70 * i ), 25 );
+        return new SoundClip( Tone.toByteArray( temp ) );
+    }
+    
     private static SoundClip stationDie()
     {
-        return new SoundClip( new Tone( 0, 0 ).toByteArray() );
+        byte[] temp = new byte[8000];
+        for ( int index = 0; index < 8000; index++ )
+            temp[index] = (byte) ( Math.sin( 280f * Math.pow( index, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - index ) );
+        return new SoundClip( temp );
     }
+    
 
     //:)
     private static SoundClip stationShoot()

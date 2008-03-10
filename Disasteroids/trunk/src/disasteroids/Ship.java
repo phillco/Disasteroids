@@ -584,7 +584,7 @@ public class Ship implements GameElement, ShootingObject
         else
         {
             invincibilityCount = Integer.MAX_VALUE;
-            explosionTime = 230;
+            explosionTime = 160;
             allStop();
 
             if ( Settings.soundOn && this == AsteroidsFrame.frame().localPlayer() )

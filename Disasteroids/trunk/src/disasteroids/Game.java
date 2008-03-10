@@ -86,7 +86,7 @@ public class Game implements Serializable
      * List of all objects that shoot.
      * @since January 7, 2008
      */
-    public LinkedList<ShootingObject> shootingObjects;
+    public ConcurrentLinkedQueue<ShootingObject> shootingObjects;
 
     /**
      * The game mode that we're playing.
@@ -280,7 +280,7 @@ public class Game implements Serializable
 
         asteroidManager = new AsteroidManager();
         actionManager = new ActionManager();
-        shootingObjects = new LinkedList<ShootingObject>();
+        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
 
         // Spawn players.
@@ -294,10 +294,6 @@ public class Game implements Serializable
 
         // Set up the game.
         gameMode = new WaveGameplay(); // LinearGameplay(); 
-
-//        Station s = new Station( 950, 750 );
-//        gameObjects.add( s );
-//        shootingObjects.add( s );
 //
 //        Alien a = new Alien();
 //        gameObjects.add( a );
@@ -568,7 +564,7 @@ public class Game implements Serializable
 
         asteroidManager = new AsteroidManager( stream );
         actionManager = new ActionManager( stream );
-        shootingObjects = new LinkedList<ShootingObject>();
+        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
 //
 //        Station s = new Station( 100, 1500 );

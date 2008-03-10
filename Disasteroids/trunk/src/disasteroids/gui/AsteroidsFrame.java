@@ -102,6 +102,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public void nextLevel()
     {
         panel.background.init();
+        ParticleManager.clear();
     }
 
     /**
@@ -114,6 +115,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         panel.highScoreAchieved = false;
         panel.background.clearMessages();
         panel.notificationMessages.clear();
+        ParticleManager.clear();
 
         // Reset the background.
         panel.background.init();

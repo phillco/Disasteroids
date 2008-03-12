@@ -1,4 +1,4 @@
-/*
+/*gh
  * Alien.java
  * 
  * Phillip Cohen.
@@ -7,7 +7,6 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
-import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
@@ -62,7 +61,7 @@ public class Alien extends GameObject implements ShootingObject
             if ( explosionTime == 1 )
             {
                 Game.getInstance().removeObject( this );
-                Sound.playInternal(SoundLibrary.ALIEN_DIE);
+                Sound.playInternal( SoundLibrary.ALIEN_DIE );
             }
 
             explosionTime--;
@@ -70,22 +69,11 @@ public class Alien extends GameObject implements ShootingObject
 
         // Smoke when low on health.
         if ( life < 80 )
-        {
-            ParticleManager.addParticle( new Particle( getX() + RandomGenerator.get().nextInt( size ), centerY(),
-                                                       RandomGenerator.get().nextInt( 5 ) + 2, RandomGenerator.get().nextBoolean() ? Color.gray : Color.darkGray,
-                                                       RandomGenerator.get().nextInt( 3 ) + 1, RandomGenerator.get().nextDouble() * 1.4 + 0.5,
-                                                       50, 30 ) );
-        }
+            ParticleManager.createSmoke( getX() + RandomGenerator.get().nextInt( size ), centerY(), 1 );
 
-        // Flames!
+        // Flames when doomed!
         if ( life < 40 )
-        {
-            ParticleManager.addParticle( new Particle( getX() + RandomGenerator.get().nextInt( size ), centerY(),
-                                                       RandomGenerator.get().nextInt( 5 ) + 2, new Color( RandomGenerator.get().nextInt( 63 ) + 192, RandomGenerator.get().nextInt( 128 ), 0 ),
-                                                       RandomGenerator.get().nextInt( 3 ) + 1, RandomGenerator.get().nextDouble() * 1.4 + 0.5,
-                                                       50, 30 ) );
-        }
-
+            ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ), centerY(), ( 50 - life ) / 10 );
 
         // Find players within our range.        
         int range = 300;
@@ -239,6 +227,7 @@ public class Alien extends GameObject implements ShootingObject
     private class AlienMissileManager extends MissileManager
     {
         double finRotation = 0.0;
+
         private int timeTillNextShot;
 
         public AlienMissileManager( int size )
@@ -262,12 +251,12 @@ public class Alien extends GameObject implements ShootingObject
         @Override
         public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
         {
-            if(timeTillNextShot>0)
+            if ( timeTillNextShot > 0 )
                 return false;
-            timeTillNextShot=getIntervalShoot();
+            timeTillNextShot = getIntervalShoot();
             return add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
         }
-        
+
         @Override
         public void act()
         {
@@ -278,7 +267,7 @@ public class Alien extends GameObject implements ShootingObject
         @Override
         public int getIntervalShoot()
         {
-            return Math.max(life,3);
+            return Math.max( life, 3 );
         }
 
         private class AlienBullet extends Missile

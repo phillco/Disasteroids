@@ -113,28 +113,21 @@ public class Station extends GameObject implements ShootingObject
             return;
         }
 
-        // Disabled.
+        // We're disabled.
         if ( disableCounter > 0 )
         {
             disableCounter--;
 
             // Smoke and spin the turret.
-            Random r = RandomGenerator.get();
-            angle += 0.07 + r.nextDouble() / 7;
-            ParticleManager.addParticle( new Particle( getX() + r.nextInt( size ), centerY(),
-                                                       r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.gray : Color.darkGray,
-                                                       r.nextInt( 3 ) + 1, r.nextDouble() * 1.4 + 0.5,
-                                                       50, 30 ) );
+            angle += 0.07 + RandomGenerator.get().nextDouble() / 7;
+            ParticleManager.createSmoke( getX() + RandomGenerator.get().nextInt( size ), centerY(), 1 + hitsWhileDisabled );
 
-            for ( int i = 0; i < hitsWhileDisabled; i++ )
-                ParticleManager.addParticle( new Particle( getX() + r.nextInt( size ), centerY(),
-                                                           r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.red : Color.orange,
-                                                           r.nextInt( 3 ) + 1, r.nextDouble() * 1.4 + 0.5,
-                                                           50, 30 ) );
-
+            // If hit again, set fire.
+            ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ), centerY(), hitsWhileDisabled * 2 );
 
             if ( disableCounter == 0 )
                 hitsWhileDisabled = 0;
+
             return;
         }
 
@@ -203,9 +196,9 @@ public class Station extends GameObject implements ShootingObject
                             {
                                 destroy();
                                 return;
-                            }       
+                            }
                         }
-                        
+
                         m.explode();
                         disable();
                     }
@@ -376,7 +369,9 @@ public class Station extends GameObject implements ShootingObject
 
     public void disable()
     {
-        if ( disableCounter <= 0 )
+        if ( disableCounter > 0 )
+            disableCounter += 80;
+        else
             disableCounter = 290;
 
         for ( WeaponManager.Unit w : manager.getWeapons() )
@@ -388,15 +383,9 @@ public class Station extends GameObject implements ShootingObject
     public void destroy()
     {
         Game.getInstance().removeObject( this );
-        Random r = RandomGenerator.get();
-        for ( int i = 0; i < 120; i++ )
-        {
-            ParticleManager.addParticle( new Particle( getX() + r.nextInt( size ), centerY(),
-                                                       r.nextInt( 5 ) + 2, r.nextBoolean() ? Color.red : Color.orange,
-                                                       RandomGenerator.get().nextDouble() * 6,
-                                                       RandomGenerator.get().nextDouble() * 2 * Math.PI,
-                                                       30, 10 ) );
-        }
+
+        ParticleManager.createSmoke( getX() + RandomGenerator.get().nextInt( size ) / 2, centerY() + RandomGenerator.get().nextInt( size ) / 2, 100 );
+        ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ) / 2, centerY() + RandomGenerator.get().nextInt( size ) / 2, 350 );
 
         Sound.playInternal( SoundLibrary.STATION_DIE );
     }

@@ -5,6 +5,7 @@
 package disasteroids.gui;
 
 import disasteroids.*;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.io.Serializable;
 import java.util.Iterator;
@@ -64,7 +65,7 @@ public class ParticleManager implements Serializable
         for ( Particle p : allParticles )
             p.draw( g );
     }
-    
+
     /**
      * Removes all particles.
      * 
@@ -73,5 +74,36 @@ public class ParticleManager implements Serializable
     public static void clear()
     {
         allParticles.clear();
+    }
+
+    public static void createSmoke( double x, double y, double amount )
+    {
+        for ( int i = 0; i < getNumberToMake( amount ); i++ )
+        {
+            addParticle( new Particle( x, y, RandomGenerator.get().nextInt( 5 ) + 2,
+                                       RandomGenerator.get().nextBoolean() ? Color.gray : Color.darkGray,
+                                       RandomGenerator.get().nextDouble() * 3 + 1, RandomGenerator.get().nextDouble() * 1.6 + 0.3,
+                                       50, 30 ) );
+        }
+    }
+
+    public static void createFlames( double x, double y, double amount )
+    {
+        for ( int i = 0; i < getNumberToMake( amount ); i++ )
+        {
+            addParticle( new Particle( x, y, RandomGenerator.get().nextInt( 5 ) + 2,
+                                       new Color( (float) ( RandomGenerator.get().nextDouble() * 0.4 + 0.6 ),
+                                                  (float) ( RandomGenerator.get().nextDouble() * 0.3 + 0.2 ), 0.01f, 1 ),
+                                       RandomGenerator.get().nextDouble() * 3 + 1, RandomGenerator.get().nextDouble() * 1.6 + 0.3,
+                                       50, 30 ) );
+        }
+    }
+
+    private static int getNumberToMake( double amountScalar )
+    {
+        if ( amountScalar < 0 )
+            return RandomGenerator.get().nextDouble() < amountScalar ? 1 : 0;
+        else
+            return (int) amountScalar;
     }
 }

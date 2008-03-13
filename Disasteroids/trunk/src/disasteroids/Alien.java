@@ -1,8 +1,6 @@
 /*gh
+ * DISASTEROIDS
  * Alien.java
- * 
- * Phillip Cohen.
- * Started on Feb 6, 2008.
  */
 package disasteroids;
 
@@ -16,8 +14,9 @@ import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
+ * Little UFOs that fire at players.
  * @author Phillip Cohen
+ * @since February 6, 2008
  */
 public class Alien extends GameObject implements ShootingObject
 {
@@ -37,8 +36,7 @@ public class Alien extends GameObject implements ShootingObject
 
     public Alien( int x, int y, double dx, double dy )
     {
-        setSpeed( dx, dy );
-        setLocation( x, y );
+        super( x, y, dx, dy );
         size = RandomGenerator.get().nextInt( 50 ) + 30;
         manager = new AlienMissileManager( size );
         color = new Color( RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ) );

@@ -5,6 +5,8 @@
 package disasteroids;
 
 import java.awt.Color;
+import java.io.DataInputStream;
+import java.io.IOException;
 
 /**
  * A darker <code>Asteroid</code> that gives bonuses when shot.
@@ -26,7 +28,7 @@ public class BonusAsteroid extends Asteroid
     public BonusAsteroid( int x, int y, double dx, double dy, int size, int lifeMax )
     {
         super( x, y, dx, dy, size, lifeMax );
-        
+
         fill = Color.green;
         outline = Color.white;
     }
@@ -41,6 +43,18 @@ public class BonusAsteroid extends Asteroid
     public BonusAsteroid( Asteroid parent )
     {
         super( parent );
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
+     * @since December 29, 2007
+     */
+    public BonusAsteroid( DataInputStream stream ) throws IOException
+    {
+        super( stream );
     }
 
     @Override

@@ -4,6 +4,10 @@
  */
 package disasteroids;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * A gameplay object that wraps.
  * @author Phillip Cohen
@@ -18,19 +22,19 @@ public abstract class GameObject implements GameElement
      */
     private double x,  y,  dx,  dy;
 
+    public GameObject()
+    {
+    }
+
+    
     public GameObject( double x, double y, double dx, double dy )
     {
         this.x = x;
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-    }
+    }        
 
-    public GameObject()
-    {
-    }
-
-    
     /**
      * Returns whether we should wrap across the game world when we get out of bounds.
      * 
@@ -114,9 +118,37 @@ public abstract class GameObject implements GameElement
         setDx( dx );
         setDy( dy );
     }
-    
+
     public double getSpeed()
     {
-        return Math.sqrt(getDx() * getDx() + getDy() * getDy());
+        return Math.sqrt( getDx() * getDx() + getDy() * getDy() );
+    }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since March 7, 2008
+     */
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        stream.writeDouble( getX() );
+        stream.writeDouble( getY() );
+        stream.writeDouble( getDx() );
+        stream.writeDouble( getDy() );
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
+     * @since March 7, 2008
+     */
+    public GameObject( DataInputStream stream ) throws IOException
+    {
+        setLocation( stream.readDouble(), stream.readDouble() );
+        setSpeed( stream.readDouble(), stream.readDouble() );
     }
 }

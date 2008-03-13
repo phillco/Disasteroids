@@ -4,7 +4,6 @@
  */
 package disasteroids;
 
-import disasteroids.gui.Particle;
 import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
 import disasteroids.gui.ParticleManager;
@@ -13,7 +12,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Calendar;
-import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**

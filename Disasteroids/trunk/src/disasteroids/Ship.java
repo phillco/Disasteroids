@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import com.sun.java.swing.plaf.windows.WindowsBorders.DashedBorder;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ParticleManager;
@@ -11,11 +12,13 @@ import disasteroids.gui.Particle;
 import disasteroids.networking.Server;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Stroke;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -50,7 +53,7 @@ public class Ship implements GameElement, ShootingObject
      * Togglers for various actions.
      * @since Classic (last minute)
      */
-    private boolean forward = false,  backwards = false,  left = false,  right = false,  shooting = false;
+    private boolean forward = false,  backwards = false,  left = false,  right = false,  shooting = false,  sniping = false;
 
     /**
      * The angle we're facing.
@@ -154,6 +157,12 @@ public class Ship implements GameElement, ShootingObject
      * @since March 9, 2008
      */
     private double strafeSpeed = 0;
+
+    /**
+     * Flashing for the sniping indicator.
+     * @since March 12, 2008
+     */
+    private boolean snipeFlash = false;
 
     public Ship( int x, int y, Color c, int lives, String name )
     {
@@ -273,6 +282,20 @@ public class Ship implements GameElement, ShootingObject
             AsteroidsFrame.frame().drawString( g, (int) x - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) y - 15, getWeaponManager().getWeaponName(), Color.gray );
             allWeapons[weaponIndex].getWeapon( (int) x, (int) y + 25, Color.gray ).draw( g );
         }
+
+        if ( sniping )
+        {
+            snipeFlash = !snipeFlash;
+            if ( snipeFlash )
+            {
+                float dash[] = { 8.0f };
+                Stroke old = ( (Graphics2D) g ).getStroke();
+                ( (Graphics2D) g ).setStroke( new BasicStroke( 3.0f, BasicStroke.CAP_ROUND,
+                                                               BasicStroke.JOIN_ROUND, 5.0f, dash, 2.0f ) );
+                AsteroidsFrame.frame().drawLine( g, myInvicibleColor, getX(), getY(), 1500, 15, angle );
+                ( (Graphics2D) g ).setStroke( old );
+            }
+        }
     }
 
     public void forward()
@@ -340,9 +363,9 @@ public class Ship implements GameElement, ShootingObject
                 dy += Math.sin( angle ) / SENSITIVITY * 2;
             }
             if ( left )
-                angle += Math.PI / SENSITIVITY / 2;
+                angle += Math.PI / SENSITIVITY / ( sniping ? 12 : 2 );
             if ( right )
-                angle -= Math.PI / SENSITIVITY / 2;
+                angle -= Math.PI / SENSITIVITY / ( sniping ? 12 : 2 );
             if ( shooting && canShoot() )
                 shoot();
             invincibilityCount--;
@@ -906,7 +929,7 @@ public class Ship implements GameElement, ShootingObject
     }
 
     /**
-     * Starts strafing, if we can.
+     * Executes a quick burst of movement to one side.
      * 
      * @param toRight   whether we should strafe right (true) or left (false)
      * @since March 9, 2008
@@ -927,5 +950,16 @@ public class Ship implements GameElement, ShootingObject
                                          RandomGenerator.get().nextDouble() * 4,
                                          angle + RandomGenerator.get().nextDouble() * .8 - .2 + Math.PI,
                                          35, 35 ) );
+    }
+
+    /**
+     * Toggles sniping mode, in which the player aims much more precisely.
+     * @param on    whether sniping is on
+     * 
+     * @since March 11, 2008
+     */
+    public void setSnipeMode( boolean on )
+    {
+        sniping = on;
     }
 }

@@ -49,7 +49,6 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         return panel;
     }
-
     /**
      * ID of the player that's at this computer.
      * IDs are used instead of indexes for better reliability.
@@ -97,8 +96,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         // Receive key events.
         addKeyListener( this );
     }
-    
-    
+
     public void nextLevel()
     {
         panel.background.init();
@@ -131,6 +129,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public synchronized void keyReleased( KeyEvent e )
     {
         Game.getInstance().actionManager().add( new Action( localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+        if ( e.isShiftDown() )
+            localPlayer().setSnipeMode( true );
+        else
+            localPlayer().setSnipeMode( false );
         if ( Client.is() )
             Client.getInstance().keyStroke( 0 - e.getKeyCode() );
     }
@@ -158,6 +160,11 @@ public class AsteroidsFrame extends Frame implements KeyListener
             Game.getInstance().setPaused( false );
             return;
         }
+
+        if ( e.isShiftDown() )
+            localPlayer().setSnipeMode( true );
+        else
+            localPlayer().setSnipeMode( false );
 
         // Is it a local action?
         switch ( e.getKeyCode() )
@@ -231,7 +238,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
         if ( Settings.useFullscreen && graphicsDevice.getFullScreenWindow() != this )
         {
             dispose();
-            setUndecorated( true );            
+            setUndecorated( true );
             panel.setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
             setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
             pack();
@@ -241,7 +248,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
             Image cursorImage = Toolkit.getDefaultToolkit().getImage( "xparent.gif" );
             Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor( cursorImage, new Point( 0, 0 ), "" );
             setCursor( blankCursor );
-            
+
             // Re-create the background.
             if ( panel.background != null )
                 panel.background.init();
@@ -358,6 +365,15 @@ public class AsteroidsFrame extends Frame implements KeyListener
         graph.setColor( col );
         if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
             graph.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
+    }
+
+    public void drawLine( Graphics graph, Color col, int x, int y, int length, int offset, double angle )
+    {
+        x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
+        y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        graph.setColor( col );
+        if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
+            graph.drawLine( (int) ( x + offset * Math.cos( angle ) ), (int) ( y - offset * Math.sin( angle ) ), (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
     }
 
     /**

@@ -66,17 +66,13 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public Asteroid( int x, int y, double dx, double dy, int size, int lifeMax )
     {
-        Random rand = RandomGenerator.get();
-        setLocation( x, y );
-        setSpeed( dx, dy );
+        super( dx, dy, dx, dy );
         this.radius = size / 2;
         this.life = this.lifeMax = Math.max( 1, lifeMax );
 
         // Enforce a minimum size.
         if ( size < 25 )
-        {
-            size = 25 + rand.nextInt( 25 );
-        }
+            size = 25 + RandomGenerator.get().nextInt( 25 );
 
         // Enforce a mininum speed.
         checkMovement();
@@ -93,19 +89,12 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public Asteroid( Asteroid parent )
     {
+        super( parent.getX(), parent.getY(), RandomGenerator.get().nextDouble() * 2 - 1, RandomGenerator.get().nextDouble() * 2 - 1 );
         parent.children++;
         if ( parent.children > 2 )
-        {
             this.radius = 5;
-        }
         else
-        {
             this.radius = parent.radius / 2;
-        }
-        Random rand = RandomGenerator.get();
-        setLocation( parent.getX(), parent.getY() );
-        setSpeed( rand.nextDouble() * 2 - 1, rand.nextDouble() * 2 - 1 );
-
         // Live half as long as parents.
         this.life = this.lifeMax = parent.lifeMax / 2 + 1;
 
@@ -295,13 +284,11 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      * @throws java.io.IOException 
      * @since December 29, 2007
      */
+    @Override
     public void flatten( DataOutputStream stream ) throws IOException
     {
+        super.flatten( stream );
         stream.writeInt( id );
-        stream.writeDouble( getX() );
-        stream.writeDouble( getY() );
-        stream.writeDouble( getDx() );
-        stream.writeDouble( getDy() );
         stream.writeInt( radius );
         stream.writeInt( life );
         stream.writeInt( lifeMax );
@@ -317,9 +304,8 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public Asteroid( DataInputStream stream ) throws IOException
     {
+        super( stream );
         id = stream.readInt();
-        setLocation( stream.readDouble(), stream.readDouble() );
-        setSpeed( stream.readDouble(), stream.readDouble() );
         radius = stream.readInt();
         life = stream.readInt();
         lifeMax = Math.max( 1, stream.readInt() );

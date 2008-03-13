@@ -160,5 +160,11 @@ public abstract class WeaponManager implements GameElement
         public abstract boolean needsRemoval();
 
         public abstract int getDamage();
+
+        public Unit()
+        {
+        }
+        
+        
     }
 }

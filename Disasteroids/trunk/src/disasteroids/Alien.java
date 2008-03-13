@@ -56,7 +56,12 @@ public class Alien extends GameObject implements ShootingObject
         if ( life <= 0 )
         {
             if ( explosionTime == 0 )
+            {
                 explosionTime = 20;
+                
+                if ( RandomGenerator.get().nextInt( 10 ) == 0 )
+                    Game.getInstance().createBonus( this );
+            }
 
             if ( explosionTime == 1 )
             {

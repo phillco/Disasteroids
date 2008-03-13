@@ -385,7 +385,10 @@ public class Station extends GameObject implements ShootingObject
         Game.getInstance().removeObject( this );
 
         ParticleManager.createSmoke( getX() + RandomGenerator.get().nextInt( size ) / 2, centerY() + RandomGenerator.get().nextInt( size ) / 2, 100 );
-        ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ) / 2, centerY() + RandomGenerator.get().nextInt( size ) / 2, 350 );
+        ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ) / 2, centerY() + RandomGenerator.get().nextInt( size ) / 2, 250 );
+
+        if ( RandomGenerator.get().nextInt( 4 ) == 0 )
+            Game.getInstance().createBonus( this );
 
         Sound.playInternal( SoundLibrary.STATION_DIE );
     }

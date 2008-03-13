@@ -299,6 +299,8 @@ public class Game implements Serializable
 //        gameObjects.add( a );
 //        shootingObjects.add( a );
 
+        gameObjects.add( new Bonus( 950, 900 ) );
+
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().resetGame();
@@ -613,5 +615,10 @@ public class Game implements Serializable
     public GameMode getGameMode()
     {
         return gameMode;
+    }
+
+    public void createBonus( GameObject parent )
+    {
+        gameObjects.add( new Bonus( parent.getX(), parent.getY() ) );
     }
 }

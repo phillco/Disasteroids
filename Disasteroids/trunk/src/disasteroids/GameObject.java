@@ -18,6 +18,19 @@ public abstract class GameObject implements GameElement
      */
     private double x,  y,  dx,  dy;
 
+    public GameObject( double x, double y, double dx, double dy )
+    {
+        this.x = x;
+        this.y = y;
+        this.dx = dx;
+        this.dy = dy;
+    }
+
+    public GameObject()
+    {
+    }
+
+    
     /**
      * Returns whether we should wrap across the game world when we get out of bounds.
      * 

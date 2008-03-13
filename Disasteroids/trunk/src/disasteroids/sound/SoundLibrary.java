@@ -30,10 +30,14 @@ public class SoundLibrary
     public static final SoundClip STATION_SHOOT = stationShoot();
 
     public static final SoundClip STATION_DISABLED = stationDisabled();
-    
+
     public static final SoundClip STATION_DIE = stationDie();
 
     public static final SoundClip GAME_OVER = gameOver();
+
+    public static final SoundClip GET_BONUS = getBonus();
+    
+    public static final SoundClip BONUS_SPAWN = bonusSpawn();
 
     /*
      * All of the computing methods
@@ -105,7 +109,7 @@ public class SoundLibrary
             temp[idx++] = new Tone( (int) ( 220 - 70 * i ), 25 );
         return new SoundClip( Tone.toByteArray( temp ) );
     }
-    
+
     private static SoundClip stationDie()
     {
         byte[] temp = new byte[8000];
@@ -113,7 +117,7 @@ public class SoundLibrary
             temp[index] = (byte) ( Math.sin( 280f * Math.pow( index, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - index ) );
         return new SoundClip( temp );
     }
-    
+
 
     //:)
     private static SoundClip stationShoot()
@@ -138,6 +142,43 @@ public class SoundLibrary
         byte[] temp = new byte[28000];
         for ( int index = 0; index < 28000; index++ )
             temp[index] = (byte) ( Math.tan( 880f * Math.pow( index, .85 ) / 4000.0 * 6.28 ) * 127 * 28000 / ( 28100 - index ) );
+        return new SoundClip( temp );
+    }
+
+    private static SoundClip getBonus()
+    {
+        byte[] temp = new byte[3000];
+        int phase = 0;
+        int freqPhase = 0;
+        int frequency = 440;
+        for ( int index = 0; index < 3000; index++ )
+        {
+            temp[index] = (byte) ( 100 * Math.sin( phase ) );
+            phase += frequency/4;
+            frequency = (int) ( 484 + 200 * Math.cos( freqPhase / 500 ) );
+            freqPhase++;
+        }
+        return new SoundClip( temp );
+    }
+
+    /**
+     * 
+     * @return
+     * @since March 12, 2008
+     */
+    private static SoundClip bonusSpawn()
+    {
+        byte[] temp = new byte[3000];
+        int phase = 0;
+        int freqPhase = 5;
+        int frequency = 440;
+        for ( int index = 0; index < 1000; index++ )
+        {
+            temp[index] = (byte) ( 100 * Math.sin( phase ) );
+            phase += frequency/4;
+            frequency = (int) ( 20 * Math.cos( 5000 / freqPhase ) );
+            freqPhase++;
+        }
         return new SoundClip( temp );
     }
 }

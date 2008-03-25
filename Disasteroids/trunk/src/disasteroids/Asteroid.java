@@ -201,7 +201,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < ( radius + Ship.RADIUS ) * ( radius + Ship.RADIUS ) )
+                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < Math.pow(radius + Ship.RADIUS , 2 ) )
                 {
                     if ( s.looseLife( s.getName() + ( Math.abs( getSpeed() ) > Math.abs( s.getSpeed() ) ? " was hit by" : " slammed into" ) + " an asteroid." ) )
                     {

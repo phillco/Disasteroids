@@ -441,14 +441,16 @@ public class AsteroidsFrame extends Frame implements KeyListener
     
     public void drawAsteroid(Graphics g, int x, int y, double angle, int radius)
     {
-        Image src=ImageLibrary.getAsteroid();//TODO: find a location to store image
+        Image src=ImageLibrary.getAsteroid();
         AffineTransform af=new AffineTransform();
-        af.translate(RelativeGraphics.translateX(x), RelativeGraphics.translateY(y));
-       // af.translate(400,400);
-        double scale=radius/100.0;
-        af.scale(scale,scale);
-        af.rotate(angle);
-        af.translate(-radius,-radius);
+     
+        af.concatenate(AffineTransform.getTranslateInstance(RelativeGraphics.translateX(x)-radius,RelativeGraphics.translateY(y)-radius ));
+       
+        af.concatenate(AffineTransform.getScaleInstance(radius/100.0, radius/100.0));
+      
+//        af.concatenate(AffineTransform.getTranslateInstance(radius, radius));
+//        af.concatenate(AffineTransform.getRotateInstance(angle,2* radius, 2*radius));
+//        af.concatenate(AffineTransform.getTranslateInstance(-radius, -radius));
         ((Graphics2D)g).drawImage(src, af, null);
     }
 

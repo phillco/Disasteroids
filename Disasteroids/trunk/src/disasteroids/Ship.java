@@ -458,7 +458,7 @@ public class Ship implements GameElement, ShootingObject
             {
                 for ( WeaponManager.Unit m : wm.getWeapons() )
                 {
-                    if ( Math.pow( (int) ( x - m.getX() ), 2 ) + Math.pow( (int) ( y - m.getY() ), 2 ) < 400 )
+                    if ( Math.pow( (int) ( x - m.getX() ), 2 ) + Math.pow( (int) ( y - m.getY() ), 2 ) < Math.pow(RADIUS+m.getRadius(),2) )
                     {
                         String obit = "";
                         if ( other instanceof Ship )

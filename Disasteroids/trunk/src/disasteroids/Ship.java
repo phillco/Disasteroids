@@ -4,7 +4,6 @@
  */
 package disasteroids;
 
-import com.sun.java.swing.plaf.windows.WindowsBorders.DashedBorder;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ParticleManager;

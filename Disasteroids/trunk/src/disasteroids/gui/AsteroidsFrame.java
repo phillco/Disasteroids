@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
@@ -28,6 +29,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
+import java.awt.geom.AffineTransform;
 
 /**
  * The big momma class up in the sky.
@@ -435,6 +437,21 @@ public class AsteroidsFrame extends Frame implements KeyListener
         fillCircle( graph, fill, x, y, radius );
         drawCircle( graph, outline, x, y, radius );
     }
+    
+    
+    public void drawAsteroid(Graphics g, int x, int y, double angle, int radius)
+    {
+        Image src=ImageLibrary.getAsteroid();//TODO: find a location to store image
+        AffineTransform af=new AffineTransform();
+        af.translate(RelativeGraphics.translateX(x), RelativeGraphics.translateY(y));
+       // af.translate(400,400);
+        double scale=radius/100.0;
+        af.scale(scale,scale);
+        af.rotate(angle);
+        af.translate(-radius,-radius);
+        ((Graphics2D)g).drawImage(src, af, null);
+    }
+
 
     /**
      * Adds a new message to the on-screen list.

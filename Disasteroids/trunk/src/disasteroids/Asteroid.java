@@ -13,7 +13,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Random;
 
 /**
  * A game object which the players remove to score.
@@ -50,6 +49,11 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      * @since January 8, 2007
      */
     int id;
+    
+    /**
+     * The angle offset, for Graphics only
+     */
+    protected double angle;
 
     Ship killer;
 
@@ -69,7 +73,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
         super( dx, dy, dx, dy );
         this.radius = size / 2;
         this.life = this.lifeMax = Math.max( 1, lifeMax );
-
+        angle=0;
         // Enforce a minimum size.
         if ( size < 25 )
             size = 25 + RandomGenerator.get().nextInt( 25 );
@@ -91,6 +95,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
     {
         super( parent.getX(), parent.getY(), RandomGenerator.get().nextDouble() * 2 - 1, RandomGenerator.get().nextDouble() * 2 - 1 );
         parent.children++;
+        angle=0;
         if ( parent.children > 2 )
             this.radius = 5;
         else
@@ -112,13 +117,16 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public void draw( Graphics g )
     {
-        lifeMax = Math.max( lifeMax, 1 );
+/*        lifeMax = Math.max( lifeMax, 1 );
         Color f = new Color( fill.getRed() * life / lifeMax, fill.getGreen() * life / lifeMax, fill.getBlue() * life / lifeMax );
         AsteroidsFrame.frame().drawOutlinedCircle( g, f, outline, (int) getX(), (int) getY(), radius );
+ */
+        AsteroidsFrame.frame().drawAsteroid(g, (int)getX(), (int)getY(), angle, radius );
+        angle+=radius%2==0?.05:-.05;
     }
 
     /**
-     * Steps <code>this</code> through one timestep, then draws it.
+     * Steps <code>this</code> through one timestep.
      * 
      * @since Classic
      */

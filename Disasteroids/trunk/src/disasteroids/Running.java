@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.gui.MenuOption;
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.MainMenu;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
@@ -61,7 +62,8 @@ public class Running
 
         // Read in our stored settings.
         Settings.loadFromStorage();
-
+        // Load Images
+        ImageLibrary.init();
         // If the user has provided a selection, skip the menu.
         if ( preselectedOption != null )
             startGame( preselectedOption );

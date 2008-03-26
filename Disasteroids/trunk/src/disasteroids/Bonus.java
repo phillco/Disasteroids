@@ -35,7 +35,7 @@ public class Bonus extends GameObject
     public Bonus( double x, double y, double dx, double dy )
     {
         super( x, y, dx, dy );
-        bonusType = RandomGenerator.get().nextInt( 8 );
+        bonusType = RandomGenerator.get().nextInt( 9 );
         Sound.playInternal( SoundLibrary.BONUS_SPAWN );
     }
 
@@ -120,6 +120,9 @@ public class Bonus extends GameObject
             case 7:
                 message = killer.getWeaponManager().ApplyBonus( 7 );
                 break;
+            case 8: 
+                message = killer.giveShield();
+                break;
         }
         if ( message.equals( "" ) )
             return;
@@ -137,7 +140,7 @@ public class Bonus extends GameObject
         lastHue = ( ( lastHue + 0.01f ) % 1 );
         lastHB = ( ( lastHB + 0.03f ) % 1 );
 
-        AsteroidsFrame.frame().drawOutlinedCircle( g, Color.lightGray, Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), 12 );
+        AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor(bonusType/9.0f,.9f,.9f), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), 12 );
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );
         AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 9, (int) getCenterY() - 1, "B", Color.darkGray );
     }

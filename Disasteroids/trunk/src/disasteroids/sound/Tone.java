@@ -9,6 +9,7 @@ package disasteroids.sound;
     public int frequency;
     public int duration;
     public int delayAfter;
+    public int volume;
     
     /**
      * Stores the values passed to the speaker; only non-null if it has been 
@@ -23,6 +24,7 @@ package disasteroids.sound;
             this.frequency = frequency;
             this.duration = duration;
             this.delayAfter = 0;
+            volume=30;
     }
 
     public Tone(int frequency, int duration, int delayAfter)
@@ -30,6 +32,15 @@ package disasteroids.sound;
             this.frequency = frequency;
             this.duration = duration;
             this.delayAfter = delayAfter;
+            volume=30;
+    }
+    
+    public Tone(int frequency, int duration, int delayAfter, int volume)
+    {
+            this.frequency = frequency;
+            this.duration = duration;
+            this.delayAfter = delayAfter;
+            this.volume=volume;
     }
     
     /**
@@ -48,7 +59,7 @@ package disasteroids.sound;
         int length=duration*8+delayAfter*8;
         byte[] toBeReturned=new byte[length];
         for(int index=0; index<duration*8; index++)
-            toBeReturned[index]=(byte)(127*Math.sin(index/8000f*frequency*2*Math.PI));
+            toBeReturned[index]=(byte)(volume*Math.sin(index/8000f*frequency*2*Math.PI));
         asBytes=toBeReturned;
         return toBeReturned;
     }

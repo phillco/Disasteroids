@@ -44,7 +44,7 @@ public class SoundLibrary
      */
     private static SoundClip bulletShoot()
     {
-        return new SoundClip( new Tone( 500, 8 ).toByteArray() );
+        return new SoundClip( new Tone( 500, 8, 0, 6 ).toByteArray() );
     }
 
     //:)

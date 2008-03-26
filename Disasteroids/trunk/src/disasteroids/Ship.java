@@ -162,6 +162,11 @@ public class Ship implements GameElement, ShootingObject
      * @since March 12, 2008
      */
     private boolean snipeFlash = false;
+    
+    /**
+     * If this <code>Ship</code> has a shield; good for one free hit
+     */
+    private boolean shielded;
 
     public Ship( int x, int y, Color c, int lives, String name )
     {
@@ -171,6 +176,7 @@ public class Ship implements GameElement, ShootingObject
         this.livesLeft = lives;
         this.name = name;
 
+        shielded=false;
         score = 0;
         numAsteroidsKilled = 0;
         drawWeaponNameTimer = 0;
@@ -271,6 +277,11 @@ public class Ship implements GameElement, ShootingObject
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
             AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
+        }
+        
+        if(shielded)
+        {
+            AsteroidsFrame.frame().drawCircle(g, Color.CYAN,(int) x,(int) y, RADIUS);
         }
 
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
@@ -434,6 +445,13 @@ public class Ship implements GameElement, ShootingObject
         drawWeaponNameTimer = 50;
     }
 
+    public String giveShield() {
+        if(shielded)
+            return "";
+        shielded=true;
+        return "Shield";
+    }
+
     private void checkBounce()
     {
         // Wrap to stay inside the level.
@@ -594,6 +612,15 @@ public class Ship implements GameElement, ShootingObject
         // We're invincible and can't die.
         if ( cannotDie() )
             return false;
+        
+        //shield saved us
+        if ( shielded )
+        {
+            setInvincibilityCount(50);      
+            shielded=false;
+            return true;
+
+        }
 
         livesLeft--;
         if ( livesLeft >= 0 )

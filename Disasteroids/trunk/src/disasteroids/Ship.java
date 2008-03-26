@@ -190,10 +190,11 @@ public class Ship implements GameElement, ShootingObject
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
         // Init weapons.
-        allWeapons = new WeaponManager[3];
+        allWeapons = new WeaponManager[4];
         allWeapons[0] = new MissileManager();
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();
+        allWeapons[3] = new SniperManager();
         weaponIndex = 0;
 
         // Start invincible.

@@ -164,7 +164,7 @@ public class LayeredSound {
          */
         public byte getValue()
         {
-            if(index==vals.length)
+            if(index>=vals.length)
             {
                 LayeredSound.instance.remove(this);
                 return 0;

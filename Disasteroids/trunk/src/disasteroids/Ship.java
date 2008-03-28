@@ -126,6 +126,12 @@ public class Ship implements GameElement, ShootingObject
      * @since December 16, 2007
      */
     private WeaponManager[] allWeapons;
+    
+    /**
+     * The <code>SniperManager</code> for this <code>Ship</code>
+     * @since March 26, 2008
+     */
+    private SniperManager sniperManager;
 
     /**
      * How long to draw the name of the current weapon.
@@ -162,7 +168,7 @@ public class Ship implements GameElement, ShootingObject
      * @since March 12, 2008
      */
     private boolean snipeFlash = false;
-    
+
     /**
      * If this <code>Ship</code> has a shield; good for one free hit
      */
@@ -176,7 +182,7 @@ public class Ship implements GameElement, ShootingObject
         this.livesLeft = lives;
         this.name = name;
 
-        shielded=false;
+        shielded = false;
         score = 0;
         numAsteroidsKilled = 0;
         drawWeaponNameTimer = 0;
@@ -190,11 +196,11 @@ public class Ship implements GameElement, ShootingObject
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
         // Init weapons.
-        allWeapons = new WeaponManager[4];
+        allWeapons = new WeaponManager[3];
         allWeapons[0] = new MissileManager();
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();
-        allWeapons[3] = new SniperManager();
+        sniperManager = new SniperManager();
         weaponIndex = 0;
 
         // Start invincible.
@@ -228,23 +234,21 @@ public class Ship implements GameElement, ShootingObject
     {
         for ( WeaponManager wM : allWeapons )
             wM.clear();
+        sniperManager.clear();
     }
 
     public void restoreBonusValues()
     {
         for ( WeaponManager wM : allWeapons )
             wM.restoreBonusValues();
-    }
-
-    public WeaponManager[] allWeapons()
-    {
-        return allWeapons;
+        sniperManager.restoreBonusValues();
     }
 
     public void draw( Graphics g )
     {
         for ( WeaponManager wm : allWeapons )
             wm.draw( g );
+        sniperManager.draw( g );
 
         if ( livesLeft < 0 )
             return;
@@ -279,10 +283,10 @@ public class Ship implements GameElement, ShootingObject
         {
             AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
         }
-        
-        if(shielded)
+
+        if ( shielded )
         {
-            AsteroidsFrame.frame().drawCircle(g, Color.CYAN,(int) x,(int) y, RADIUS);
+            AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) x, (int) y, RADIUS );
         }
 
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
@@ -408,6 +412,7 @@ public class Ship implements GameElement, ShootingObject
             else
                 wm.act( false );
         }
+        sniperManager.act(true);
 
 
         checkBounce();
@@ -446,10 +451,11 @@ public class Ship implements GameElement, ShootingObject
         drawWeaponNameTimer = 50;
     }
 
-    public String giveShield() {
-        if(shielded)
+    public String giveShield()
+    {
+        if ( shielded )
             return "";
-        shielded=true;
+        shielded = true;
         return "Shield";
     }
 
@@ -477,7 +483,7 @@ public class Ship implements GameElement, ShootingObject
             {
                 for ( WeaponManager.Unit m : wm.getWeapons() )
                 {
-                    if ( Math.pow( (int) ( x - m.getX() ), 2 ) + Math.pow( (int) ( y - m.getY() ), 2 ) < Math.pow(RADIUS+m.getRadius(),2) )
+                    if ( Math.pow( (int) ( x - m.getX() ), 2 ) + Math.pow( (int) ( y - m.getY() ), 2 ) < Math.pow( RADIUS + m.getRadius(), 2 ) )
                     {
                         String obit = "";
                         if ( other instanceof Ship )
@@ -584,7 +590,10 @@ public class Ship implements GameElement, ShootingObject
         if ( livesLeft < 0 )
             return;
 
-        getWeaponManager().add( (int) x, (int) y, angle, dx, dy, myColor, true );
+        if ( sniping )
+            sniperManager.add( (int) x, (int) y, angle, dx, dy, myColor, true );
+        else
+            getWeaponManager().add( (int) x, (int) y, angle, dx, dy, myColor, true );
     }
 
     public boolean canShoot()
@@ -613,12 +622,12 @@ public class Ship implements GameElement, ShootingObject
         // We're invincible and can't die.
         if ( cannotDie() )
             return false;
-        
+
         //shield saved us
         if ( shielded )
         {
-            setInvincibilityCount(50);      
-            shielded=false;
+            setInvincibilityCount( 50 );
+            shielded = false;
             return true;
 
         }
@@ -942,6 +951,7 @@ public class Ship implements GameElement, ShootingObject
         ConcurrentLinkedQueue<WeaponManager> c = new ConcurrentLinkedQueue<WeaponManager>();
         for ( WeaponManager w : allWeapons )
             c.add( w );
+        c.add(sniperManager);
         return c;
     }
 

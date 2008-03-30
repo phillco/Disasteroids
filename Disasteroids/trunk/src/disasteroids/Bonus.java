@@ -21,13 +21,13 @@ import java.awt.Graphics;
 public class Bonus extends GameObject
 {
     final int RADIUS = 12;
-    
-    static final int MAX_LIFE=600;
+
+    static final int MAX_LIFE = 600;
 
     private float lastHue = 0.1f;
 
     private float lastHB = 0.6f;
-    
+
     private int age;
 
     /**
@@ -40,7 +40,7 @@ public class Bonus extends GameObject
     {
         super( x, y, dx, dy );
         bonusType = RandomGenerator.get().nextInt( 9 );
-        age=0;
+        age = 0;
         Sound.playInternal( SoundLibrary.BONUS_SPAWN );
     }
 
@@ -53,18 +53,18 @@ public class Bonus extends GameObject
     {
         move();
         ++age;
-        if( age > MAX_LIFE )
+        if ( age > MAX_LIFE )
         {
             Game.getInstance().removeObject( this );
             for ( int i = 0; i < 500; i++ )
-               ParticleManager.addParticle( new Particle(
-                                         getX() + RandomGenerator.get().nextInt( 8 ) - 4,
-                                         getY() + RandomGenerator.get().nextInt( 8 ) - 4,
-                                         RandomGenerator.get().nextInt( 8 ),
-                                         Color.getHSBColor(bonusType/9.0f , 1f, .7f ),
-                                         RandomGenerator.get().nextDouble() * 5,
-                                         RandomGenerator.get().nextDouble() * 2 * Math.PI,
-                                         40, 2 ) );
+                ParticleManager.addParticle( new Particle(
+                                             getX() + RandomGenerator.get().nextInt( 8 ) - 4,
+                                             getY() + RandomGenerator.get().nextInt( 8 ) - 4,
+                                             RandomGenerator.get().nextInt( 8 ),
+                                             Color.getHSBColor( bonusType / 9.0f, 1f, .7f ),
+                                             RandomGenerator.get().nextDouble() * 5,
+                                             RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                             40, 2 ) );
         }
         checkCollision();
         for ( int i = 0; i < 3; i++ )
@@ -139,7 +139,7 @@ public class Bonus extends GameObject
             case 7:
                 message = killer.getWeaponManager().ApplyBonus( 7 );
                 break;
-            case 8: 
+            case 8:
                 message = killer.giveShield();
                 break;
         }
@@ -159,7 +159,7 @@ public class Bonus extends GameObject
         lastHue = ( ( lastHue + 0.01f ) % 1 );
         lastHB = ( ( lastHB + 0.03f ) % 1 );
 
-        AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor(bonusType/9.0f,((float)age)/MAX_LIFE,.9f), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), 12 );
+        AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );
         AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 9, (int) getCenterY() - 1, "B", Color.darkGray );
     }

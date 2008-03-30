@@ -125,7 +125,7 @@ public class MissileManager extends WeaponManager
 
     public boolean add( Unit a, boolean playShootSound )
     {
-        if ( weapons.size() > 100 )//|| timeTillNextShot > 0 )
+        if ( weapons.size() > maxShots )//|| timeTillNextShot > 0 )
             return false;
         timeTillNextShot = getIntervalShoot();
 

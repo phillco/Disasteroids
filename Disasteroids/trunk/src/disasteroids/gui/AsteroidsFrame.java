@@ -437,24 +437,45 @@ public class AsteroidsFrame extends Frame implements KeyListener
         fillCircle( graph, fill, x, y, radius );
         drawCircle( graph, outline, x, y, radius );
     }
-    
-    
-    public void drawAsteroid(Graphics g, int x, int y, double angle, int radius)
+
+    /**
+     * Draws an <code>Image</code> correctly rotated, translated, and scaled
+     * @param g The <code>Graphics</code> context in which to draw
+     * @param img The raw <code>Image</code> to draw
+     * @param x The absolute x coordinate of the center of the <code>Image</code>
+     * @param y The absolute y coordinate of the center of the <code>Image</code>
+     * @param angle The angle to rotate; positive is clockwise
+     * @param scale The relative size of the desired image; 1.0 is the same size as the stock image
+     * 
+     * @since March 30, 2008
+     */
+    public void drawImage(Graphics g, Image img, int x, int y, double angle, double scale)
     {
-        Image src=ImageLibrary.getAsteroid();
         AffineTransform af=new AffineTransform();
-     
-        af.concatenate(AffineTransform.getTranslateInstance(RelativeGraphics.translateX(x)-radius,RelativeGraphics.translateY(y)-radius ));
-       
-        af.concatenate(AffineTransform.getScaleInstance(radius/100.0, radius/100.0));
-      
-//        af.concatenate(AffineTransform.getTranslateInstance(radius, radius));
-//        af.concatenate(AffineTransform.getRotateInstance(angle,2* radius, 2*radius));
-//        af.concatenate(AffineTransform.getTranslateInstance(-radius, -radius));
-        ((Graphics2D)g).drawImage(src, af, null);
+        af.translate(RelativeGraphics.translateX(x),RelativeGraphics.translateY(y));
+	af.scale(scale, scale);
+	af.rotate(angle);
+        af.translate(-img.getWidth(null)/2,-img.getHeight(null)/2);
+        ((Graphics2D)g).drawImage(img, af, null);
     }
-
-
+    
+    /**
+     * Draws an <code>Image</code> at a specified location.  Equivalent to the call
+     * of drawImage(g, img, x, y, 0.0, 1.0), but more efficient.
+     * 
+     * @param g The <code>Graphics</code> context in which to draw
+     * @param img The <code>Image</code> to draw
+     * @param x The absolute x coordinate of the center of the <code>Image</code>
+     * @param y The absolute y coordinate of the center of the <code>Image</code>
+     * 
+     * @since March 30,2008
+     */
+    public void drawImage(Graphics g, Image img, int x, int y)
+    {
+        g.drawImage(img, RelativeGraphics.translateX( x ) - img.getWidth( null )/2, 
+                         RelativeGraphics.translateY( y ) - img.getHeight( null )/2, null );
+    }
+    
     /**
      * Adds a new message to the on-screen list.
      * These messages should be relevant to the local player.

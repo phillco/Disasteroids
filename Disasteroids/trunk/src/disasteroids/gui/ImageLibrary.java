@@ -16,6 +16,11 @@ public class ImageLibrary {
     private static Image asteroid;
     
     /**
+     * The <code>Image</code> for a bonusAsteroid
+     */
+    private static Image bonusAsteroid;
+    
+    /**
      * Starts to load all of the <code>Image</code>s
      * 
      * @since March 24, 2008
@@ -23,6 +28,7 @@ public class ImageLibrary {
     public static void init()
     {
         asteroid = Toolkit.getDefaultToolkit().createImage("asteroid.GIF");
+        bonusAsteroid = Toolkit.getDefaultToolkit().createImage("bonusAsteroid.GIF");
     }
     
     /**
@@ -33,5 +39,10 @@ public class ImageLibrary {
     public static Image getAsteroid()
     {
         return asteroid;
+    }
+    
+    public static Image getBonusAsteroid()
+    {
+        return bonusAsteroid;
     }
 }

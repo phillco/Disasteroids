@@ -5,6 +5,7 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.ImageLibrary;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -121,7 +122,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
         Color f = new Color( fill.getRed() * life / lifeMax, fill.getGreen() * life / lifeMax, fill.getBlue() * life / lifeMax );
         AsteroidsFrame.frame().drawOutlinedCircle( g, f, outline, (int) getX(), (int) getY(), radius );
  */
-        AsteroidsFrame.frame().drawAsteroid(g, (int)getX(), (int)getY(), angle, radius );
+        AsteroidsFrame.frame().drawImage(g, ImageLibrary.getAsteroid(), (int) getX(), (int)getY(), angle, radius*2.0/ImageLibrary.getAsteroid().getWidth(null) );
         angle+=radius%2==0?.05:-.05;
     }
 

@@ -55,12 +55,18 @@ public class Particle implements GameElement
      * @since Classic
      */
     public double[] rgb = new double[3];
-    
+
     /**
      * The rate at which we grow or shrink.
      * @since January 16, 2008
      */
     private double deltaSize;
+
+    /**
+     * Whether this particle is of the few drawn in software.
+     * @since March 29, 2008
+     */
+    private boolean drawInSpeedRendering;
 
     /**
      * Creates a new <code>Particle</code>.
@@ -89,8 +95,10 @@ public class Particle implements GameElement
         rgb[0] = c.getRed();
         rgb[1] = c.getGreen();
         rgb[2] = c.getBlue();
-        
+
         deltaSize = RandomGenerator.get().nextDouble() - 0.6;
+        drawInSpeedRendering = RandomGenerator.get().nextInt( 10 ) == 0;
+
     }
 
     /**
@@ -116,6 +124,9 @@ public class Particle implements GameElement
 
     public void draw( Graphics g )
     {
+        if ( !drawInSpeedRendering && !Settings.hardwareRendering )
+            return;
+
         double fadePct = (double) life / life_max;
         color = new Color( (int) ( rgb[0] * fadePct ), (int) ( rgb[1] * fadePct ), (int) ( rgb[2] * fadePct ) );
         AsteroidsFrame.frame().fillCircle( g, color, (int) x, (int) y, (int) size / 2 );

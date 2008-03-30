@@ -59,9 +59,6 @@ public class ParticleManager implements Serializable
      */
     public static void draw( Graphics g )
     {
-        if ( !Settings.qualityRendering )
-            return;
-
         for ( Particle p : allParticles )
             p.draw( g );
     }

@@ -144,7 +144,7 @@ class SniperManager extends WeaponManager
 
     public SoundClip getShootSound()
     {
-        return SoundLibrary.BULLET_SHOOT;
+        return SoundLibrary.SNIPER_SHOOT;
     }
 
     public SoundClip getBerserkSound()

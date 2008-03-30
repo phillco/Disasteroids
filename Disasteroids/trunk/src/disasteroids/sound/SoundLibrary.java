@@ -38,6 +38,8 @@ public class SoundLibrary
     public static final SoundClip GET_BONUS = getBonus();
     
     public static final SoundClip BONUS_SPAWN = bonusSpawn();
+    
+    public static final SoundClip SNIPER_SHOOT = sniperShoot();
 
     /*
      * All of the computing methods
@@ -180,5 +182,20 @@ public class SoundLibrary
             freqPhase++;
         }
         return new SoundClip( temp );
+    }
+
+    private static SoundClip sniperShoot()
+    {
+        byte[] temp=new byte[2000];// 1/4 second
+        int frequency=20000;
+        double phase=0;
+        for(int index=0; index<2000; index++)
+        {
+            frequency*=.99;
+            phase+=frequency/8000.0;
+            temp[index]=(byte)(100*Math.sin(phase));
+        }
+        return new SoundClip( temp );
+        
     }
 }

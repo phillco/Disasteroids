@@ -99,7 +99,7 @@ public class Background
             }
 
             //Color col = new Color( rgb[0], rgb[1], rgb[2] );
-            Color col=Color.getHSBColor(rand.nextFloat(), rand.nextFloat()/3f, .7f+.3f*rand.nextFloat());
+            Color col = Color.getHSBColor( rand.nextFloat(), rand.nextFloat() / 3f, .7f + .3f * rand.nextFloat() );
             theStars[star] = new Star( rand.nextInt( width ), rand.nextInt( height ), col );
         }
     }
@@ -154,11 +154,12 @@ public class Background
         g.fillRect( 0, 0, width, height );
 
         // Draw stars.
-        try{ 
+        try
+        {
             for ( Star star : this.theStars )
-                synchronized (this)
+                synchronized ( this )
                 {
-                    if(star==null||AsteroidsFrame.frame()==null||AsteroidsFrame.frame().localPlayer()==null)
+                    if ( star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
                         continue;
                     // Move them.
                     star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
@@ -169,9 +170,10 @@ public class Background
 
                     AsteroidsFrame.frame().drawPoint( g, star.color, star.x, star.y );
                 }
-        }catch(NullPointerException e)
+        }
+        catch ( NullPointerException e )
         {
-            Running.log("Star Null Pointer :(");
+            Running.warning( "Star Null Pointer :(" );
         }
 
         // Draw background messages.
@@ -286,7 +288,7 @@ public class Background
                     Math.min( col.getRed() * life / 70 + 80, 255 ),
                     col.getGreen() * life / lifeMax,
                     col.getBlue() * life / lifeMax );
-            gBack.setFont(new Font("Century Gothic", Font.BOLD, 10));
+            gBack.setFont( new Font( "Century Gothic", Font.BOLD, 10 ) );
             AsteroidsFrame.frame().drawString( gBack, (int) ( x + 3 * Math.cos( life / 5.0 ) ), y, message, c );
         }
     }

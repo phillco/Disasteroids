@@ -22,13 +22,19 @@ public class Bonus extends GameObject
 {
     final int RADIUS = 12;
 
-    static final int MAX_LIFE = 600;
+    static final int MAX_LIFE = 1600;
 
     private float lastHue = 0.1f;
 
     private float lastHB = 0.6f;
 
-    private int age;
+    private int age = 0;
+
+    /**
+     * Acceleration vectors.
+     * @since March 30, 2008
+     */
+    private double ax = 0, ay = 0;
 
     /**
      * The type of bonus.
@@ -40,7 +46,6 @@ public class Bonus extends GameObject
     {
         super( x, y, dx, dy );
         bonusType = RandomGenerator.get().nextInt( 9 );
-        age = 0;
         Sound.playInternal( SoundLibrary.BONUS_SPAWN );
     }
 
@@ -52,6 +57,25 @@ public class Bonus extends GameObject
     public void act()
     {
         move();
+        setSpeed( Math.min( 6, getDx() + ax ), Math.min( 6, getDy() + ay ) );
+
+        ax *= 0.98;
+        ay *= 0.98;
+
+        if ( Math.abs( ax ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
+            ax = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
+        if ( Math.abs( ay ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
+            ay = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
+        if ( RandomGenerator.get().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
+        {
+            ax *= -1.8;
+            ay *= -1.8;
+        }
+
+
+
+
+
         ++age;
         if ( age > MAX_LIFE )
         {

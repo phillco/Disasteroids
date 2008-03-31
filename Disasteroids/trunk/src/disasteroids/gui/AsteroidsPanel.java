@@ -363,7 +363,9 @@ public class AsteroidsPanel extends Panel
         // Draw the asteroid count.
         g2d.setColor( Color.lightGray );
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
-        text = AsteroidsFrame.insertThousandCommas( Game.getInstance().asteroidManager().size() ) + " asteroid" + ( Game.getInstance().asteroidManager().size() == 1 ? " remains" : "s remain" );
+        text = AsteroidsFrame.insertThousandCommas( Game.getInstance().asteroidManager().size() ) + " asteroid" + ( Game.getInstance().asteroidManager().size() == 1 ? ", " : "s, " );
+        text += AsteroidsFrame.insertThousandCommas( Game.getInstance().baddies.size() ) + " baddie" + ( Game.getInstance().baddies.size() == 1 ? "" : "s" );
+        text += " remain";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         g2d.drawString( text, x, y );
         y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;

@@ -57,12 +57,12 @@ public class AsteroidManager implements Serializable
         // Create regular asteroids.
         for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
         {
-            theAsteroids.add( new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
-                                            rand.nextInt( Game.getInstance().GAME_HEIGHT ),
-                                            rand.nextDouble() * 6 - 3,
-                                            rand.nextDouble() * 6 - 3,
-                                            rand.nextInt( 150 ) + 25,
-                                            rand.nextInt( level * 10 + 10 ) - 9 ) );
+            add( new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
+                               rand.nextInt( Game.getInstance().GAME_HEIGHT ),
+                               rand.nextDouble() * 6 - 3,
+                               rand.nextDouble() * 6 - 3,
+                               rand.nextInt( 150 ) + 25,
+                               rand.nextInt( level * 10 + 10 ) - 9 ), true );
             if ( rand.nextInt( 10 ) == 1 )
             {
                 numBonuses++;
@@ -72,12 +72,12 @@ public class AsteroidManager implements Serializable
         // Create bonus asteroids.
         for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
         {
-            theAsteroids.add( new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
-                                                 rand.nextInt( Game.getInstance().GAME_HEIGHT ),
-                                                 rand.nextDouble() * 6 - 3,
-                                                 rand.nextDouble() * 6 - 3,
-                                                 rand.nextInt( 150 ) + 25,
-                                                 rand.nextInt( level * 10 + 10 ) - 9 ) );
+            add( new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
+                                    rand.nextInt( Game.getInstance().GAME_HEIGHT ),
+                                    rand.nextDouble() * 6 - 3,
+                                    rand.nextDouble() * 6 - 3,
+                                    rand.nextInt( 150 ) + 25,
+                                    rand.nextInt( level * 10 + 10 ) - 9 ), true );
 
         }
     }

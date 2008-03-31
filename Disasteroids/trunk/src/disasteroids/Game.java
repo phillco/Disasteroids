@@ -89,6 +89,12 @@ public class Game implements Serializable
     public ConcurrentLinkedQueue<ShootingObject> shootingObjects;
 
     /**
+     * Reference list all of living objects on the level that the player must destroy (asteroids, aliens, stations, and so on).
+     * @since March 31, 2008
+     */
+    public ConcurrentLinkedQueue<GameObject> baddies;
+
+    /**
      * The game mode that we're playing.
      * @since February 28, 2008
      */
@@ -247,6 +253,7 @@ public class Game implements Serializable
     {
         gameObjects.remove( o );
         shootingObjects.remove( o );
+        baddies.remove( o );
     }
 
     /**
@@ -282,24 +289,19 @@ public class Game implements Serializable
         actionManager = new ActionManager();
         shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
+        baddies = new ConcurrentLinkedQueue<GameObject>();
 
         // Spawn players.
         for ( int index = 0; index < players.size(); index++ )
         {
             int id = players.get( index ).id;
-            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), 1, players.get( index ).getName() ) );
+            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), 100, players.get( index ).getName() ) );
             players.get( index ).id = id;
             shootingObjects.add( players.get( index ) );
         }
 
         // Set up the game.
         gameMode = new WaveGameplay(); // LinearGameplay(); 
-//
-//        Alien a = new Alien();
-//        gameObjects.add( a );
-//        shootingObjects.add( a );
-
-        gameObjects.add( new Bonus( 950, 900 ) );
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
@@ -621,4 +623,11 @@ public class Game implements Serializable
     {
         gameObjects.add( new Bonus( parent.getX(), parent.getY() ) );
     }
+
+    public ConcurrentLinkedQueue<GameObject> getBaddies()
+    {
+        return baddies;
+    }
+    
+    
 }

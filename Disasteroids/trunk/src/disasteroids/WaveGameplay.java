@@ -26,29 +26,34 @@ public class WaveGameplay implements GameMode
 
     public WaveGameplay()
     {
-        currentWave = 5;
+        currentWave = 1;
         wavePoints = getWavePoints( currentWave );
     }
 
     public void act()
     {
-        // Is the wave over?
-        if ( wavePoints <= 0 && Game.getInstance().asteroidManager().size() <= 0 )
+        // Is the wave over? Advance.
+        if ( wavePoints <= 0 && Game.getInstance().baddies.size() <= 0 && Game.getInstance().asteroidManager().size() <= 0 )
         {
             Running.log( "Wave " + currentWave + " completed!", 300 );
             currentWave += 1;
             wavePoints = getWavePoints( currentWave );
         }
-        int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 60 ) - 30;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
-        int y = ( Game.getInstance().players.getFirst().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 60 ) - 30;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+
+        // Spawn asteroids directly opposite from player 1.
+        int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+        int y = ( Game.getInstance().players.getFirst().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+
+        double spawnRate = Math.min(9, Math.max( 1, (Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size()) / 20.0));
+        // System.out.println(spawnRate + " " + wavePoints);
 
         // Spawn an asteroid.
-        if ( wavePoints >= 50 && RandomGenerator.get().nextInt( 20 ) == 0 )
+        if ( wavePoints >= 50 && RandomGenerator.get().nextDouble() * spawnRate <= 0.3)
         {
             wavePoints -= 50;
 
             // Make it a bonus asteroid.
-            if ( RandomGenerator.get().nextInt( 30 ) == 0 )
+            if ( RandomGenerator.get().nextDouble() * 12 * spawnRate <= 0.3)
             {
                 Game.getInstance().asteroidManager().add(
                         new BonusAsteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
@@ -64,21 +69,23 @@ public class WaveGameplay implements GameMode
         }
 
         // Spawn an alien.
-        if ( wavePoints >= 100 && RandomGenerator.get().nextInt( 60 ) == 0 )
+        if ( wavePoints >= 100 && RandomGenerator.get().nextDouble() *  3 * spawnRate <= 0.3)
         {
             wavePoints -= 100;
             Alien a = new Alien( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3 );
             Game.getInstance().gameObjects.add( a );
             Game.getInstance().shootingObjects.add( a );
+            Game.getInstance().baddies.add( a );
         }
 
         // Spawn a station.
-        if ( wavePoints >= 150 && RandomGenerator.get().nextInt( 90 ) == 0 )
+        if ( wavePoints >= 150 && RandomGenerator.get().nextDouble() * 11 * spawnRate <= 0.3)
         {
             wavePoints -= 150;
             Station s = new Station( x, y, RandomGenerator.get().nextInt( 4 ) - 2, RandomGenerator.get().nextInt( 4 ) - 2 );
             Game.getInstance().gameObjects.add( s );
             Game.getInstance().shootingObjects.add( s );
+            Game.getInstance().baddies.add( s );
         }
 
     }
@@ -115,7 +122,7 @@ public class WaveGameplay implements GameMode
 
     int getWavePoints( int wave )
     {
-        return wave * 300;
+        return wave * 1200 + 100;
     }
 
     public void flatten( DataOutputStream stream ) throws IOException
@@ -130,6 +137,7 @@ public class WaveGameplay implements GameMode
             int newWave = Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the wave to start.", currentWave ) );
             Game.getInstance().asteroidManager().clear();
             Game.getInstance().gameObjects.clear();
+            Game.getInstance().baddies.clear();
             Game.getInstance().shootingObjects = new ConcurrentLinkedQueue<ShootingObject>( Game.getInstance().players );
             currentWave = newWave;
             wavePoints = getWavePoints( currentWave );

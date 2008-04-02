@@ -429,9 +429,11 @@ public class Game implements Serializable
         switch ( action )
         {
             case KeyEvent.VK_SPACE:
+            case KeyEvent.VK_CLEAR://5 on numpad w/o numlock
                 actor.startShoot();
                 break;
             case -KeyEvent.VK_SPACE:
+            case -KeyEvent.VK_CLEAR:
                 actor.stopShoot();
                 break;
             case KeyEvent.VK_LEFT:

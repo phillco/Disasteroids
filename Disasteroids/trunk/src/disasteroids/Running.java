@@ -10,6 +10,7 @@ import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.MainMenu;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
+import disasteroids.sound.Sound;
 import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -140,6 +141,8 @@ public class Running
             case SINGLEPLAYER:
                 new Game();
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName() ) );
+                if(Settings.musicOn)
+                    Sound.startMusic();
                 break;
 
             case CONNECT:
@@ -150,6 +153,8 @@ public class Running
 
                 Settings.lastConnectionIP = address;
                 Settings.saveToStorage();
+                if(Settings.musicOn)
+                    Sound.startMusic();
 
                 // Connect to it.
                 try

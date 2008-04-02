@@ -115,7 +115,8 @@ public class Bonus extends GameObject
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < ( RADIUS + Ship.RADIUS ) * ( RADIUS + Ship.RADIUS ) )
+                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < 
+                              ( RADIUS + s.getRadius() ) * ( RADIUS + s.getRadius() ) )
                 {
                     Sound.playInternal( SoundLibrary.GET_BONUS );
                     Game.getInstance().removeObject( this );

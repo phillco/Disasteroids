@@ -124,7 +124,7 @@ public class Particle implements GameElement
 
     public void draw( Graphics g )
     {
-        if ( !drawInSpeedRendering && !Settings.hardwareRendering )
+        if ( !drawInSpeedRendering && !Settings.qualityRendering )
             return;
 
         double fadePct = (double) life / life_max;

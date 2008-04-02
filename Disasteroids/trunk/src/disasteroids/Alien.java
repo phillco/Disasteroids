@@ -137,8 +137,8 @@ public class Alien extends GameObject implements ShootingObject
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( ( s.getX() + Ship.RADIUS > getX() && s.getX() - Ship.RADIUS < getX() + size ) &&
-                        ( s.getY() + Ship.RADIUS > getY() && s.getY() - Ship.RADIUS < getY() + size ) )
+                if ( ( s.getX() + s.getRadius() > getX() && s.getX() - s.getRadius() < getX() + size ) &&
+                        ( s.getY() + s.getRadius() > getY() && s.getY() - s.getRadius() < getY() + size ) )
                 {
                     if ( s.looseLife( s.getName() + " was abducted." ) )
                         return;

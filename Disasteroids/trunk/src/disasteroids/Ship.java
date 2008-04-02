@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
 import disasteroids.networking.Server;
@@ -34,7 +35,7 @@ public class Ship implements GameElement, ShootingObject
 
     public final static double SENSITIVITY = 20;
 
-    public final static int RADIUS = 10;
+    private final static int RADIUS = 10;
 
     /**
      * Our location on the absolute game world.
@@ -283,10 +284,12 @@ public class Ship implements GameElement, ShootingObject
         {
             AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
         }
+        
+      //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
         if ( shielded )
         {
-            AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) x, (int) y, RADIUS );
+            AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) x, (int) y, RADIUS + 5 );
         }
 
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
@@ -998,5 +1001,10 @@ public class Ship implements GameElement, ShootingObject
     public void setSnipeMode( boolean on )
     {
         sniping = on;
+    }
+    
+    public int getRadius()
+    {
+        return shielded ? RADIUS + 5 : RADIUS;
     }
 }

@@ -38,6 +38,8 @@ public class WaveGameplay implements GameMode
             Running.log( "Wave " + currentWave + " completed!", 300 );
             currentWave += 1;
             wavePoints = getWavePoints( currentWave );
+            for(Ship s: Game.getInstance().players)
+                s.restoreBonusValues();
         }
 
         // Spawn asteroids directly opposite from player 1.

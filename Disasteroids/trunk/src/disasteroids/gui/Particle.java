@@ -4,7 +4,10 @@
  */
 package disasteroids.gui;
 
-import disasteroids.*;
+
+import disasteroids.GameElement;
+import disasteroids.RandomGenerator;
+import disasteroids.Settings;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -127,7 +130,7 @@ public class Particle implements GameElement
         if ( !drawInSpeedRendering && !Settings.qualityRendering )
             return;
 
-        double fadePct = (double) life / life_max;
+        double fadePct = life / life_max;
         color = new Color( (int) ( rgb[0] * fadePct ), (int) ( rgb[1] * fadePct ), (int) ( rgb[2] * fadePct ) );
         AsteroidsFrame.frame().fillCircle( g, color, (int) x, (int) y, (int) size / 2 );
     }

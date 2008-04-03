@@ -46,7 +46,7 @@ public class WaveGameplay implements GameMode
         int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
         int y = ( Game.getInstance().players.getFirst().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
 
-        double spawnRate = Math.min(9, Math.max( 1, (Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size()) / 20.0));
+        double spawnRate = .4; //Math.min(9, Math.max( 1, (Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size()) / 20.0));
         // System.out.println(spawnRate + " " + wavePoints);
 
         // Spawn an asteroid.

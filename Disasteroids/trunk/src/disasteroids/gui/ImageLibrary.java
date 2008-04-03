@@ -27,8 +27,8 @@ public class ImageLibrary {
      */
     public static void init()
     {
-        asteroid = Toolkit.getDefaultToolkit().createImage("asteroid.GIF");
-        bonusAsteroid = Toolkit.getDefaultToolkit().createImage("bonusAsteroid.GIF");
+        asteroid = Toolkit.getDefaultToolkit().createImage("asteroid.png");
+        bonusAsteroid = Toolkit.getDefaultToolkit().createImage("bonusAsteroid.png");
     }
     
     /**

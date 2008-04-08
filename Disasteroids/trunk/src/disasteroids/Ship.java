@@ -276,9 +276,9 @@ public class Ship implements GameElement, ShootingObject
         }
 
         Polygon outline = new Polygon();
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY());
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) )  - AsteroidsFrame.frame().getRumbleY());
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ) , (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ));
 
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
@@ -634,6 +634,8 @@ public class Ship implements GameElement, ShootingObject
             return true;
 
         }
+        
+        AsteroidsFrame.frame().rumble();
 
         livesLeft--;
         if ( livesLeft >= 0 )

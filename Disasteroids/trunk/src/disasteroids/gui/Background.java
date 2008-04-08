@@ -168,7 +168,7 @@ public class Background
                     // Wrap them.
                     star.checkWrap();
 
-                    AsteroidsFrame.frame().drawPoint( g, star.color, star.x, star.y );
+                    AsteroidsFrame.frame().drawPoint( g, star.color, star.x + AsteroidsFrame.frame().getRumbleX(), star.y + AsteroidsFrame.frame().getRumbleY());
                 }
         }
         catch ( NullPointerException e )

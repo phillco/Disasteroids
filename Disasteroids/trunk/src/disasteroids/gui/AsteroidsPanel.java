@@ -6,6 +6,7 @@ package disasteroids.gui;
 
 import disasteroids.Game;
 import disasteroids.GameObject;
+import disasteroids.RandomGenerator;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
@@ -83,18 +84,32 @@ public class AsteroidsPanel extends Panel
     boolean showTracker = false;
 
     /**
-     * The number of times that the paint method has been called, for FPS
+     * The number of times that the paint method has been called, for FPS.
      * @since January 10, 2008
      */
-    int paintCount;
+    int paintCount = 0;
 
+    /**
+     * Positive number at which the screen rumbles; the greater the value, the greater the (random) distance.
+     * @since April 7, 2008
+     */
+    double rumble = 0.0;
+    
+    /**
+     * Offsets that objects should be drawn at during rumbling.
+     * @since April 7, 2008
+     */
+    int rumbleX = 0, rumbleY = 0;
+
+    /**
+     * The parent frame containing this.
+     * @since January 15, 2008
+     */
     AsteroidsFrame parent;
 
     public AsteroidsPanel( AsteroidsFrame parent )
     {
-        paintCount = 0;
         this.parent = parent;
-
     }
 
     /**
@@ -148,7 +163,7 @@ public class AsteroidsPanel extends Panel
         // Update the ships.
         for ( Ship s : Game.getInstance().players )
             s.draw( g );
-        
+
         // Draw the on-screen HUD.
         drawHud( g );
 
@@ -188,6 +203,16 @@ public class AsteroidsPanel extends Panel
         if ( virtualMem == null )
             initBuffering();
 
+        // Shake the screen when hit.
+        if ( Math.abs( rumble ) < 0.1 )
+            rumble = 0;
+        else
+        {
+            rumbleX = (int) ( RandomGenerator.get().nextDouble() * rumble - rumble / 2 );
+            rumbleY = (int) ( RandomGenerator.get().nextDouble() * rumble - rumble / 2 );
+            rumble *= 0.93;
+        }
+
         if ( showWarpDialog )
         {
             Game.getInstance().getGameMode().optionsKey();
@@ -205,7 +230,8 @@ public class AsteroidsPanel extends Panel
                 draw( virtualMem.getGraphics() );
 
             }
-            while ( ( (VolatileImage) virtualMem ).contentsLost() ); // Render in software mode.
+            while ( ( (VolatileImage) virtualMem ).contentsLost() );
+        // Render in software mode.
         else
             // Draw the game's graphics.
             draw( virtualMem.getGraphics() );

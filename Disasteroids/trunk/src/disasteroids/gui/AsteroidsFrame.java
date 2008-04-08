@@ -30,6 +30,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.awt.geom.AffineTransform;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The big momma class up in the sky.
@@ -316,8 +318,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void drawPoint( Graphics graph, Color col, int x, int y )
     {
-        x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        x = RelativeGraphics.translateX( x );
+        y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -2 && x < Game.getInstance().GAME_WIDTH + 2 && y > -2 && y < Game.getInstance().GAME_HEIGHT + 2 )
             graph.drawRect( x, y, 0, 0 );
@@ -333,8 +335,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void drawCircle( Graphics graph, Color col, int x, int y, int radius )
     {
-        x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        x = RelativeGraphics.translateX( x );
+        y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -radius * 2 && x < Game.getInstance().GAME_WIDTH + radius * 2 && y > -radius * 2 && y < Game.getInstance().GAME_HEIGHT + radius * 2 )
             graph.drawOval( x - radius, y - radius, radius * 2, radius * 2 );
@@ -362,8 +364,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void drawLine( Graphics graph, Color col, int x, int y, int length, double angle )
     {
-        x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        x = RelativeGraphics.translateX( x );
+        y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
             graph.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
@@ -371,8 +373,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void drawLine( Graphics graph, Color col, int x, int y, int length, int offset, double angle )
     {
-        x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        x = RelativeGraphics.translateX( x );
+        y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
             graph.drawLine( (int) ( x + offset * Math.cos( angle ) ), (int) ( y - offset * Math.sin( angle ) ), (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
@@ -389,8 +391,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void fillCircle( Graphics graph, Color col, int x, int y, int radius )
     {
-        x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        x = RelativeGraphics.translateX( x );
+        y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -2 * radius && x < Game.getInstance().GAME_WIDTH + radius * 2 && y > -radius * 2 && y < Game.getInstance().GAME_HEIGHT + radius * 2 )
             graph.fillOval( x - radius, y - radius, radius * 2, radius * 2 );
@@ -399,8 +401,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
     public void drawString( Graphics graph, int x, int y, String str, Color col )
     {
 //        graph.setFont( new Font( "Tahoma", graph.getFont().getStyle(), graph.getFont().getSize() ) );
-        x = ( x - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y = ( y - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        x = RelativeGraphics.translateX( x );
+        y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -50 && x < Game.getInstance().GAME_WIDTH && y > -50 && y < Game.getInstance().GAME_HEIGHT )
             graph.drawString( str, x, y );
@@ -449,16 +451,16 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since March 30, 2008
      */
-    public void drawImage(Graphics g, Image img, int x, int y, double angle, double scale)
+    public void drawImage( Graphics g, Image img, int x, int y, double angle, double scale )
     {
-        AffineTransform af=new AffineTransform();
-        af.translate(RelativeGraphics.translateX(x),RelativeGraphics.translateY(y));
-	af.scale(scale, scale);
-	af.rotate(angle);
-        af.translate(-img.getWidth(null)/2,-img.getHeight(null)/2);
-        ((Graphics2D)g).drawImage(img, af, null);
+        AffineTransform af = new AffineTransform();
+        af.translate( RelativeGraphics.translateX( x ), RelativeGraphics.translateY( y ) );
+        af.scale( scale, scale );
+        af.rotate( angle );
+        af.translate( -img.getWidth( null ) / 2, -img.getHeight( null ) / 2 );
+        ( (Graphics2D) g ).drawImage( img, af, null );
     }
-    
+
     /**
      * Draws an <code>Image</code> at a specified location.  Equivalent to the call
      * of drawImage(g, img, x, y, 0.0, 1.0), but more efficient.
@@ -470,12 +472,12 @@ public class AsteroidsFrame extends Frame implements KeyListener
      * 
      * @since March 30,2008
      */
-    public void drawImage(Graphics g, Image img, int x, int y)
+    public void drawImage( Graphics g, Image img, int x, int y )
     {
-        g.drawImage(img, RelativeGraphics.translateX( x ) - img.getWidth( null )/2, 
-                         RelativeGraphics.translateY( y ) - img.getHeight( null )/2, null );
+        g.drawImage( img, RelativeGraphics.translateX( x ) - img.getWidth( null ) / 2,
+                     RelativeGraphics.translateY( y ) - img.getHeight( null ) / 2, null );
     }
-    
+
     /**
      * Adds a new message to the on-screen list.
      * These messages should be relevant to the local player.
@@ -550,5 +552,26 @@ public class AsteroidsFrame extends Frame implements KeyListener
             frame().dispose();
             Running.quit();
         }
+    }
+
+    /**
+     * Returns the x offset for objects during rumbling.
+     * 
+     * @return  the x offset that objects should be drawn at during rumbling
+     * @since April 7, 2008
+     */
+    public int getRumbleX()
+    {
+        return panel.rumbleX;
+    }
+
+    public int getRumbleY()
+    {
+        return panel.rumbleY;
+    }
+    
+    public void rumble()
+    {
+        panel.rumble = 19;
     }
 }

@@ -60,7 +60,7 @@ public class GameLoop extends Thread
     }
     
     /**
-     * Returnds whether the game should run.
+     * Returns whether the game should run.
      * 
      * @return  whether we should run the next timestep
      * @since January 13, 2007

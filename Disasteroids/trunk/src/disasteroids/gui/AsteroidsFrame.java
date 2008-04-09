@@ -570,8 +570,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
         return panel.rumbleY;
     }
     
-    public void rumble()
+    public void rumble(double amount)
     {
-        panel.rumble = 19;
+        panel.rumble += amount;
     }
 }

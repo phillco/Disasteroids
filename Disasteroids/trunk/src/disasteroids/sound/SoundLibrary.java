@@ -19,6 +19,8 @@ public class SoundLibrary
 
     public static final SoundClip BERSERK = berserkSound();
 
+    public static final SoundClip SHIP_HIT = shipHit();
+    
     public static final SoundClip SHIP_DIE = shipDie();
 
     public static final SoundClip ASTEROID_DIE = asteroidDie();
@@ -95,6 +97,15 @@ public class SoundLibrary
     }
 
     //:)
+    private static SoundClip shipHit()
+    {
+        byte[] temp = new byte[2000];
+        int index = 0;
+        for ( int i = 1200; i > 800; i-- )
+            temp[index++] = (byte) ( Math.sin( 80f * Math.pow( i, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - i ) );
+        return new SoundClip( temp );
+    }
+    
     private static SoundClip shipDie()
     {
         byte[] temp = new byte[8000];
@@ -102,6 +113,8 @@ public class SoundLibrary
             temp[index] = (byte) ( Math.sin( 880f * Math.pow( index, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - index ) );
         return new SoundClip( temp );
     }
+    
+    
 
     private static SoundClip stationDisabled()
     {

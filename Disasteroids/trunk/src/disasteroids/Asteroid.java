@@ -50,7 +50,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      * @since January 8, 2007
      */
     int id;
-    
+
     /**
      * The angle offset, for Graphics only
      */
@@ -74,7 +74,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
         super( x, y, dx, dy );
         this.radius = size / 2;
         this.life = this.lifeMax = Math.max( 1, lifeMax );
-        angle=0;
+        angle = 0;
         // Enforce a minimum size.
         if ( size < 25 )
             size = 25 + RandomGenerator.get().nextInt( 25 );
@@ -96,7 +96,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
     {
         super( parent.getX(), parent.getY(), RandomGenerator.get().nextDouble() * 2 - 1, RandomGenerator.get().nextDouble() * 2 - 1 );
         parent.children++;
-        angle=0;
+        angle = 0;
         if ( parent.children > 2 )
             this.radius = 5;
         else
@@ -118,12 +118,11 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public void draw( Graphics g )
     {
-/*        lifeMax = Math.max( lifeMax, 1 );
+        /*        lifeMax = Math.max( lifeMax, 1 );
         Color f = new Color( fill.getRed() * life / lifeMax, fill.getGreen() * life / lifeMax, fill.getBlue() * life / lifeMax );
         AsteroidsFrame.frame().drawOutlinedCircle( g, f, outline, (int) getX(), (int) getY(), radius );
- */
-        AsteroidsFrame.frame().drawImage(g, ImageLibrary.getAsteroid(), (int) getX(), (int)getY(), angle, radius*2.0/ImageLibrary.getAsteroid().getWidth(null) );
-        angle+=radius%2==0?.05:-.05;
+         */
+        AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAsteroid(), (int) getX(), (int) getY(), angle, radius * 2.0 / ImageLibrary.getAsteroid().getWidth( null ) );
     }
 
     /**
@@ -146,6 +145,8 @@ public class Asteroid extends GameObject implements GameElement, Serializable
 
         move();
         checkCollision();
+        if ( !Game.getInstance().isPaused() )
+            angle += radius % 2 == 0 ? .05 : -.05;
     }
 
     /**
@@ -202,9 +203,9 @@ public class Asteroid extends GameObject implements GameElement, Serializable
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < Math.pow(radius + s.getRadius() , 2 ) )
+                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < Math.pow( radius + s.getRadius(), 2 ) )
                 {
-                    if ( s.looseLife( s.getName() + ( Math.abs( getSpeed() ) > Math.abs( s.getSpeed() ) ? " was hit by" : " slammed into" ) + " an asteroid." ) )
+                    if ( s.damage( radius / 2.0 + 8, s.getName() + ( Math.abs( getSpeed() ) > Math.abs( s.getSpeed() ) ? " was hit by" : " slammed into" ) + " an asteroid." ) )
                     {
                         killer = s;
                         kill();

@@ -161,14 +161,15 @@ public class Background
                 {
                     if ( star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
                         continue;
+
                     // Move them.
-                 //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
-                 //   star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+                    //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+                    //   star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
 
                     // Wrap them.
-                 //   star.checkWrap();
+                    //   star.checkWrap();
 
-                    AsteroidsFrame.frame().drawPoint( g, star.color,(int) star.x + AsteroidsFrame.frame().getRumbleX(),(int) star.y + AsteroidsFrame.frame().getRumbleY());
+                    AsteroidsFrame.frame().drawPoint( g, star.color, (int) star.x + AsteroidsFrame.frame().getRumbleX(), (int) star.y + AsteroidsFrame.frame().getRumbleY() );
                 }
         }
         catch ( NullPointerException e )
@@ -186,17 +187,17 @@ public class Background
                 itr.remove();
         }
     }
-    
+
     public void act()
     {
-        if(theStars==null)
+        if ( theStars == null )
             return;
-        for(Star star: theStars)
+        for ( Star star : theStars )
         {
-            if(star==null)
+            if ( star == null )
                 continue;
-            star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
-            star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+            star.x += -AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+            star.y += -AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
             star.checkWrap();
         }
     }
@@ -226,8 +227,6 @@ public class Background
     {
         public double x,  y;
 
-        public double dx,  dy;
-
         public Color color;
 
         public double depth;
@@ -239,30 +238,23 @@ public class Background
             this.color = col;
 
             // Simulated depth. Multiplied by the localPlayer's dx and dy to determine speed.
-            depth = RandomGenerator.get().nextDouble() * 5;
+            depth = RandomGenerator.get().nextDouble() * 2;
 
             // Force some to the 'background'.
             if ( RandomGenerator.get().nextInt( 15 ) == 0 )
                 depth /= 3;
-
-            // Some stars also move.
-            if ( RandomGenerator.get().nextInt( 10 ) == 0 )
-            {
-                dx = RandomGenerator.get().nextDouble() - 0.5;
-                dy = RandomGenerator.get().nextDouble() - 0.5;
-            }
         }
 
         public void checkWrap()
         {
             // Wrap to stay inside the level.
-            if ( x <= Math.abs( dx ) )
+            if ( x <= Math.abs( 0 ) )
                 x += Game.getInstance().GAME_WIDTH - 1;
-            if ( y <= Math.abs( dy ) )
+            if ( y <= Math.abs( 0 ) )
                 y += Game.getInstance().GAME_HEIGHT - 1;
-            if ( x > Game.getInstance().GAME_WIDTH - Math.abs( dx ) )
+            if ( x > Game.getInstance().GAME_WIDTH )
                 x -= Game.getInstance().GAME_WIDTH - 1;
-            if ( y > Game.getInstance().GAME_HEIGHT - Math.abs( dy ) )
+            if ( y > Game.getInstance().GAME_HEIGHT )
                 y -= Game.getInstance().GAME_HEIGHT - 1;
         }
     }

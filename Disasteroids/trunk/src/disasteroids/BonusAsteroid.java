@@ -72,6 +72,5 @@ public class BonusAsteroid extends Asteroid
     {
         AsteroidsFrame.frame().drawImage(g, ImageLibrary.getBonusAsteroid(),
                 (int) getX(), (int)getY(), angle, radius*2.0/ImageLibrary.getBonusAsteroid().getWidth(null) );
-        angle+=radius%2==0?.05:-.05;
     }
 }

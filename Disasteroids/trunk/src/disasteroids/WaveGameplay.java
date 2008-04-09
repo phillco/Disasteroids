@@ -74,7 +74,7 @@ public class WaveGameplay implements GameMode
         if ( wavePoints >= 100 && RandomGenerator.get().nextDouble() *  3 * spawnRate <= 0.3)
         {
             wavePoints -= 100;
-            Alien a = new Alien( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3 );
+            Alien a = new Alien( x, y, RandomGenerator.get().nextDouble() * 8 - 4,  RandomGenerator.get().nextDouble() * 8 - 4 );
             Game.getInstance().gameObjects.add( a );
             Game.getInstance().shootingObjects.add( a );
             Game.getInstance().baddies.add( a );

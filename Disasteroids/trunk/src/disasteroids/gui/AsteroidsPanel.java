@@ -204,13 +204,13 @@ public class AsteroidsPanel extends Panel
             initBuffering();
 
         // Shake the screen when hit.
-        if ( Math.abs( rumble ) < 0.1 )
+        if ( rumble < 0.1 )
             rumble = 0;
         else
         {
             rumbleX = (int) ( RandomGenerator.get().nextDouble() * rumble - rumble / 2 );
             rumbleY = (int) ( RandomGenerator.get().nextDouble() * rumble - rumble / 2 );
-            rumble *= 0.93;
+            rumble *= 0.9;
         }
 
         if ( showWarpDialog )
@@ -333,6 +333,15 @@ public class AsteroidsPanel extends Panel
         g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
         text = "fps";
         g2d.drawString( text, x, y );
+
+        // Draw energy.
+        x = getWidth() / 2 - 50;
+        y = 18;
+        g2d.setColor( new Color( 9, 68, 12 ) );
+        g2d.fillRect( x, y, (int) ( parent.localPlayer().getHealth() ), 20 );
+        g2d.setColor( new Color( 21, 98, 28 ) );
+        g2d.drawRect( x, y, 100, 20 );
+
 
         // Draw notification messages.
         x = 8;

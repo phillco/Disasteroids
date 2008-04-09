@@ -126,7 +126,7 @@ public class Ship implements GameElement, ShootingObject
      * @since December 16, 2007
      */
     private WeaponManager[] allWeapons;
-    
+
     /**
      * The <code>SniperManager</code> for this <code>Ship</code>
      * @since March 26, 2008
@@ -173,6 +173,8 @@ public class Ship implements GameElement, ShootingObject
      * If this <code>Ship</code> has a shield; good for one free hit
      */
     private boolean shielded;
+
+    private double healthMax = 100,  health = healthMax;
 
     public Ship( int x, int y, Color c, int lives, String name )
     {
@@ -277,16 +279,16 @@ public class Ship implements GameElement, ShootingObject
         }
 
         Polygon outline = new Polygon();
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY());
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) )  - AsteroidsFrame.frame().getRumbleY());
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ) , (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ));
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY() );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) - AsteroidsFrame.frame().getRumbleY() );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
 
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
             AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
         }
-        
-      //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
+
+        //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
         if ( shielded )
         {
@@ -416,7 +418,7 @@ public class Ship implements GameElement, ShootingObject
             else
                 wm.act( false );
         }
-        sniperManager.act(true);
+        sniperManager.act( true );
 
 
         checkBounce();
@@ -495,7 +497,7 @@ public class Ship implements GameElement, ShootingObject
                         else if ( other instanceof Station )
                             obit = getName() + " was shot down by a satellite.";
 
-                        if ( looseLife( obit ) )
+                        if ( damage( 40, obit ) )
                         {
                             m.explode();
                             score -= 5000;
@@ -615,39 +617,52 @@ public class Ship implements GameElement, ShootingObject
     }
 
     /**
-     * If this ship isn't invincible, executes the 'killing': takes a life, creates particles, etc.
+     * Does a certain amount of damage to this ship, potentially killing it.
      * 
      * @param obituary  the string to announce to the game. For example, <code>ship.getName() + " played with fire."</code>
-     * @return  whether the live was taken
+     * @return          whether damage was dealt (ship not invincible)
      * @since Classic
      */
-    public boolean looseLife( String obituary )
+    public boolean damage( double amount, String obituary )
     {
         // We're invincible and can't die.
         if ( cannotDie() )
             return false;
 
-        //shield saved us
+        // Shield saved us.
         if ( shielded )
         {
             setInvincibilityCount( 50 );
             shielded = false;
             return true;
-
         }
-        
-        AsteroidsFrame.frame().rumble();
 
+        // Lose health, and some max health as well.
+        health -= amount;
+        healthMax -= amount / 3.0;
+
+        // Bounce.
+        dx *= -.3;
+        dy *= -.3;
+
+        // If just a wound, play the sound and leave.
+        if ( health > 0 )
+        {
+            Sound.playInternal( SoundLibrary.SHIP_HIT );
+            AsteroidsFrame.frame().rumble( amount * 2 / 3.0 );
+            return true;
+        }
+
+        // We lost a life.
         livesLeft--;
+
+        // Continue play.
         if ( livesLeft >= 0 )
         {
+            health = healthMax = 100;
             setInvincibilityCount( 300 );
-            if ( Settings.soundOn )
-                Sound.playInternal( SoundLibrary.SHIP_DIE );
-
-            // Bounce.
-            dx *= -.3;
-            dy *= -.3;
+            AsteroidsFrame.frame().rumble( 30 );
+            Sound.playInternal( SoundLibrary.SHIP_DIE );
 
             // Create particles.
             for ( int i = 0; i < 80; i++ )
@@ -662,12 +677,13 @@ public class Ship implements GameElement, ShootingObject
                                              30, 10 ) );
             }
         }
+        // We lost the game.
         else
         {
             invincibilityCount = Integer.MAX_VALUE;
             explosionTime = 160;
             allStop();
-
+            AsteroidsFrame.frame().rumble( 85 );
             if ( Settings.soundOn && this == AsteroidsFrame.frame().localPlayer() )
                 Sound.playInternal( SoundLibrary.GAME_OVER );
 
@@ -959,7 +975,7 @@ public class Ship implements GameElement, ShootingObject
         ConcurrentLinkedQueue<WeaponManager> c = new ConcurrentLinkedQueue<WeaponManager>();
         for ( WeaponManager w : allWeapons )
             c.add( w );
-        c.add(sniperManager);
+        c.add( sniperManager );
         return c;
     }
 
@@ -1007,7 +1023,7 @@ public class Ship implements GameElement, ShootingObject
     {
         sniping = on;
     }
-    
+
     public int getRadius()
     {
         return shielded ? RADIUS + 5 : RADIUS;
@@ -1018,4 +1034,11 @@ public class Ship implements GameElement, ShootingObject
         weaponIndex=index%allWeapons.length;
         drawWeaponNameTimer=50;
     }
+
+    public double getHealth()
+    {
+        return health;
+    }
+    
+    
 }

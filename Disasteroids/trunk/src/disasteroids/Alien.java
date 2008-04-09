@@ -1,10 +1,11 @@
-/*gh
+/*
  * DISASTEROIDS
  * Alien.java
  */
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
@@ -34,19 +35,45 @@ public class Alien extends GameObject implements ShootingObject
 
     private int explosionTime;
 
+    /**
+     * Acceleration vectors.
+     * @since March 30, 2008
+     */
+    private double ax = 0,  ay = 0;
+
+    double angle = RandomGenerator.get().nextDouble() * 2 * Math.PI;
+
     public Alien( int x, int y, double dx, double dy )
     {
         super( x, y, dx, dy );
-        size = RandomGenerator.get().nextInt( 50 ) + 30;
+        size = RandomGenerator.get().nextInt( 60 ) + 25;
         manager = new AlienMissileManager( size );
-        color = new Color( RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ), RandomGenerator.get().nextInt( 255 ) );
+        color = new Color( RandomGenerator.get().nextInt( 60 ), RandomGenerator.get().nextInt( 128 ) + 96, RandomGenerator.get().nextInt( 60 ) );
         life = 100;
         explosionTime = 0;
+
     }
 
     public void act()
     {
         move();
+
+        setSpeed( Math.min( 6, getDx() + ax ), Math.min( 6, getDy() + ay ) );
+
+        ax *= 0.98;
+        ay *= 0.98;
+
+        if ( Math.abs( ax ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
+            ax = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
+        if ( Math.abs( ay ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
+            ay = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
+        if ( RandomGenerator.get().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
+        {
+            ax *= -1.8;
+            ay *= -1.8;
+        }
+
+
         checkCollision();
         manager.act( true );
 
@@ -56,7 +83,7 @@ public class Alien extends GameObject implements ShootingObject
             if ( explosionTime == 0 )
             {
                 explosionTime = 20;
-                
+
                 if ( RandomGenerator.get().nextInt( 10 ) == 0 )
                     Game.getInstance().createBonus( this );
             }
@@ -98,9 +125,11 @@ public class Alien extends GameObject implements ShootingObject
         // Aim towards closest ship.
         if ( closestShip != null )
         {
-            double angle = calculateAngle( closestShip );
-            manager.add( (int) centerX(), (int) centerY(), 0 - randomizeAngle( angle ), Math.cos( 0 - angle ) * 5, Math.sin( 0 - angle ) * 5, color, false );
+            double mAngle = calculateAngle( closestShip );
+            manager.add( (int) centerX(), (int) centerY(), 0 - randomizeAngle( mAngle ), Math.cos( 0 - mAngle ) * 5, Math.sin( 0 - mAngle ) * 5, color, false );
         }
+
+        angle += size / 420.0 + 0.03;
     }
 
     private void checkCollision()
@@ -140,7 +169,7 @@ public class Alien extends GameObject implements ShootingObject
                 if ( ( s.getX() + s.getRadius() > getX() && s.getX() - s.getRadius() < getX() + size ) &&
                         ( s.getY() + s.getRadius() > getY() && s.getY() - s.getRadius() < getY() + size ) )
                 {
-                    if ( s.looseLife( s.getName() + " was abducted." ) )
+                    if ( s.damage( 5, s.getName() + " was abducted." ) )
                         return;
                 }
             }
@@ -198,20 +227,21 @@ public class Alien extends GameObject implements ShootingObject
 
         if ( explosionTime > 0 )
         {
-            AsteroidsFrame.frame().fillCircle( g, Color.orange, (int) getX(), (int) getY(), (int) ( size * 0.1 * ( explosionTime - 1 ) ) );
+            AsteroidsFrame.frame().fillCircle( g, color.darker().darker(), (int) getX(), (int) getY(), (int) ( size * 0.1 * ( explosionTime - 1 ) ) );
             return;
         }
-
+        /*
         g.setColor( color );
         g.fillOval( rX, rY, size, (int) ( size * 0.6 ) );
         g.setColor( color.darker() );
         g.drawOval( rX, rY, size, (int) ( size * 0.6 ) );
-
         Color window = new Color( 40, 40, 45 );
         g.setColor( window );
         g.fillOval( rX + (int) ( size * 0.22 ), (int) ( rY - size / 7.5 ), (int) ( size * 0.6 ), (int) ( size * 0.58 ) );
         g.setColor( window.brighter().brighter() );
         g.drawOval( rX + (int) ( size * 0.22 ), (int) ( rY - size / 7.5 ), (int) ( size * 0.6 ), (int) ( size * 0.58 ) );
+         */
+        AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAlien(), (int) getX() + size / 2, (int) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
     }
 
     /**
@@ -230,7 +260,6 @@ public class Alien extends GameObject implements ShootingObject
     private class AlienMissileManager extends MissileManager
     {
         double finRotation = 0.0;
-
 
         public AlienMissileManager( int size )
         {
@@ -256,6 +285,7 @@ public class Alien extends GameObject implements ShootingObject
             if ( timeTillNextShot > 0 )
                 return false;
             timeTillNextShot = getIntervalShoot();
+            super.add( x, y, angle, dx / 8, dy / 8, col, false );
             return add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
         }
 
@@ -263,7 +293,7 @@ public class Alien extends GameObject implements ShootingObject
         @Override
         public int getIntervalShoot()
         {
-            return Math.max( life, 3 );
+            return 12;//Math.max( life, 30 );
         }
 
         private class AlienBullet extends Missile
@@ -285,7 +315,7 @@ public class Alien extends GameObject implements ShootingObject
             {
                 super.act();
                 setRadius( 5 + ( getAge() - getManager().life() * .2 ) * ( getManager().life() - getAge() ) * 0.05 );
-                finRotation += ( 0.002 * Math.PI ) % Math.PI * 2;
+                finRotation += ( 0.004 * Math.PI ) % Math.PI * 2;
             }
 
             @Override

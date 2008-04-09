@@ -554,6 +554,13 @@ public class AsteroidsPanel extends Panel
         paint( g );
     }
 
+    public Background getStarBackground() 
+    {
+        return background;
+    }
+    
+    
+
     /**
      * A small class for the storage of scoreboard colums.
      * 

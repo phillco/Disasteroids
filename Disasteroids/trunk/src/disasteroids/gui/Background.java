@@ -162,13 +162,13 @@ public class Background
                     if ( star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
                         continue;
                     // Move them.
-                    star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
-                    star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+                 //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+                 //   star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
 
                     // Wrap them.
-                    star.checkWrap();
+                 //   star.checkWrap();
 
-                    AsteroidsFrame.frame().drawPoint( g, star.color, star.x + AsteroidsFrame.frame().getRumbleX(), star.y + AsteroidsFrame.frame().getRumbleY());
+                    AsteroidsFrame.frame().drawPoint( g, star.color,(int) star.x + AsteroidsFrame.frame().getRumbleX(),(int) star.y + AsteroidsFrame.frame().getRumbleY());
                 }
         }
         catch ( NullPointerException e )
@@ -184,6 +184,20 @@ public class Background
             m.draw( g );
             if ( m.life-- <= 0 )
                 itr.remove();
+        }
+    }
+    
+    public void act()
+    {
+        if(theStars==null)
+            return;
+        for(Star star: theStars)
+        {
+            if(star==null)
+                continue;
+            star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+            star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+            star.checkWrap();
         }
     }
 
@@ -210,7 +224,7 @@ public class Background
      */
     private static class Star
     {
-        public int x,  y;
+        public double x,  y;
 
         public double dx,  dy;
 

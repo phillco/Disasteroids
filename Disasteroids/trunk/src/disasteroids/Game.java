@@ -378,7 +378,8 @@ public class Game implements Serializable
     {
         // Update the game mode.
         gameMode.act();
-
+        if(AsteroidsFrame.frame().getPanel().getStarBackground()!=null)
+             AsteroidsFrame.frame().getPanel().getStarBackground().act();
         // Execute game actions.
         timeStep++;
         actionManager.act( timeStep );
@@ -493,6 +494,33 @@ public class Game implements Serializable
                 break;
             case KeyEvent.VK_Q:
                 actor.rotateWeapons();
+                break;
+            case KeyEvent.VK_1:
+                actor.setWeapon(1);
+                break;
+            case KeyEvent.VK_2:
+                actor.setWeapon(2);
+                break;
+            case KeyEvent.VK_3:
+                actor.setWeapon(3);
+                break;
+            case KeyEvent.VK_4:
+                actor.setWeapon(4);
+                break;
+            case KeyEvent.VK_5:
+                actor.setWeapon(5);
+                break;
+            case KeyEvent.VK_6:
+                actor.setWeapon(6);
+                break;
+            case KeyEvent.VK_7:
+                actor.setWeapon(7);
+                break;
+            case KeyEvent.VK_8:
+                actor.setWeapon(8);
+                break;
+            case KeyEvent.VK_9:
+                actor.setWeapon(9);
                 break;
 
             case KeyEvent.VK_P:

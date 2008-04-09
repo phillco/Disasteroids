@@ -231,7 +231,6 @@ public class Alien extends GameObject implements ShootingObject
     {
         double finRotation = 0.0;
 
-        private int timeTillNextShot;
 
         public AlienMissileManager( int size )
         {
@@ -260,12 +259,6 @@ public class Alien extends GameObject implements ShootingObject
             return add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
         }
 
-        @Override
-        public void act()
-        {
-            super.act();
-            timeTillNextShot--;
-        }
 
         @Override
         public int getIntervalShoot()

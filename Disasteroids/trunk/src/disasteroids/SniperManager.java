@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * A weapon manager that rapidly fires weak bullets.
  * @author Andy Kooiman
  */
-class SniperManager extends WeaponManager
+class SniperManager extends Weapon
 {
 
     private int speed = 30;

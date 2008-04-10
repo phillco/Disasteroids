@@ -34,6 +34,12 @@ public class Ship implements GameElement, ShootingObject
 
     public final static double SENSITIVITY = 20;
 
+    /**
+     * How many lives players start with.
+     * @since April 9, 2008
+     */
+    public final static int START_LIVES = 4;
+
     private final static int RADIUS = 10;
 
     /**
@@ -125,7 +131,7 @@ public class Ship implements GameElement, ShootingObject
      * Our cache of weapons.
      * @since December 16, 2007
      */
-    private WeaponManager[] allWeapons;
+    private Weapon[] allWeapons;
 
     /**
      * The <code>SniperManager</code> for this <code>Ship</code>
@@ -198,7 +204,7 @@ public class Ship implements GameElement, ShootingObject
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
         // Init weapons.
-        allWeapons = new WeaponManager[4];
+        allWeapons = new Weapon[4];
         allWeapons[0] = new MissileManager();
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();
@@ -236,21 +242,21 @@ public class Ship implements GameElement, ShootingObject
 
     public void clearWeapons()
     {
-        for ( WeaponManager wM : allWeapons )
+        for ( Weapon wM : allWeapons )
             wM.clear();
         sniperManager.clear();
     }
 
     public void restoreBonusValues()
     {
-        for ( WeaponManager wM : allWeapons )
+        for ( Weapon wM : allWeapons )
             wM.restoreBonusValues();
         sniperManager.restoreBonusValues();
     }
 
     public void draw( Graphics g )
     {
-        for ( WeaponManager wm : allWeapons )
+        for ( Weapon wm : allWeapons )
             wm.draw( g );
         sniperManager.draw( g );
 
@@ -285,7 +291,7 @@ public class Ship implements GameElement, ShootingObject
 
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
-            AsteroidsFrame.frame().drawPolygon( g, col, (myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray), outline );
+            AsteroidsFrame.frame().drawPolygon( g, col, ( myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ), outline );
         }
 
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
@@ -411,7 +417,7 @@ public class Ship implements GameElement, ShootingObject
                                              25 + explosionTime / 10, 10 ) );
             }
         }
-        for ( WeaponManager wm : allWeapons )
+        for ( Weapon wm : allWeapons )
         {
             if ( wm == this.allWeapons[weaponIndex] )
                 wm.act( true );
@@ -485,9 +491,9 @@ public class Ship implements GameElement, ShootingObject
             if ( other == this )
                 continue;
 
-            for ( WeaponManager wm : other.getManagers() )
+            for ( Weapon wm : other.getManagers() )
             {
-                for ( WeaponManager.Unit m : wm.getWeapons() )
+                for ( Weapon.Unit m : wm.getWeapons() )
                 {
                     if ( Math.pow( (int) ( x - m.getX() ), 2 ) + Math.pow( (int) ( y - m.getY() ), 2 ) < Math.pow( RADIUS + m.getRadius(), 2 ) )
                     {
@@ -713,7 +719,7 @@ public class Ship implements GameElement, ShootingObject
         return invincibilityCount > 0;
     }
 
-    public WeaponManager getWeaponManager()
+    public Weapon getWeaponManager()
     {
         return allWeapons[weaponIndex];
     }
@@ -822,29 +828,13 @@ public class Ship implements GameElement, ShootingObject
     {
         stream.writeInt( id );
 
-        flattenPosition(
-                stream );
+        flattenPosition( stream );
 
         stream.writeInt( weaponIndex );
 
         stream.writeInt( invincibilityCount );
 
-        // Find our color.
-        int colorIndex = -1;
-        for ( int i = 0; i <
-                Game.PLAYER_COLORS.length; i++ )
-        {
-            if ( Game.PLAYER_COLORS[i] == myColor )
-            {
-                colorIndex = i;
-                break;
-            }
-
-        }
-        if ( colorIndex == -1 )
-            Running.fatalError( "Unknown ship color: " + myColor );
-
-        stream.writeInt( colorIndex );
+        stream.writeInt( myColor.getRGB() );
         stream.writeUTF( name );
         stream.writeInt( livesLeft );
         stream.writeInt( weaponIndex );
@@ -928,8 +918,7 @@ public class Ship implements GameElement, ShootingObject
         invincibilityCount =
                 stream.readInt();
 
-        myColor =
-                Game.PLAYER_COLORS[stream.readInt()];
+        myColor = new Color( stream.readInt() );
 
         name =
                 stream.readUTF();
@@ -947,7 +936,7 @@ public class Ship implements GameElement, ShootingObject
         myInvicibleColor =
                 new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
         allWeapons =
-                new WeaponManager[4];
+                new Weapon[4];
         allWeapons[0] = new MissileManager();
         allWeapons[1] = new BulletManager();
         allWeapons[2] = new MineManager();
@@ -970,10 +959,10 @@ public class Ship implements GameElement, ShootingObject
         return weaponIndex;
     }
 
-    public ConcurrentLinkedQueue<WeaponManager> getManagers()
+    public ConcurrentLinkedQueue<Weapon> getManagers()
     {
-        ConcurrentLinkedQueue<WeaponManager> c = new ConcurrentLinkedQueue<WeaponManager>();
-        for ( WeaponManager w : allWeapons )
+        ConcurrentLinkedQueue<Weapon> c = new ConcurrentLinkedQueue<Weapon>();
+        for ( Weapon w : allWeapons )
             c.add( w );
         c.add( sniperManager );
         return c;
@@ -1028,17 +1017,15 @@ public class Ship implements GameElement, ShootingObject
     {
         return shielded ? RADIUS + 5 : RADIUS;
     }
-    
-    public void setWeapon(int index)
+
+    public void setWeapon( int index )
     {
-        weaponIndex=index%allWeapons.length;
-        drawWeaponNameTimer=50;
+        weaponIndex = index % allWeapons.length;
+        drawWeaponNameTimer = 50;
     }
 
     public double getHealth()
     {
         return health;
     }
-    
-    
 }

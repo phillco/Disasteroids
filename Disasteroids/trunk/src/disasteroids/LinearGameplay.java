@@ -33,11 +33,6 @@ public class LinearGameplay implements GameMode
         Game.getInstance().asteroidManager().setUpAsteroidField( level );
     }
 
-    public LinearGameplay( DataInputStream stream ) throws IOException
-    {
-        this.level = stream.readInt();
-    }
-
     public void act()
     {
         // Advance to the next level if it's time.
@@ -150,6 +145,11 @@ public class LinearGameplay implements GameMode
     public void flatten( DataOutputStream stream ) throws IOException
     {
         stream.writeInt( level );
+    }
+
+    public LinearGameplay( DataInputStream stream ) throws IOException
+    {
+        this.level = stream.readInt();
     }
 
     public void optionsKey()

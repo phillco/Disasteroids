@@ -11,7 +11,7 @@ import java.awt.Color;
 /**
  *  * @author Andy Kooiman
  */
-class Laser extends WeaponManager.Unit
+class Laser extends Weapon.Unit
 {
     private LaserManager env;
 

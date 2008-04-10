@@ -144,10 +144,10 @@ public class Alien extends GameObject implements ShootingObject
                 continue;
 
             // Loop through the mangers.
-            for ( WeaponManager wm : s.getManagers() )
+            for ( Weapon wm : s.getManagers() )
             {
                 // Loop through the bullets.
-                for ( WeaponManager.Unit m : wm.getWeapons() )
+                for ( Weapon.Unit m : wm.getWeapons() )
                 {
                     // Were we hit by a bullet?
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
@@ -250,9 +250,9 @@ public class Alien extends GameObject implements ShootingObject
      * @return  thread-safe queue containing our <code>MissileManager</code>
      * @since January 6, 2008
      */
-    public ConcurrentLinkedQueue<WeaponManager> getManagers()
+    public ConcurrentLinkedQueue<Weapon> getManagers()
     {
-        ConcurrentLinkedQueue<WeaponManager> c = new ConcurrentLinkedQueue<WeaponManager>();
+        ConcurrentLinkedQueue<Weapon> c = new ConcurrentLinkedQueue<Weapon>();
         c.add( manager );
         return c;
     }

@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * A weapon that lays dangerous <code>Mine</code>s.
  * @author Andy Kooiman
  */
-public class MineManager extends WeaponManager
+public class MineManager extends Weapon
 {
 
     private int maxShots = 20;

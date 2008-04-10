@@ -18,5 +18,5 @@ public interface ShootingObject
      * @return  a linked queue of all of our weapon managers
      * @since January 6, 2008
      */
-    ConcurrentLinkedQueue<WeaponManager> getManagers();
+    ConcurrentLinkedQueue<Weapon> getManagers();
 }

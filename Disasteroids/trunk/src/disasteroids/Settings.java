@@ -83,7 +83,7 @@ public class Settings implements Serializable
      * @since April 9, 2008
      */
     public static Color playerColor = Color.red;
-    
+
     /**
      * First time startup?
      * @since April 9, 2008
@@ -134,19 +134,10 @@ public class Settings implements Serializable
 
             if ( p.containsKey( "hardwareRendering" ) )
                 hardwareRendering = Boolean.parseBoolean( p.getProperty( "hardwareRendering" ) );
-            {
-                int red = -1, green = -1, blue = -1;
 
-                if ( p.containsKey( "playerColor_red" ) )
-                    red = Integer.parseInt( p.getProperty( "playerColor_red" ) );
-                if ( p.containsKey( "playerColor_green" ) )
-                    green = Integer.parseInt( p.getProperty( "playerColor_green" ) );
-                if ( p.containsKey( "playerColor_blue" ) )
-                    blue = Integer.parseInt( p.getProperty( "playerColor_blue" ) );
+            if ( p.containsKey( "playerColor" ) )
+                playerColor = new Color( Integer.parseInt( p.getProperty( "playerColor" ) ) );
 
-                if ( red > 0 && green > 0 && blue > 0 )
-                    playerColor = new Color( red, green, blue );
-            }
         }
         catch ( IOException ex )
         {
@@ -184,9 +175,7 @@ public class Settings implements Serializable
                 p.put( "playerName", playerName );
 
             p.put( "hardwareRendering", String.valueOf( hardwareRendering ) );
-            p.put( "playerColor_red", String.valueOf( playerColor.getRed() ) );
-            p.put( "playerColor_green", String.valueOf( playerColor.getGreen() ) );
-            p.put( "playerColor_blue", String.valueOf( playerColor.getBlue() ) );
+            p.put( "playerColor", String.valueOf( playerColor.getRGB() ) );
 
             // Write the settings file.            
             p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );
@@ -207,7 +196,7 @@ public class Settings implements Serializable
         else
             return playerName;
     }
-    
+
     public static boolean isInSetup()
     {
         return inSetup;
@@ -217,6 +206,4 @@ public class Settings implements Serializable
     {
         Settings.inSetup = inSetup;
     }
-    
-    
 }

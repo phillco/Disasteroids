@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andy Kooiman
  * @since Classic
  */
-public class MissileManager extends WeaponManager
+public class MissileManager extends Weapon
 {
     /**
      * The time between each shot

@@ -35,12 +35,6 @@ public class Game implements Serializable
     public final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
 
     /**
-     * Default player colors. Inspired from AOE2.
-     * @since December 14 2007
-     */
-    public static final Color[] PLAYER_COLORS = { Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK };
-
-    /**
      * Stores whether the game is currently paused or not.
      * @since Classic
      */
@@ -211,7 +205,7 @@ public class Game implements Serializable
      */
     public int addPlayer( String name, Color c )
     {
-        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, c, 1, name );
+        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, c, Ship.START_LIVES, name );
         players.add( s );
         shootingObjects.add( s );
         Running.log( s.getName() + " entered the game (id " + s.id + ")." );
@@ -295,7 +289,7 @@ public class Game implements Serializable
         for ( int index = 0; index < players.size(); index++ )
         {
             int id = players.get( index ).id;
-            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), 100, players.get( index ).getName() ) );
+            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), Ship.START_LIVES, players.get( index ).getName() ) );
             players.get( index ).id = id;
             shootingObjects.add( players.get( index ) );
         }

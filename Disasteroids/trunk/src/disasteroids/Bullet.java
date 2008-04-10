@@ -12,7 +12,7 @@ import java.awt.Color;
  * A fast but simple bullet that dies on impact.
  * @author Andy Kooiman
  */
-class Bullet extends WeaponManager.Unit
+class Bullet extends Weapon.Unit
 {
     private BulletManager env;
 

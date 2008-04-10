@@ -16,7 +16,7 @@ import java.util.Random;
  * @author Andy Kooiman
  * @since Classic
  */
-public class Missile extends WeaponManager.Unit
+public class Missile extends Weapon.Unit
 {
     /**
      * The <code>Color</code> to be drawn in.

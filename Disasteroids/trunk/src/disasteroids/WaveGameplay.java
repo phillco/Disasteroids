@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -46,7 +47,7 @@ public class WaveGameplay implements GameMode
         int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
         int y = ( Game.getInstance().players.getFirst().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
 
-        double spawnRate = .4; //Math.min(9, Math.max( 1, (Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size()) / 20.0));
+        double spawnRate = Math.min(9, Math.max( 1, (Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size()) / 20.0));
         // System.out.println(spawnRate + " " + wavePoints);
 
         // Spawn an asteroid.
@@ -129,7 +130,14 @@ public class WaveGameplay implements GameMode
 
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        throw new UnsupportedOperationException( "Not supported yet." );
+        stream.writeInt(currentWave);
+        stream.writeInt(wavePoints);
+    }
+    
+    public WaveGameplay( DataInputStream stream ) throws IOException
+    {
+        this.currentWave = stream.readInt();
+        this.wavePoints = stream.readInt();
     }
 
     public void optionsKey()

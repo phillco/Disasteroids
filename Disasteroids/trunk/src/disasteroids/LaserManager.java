@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * A weapon manager that fires long, straight Lasers
  * @author Andy Kooiman
  */
-class LaserManager extends WeaponManager
+class LaserManager extends Weapon
 {
 
     private int speed = 20;

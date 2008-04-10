@@ -14,7 +14,7 @@ import java.awt.Graphics;
  * 
  * @author Andy Kooiman
  */
-public class Mine extends WeaponManager.Unit
+public class Mine extends Weapon.Unit
 {
     /**
      * How long until this <code>Mine</code> is removed.  It will explode on its
@@ -39,7 +39,7 @@ public class Mine extends WeaponManager.Unit
      */
     private boolean needsRemoval;
 
-    private WeaponManager env;
+    private Weapon env;
 
     /**
      * Creates a new <code>Minde</code>
@@ -49,7 +49,7 @@ public class Mine extends WeaponManager.Unit
      * @param col The <code>Color</code> of the outside ring.
      * @author Andy Kooiman
      */
-    Mine( int x, int y, Color col, WeaponManager env )
+    Mine( int x, int y, Color col, Weapon env )
     {
         setLocation( x, y );
         this.isExploding = false;

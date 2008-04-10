@@ -1,6 +1,6 @@
 /**
  * DISASTEROIDS
- * WeaponManager.java
+ * Weapon.java
  */
 package disasteroids;
 
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Interface for a Ship's weapon.
  * @author Andy Kooiman
  */
-public abstract class WeaponManager implements GameElement
+public abstract class Weapon implements GameElement
 {
     protected ConcurrentLinkedQueue<Unit> weapons;
 

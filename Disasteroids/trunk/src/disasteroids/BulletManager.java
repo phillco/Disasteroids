@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 class BulletManager extends Weapon
 {
-
     private int speed = 20;
 
     private int maxShots = 100;
@@ -42,20 +41,19 @@ class BulletManager extends Weapon
 
     public void act()
     {
-        super.act(true);
-        /*Iterator<Unit> iter = theBullets.iterator();
-        while ( iter.hasNext() )
-        {
-            Unit w = iter.next();
-            if ( w.needsRemoval() )
-                iter.remove();
-            else
-                w.act();
-        }*/
+        super.act( true );
+    /*Iterator<Unit> iter = theBullets.iterator();
+    while ( iter.hasNext() )
+    {
+    Unit w = iter.next();
+    if ( w.needsRemoval() )
+    iter.remove();
+    else
+    w.act();
+    }*/
     }
 
-  
-      public int getIntervalShoot()
+    public int getIntervalShoot()
     {
         return intervalShoot;
     }
@@ -159,7 +157,7 @@ class BulletManager extends Weapon
         timeTillNextShot = 0;
         for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 50 )
         {
-            add( s.getX(), s.getY(), angle, s.getDx(), s.getDy(), s.getColor(), false );
+            add( (int) s.getX(), (int) s.getY(), angle, s.getDx(), s.getDy(), s.getColor(), false );
             timeTillNextShot = 0;
         }
         timeTillNextShot = temp;
@@ -169,9 +167,8 @@ class BulletManager extends Weapon
     @Override
     public boolean canShoot()
     {
-        return super.canShoot()&& weapons.size() < 500 ;
+        return super.canShoot() && weapons.size() < 500;
     }
-
 
     public SoundClip getShootSound()
     {

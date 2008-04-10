@@ -28,7 +28,7 @@ public class BonusAsteroid extends Asteroid
      * @param lifeMax                   total amount of life
      * @since Classic
      */
-    public BonusAsteroid( int x, int y, double dx, double dy, int size, int lifeMax )
+    public BonusAsteroid( double x, double y, double dx, double dy, int size, int lifeMax )
     {
         super( x, y, dx, dy, size, lifeMax );
 

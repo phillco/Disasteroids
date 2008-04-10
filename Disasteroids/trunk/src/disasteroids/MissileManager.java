@@ -358,7 +358,7 @@ public class MissileManager extends Weapon
             return;
         Sound.playInternal( getBerserkSound() );
         for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
-            weapons.add( new Missile( this, s.getX(), s.getY(), ang, s.getDx(), s.getDy(), s.getColor() ) );
+            weapons.add( new Missile( this, (int) s.getX(), (int) s.getY(), ang, s.getDx(), s.getDy(), s.getColor() ) );
         timeTillNextBerserk = 100;
     }
 

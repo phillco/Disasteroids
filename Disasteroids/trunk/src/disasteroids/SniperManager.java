@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 class SniperManager extends Weapon
 {
-
     private int speed = 30;
 
     private int intervalShoot = 50;
@@ -38,10 +37,9 @@ class SniperManager extends Weapon
 
     public void act()
     {
-        super.act(true);
+        super.act( true );
     }
 
-  
     public int getIntervalShoot()
     {
         return intervalShoot;
@@ -62,8 +60,8 @@ class SniperManager extends Weapon
     public void restoreBonusValues()
     {
         intervalShoot = 50;
-       /* radius = 15;
-        damage = 1000;*/
+    /* radius = 15;
+    damage = 1000;*/
     }
 
     public int getDamage()
@@ -128,7 +126,7 @@ class SniperManager extends Weapon
         timeTillNextShot = 0;
         for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 8 )
         {
-            add( s.getX(), s.getY(), angle, s.getDx(), s.getDy(), s.getColor(), false );
+            add( (int) s.getX(), (int) s.getY(), angle, s.getDx(), s.getDy(), s.getColor(), false );
             timeTillNextShot = 0;
         }
         timeTillNextShot = temp;
@@ -138,9 +136,8 @@ class SniperManager extends Weapon
     @Override
     public boolean canShoot()
     {
-        return super.canShoot()&& weapons.size() < 500 ;
+        return super.canShoot() && weapons.size() < 500;
     }
-
 
     public SoundClip getShootSound()
     {

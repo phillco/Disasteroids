@@ -119,8 +119,6 @@ public class MineManager extends Weapon
         return super.canShoot()&& weapons.size() < maxShots;
     }
 
-
-
     public SoundClip getShootSound()
     {
         return SoundLibrary.MINE_ARM;

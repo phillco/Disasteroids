@@ -26,14 +26,13 @@ public abstract class GameObject implements GameElement
     {
     }
 
-    
     public GameObject( double x, double y, double dx, double dy )
     {
         this.x = x;
         this.y = y;
         this.dx = dx;
         this.dy = dy;
-    }        
+    }
 
     /**
      * Returns whether we should wrap across the game world when we get out of bounds.
@@ -140,6 +139,19 @@ public abstract class GameObject implements GameElement
     }
 
     /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since March 7, 2008
+     */
+    public void restore( DataInputStream stream ) throws IOException
+    {
+        setLocation( stream.readDouble(), stream.readDouble() );
+        setSpeed( stream.readDouble(), stream.readDouble() );
+    }
+
+    /**
      * Creates <code>this</code> from a stream for client/server transmission.
      * 
      * @param stream    the stream to read from (sent by the server)
@@ -148,7 +160,6 @@ public abstract class GameObject implements GameElement
      */
     public GameObject( DataInputStream stream ) throws IOException
     {
-        setLocation( stream.readDouble(), stream.readDouble() );
-        setSpeed( stream.readDouble(), stream.readDouble() );
+        restore( stream );
     }
 }

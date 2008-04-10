@@ -39,24 +39,24 @@ public class WaveGameplay implements GameMode
             Running.log( "Wave " + currentWave + " completed!", 300 );
             currentWave += 1;
             wavePoints = getWavePoints( currentWave );
-            for(Ship s: Game.getInstance().players)
+            for ( Ship s : Game.getInstance().players )
                 s.restoreBonusValues();
         }
 
         // Spawn asteroids directly opposite from player 1.
-        int x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
-        int y = ( Game.getInstance().players.getFirst().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+        double x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+        double y = ( Game.getInstance().players.getFirst().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
 
-        double spawnRate = Math.min(9, Math.max( 1, (Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size()) / 20.0));
+        double spawnRate = Math.min( 9, Math.max( 1, ( Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size() ) / 20.0 ) );
         // System.out.println(spawnRate + " " + wavePoints);
 
         // Spawn an asteroid.
-        if ( wavePoints >= 50 && RandomGenerator.get().nextDouble() * spawnRate <= 0.3)
+        if ( wavePoints >= 50 && RandomGenerator.get().nextDouble() * spawnRate <= 0.3 )
         {
             wavePoints -= 50;
 
             // Make it a bonus asteroid.
-            if ( RandomGenerator.get().nextDouble() * 12 * spawnRate <= 0.3)
+            if ( RandomGenerator.get().nextDouble() * 12 * spawnRate <= 0.3 )
             {
                 Game.getInstance().asteroidManager().add(
                         new BonusAsteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
@@ -72,17 +72,17 @@ public class WaveGameplay implements GameMode
         }
 
         // Spawn an alien.
-        if ( wavePoints >= 100 && RandomGenerator.get().nextDouble() *  3 * spawnRate <= 0.3)
+        if ( wavePoints >= 100 && RandomGenerator.get().nextDouble() * 3 * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
-            Alien a = new Alien( x, y, RandomGenerator.get().nextDouble() * 8 - 4,  RandomGenerator.get().nextDouble() * 8 - 4 );
+            Alien a = new Alien( x, y, RandomGenerator.get().nextDouble() * 8 - 4, RandomGenerator.get().nextDouble() * 8 - 4 );
             Game.getInstance().gameObjects.add( a );
             Game.getInstance().shootingObjects.add( a );
             Game.getInstance().baddies.add( a );
         }
 
         // Spawn a station.
-        if ( wavePoints >= 150 && RandomGenerator.get().nextDouble() * 11 * spawnRate <= 0.3)
+        if ( wavePoints >= 150 && RandomGenerator.get().nextDouble() * 11 * spawnRate <= 0.3 )
         {
             wavePoints -= 150;
             Station s = new Station( x, y, RandomGenerator.get().nextInt( 4 ) - 2, RandomGenerator.get().nextInt( 4 ) - 2 );
@@ -130,10 +130,10 @@ public class WaveGameplay implements GameMode
 
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt(currentWave);
-        stream.writeInt(wavePoints);
+        stream.writeInt( currentWave );
+        stream.writeInt( wavePoints );
     }
-    
+
     public WaveGameplay( DataInputStream stream ) throws IOException
     {
         this.currentWave = stream.readInt();

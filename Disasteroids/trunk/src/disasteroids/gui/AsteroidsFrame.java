@@ -345,7 +345,7 @@ public class AsteroidsFrame extends Frame implements KeyListener
     /**
      * Draws a line from one coordinate to another in a given color.
      * 
-     * @param col   the <code>Color</code> in wihch the circle will be drawn
+     * @param col   the <code>Color</code> in which the circle will be drawn
      * @param x1    the first x coordinate
      * @param y1    the first y coordinate
      * @param x2    the second x coordinate
@@ -354,10 +354,10 @@ public class AsteroidsFrame extends Frame implements KeyListener
      */
     public void drawLine( Graphics graph, Color col, int x1, int y1, int x2, int y2 )
     {
-        x1 = ( x1 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y1 = ( y1 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
-        x2 = ( x2 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-        y2 = ( y2 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+        x1 = (int) ( ( x1 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH );
+        y1 = (int) ( ( y1 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT );
+        x2 = (int) ( ( x2 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH );
+        y2 = (int) ( ( y2 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT );
         graph.setColor( col );
         graph.drawLine( x1, y1, x2, y2 );
     }
@@ -569,8 +569,8 @@ public class AsteroidsFrame extends Frame implements KeyListener
     {
         return panel.rumbleY;
     }
-    
-    public void rumble(double amount)
+
+    public void rumble( double amount )
     {
         panel.rumble += amount;
     }

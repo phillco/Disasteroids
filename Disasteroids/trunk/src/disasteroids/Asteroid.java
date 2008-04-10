@@ -69,7 +69,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      * @param lifeMax                   total amount of life
      * @since Classic
      */
-    public Asteroid( int x, int y, double dx, double dy, int size, int lifeMax )
+    public Asteroid( double x, double y, double dx, double dy, int size, int lifeMax )
     {
         super( x, y, dx, dy );
         this.radius = size / 2;

@@ -43,7 +43,7 @@ public class Alien extends GameObject implements ShootingObject
 
     double angle = RandomGenerator.get().nextDouble() * 2 * Math.PI;
 
-    public Alien( int x, int y, double dx, double dy )
+    public Alien( double x, double y, double dx, double dy )
     {
         super( x, y, dx, dy );
         size = RandomGenerator.get().nextInt( 60 ) + 25;
@@ -288,7 +288,6 @@ public class Alien extends GameObject implements ShootingObject
             super.add( x, y, angle, dx / 8, dy / 8, col, false );
             return add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
         }
-
 
         @Override
         public int getIntervalShoot()

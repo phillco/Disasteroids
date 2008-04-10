@@ -209,9 +209,9 @@ public class Game implements Serializable
      * @return      the new player's id
      * @since December 29, 2007
      */
-    public int addPlayer( String name )
+    public int addPlayer( String name, Color c )
     {
-        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, PLAYER_COLORS[players.size()], 1, name );
+        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, c, 1, name );
         players.add( s );
         shootingObjects.add( s );
         Running.log( s.getName() + " entered the game (id " + s.id + ")." );

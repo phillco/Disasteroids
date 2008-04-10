@@ -1,0 +1,15 @@
+#Disasteroids settings file.
+#Wed Apr 09 21:24:28 ACT 2008
+soundOn=true
+playerColor_blue=22
+playerName=Phil
+hardwareRendering=false
+antiAlias=true
+lastConnectionIP=
+playerColor_green=22
+waitForMissiles=false
+playerColor_red=23
+highScoreName=Phillip & Andy
+fullscreen=true
+musicOn=true
+highScore=1000.0

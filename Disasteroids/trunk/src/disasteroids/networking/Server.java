@@ -9,6 +9,7 @@ import disasteroids.Asteroid;
 import disasteroids.Game;
 import disasteroids.Running;
 import disasteroids.Ship;
+import java.awt.Color;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -159,7 +160,7 @@ public class Server extends DatagramListener
                         ByteOutputStream out = new ByteOutputStream();
 
                         // Spawn him in (so he'll be included in the update).
-                        int id = Game.getInstance().addPlayer( in.readUTF() );
+                        int id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt(), in.readInt(), in.readInt() ) );
 
                         // Send him a full update.
                         out.writeInt( Message.FULL_UPDATE.ordinal() );
@@ -188,7 +189,7 @@ public class Server extends DatagramListener
                     // Client is sending us a keystroke.
                     case KEYSTROKE:
 
-                        if (  ! client.isInGame() )
+                        if ( !client.isInGame() )
                             break;
 
                         int keyCode = in.readInt();
@@ -198,7 +199,7 @@ public class Server extends DatagramListener
                     // Client wishes to resume life.
                     case QUITTING:
 
-                        if (  ! client.isInGame() )
+                        if ( !client.isInGame() )
                             break;
 
                         Game.getInstance().removePlayer( client.inGamePlayer );
@@ -230,7 +231,7 @@ public class Server extends DatagramListener
     {
         if ( clients == null )
             return;
-        
+
         byte[] message = stream.toByteArray();
         for ( ClientMachine c : clients )
             if ( c.isInGame() )
@@ -433,7 +434,7 @@ public class Server extends DatagramListener
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Message.REMOVE_ASTEROID.ordinal() );
             out.writeInt( id );
-            
+
             if ( killer == null )
                 out.writeBoolean( false );
             else
@@ -441,7 +442,7 @@ public class Server extends DatagramListener
                 out.writeBoolean( true );
                 out.writeInt( killer.id );
             }
-            
+
             sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )

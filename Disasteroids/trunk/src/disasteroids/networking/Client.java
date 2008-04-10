@@ -96,8 +96,11 @@ public class Client extends DatagramListener
             // Send our connection request.
             out.writeInt( Message.CONNECT.ordinal() );
 
-            // Send our name.
+            // Send our name and color.
             out.writeUTF( Settings.getLocalName() );
+            out.writeInt( Settings.playerColor.getRed() );
+            out.writeInt( Settings.playerColor.getGreen() );
+            out.writeInt( Settings.playerColor.getBlue() );
 
             sendPacket( server, out );
         }
@@ -130,7 +133,7 @@ public class Client extends DatagramListener
                 switch ( Server.Message.values()[command] )
                 {
                     case MULTI_PACKET:
-                        
+
                         int seriesId = in.readInt();
                         int count = in.readInt();
                         int index = in.readInt();
@@ -144,8 +147,8 @@ public class Client extends DatagramListener
                                 series = s;
                                 break;
                             }
-                        }                        
-                                                
+                        }
+
                         if ( series == null )
                         {
                             // No, so start a new one.
@@ -154,13 +157,13 @@ public class Client extends DatagramListener
                         }
 
                         // Plug in this packet.
-                        series.addPacket(index, p);
-                            // System.out.println("Received packet " + index + "/" + count + " in series " + seriesId + " - " + hashPacket(p.getData()));
-                        
+                        series.addPacket( index, p );
+                        // System.out.println("Received packet " + index + "/" + count + " in series " + seriesId + " - " + hashPacket(p.getData()));
+
                         // Does this complete the series? Rejoice!
                         if ( series.isComplete() )
                         {
-                                // System.out.println( "Series complete!\nContigous data: " + hashPacket(series.contiguousData));
+                            // System.out.println( "Series complete!\nContigous data: " + hashPacket(series.contiguousData));
                             parseReceived( new DatagramPacket( series.getContiguousData(), 0, series.getContiguousData().length, server.address, server.port ) );
                             packetSeries.remove( series );
                         }
@@ -214,8 +217,8 @@ public class Client extends DatagramListener
                         Running.quit();
                         break;
                     default:
-                        System.out.println("Weird packet - " + command + ".");
-                            
+                        System.out.println( "Weird packet - " + command + "." );
+
                 }
             }
         }

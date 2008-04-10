@@ -1,10 +1,12 @@
-package disasteroids.gui;
-
 /*
  * DISASTEROIDS
  * MainMenu.java
  */
-import disasteroids.*;
+package disasteroids.gui;
+
+import disasteroids.Running;
+import disasteroids.Settings;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,6 +14,8 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.JColorChooser;
+import javax.swing.JOptionPane;
 
 /**
  * A simple, modular main menu.
@@ -22,7 +26,15 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
 {
     private static final String title = "DISASTEROIDS!";
 
+    /**
+     * User's selection of the menu options.
+     */
     private int choice = 0;
+
+    /**
+     * Used for the flashing icon.
+     */
+    private int flashControl = 0;
 
     public MainMenu()
     {
@@ -39,64 +51,111 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         // Some positioning.
         int y = 0;
 
+        flashControl = ( flashControl + 1 ) % 50;
+
         Font normal = new Font( "Tahoma", Font.PLAIN, 14 );
         Font accent = new Font( "Tahoma", Font.BOLD, 14 );
 
         // Draw the title.
         y += 75;
-        g.setColor( Color.BLACK );
+        g.setColor( Color.darkGray );
         g.setFont( new Font( "Tahoma", Font.BOLD, 36 ) );
-        g.drawString( title, 60, 75 );
+        g.drawString( title, 110, 80 );
 
-        y += 30;
+        y += 80;
 
-        // Draw the options.
-        for ( int i = 0; i < MenuOption.values().length; i++ )
+        if ( Settings.isInSetup() )
         {
-            int midpoint = WINDOW_WIDTH / 2;
-            int string_width = (int) normal.getStringBounds( MenuOption.values()[i].toString(), ( (Graphics2D) g ).getFontRenderContext() ).getWidth();
-            g.setFont( choice == i ? accent : normal );
-            g.drawString( MenuOption.values()[i].toString(), midpoint - string_width / 2, y );
-
-            if ( choice == i )
+            g.setColor( Color.white );
+            if ( flashControl < 25 )
             {
+                int ff = ( choice == 2 ? 3 : choice );
                 g.setFont( accent );
-                int[] xp = { midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 5 };
-                int[] yp = { y - 10, y, y - 5 };
+                int[] xp = { 160, 160, 160 + 5 };
+                int[] yp = { y - 10 + 20 * ff, y + 20 * ff, y - 5 + 20 * ff };
                 g.fillPolygon( new Polygon( xp, yp, 3 ) );
             }
-            y += 25;
+
+            g.setColor( Color.lightGray );
+            g.setFont( choice == 0 ? accent : normal );
+            g.drawString( "Name:   " + Settings.getLocalName(), 180, y );
+
+            y += 20;
+            g.setFont( choice == 1 ? accent : normal );
+            g.drawString( "Color:", 180, y );
+
+            g.setColor( Settings.playerColor );
+            Polygon outline = new Polygon();
+            {
+                double angle = 0.3;
+                double RADIUS = 10;
+                int centerX = 250;
+                int centerY = y - 2;
+                outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
+                outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
+                outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
+            }
+            g.fillPolygon( outline );
+            g.setColor( ( Settings.playerColor.getRed() + Settings.playerColor.getGreen() + Settings.playerColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ) );
+            g.drawPolygon( outline );
+
+            g.setColor( Color.lightGray );
+
+            y += 40;
+            g.setFont( choice == 2 ? accent : normal );
+            g.drawString( "OK", 210, y );
+            repaint();
         }
+        else
+        {
 
-        // Draw some settings (this is still hard coded).
-        String musicString = "Music " + ( Settings.musicOn ? "on" : "off" );
-        String soundString = "Sound " + ( Settings.soundOn ? "on" : "off" );
-        String fullscreenString = ( Settings.useFullscreen ? "Fullscreen" : "Windowed" );
-        String renderingString = ( Settings.hardwareRendering ? "Hardware" : "Software" );
-        int height = (int) ( normal.getStringBounds( "|", ( (Graphics2D) g ).getFontRenderContext() ).getHeight() );
+            g.setColor( Color.lightGray );
 
-        g.setFont( normal );
-        g.drawString( musicString, 15, ( WINDOW_HEIGHT - height ) );
-        g.drawString( soundString, 15, ( WINDOW_HEIGHT - 2 * height ) );
+            // Draw the options.
+            for ( int i = 0; i < MenuOption.values().length; i++ )
+            {
+                int midpoint = WINDOW_WIDTH / 2;
+                int string_width = (int) normal.getStringBounds( MenuOption.values()[i].toString(), ( (Graphics2D) g ).getFontRenderContext() ).getWidth();
+                g.setFont( choice == i ? accent : normal );
+                g.drawString( MenuOption.values()[i].toString(), midpoint - string_width / 2, y );
+                if ( choice == i )
+                {
+                    g.setFont( accent );
+                    int[] xp = { midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 5 };
+                    int[] yp = { y - 10, y, y - 5 };
+                    g.fillPolygon( new Polygon( xp, yp, 3 ) );
+                }
+                y += 25;
+            }
 
-        g.drawString( fullscreenString,
-                      WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
-                      ( WINDOW_HEIGHT - height ) );
-        g.drawString( renderingString,
-                      WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
-                      ( WINDOW_HEIGHT - 2 * height ) );
+            // Draw some settings (this is still hard coded).
+            String musicString = "Music " + ( Settings.musicOn ? "on" : "off" );
+            String soundString = "Sound " + ( Settings.soundOn ? "on" : "off" );
+            String fullscreenString = ( Settings.useFullscreen ? "Fullscreen" : "Windowed" );
+            String renderingString = ( Settings.qualityRendering ? "Quality" : "Speed" );
+            int height = (int) ( normal.getStringBounds( "|", ( (Graphics2D) g ).getFontRenderContext() ).getHeight() );
+            g.setFont( normal );
+            g.drawString( musicString, 15, ( WINDOW_HEIGHT - height ) );
+            g.drawString( soundString, 15, ( WINDOW_HEIGHT - 2 * height ) );
+            g.drawString( fullscreenString,
+                          WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
+                          ( WINDOW_HEIGHT - height ) );
+            g.drawString( renderingString,
+                          WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
+                          ( WINDOW_HEIGHT - 2 * height ) );
+        }
     }
 
     private void moveSelectionUp()
     {
         this.choice -= 1;
         if ( choice < 0 )
-            choice = MenuOption.values().length - 1;
+            choice = ( Settings.isInSetup() ? 2 : MenuOption.values().length - 1 );
     }
 
     private void moveSelectionDown()
     {
-        this.choice = ( choice + 1 ) % MenuOption.values().length;
+        this.choice = ( choice + 1 ) % ( Settings.isInSetup() ? 3 : MenuOption.values().length );
     }
 
     /*
@@ -120,8 +179,39 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             case KeyEvent.VK_ENTER:
             case KeyEvent.VK_SPACE:
                 {
-                    dispose();
-                    Running.startGame( MenuOption.values()[choice] );
+                    if ( Settings.isInSetup() )
+                    {
+                        if ( choice == 0 )
+                            Settings.playerName = JOptionPane.showInputDialog( this, "Enter your name.", Settings.playerName );
+                        else if ( choice == 1 )
+                        {
+                            Color oldColor = Settings.playerColor;
+                            Settings.playerColor = JColorChooser.showDialog( this, "Select player color...", Settings.playerColor );
+                            if ( Settings.playerColor.getRed() + Settings.playerColor.getGreen() + Settings.playerColor.getBlue() < 12 * 3 )
+                            {
+                                JOptionPane.showMessageDialog( this, "Sorry, that's a bit too dark." );
+                                Settings.playerColor = oldColor;
+                            }
+                        }
+                        else
+                        {
+                            choice = 0;
+                            Settings.setInSetup( false );
+                        }
+                    }
+                    else
+                    {
+                        if ( MenuOption.values()[choice] == MenuOption.OPTIONS )
+                        {
+                            choice = 0;
+                            Settings.setInSetup( true );
+                        }
+                        else
+                        {
+                            dispose();
+                            Running.startGame( MenuOption.values()[choice] );
+                        }
+                    }
                 }
                 break;
 
@@ -136,8 +226,8 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             case KeyEvent.VK_F:
                 Settings.useFullscreen = !Settings.useFullscreen;
                 break;
-            case KeyEvent.VK_H:
-                Settings.hardwareRendering = !Settings.hardwareRendering;
+            case KeyEvent.VK_A:
+                Settings.qualityRendering = !Settings.qualityRendering;
                 break;
 
             // Scrolling?

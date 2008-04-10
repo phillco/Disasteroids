@@ -22,16 +22,16 @@ import java.awt.event.WindowEvent;
  */
 public class AsteroidsMenu extends BufferedFrame
 {
-    public static final int WINDOW_HEIGHT = 250;
+    public static final int WINDOW_HEIGHT = 400;
 
-    public static final int WINDOW_WIDTH = 400;
+    public static final int WINDOW_WIDTH = 500;
 
     public AsteroidsMenu()
     {
         // Center on the screen.
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation( screenSize.width / 2, screenSize.height / 2 );
         setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
+        setLocation( screenSize.width / 2 - getWidth() / 2, screenSize.height / 2 - getHeight() / 2 );
 
         // Allow us to be closed and keyed.
         addWindowListener( new CloseAdapter() );
@@ -51,7 +51,7 @@ public class AsteroidsMenu extends BufferedFrame
 
         // Draw the background.
         Graphics2D g2d = (Graphics2D) g;
-        GradientPaint gradient = new GradientPaint( 0, 0, Color.darkGray, WINDOW_WIDTH, WINDOW_HEIGHT, Color.lightGray );
+        GradientPaint gradient = new GradientPaint( 0, 0, Color.darkGray, WINDOW_WIDTH, WINDOW_HEIGHT, Color.black );
         g2d.setPaint( gradient );
         g2d.fillRect( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
     }

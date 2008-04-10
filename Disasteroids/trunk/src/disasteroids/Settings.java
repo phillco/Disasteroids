@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,6 +79,18 @@ public class Settings implements Serializable
     public static boolean hardwareRendering = false;
 
     /**
+     * The user's ship color.
+     * @since April 9, 2008
+     */
+    public static Color playerColor = Color.red;
+    
+    /**
+     * First time startup?
+     * @since April 9, 2008
+     */
+    public static boolean inSetup = false;
+
+    /**
      * Loads settings from <code>Disasteroids.props</code>, if it exists.
      * 
      * @return  whether settings were loaded
@@ -121,10 +134,23 @@ public class Settings implements Serializable
 
             if ( p.containsKey( "hardwareRendering" ) )
                 hardwareRendering = Boolean.parseBoolean( p.getProperty( "hardwareRendering" ) );
+            {
+                int red = -1, green = -1, blue = -1;
 
+                if ( p.containsKey( "playerColor_red" ) )
+                    red = Integer.parseInt( p.getProperty( "playerColor_red" ) );
+                if ( p.containsKey( "playerColor_green" ) )
+                    green = Integer.parseInt( p.getProperty( "playerColor_green" ) );
+                if ( p.containsKey( "playerColor_blue" ) )
+                    blue = Integer.parseInt( p.getProperty( "playerColor_blue" ) );
+
+                if ( red > 0 && green > 0 && blue > 0 )
+                    playerColor = new Color( red, green, blue );
+            }
         }
         catch ( IOException ex )
         {
+            inSetup = true;
             return false;
         }
 
@@ -158,6 +184,9 @@ public class Settings implements Serializable
                 p.put( "playerName", playerName );
 
             p.put( "hardwareRendering", String.valueOf( hardwareRendering ) );
+            p.put( "playerColor_red", String.valueOf( playerColor.getRed() ) );
+            p.put( "playerColor_green", String.valueOf( playerColor.getGreen() ) );
+            p.put( "playerColor_blue", String.valueOf( playerColor.getBlue() ) );
 
             // Write the settings file.            
             p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );
@@ -178,4 +207,16 @@ public class Settings implements Serializable
         else
             return playerName;
     }
+    
+    public static boolean isInSetup()
+    {
+        return inSetup;
+    }
+
+    public static void setInSetup( boolean inSetup )
+    {
+        Settings.inSetup = inSetup;
+    }
+    
+    
 }

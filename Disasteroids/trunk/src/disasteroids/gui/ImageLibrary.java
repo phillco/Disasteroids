@@ -27,9 +27,9 @@ public class ImageLibrary
      */
     public static void init()
     {
-        asteroid = Toolkit.getDefaultToolkit().createImage( "asteroid.png" );
-        bonusAsteroid = Toolkit.getDefaultToolkit().createImage( "bonusAsteroid.png" );
-        alien = Toolkit.getDefaultToolkit().createImage( "alien.png" );
+        asteroid = Toolkit.getDefaultToolkit().createImage( "res\\asteroid.png" );
+        bonusAsteroid = Toolkit.getDefaultToolkit().createImage( "res\\bonusAsteroid.png" );
+        alien = Toolkit.getDefaultToolkit().createImage( "res\\alien.png" );
     }
 
     /**

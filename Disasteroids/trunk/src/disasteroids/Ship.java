@@ -285,7 +285,7 @@ public class Ship implements GameElement, ShootingObject
 
         if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
         {
-            AsteroidsFrame.frame().drawPolygon( g, col, Color.black, outline );
+            AsteroidsFrame.frame().drawPolygon( g, col, (myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray), outline );
         }
 
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);

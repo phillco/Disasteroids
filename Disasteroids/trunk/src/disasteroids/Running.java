@@ -42,12 +42,12 @@ public class Running
         System.out.println( "DISASTEROIDS started!" );
 
         // Check for resources.
-        if ( !new File("res\\Music2.mid").exists() )
+        if ( !new File( "res\\Music2.mid" ).exists() )
         {
-            Running.fatalError("Couldn't load resources.\nPlease make sure that your running directory is empty.");
+            Running.fatalError( "Couldn't load resources.\nPlease make sure that your running directory is empty." );
             return;
         }
-        
+
         // Make swing dialogs like the local operating system.
         try
         {
@@ -137,7 +137,7 @@ public class Running
      * @param option    the selected game choice
      * @since Classic
      */
-    @SuppressWarnings ( "fallthrough" )
+    @SuppressWarnings( "fallthrough" )
     public static void startGame( MenuOption option )
     {
         switch ( option )
@@ -147,10 +147,15 @@ public class Running
             // Fall-through
 
             case SINGLEPLAYER:
-                new Game();
+                new Game( new WaveGameplay() );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName(), Settings.playerColor ) );
-                if(Settings.musicOn)
-                    Sound.startMusic();
+                Sound.updateMusic();
+                break;
+
+            case TUTORIAL:
+                new Game( new TutorialMode() );
+                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName(), Settings.playerColor ) );
+                Sound.updateMusic();
                 break;
 
             case CONNECT:
@@ -161,7 +166,7 @@ public class Running
 
                 Settings.lastConnectionIP = address;
                 Settings.saveToStorage();
-                if(Settings.musicOn)
+                if ( Settings.musicOn )
                     Sound.startMusic();
 
                 // Connect to it.
@@ -175,6 +180,7 @@ public class Running
                 }
                 break;
             default:
+                Running.warning( "Unexpected menu selection." );
                 Running.quit();
             }
     }

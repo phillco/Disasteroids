@@ -5,6 +5,7 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainMenu;
 import disasteroids.gui.ParticleManager;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
@@ -107,15 +108,38 @@ public class Game implements Serializable
     private static Game instance;
 
     /**
-     * Sets up the game, but doesn't start it.
+     * Creates the game.
      * @since December 29, 2007
      */
-    public Game()
+    public Game( GameMode gameMode )
     {
         if ( instance == null )
             Game.instance = this;
 
-        newGame();
+        // Start managers and lists.
+        timeStep = 0;
+        otherPlayerTimeStep = 0;
+        asteroidManager = new AsteroidManager();
+        actionManager = new ActionManager();
+        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
+        gameObjects = new ConcurrentLinkedQueue<GameObject>();
+        baddies = new ConcurrentLinkedQueue<GameObject>();
+
+        // Spawn players.
+        for ( int index = 0; index < players.size(); index++ )
+        {
+            int id = players.get( index ).id;
+            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), Ship.START_LIVES, players.get( index ).getName() ) );
+            players.get( index ).id = id;
+            shootingObjects.add( players.get( index ) );
+        }
+
+        // Set the game mode.
+        this.gameMode = gameMode;
+
+        // Update the GUI.
+        if ( AsteroidsFrame.frame() != null )
+            AsteroidsFrame.frame().resetGame();
     }
 
     /**
@@ -223,7 +247,6 @@ public class Game implements Serializable
         players.add( newPlayer );
         shootingObjects.add( newPlayer );
         Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ").", 800 );
-
     }
 
     /**
@@ -265,41 +288,6 @@ public class Game implements Serializable
 
         if ( quitReason.length() > 0 )
             Running.log( leavingPlayer.getName() + quitReason, 800 );
-    }
-
-    /**
-     * Resets all gameplay elements. Ships, asteroids, timesteps, missiles and actions are all reset.
-     * Connection elements like the number of players or the index of <code>localPlayer</code> are not reset.
-     * 
-     * @since December 16, 2007
-     */
-    public void newGame()
-    {
-        // Create the lists.
-        timeStep = 0;
-        otherPlayerTimeStep = 0;
-
-        asteroidManager = new AsteroidManager();
-        actionManager = new ActionManager();
-        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
-        gameObjects = new ConcurrentLinkedQueue<GameObject>();
-        baddies = new ConcurrentLinkedQueue<GameObject>();
-
-        // Spawn players.
-        for ( int index = 0; index < players.size(); index++ )
-        {
-            int id = players.get( index ).id;
-            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), Ship.START_LIVES, players.get( index ).getName() ) );
-            players.get( index ).id = id;
-            shootingObjects.add( players.get( index ) );
-        }
-
-        // Set up the game.
-        gameMode = new WaveGameplay(); // LinearGameplay(); 
-
-        // Update the GUI.
-        if ( AsteroidsFrame.frame() != null )
-            AsteroidsFrame.frame().resetGame();
     }
 
     /**
@@ -372,8 +360,8 @@ public class Game implements Serializable
     {
         // Update the game mode.
         gameMode.act();
-        if(AsteroidsFrame.frame().getPanel().getStarBackground()!=null)
-             AsteroidsFrame.frame().getPanel().getStarBackground().act();
+        if ( AsteroidsFrame.frame().getPanel().getStarBackground() != null )
+            AsteroidsFrame.frame().getPanel().getStarBackground().act();
         // Execute game actions.
         timeStep++;
         actionManager.act( timeStep );
@@ -386,7 +374,10 @@ public class Game implements Serializable
             s.act();
             if ( s.livesLeft() < 0 & s.getExplosionTime() < 0 && !Client.is() )
             {
-                newGame();
+                // Return to the menu.
+                Game.instance = null;
+                new MainMenu();
+
                 return;
             }
         }
@@ -490,31 +481,31 @@ public class Game implements Serializable
                 actor.rotateWeapons();
                 break;
             case KeyEvent.VK_1:
-                actor.setWeapon(1);
+                actor.setWeapon( 1 );
                 break;
             case KeyEvent.VK_2:
-                actor.setWeapon(2);
+                actor.setWeapon( 2 );
                 break;
             case KeyEvent.VK_3:
-                actor.setWeapon(3);
+                actor.setWeapon( 3 );
                 break;
             case KeyEvent.VK_4:
-                actor.setWeapon(4);
+                actor.setWeapon( 4 );
                 break;
             case KeyEvent.VK_5:
-                actor.setWeapon(5);
+                actor.setWeapon( 5 );
                 break;
             case KeyEvent.VK_6:
-                actor.setWeapon(6);
+                actor.setWeapon( 6 );
                 break;
             case KeyEvent.VK_7:
-                actor.setWeapon(7);
+                actor.setWeapon( 7 );
                 break;
             case KeyEvent.VK_8:
-                actor.setWeapon(8);
+                actor.setWeapon( 8 );
                 break;
             case KeyEvent.VK_9:
-                actor.setWeapon(9);
+                actor.setWeapon( 9 );
                 break;
 
             case KeyEvent.VK_P:
@@ -652,6 +643,4 @@ public class Game implements Serializable
     {
         return baddies;
     }
-    
-    
 }

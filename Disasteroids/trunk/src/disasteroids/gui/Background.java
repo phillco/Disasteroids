@@ -8,6 +8,7 @@ import disasteroids.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.VolatileImage;
 import java.util.Iterator;
@@ -216,6 +217,11 @@ public class Background
         starMessages.add( new BackgroundMessage( x, y, message, col ) );
     }
 
+    public void writeOnBackground( String message, int x, int y, double dy, int life, Color col, Font f )
+    {
+        starMessages.add( new BackgroundMessage( x, y, message, dy, col, life, f ) );
+    }
+
     /**
      * The <code>Star</code> class is little more than an overblown
      * coordinate class and is used for storing the absolute locations of each Star.
@@ -266,7 +272,7 @@ public class Background
      */
     private class BackgroundMessage
     {
-        public int x,  y;
+        public double x,  y;
 
         public double dy;
 
@@ -276,7 +282,9 @@ public class Background
 
         public int life,  lifeMax;
 
-        public BackgroundMessage( int x, int y, String message, Color col )
+        public Font font;
+
+        public BackgroundMessage( double x, double y, String message, Color col )
         {
             this.x = x;
             this.y = y;
@@ -285,17 +293,30 @@ public class Background
 
             life = lifeMax = RandomGenerator.get().nextInt( 30 ) + 40;
             dy = -RandomGenerator.get().nextDouble() * 4;
+            font = new Font( "Century Gothic", Font.BOLD, 10 );
+        }
+
+        public BackgroundMessage( double x, double y, String message, double dy, Color col, int life, Font font )
+        {
+            this.x = x;
+            this.y = y;
+            this.dy = dy;
+            this.message = message;
+            this.col = col;
+            this.life = lifeMax = life;
+            this.font = font;
         }
 
         private void draw( Graphics gBack )
         {
             y += dy;
-            Color c = new Color(
-                    Math.min( col.getRed() * life / 70 + 80, 255 ),
-                    col.getGreen() * life / lifeMax,
-                    col.getBlue() * life / lifeMax );
-            gBack.setFont( new Font( "Century Gothic", Font.BOLD, 10 ) );
-            AsteroidsFrame.frame().drawString( gBack, (int) ( x + 3 * Math.cos( life / 5.0 ) ), y, message, c );
+
+            Color c = new Color( col.getRed() * life / lifeMax,
+                                 col.getGreen() * life / lifeMax,
+                                 col.getBlue() * life / lifeMax );
+
+            gBack.setFont( font );
+            AsteroidsFrame.frame().drawString( gBack, (int) (dy == 0? x : x + 3 * Math.cos( life / 5.0 ) ), (int) y, message, c );
         }
     }
 }

@@ -30,8 +30,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.awt.geom.AffineTransform;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The big momma class up in the sky.
@@ -400,12 +398,19 @@ public class AsteroidsFrame extends Frame implements KeyListener
 
     public void drawString( Graphics graph, int x, int y, String str, Color col )
     {
-//        graph.setFont( new Font( "Tahoma", graph.getFont().getStyle(), graph.getFont().getSize() ) );
         x = RelativeGraphics.translateX( x );
         y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -50 && x < Game.getInstance().GAME_WIDTH && y > -50 && y < Game.getInstance().GAME_HEIGHT )
-            graph.drawString( str, x, y );
+        {
+            // drawString doesn't support linebreaks, so we do that here.
+            String[] lines = str.split( "\n" );
+            for ( String line : lines )
+            {
+                graph.drawString( line, x - (int) graph.getFont().getStringBounds( line, ( (Graphics2D) graph ).getFontRenderContext() ).getWidth() / 2, y );
+                y += (int) graph.getFont().getStringBounds( line, ( (Graphics2D) graph ).getFontRenderContext() ).getHeight();
+            }
+        }
     }
 
     /**

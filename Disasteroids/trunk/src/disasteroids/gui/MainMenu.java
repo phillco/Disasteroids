@@ -208,6 +208,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                         }
                         else
                         {
+                            setVisible(false);
                             dispose();
                             Running.startGame( MenuOption.values()[choice] );
                         }

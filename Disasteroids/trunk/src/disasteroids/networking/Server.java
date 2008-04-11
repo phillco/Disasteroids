@@ -31,7 +31,14 @@ public class Server extends DatagramListener
      */
     public enum Message
     {
+        /**
+         * Multipacket coming in.
+         */
         MULTI_PACKET,
+        /**
+         * Client was using an old version.
+         */
+        CONNECT_ERROR_OLDNETCODE,
         /**
          * We send the client all of the game's data to allow him to join.
          */
@@ -53,7 +60,7 @@ public class Server extends DatagramListener
          */
         PLAYER_JOINED,
         /**
-         * An existing player is qutting.
+         * An existing player is quitting.
          */
         PLAYER_QUIT,
         /**
@@ -61,7 +68,7 @@ public class Server extends DatagramListener
          */
         PAUSE,
         /**
-         * A ship has berserked
+         * A ship has berserked.
          */
         BERSERK,
         /**
@@ -96,8 +103,7 @@ public class Server extends DatagramListener
     public Server()
     {
         instance = this;
-        System.out.println( "== DISASTEROIDS SERVER == Started!" );
-        System.out.println( "IP address: " + getLocalIP() );
+        System.out.println( "== SERVER v" + Constants.NETCODE_VERSION + " == started at IP address: " + getLocalIP() );
         clients = new LinkedList<ClientMachine>();
 
         try
@@ -158,6 +164,15 @@ public class Server extends DatagramListener
                     case CONNECT:
 
                         ByteOutputStream out = new ByteOutputStream();
+
+                        // If he's using an older netcode version, slam the door in his face.
+                        if ( in.readInt() < Constants.NETCODE_VERSION )
+                        {
+                            out.writeInt( Message.CONNECT_ERROR_OLDNETCODE.ordinal() );
+                            out.writeInt( Constants.NETCODE_VERSION );
+                            sendPacket( client, out );
+                            return;
+                        }
 
                         // Spawn him in (so he'll be included in the update).
                         int id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt(), in.readInt(), in.readInt() ) );

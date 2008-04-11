@@ -168,6 +168,10 @@ public class Client extends DatagramListener
                             packetSeries.remove( series );
                         }
                         break;
+                    case CONNECT_ERROR_OLDNETCODE:
+                        Running.fatalError("Couldn't connect because the server is using a newer version.\nTheirs: "
+                                + in.readInt() + "\nOurs: " + Constants.NETCODE_VERSION + "\n\nYou'll have to update." );
+                        return;
                     case FULL_UPDATE:
                         System.out.print( "Receiving full update..." );
 

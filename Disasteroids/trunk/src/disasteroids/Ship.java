@@ -168,6 +168,8 @@ public class Ship extends GameObject implements ShootingObject
      */
     private boolean shielded;
 
+    private boolean stopping = false;
+
     private double healthMax = 100,  health = healthMax;
 
     public Ship( double x, double y, Color c, int lives, String name )
@@ -393,6 +395,11 @@ public class Ship extends GameObject implements ShootingObject
                 wm.act( false );
         }
         sniperManager.act( true );
+
+        if ( stopping == true )
+        {
+            slowStop();
+        }
     }
 
     public void fullRight()
@@ -417,7 +424,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public void allStop()
     {
-        setSpeed( 0, 0 );
+        stopping = true;
     }
 
     public void rotateWeapons()
@@ -929,5 +936,17 @@ public class Ship extends GameObject implements ShootingObject
     public double getHealth()
     {
         return health;
+    }
+
+    private void slowStop()
+    {
+        if ( getDx() > .4 || getDx() < -.4 )
+            setDx( getDx() * .9 );
+        else
+            stopping = false;
+        if ( getDy() > .4 || getDy() < -.4 )
+            setDy( getDy() * .9 );
+        else
+            stopping = false;
     }
 }

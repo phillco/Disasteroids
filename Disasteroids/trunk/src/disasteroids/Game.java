@@ -8,6 +8,7 @@ import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.MainMenu;
 import disasteroids.gui.ParticleManager;
 import disasteroids.networking.Client;
+import disasteroids.networking.Constants;
 import disasteroids.networking.Server;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
@@ -360,8 +361,10 @@ public class Game implements Serializable
     {
         // Update the game mode.
         gameMode.act();
+
         if ( AsteroidsFrame.frame().getPanel().getStarBackground() != null )
             AsteroidsFrame.frame().getPanel().getStarBackground().act();
+
         // Execute game actions.
         timeStep++;
         actionManager.act( timeStep );
@@ -557,12 +560,20 @@ public class Game implements Serializable
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
+        stream.writeInt( Constants.parseGameMode( gameMode ) );
         gameMode.flatten( stream );
         stream.writeLong( timeStep );
 
         stream.writeInt( players.size() );
         for ( Ship s : players )
             s.flatten( stream );
+
+        stream.writeInt( gameObjects.size() );
+        for ( GameObject o : gameObjects )
+        {
+            stream.writeInt( Constants.parseGameObject( o ) );
+            o.flatten( stream );
+        }
 
         asteroidManager.flatten( stream );
         actionManager.flatten( stream );
@@ -579,7 +590,8 @@ public class Game implements Serializable
     {
         instance = this;
 
-        gameMode = new LinearGameplay( stream );
+        // Create the game mode.
+        gameMode = Constants.parseGameMode( stream.readInt(), stream );
         this.timeStep = stream.readLong();
 
         players = new LinkedList<Ship>();
@@ -587,14 +599,35 @@ public class Game implements Serializable
         for ( int i = 0; i < size; i++ )
             players.add( new Ship( stream ) );
 
+        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
+        baddies = new ConcurrentLinkedQueue<GameObject>();
+        gameObjects = new ConcurrentLinkedQueue<GameObject>();
+        size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
+        {
+            switch ( Constants.GameObjectTIDs.values()[stream.readInt()] )
+            {
+                case ALIEN:
+                    Alien a = new Alien( stream );
+                    gameObjects.add( a );
+                    shootingObjects.add( a );
+                    baddies.add( a );
+                    break;
+                case BONUS:
+                    Bonus b = new Bonus( stream );
+                    gameObjects.add( b );
+                    break;
+                case STATION:
+                    Station t = new Station( stream );
+                    gameObjects.add( t );
+                    shootingObjects.add( t );
+                    baddies.add( t );
+                    break;
+
+            }
+        }
         asteroidManager = new AsteroidManager( stream );
         actionManager = new ActionManager( stream );
-        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
-        gameObjects = new ConcurrentLinkedQueue<GameObject>();
-//
-//        Station s = new Station( 100, 1500 );
-//        gameObjects.add( s );
-//        shootingObjects.add( s );
     }
 
     /**

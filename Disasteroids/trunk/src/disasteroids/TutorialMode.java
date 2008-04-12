@@ -114,4 +114,9 @@ public class TutorialMode implements GameMode
             Running.log( "Invalid section command.", 800 );
         }
     }
+
+    public int id()
+    {
+        throw new UnsupportedOperationException( "Tutorials can't be used in net games." );
+    }
 }

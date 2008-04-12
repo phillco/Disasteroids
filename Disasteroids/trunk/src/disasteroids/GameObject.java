@@ -16,6 +16,12 @@ import java.io.IOException;
 public abstract class GameObject implements GameElement
 {
     /**
+     * Unique ID for this class. Used for C/S.
+     * @since April 11, 2008
+     */
+    public static final int TYPE_ID = -1;
+    
+    /**
      * Our location and speed data.
      * 
      * @since January 5, 2008
@@ -161,5 +167,10 @@ public abstract class GameObject implements GameElement
     public GameObject( DataInputStream stream ) throws IOException
     {
         restore( stream );
+    }
+    
+    public int getTypeId()
+    {
+        return TYPE_ID;
     }
 }

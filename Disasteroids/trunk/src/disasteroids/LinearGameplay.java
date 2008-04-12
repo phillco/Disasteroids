@@ -22,6 +22,12 @@ import javax.swing.JOptionPane;
 public class LinearGameplay implements GameMode
 {
     /**
+     * Unique ID for this class. Used for C/S.
+     * @since April 11, 2008
+     */
+    public static final int TYPE_ID = 0;
+
+    /**
      * The current level of the game.
      * @since Classic
      */

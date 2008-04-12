@@ -128,7 +128,7 @@ public class Server extends DatagramListener
         {
             InetAddress localHost = InetAddress.getLocalHost();
             InetAddress[] all_IPs = InetAddress.getAllByName( localHost.getHostName() );
-            return ( all_IPs[0].toString().split( "/" ) )[1] + Constants.DEFAULT_PORT;
+            return ( all_IPs[0].toString().split( "/" ) )[1] + ":" + Constants.DEFAULT_PORT;
         }
         catch ( UnknownHostException e )
         {
@@ -166,16 +166,20 @@ public class Server extends DatagramListener
                         ByteOutputStream out = new ByteOutputStream();
 
                         // If he's using an older netcode version, slam the door in his face.
-                        if ( in.readInt() < Constants.NETCODE_VERSION )
+                        int version = in.readInt();
+                        if ( version < Constants.NETCODE_VERSION )
                         {
                             out.writeInt( Message.CONNECT_ERROR_OLDNETCODE.ordinal() );
                             out.writeInt( Constants.NETCODE_VERSION );
                             sendPacket( client, out );
+                            Running.log( "Connection from " + client.toString() + " refused, using old version: " + version + ".", 800 );
                             return;
                         }
 
+                        Running.log( "Connection from " + client.toString() + " accepted." );
+
                         // Spawn him in (so he'll be included in the update).
-                        int id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt(), in.readInt(), in.readInt() ) );
+                        int id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt() ) );
 
                         // Send him a full update.
                         out.writeInt( Message.FULL_UPDATE.ordinal() );

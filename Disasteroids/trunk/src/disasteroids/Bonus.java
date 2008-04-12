@@ -12,6 +12,9 @@ import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  *
@@ -20,6 +23,12 @@ import java.awt.Graphics;
  */
 public class Bonus extends GameObject
 {
+    /**
+     * Unique ID for this class. Used for C/S.
+     * @since April 11, 2008
+     */
+    public static final int TYPE_ID = 2;
+
     final int RADIUS = 12;
 
     static final int MAX_LIFE = 1600;
@@ -34,7 +43,7 @@ public class Bonus extends GameObject
      * Acceleration vectors.
      * @since March 30, 2008
      */
-    private double ax = 0, ay = 0;
+    private double ax = 0,  ay = 0;
 
     /**
      * The type of bonus.
@@ -71,10 +80,6 @@ public class Bonus extends GameObject
             ax *= -1.8;
             ay *= -1.8;
         }
-
-
-
-
 
         ++age;
         if ( age > MAX_LIFE )
@@ -115,8 +120,8 @@ public class Bonus extends GameObject
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) < 
-                              ( RADIUS + s.getRadius() ) * ( RADIUS + s.getRadius() ) )
+                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) <
+                        ( RADIUS + s.getRadius() ) * ( RADIUS + s.getRadius() ) )
                 {
                     Sound.playInternal( SoundLibrary.GET_BONUS );
                     Game.getInstance().removeObject( this );
@@ -197,5 +202,42 @@ public class Bonus extends GameObject
     double getCenterY()
     {
         return getY() + RADIUS / 2;
+    }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since April 11, 2008
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+        stream.writeDouble( ax );
+        stream.writeDouble( ay );
+        stream.writeInt( bonusType );
+        stream.writeInt( age );
+        stream.writeFloat( lastHB );
+        stream.writeFloat( lastHue );
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
+     * @since April 11, 2008
+     */
+    public Bonus( DataInputStream stream ) throws IOException
+    {
+        super( stream );
+        ax = stream.readDouble();
+        ay = stream.readDouble();
+        bonusType = stream.readInt();
+        age = stream.readInt();
+        lastHB = stream.readFloat();
+        lastHue = stream.readFloat();
     }
 }

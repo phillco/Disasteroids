@@ -16,6 +16,12 @@ import java.io.IOException;
  */
 public interface GameMode
 {
+    /**
+     * Unique ID for this class. Used for C/S.
+     * @since April 11, 2008
+     */
+    public static final int TYPE_ID = -1;
+    
     public void act();
     
     public void draw(Graphics g);
@@ -23,5 +29,4 @@ public interface GameMode
     public void flatten( DataOutputStream stream ) throws IOException;
     
     public void optionsKey();
-
 }

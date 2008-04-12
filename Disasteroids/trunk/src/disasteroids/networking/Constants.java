@@ -4,6 +4,16 @@
  */
 package disasteroids.networking;
 
+import disasteroids.Alien;
+import disasteroids.Bonus;
+import disasteroids.GameMode;
+import disasteroids.GameObject;
+import disasteroids.LinearGameplay;
+import disasteroids.Station;
+import disasteroids.WaveGameplay;
+import java.io.DataInputStream;
+import java.io.IOException;
+
 /**
  * Storage class for network constants.
  * @author Phillip Cohen
@@ -15,7 +25,7 @@ public class Constants
      * The version of our net code protocol. Bump to ensure older clients don't connect and cause havoc.
      * @since April 11, 2008
      */
-    public static final int NETCODE_VERSION = 1;
+    public static final int NETCODE_VERSION = -1;
 
     /**
      * The default port that the server runs on.
@@ -42,11 +52,61 @@ public class Constants
     public static final int MAX_PACKET_SIZE = 1024;
 
     /**
-     * Size of the overhead for packet series.
+     * Size of the overhead for a packet in a series.
      * @since January 22, 2008
      */
     public static final int MULTIPACKET_HEADER_SIZE = ( 4 * Integer.SIZE / 8 );
 
+    /**
+     * Remaining size for data for packet in a series.
+     * @since January 22, 2008
+     */
     public static final int MULTIPACKET_DATA_SIZE = MAX_PACKET_SIZE - MULTIPACKET_HEADER_SIZE;
 
+    public static enum GameModeTIDs
+    {
+        LINEAR, WAVE;
+
+    }
+
+    public static enum GameObjectTIDs
+    {
+        ALIEN, BONUS, STATION;
+
+    }
+
+    public static int parseGameMode( GameMode m )
+    {
+        if ( m instanceof LinearGameplay )
+            return GameModeTIDs.LINEAR.ordinal();
+        else if ( m instanceof WaveGameplay )
+            return GameModeTIDs.WAVE.ordinal();
+        else
+            throw new IllegalArgumentException( "Unknown game mode: " + m + "." );
+    }
+
+    public static GameMode parseGameMode( int type, DataInputStream stream ) throws IOException
+    {
+        switch ( GameModeTIDs.values()[type] )
+        {
+            case LINEAR:
+                return new LinearGameplay( stream );
+            case WAVE:
+                return new WaveGameplay( stream );
+            default:
+                throw new IllegalArgumentException( "Unknown game mode: " + type + "." );
+        }
+    }
+
+    public static int parseGameObject( GameObject o )
+    {
+        if ( o instanceof Alien )
+            return GameObjectTIDs.ALIEN.ordinal();
+        else if ( o instanceof Bonus )
+            return GameObjectTIDs.BONUS.ordinal();
+        else if ( o instanceof Station )
+            return GameObjectTIDs.STATION.ordinal();
+        else
+            throw new IllegalArgumentException( "Unknown game object: " + o + "." );
+    }
 }

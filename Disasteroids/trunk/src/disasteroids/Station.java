@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.gui.Local;
 import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
 import disasteroids.gui.ParticleManager;
@@ -11,6 +12,9 @@ import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,6 +25,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Station extends GameObject implements ShootingObject
 {
+    /**
+     * Unique ID for this class. Used for C/S.
+     * @since April 11, 2008
+     */
+    public static final int TYPE_ID = 1;
+
     /**
      * The angle we're facing.
      * @since January 6, 2008
@@ -52,12 +62,6 @@ public class Station extends GameObject implements ShootingObject
     private int disableCounter = 0;
 
     /**
-     * Whether we should be hidden in the next tick. Used for our flashing when disabled.
-     * @since January 16, 2008
-     */
-    private boolean disableFlash = false;
-
-    /**
      * The angle we're turning towards.
      * @since January 16, 2008
      */
@@ -82,9 +86,7 @@ public class Station extends GameObject implements ShootingObject
      */
     public Station( double x, double y, double dx, double dy )
     {
-        setLocation( x, y );
-        setDx( dx );
-        setDy( dy );
+        super( x, y, dx, dy );
         angle = 0;
         manager = new MissileManager();
         manager.setPopQuantity( 0 );
@@ -243,12 +245,9 @@ public class Station extends GameObject implements ShootingObject
      */
     public void draw( Graphics g )
     {
-        if ( disableCounter > 0 )
-        {
-            disableFlash = !disableFlash;
-            if ( disableFlash )
-                return;
-        }
+        // Flash when disabled.
+        if ( disableCounter > 0 && Local.getGlobalFlash() )
+            return;
 
         int rX = RelativeGraphics.translateX( getX() );
         int rY = RelativeGraphics.translateY( getY() );
@@ -423,5 +422,47 @@ public class Station extends GameObject implements ShootingObject
             else
                 angle -= SWEEP_SPEED;
         }
+    }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since April 11, 2008
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+        stream.writeDouble( angle );
+        stream.writeDouble( desiredAngle );
+        stream.writeInt( disableCounter );
+        stream.writeInt( easterEggCounter );
+        stream.writeInt( hitsWhileDisabled );
+        stream.writeInt( size );
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
+     * @since April 11, 2008
+     */
+    public Station( DataInputStream stream ) throws IOException
+    {
+        super( stream );
+        angle = stream.readDouble();
+        desiredAngle = stream.readDouble();
+        disableCounter = stream.readInt();
+        easterEggCounter = stream.readInt();
+        hitsWhileDisabled = stream.readInt();
+        size = stream.readInt();
+
+        // TODO [PC]: Sync!
+        manager = new MissileManager();
+        manager.setPopQuantity( 0 );
+        manager.setLife( 50 );
     }
 }

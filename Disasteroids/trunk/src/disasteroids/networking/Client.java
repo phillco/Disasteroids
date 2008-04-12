@@ -97,10 +97,9 @@ public class Client extends DatagramListener
             out.writeInt( Message.CONNECT.ordinal() );
 
             // Send our name and color.
+            out.writeInt( Constants.NETCODE_VERSION );
             out.writeUTF( Settings.getLocalName() );
-            out.writeInt( Settings.playerColor.getRed() );
-            out.writeInt( Settings.playerColor.getGreen() );
-            out.writeInt( Settings.playerColor.getBlue() );
+            out.writeInt( Settings.playerColor.getRGB() );
 
             sendPacket( server, out );
         }
@@ -169,8 +168,7 @@ public class Client extends DatagramListener
                         }
                         break;
                     case CONNECT_ERROR_OLDNETCODE:
-                        Running.fatalError("Couldn't connect because the server is using a newer version.\nTheirs: "
-                                + in.readInt() + "\nOurs: " + Constants.NETCODE_VERSION + "\n\nYou'll have to update." );
+                        Running.fatalError( "Couldn't connect because the server is using a newer version.\nTheirs: " + in.readInt() + "\nOurs: " + Constants.NETCODE_VERSION + "\n\nYou'll have to update." );
                         return;
                     case FULL_UPDATE:
                         System.out.print( "Receiving full update..." );

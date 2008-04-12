@@ -94,6 +94,10 @@ public class Machine
         return true;
     }
 
+    /**
+     * Returns IP and port.
+     * @return "xxx.xxx.xxx.xxx:xxxx"
+     */
     @Override
     public String toString()
     {

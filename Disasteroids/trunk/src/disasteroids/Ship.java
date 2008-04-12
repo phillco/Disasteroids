@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.Local;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
 import disasteroids.networking.Server;
@@ -52,7 +53,7 @@ public class Ship extends GameObject implements ShootingObject
      * The angle we're facing.
      * @since Classic
      */
-    private double angle;
+    private double angle = Math.PI / 2;
 
     /**
      * Our name, showed on the scoreboard.
@@ -61,7 +62,7 @@ public class Ship extends GameObject implements ShootingObject
     private String name;
 
     /**
-     * Our color. The ship, missiles, <code>StarMissile</code>s, and explosions are drawn in this.
+     * Our color. The ship, missiles, <code>StarMessages</code>s, and explosions are drawn in this.
      * @see Game#PLAYER_COLORS
      * @since Classic
      */
@@ -86,52 +87,46 @@ public class Ship extends GameObject implements ShootingObject
     private int livesLeft;
 
     /**
-     * Toggler for the invincibility flashing during drawing.
-     * @since Classic
-     */
-    private boolean invulFlash;
-
-    /**
      * Our score.
      * @since Classic
      */
-    private int score;
+    private int score = 0;
 
     /**
      * How many <code>Asteroid</code>s we've killed on this level.
      * @since December 16, 2007
      */
-    private int numAsteroidsKilled;
+    private int numAsteroidsKilled = 0;
 
     /**
      * How many <code>Ship</code>s we've killed on this level.
      * @since December 16, 2007
      */
-    private int numShipsKilled;
+    private int numShipsKilled = 0;
 
     /**
      * The current weapon selected in <code>allWeapons</code>.
      * @since December 25, 2007
      */
-    private int weaponIndex;
+    private int weaponIndex = 0;
 
     /**
      * Our cache of weapons.
      * @since December 16, 2007
      */
-    private Weapon[] allWeapons;
+    private Weapon[] allWeapons = { new MissileManager(), new BulletManager(), new MineManager(), new LaserManager() };
 
     /**
      * The <code>SniperManager</code> for this <code>Ship</code>
      * @since March 26, 2008
      */
-    private SniperManager sniperManager;
+    private SniperManager sniperManager = new SniperManager();
 
     /**
      * How long to draw the name of the current weapon.
      * @since December 25, 2007
      */
-    private int drawWeaponNameTimer;
+    private int drawWeaponNameTimer = 0;
 
     /**
      * How many acceleration particles should be emitted out the front. Used for smooth effects.
@@ -164,9 +159,9 @@ public class Ship extends GameObject implements ShootingObject
     private boolean snipeFlash = false;
 
     /**
-     * If this <code>Ship</code> has a shield; good for one free hit
+     * If this <code>Ship</code> has a shield; good for one free hit.
      */
-    private boolean shielded;
+    private boolean shielded = false;
 
     private boolean stopping = false;
 
@@ -179,29 +174,11 @@ public class Ship extends GameObject implements ShootingObject
         this.livesLeft = lives;
         this.name = name;
 
-        shielded = false;
-        score = 0;
-        numAsteroidsKilled = 0;
-        drawWeaponNameTimer = 0;
-        numShipsKilled = 0;
-        angle = Math.PI / 2;
-
         // Colors.        
         double fadePct = 0.6;
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
-        // Init weapons.
-        allWeapons = new Weapon[4];
-        allWeapons[0] = new MissileManager();
-        allWeapons[1] = new BulletManager();
-        allWeapons[2] = new MineManager();
-//        allWeapons[3] = new FlechetteManager();
-        allWeapons[3] = new LaserManager();
-        sniperManager = new SniperManager();
-        weaponIndex = 0;
-
         // Start invincible.
-        invulFlash = true;
         invincibilityCount = 200;
 
         // Assign an unique ID.
@@ -277,9 +254,9 @@ public class Ship extends GameObject implements ShootingObject
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) - AsteroidsFrame.frame().getRumbleY() );
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
 
-        if ( ( cannotDie() && ( invulFlash = !invulFlash ) == true ) || !( cannotDie() ) )
+        // Flash when invincible.
+        if ( !cannotDie() || ( cannotDie() && Local.getGlobalFlash() ) )
             AsteroidsFrame.frame().drawPolygon( g, col, ( myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ), outline );
-
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
         if ( shielded )
@@ -772,31 +749,6 @@ public class Ship extends GameObject implements ShootingObject
     }
 
     /**
-     * Writes <code>this</code> to a stream for client/server transmission.
-     * 
-     * @param stream the stream to write to
-     * @throws java.io.IOException 
-     * @since December 30, 2007
-     */
-    @Override
-    public void flatten( DataOutputStream stream ) throws IOException
-    {
-        stream.writeInt( id );
-        flattenPosition( stream );
-        stream.writeInt( weaponIndex );
-        stream.writeInt( invincibilityCount );
-
-        stream.writeInt( myColor.getRGB() );
-        stream.writeUTF( name );
-        stream.writeInt( livesLeft );
-        stream.writeInt( weaponIndex );
-        stream.writeInt( numAsteroidsKilled );
-        stream.writeInt( numShipsKilled );
-
-    // (Whew!)
-    }
-
-    /**
      * Writes our position, angle, key presses, and speed.
      * 
      * @param stream    the stream to write to
@@ -812,6 +764,7 @@ public class Ship extends GameObject implements ShootingObject
         stream.writeBoolean( backwards );
         stream.writeBoolean( forward );
         stream.writeBoolean( shooting );
+        stream.writeInt( weaponIndex );
     }
 
     /**
@@ -834,6 +787,28 @@ public class Ship extends GameObject implements ShootingObject
     }
 
     /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since December 30, 2007
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        stream.writeInt( id );
+        flattenPosition( stream );
+        stream.writeInt( invincibilityCount );
+        stream.writeInt( myColor.getRGB() );
+
+        stream.writeUTF( name );
+        stream.writeInt( livesLeft );
+        stream.writeInt( weaponIndex );
+        stream.writeInt( numAsteroidsKilled );
+        stream.writeInt( numShipsKilled );
+    }
+
+    /**
      * Creates <code>this</code> from a stream for client/server transmission.
      * 
      * @param stream    the stream to read from (sent by the server)
@@ -844,9 +819,7 @@ public class Ship extends GameObject implements ShootingObject
     {
         id = stream.readInt();
         restorePosition( stream );
-
         invincibilityCount = stream.readInt();
-
         myColor = new Color( stream.readInt() );
 
         name = stream.readUTF();
@@ -857,15 +830,7 @@ public class Ship extends GameObject implements ShootingObject
 
         // Apply basic construction.        
         double fadePct = 0.6;
-        myInvicibleColor =
-                new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
-        allWeapons =
-                new Weapon[4];
-        allWeapons[0] = new MissileManager();
-        allWeapons[1] = new BulletManager();
-        allWeapons[2] = new MineManager();
-//        allWeapons[3] = new FlechetteManager();
-        allWeapons[3] = new LaserManager();
+        myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
     }
 
     public int getWeaponIndex()

@@ -121,7 +121,7 @@ public class AsteroidsPanel extends Panel
     {
         if ( parent.localPlayer() == null )
             return;
-
+        
         // Adjust the thread's priority if it's in the foreground/background.
         if ( parent.isActive() && Thread.currentThread().getPriority() != Thread.NORM_PRIORITY )
             Thread.currentThread().setPriority( Thread.NORM_PRIORITY );
@@ -203,6 +203,9 @@ public class AsteroidsPanel extends Panel
         if ( virtualMem == null )
             initBuffering();
 
+        // Flashing game objects.
+        Local.globalFlash = !Local.globalFlash;
+        
         // Shake the screen when hit.
         if ( rumble < 0.1 )
             rumble = 0;

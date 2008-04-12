@@ -14,6 +14,12 @@ import disasteroids.Ship;
 public class Local
 {
     /**
+     * A boolean that's toggled every step. Useful for flashing objects.
+     * @since April 11, 2008
+     */
+    static boolean globalFlash = true;
+
+    /**
      * Returns if commonly used things (like the AsteroidsFrame and Background) are null, and thus are loading.
      * 
      * @return  if common graphics classes are null!
@@ -44,5 +50,16 @@ public class Local
             return null;
         else
             return AsteroidsFrame.frame().localPlayer();
+    }
+
+    /**
+     * Returns a boolean that's toggled every step. Useful for flashing objects.
+     * 
+     * @return  a global boolean, toggled at every step.
+     * @since April 11, 2008
+     */
+    public static boolean getGlobalFlash()
+    {
+        return globalFlash;
     }
 }

@@ -12,7 +12,11 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import javax.swing.plaf.ColorUIResource;
 
 /**
  * Little UFOs that fire at players.
@@ -21,6 +25,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Alien extends GameObject implements ShootingObject
 {
+    /**
+     * Unique ID for this class. Used for C/S.
+     * @since April 11, 2008
+     */
+    public static final int TYPE_ID = 0;
+
     /**
      * Our firing manager.
      * @since January 6, 2008
@@ -51,7 +61,6 @@ public class Alien extends GameObject implements ShootingObject
         color = new Color( RandomGenerator.get().nextInt( 60 ), RandomGenerator.get().nextInt( 128 ) + 96, RandomGenerator.get().nextInt( 60 ) );
         life = 100;
         explosionTime = 0;
-
     }
 
     public void act()
@@ -126,7 +135,7 @@ public class Alien extends GameObject implements ShootingObject
         if ( closestShip != null )
         {
             double mAngle = calculateAngle( closestShip );
-            manager.add( (int) centerX(), (int) centerY(), 0 - randomizeAngle( mAngle ), Math.cos( 0 - mAngle ) * 5, Math.sin( 0 - mAngle ) * 5, color, false );
+            manager.add( (int) centerX(), (int) centerY(), 0 - mAngle, Math.cos( 0 - mAngle ) * 5, Math.sin( 0 - mAngle ) * 5, color, false );
         }
 
         angle += size / 420.0 + 0.03;
@@ -191,11 +200,6 @@ public class Alien extends GameObject implements ShootingObject
         return desiredAngle;
     }
 
-    private double randomizeAngle( double d )
-    {
-        return d;
-    }
-
     double centerX()
     {
         return getX() + 8;
@@ -243,6 +247,55 @@ public class Alien extends GameObject implements ShootingObject
          */
         AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAlien(), (int) getX() + size / 2, (int) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
     }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     * 
+     * @param stream the stream to write to
+     * @throws java.io.IOException 
+     * @since April 11, 2008
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+        stream.writeDouble( angle );
+        stream.writeDouble( ax );
+        stream.writeDouble( ay );
+        stream.writeInt( color.getRGB() );
+        stream.writeInt( explosionTime );
+        stream.writeInt( life );
+        stream.writeInt( size );
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     * 
+     * @param stream    the stream to read from (sent by the server)
+     * @throws java.io.IOException 
+     * @since April 11, 2008
+     */
+    public Alien( DataInputStream stream ) throws IOException
+    {
+        super( stream );
+        angle = stream.readDouble();
+        ax = stream.readDouble();
+        ay = stream.readDouble();
+        color = new Color( stream.readInt() );
+        explosionTime = stream.readInt();
+        life = stream.readInt();
+        size = stream.readInt();
+        
+        // TODO [PC]: Sync!
+        manager = new AlienMissileManager( size );
+    }
+
+    @Override
+    public int getTypeId()
+    {
+        return TYPE_ID;
+    }
+    
 
     /**
      * Returns a linked queue containing our one weapon manager. Used for ShootingObject.

@@ -21,6 +21,12 @@ import javax.swing.JOptionPane;
  */
 public class WaveGameplay implements GameMode
 {
+    /**
+     * Unique ID for this class. Used for C/S.
+     * @since April 11, 2008
+     */
+    public static final int TYPE_ID = 1;
+
     private int currentWave;
 
     private int wavePoints;

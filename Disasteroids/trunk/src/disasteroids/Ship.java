@@ -114,7 +114,7 @@ public class Ship extends GameObject implements ShootingObject
      * Our cache of weapons.
      * @since December 16, 2007
      */
-    private Weapon[] allWeapons = { new MissileManager(), new BulletManager(), new MineManager(), new LaserManager() };
+    private Weapon[] allWeapons = { new MissileManager(), new BulletManager(), new MineManager(), new LaserManager(), new FlechetteManager() };
 
     /**
      * The <code>SniperManager</code> for this <code>Ship</code>
@@ -399,9 +399,14 @@ public class Ship extends GameObject implements ShootingObject
         angle = Math.PI * 3 / 2;
     }
 
-    public void allStop()
+    public void brake()
     {
         stopping = true;
+    }
+    
+    public void unBrake()
+    {
+        stopping=false;
     }
 
     public void rotateWeapons()
@@ -619,7 +624,7 @@ public class Ship extends GameObject implements ShootingObject
         {
             invincibilityCount = Integer.MAX_VALUE;
             explosionTime = 160;
-            allStop();
+            brake();
             AsteroidsFrame.frame().rumble( 85 );
             if ( Settings.soundOn && this == AsteroidsFrame.frame().localPlayer() )
                 Sound.playInternal( SoundLibrary.GAME_OVER );
@@ -894,7 +899,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public void setWeapon( int index )
     {
-        weaponIndex = index % allWeapons.length;
+        weaponIndex = (index - 1 ) % allWeapons.length;
         drawWeaponNameTimer = 50;
     }
 
@@ -907,11 +912,15 @@ public class Ship extends GameObject implements ShootingObject
     {
         if ( getDx() > .4 || getDx() < -.4 )
             setDx( getDx() * .9 );
-        else
-            stopping = false;
         if ( getDy() > .4 || getDy() < -.4 )
             setDy( getDy() * .9 );
-        else
-            stopping = false;
+        if(Math.abs(getDx())<.4&&Math.abs(getDy())<.4)
+        {    
+            stopping=false;
+            setDx(0);
+            setDy(0);
+        }
+             
+
     }
 }

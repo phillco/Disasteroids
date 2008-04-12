@@ -466,7 +466,10 @@ public class Game implements Serializable
                 actor.fullRight();
                 break;
             case KeyEvent.VK_END:
-                actor.allStop();
+                actor.brake();
+                break;
+            case -KeyEvent.VK_END:
+                actor.unBrake();
                 break;
             case 192:	// ~ activates berserk!
                 actor.berserk();

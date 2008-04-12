@@ -8,7 +8,6 @@ import disasteroids.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.VolatileImage;
 import java.util.Iterator;
@@ -88,19 +87,10 @@ public class Background
 
         // Create the array of stars.
         Random rand = RandomGenerator.get();
-        this.theStars = new Star[( width * height / ( rand.nextInt( 800 ) + 1000 ) ) / ( Settings.qualityRendering ? 1 : 3 )];
+        this.theStars = new Star[ ( width * height / ( rand.nextInt( 600 ) + 750 ) ) ];
         for ( int star = 0; star < theStars.length; star++ )
         {
-            int sat = rand.nextInt( 255 );
-            int rgb[] = new int[3];
-            for ( int i = 0; i < rgb.length; i++ )
-            {
-                int deviance = rand.nextInt( 90 );
-                rgb[i] = Math.max( Math.min( sat + ( deviance - deviance / 2 ), 255 ), 0 );
-            }
-
-            //Color col = new Color( rgb[0], rgb[1], rgb[2] );
-            Color col = Color.getHSBColor( rand.nextFloat(), rand.nextFloat() / 3f, .7f + .3f * rand.nextFloat() );
+            Color col = Color.getHSBColor( rand.nextFloat(), rand.nextFloat() / 3f, .1f + .9f * rand.nextFloat() );
             theStars[star] = new Star( rand.nextInt( width ), rand.nextInt( height ), col );
         }
     }
@@ -157,20 +147,20 @@ public class Background
         // Draw stars.
         try
         {
+            int count=0;
             for ( Star star : this.theStars )
                 synchronized ( this )
                 {
-                    if ( star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
+                    if ( (!Settings.qualityRendering && ++count%3==0) || star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
                         continue;
-
                     // Move them.
-                    //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
-                    //   star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+                 //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+                 //   star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
 
                     // Wrap them.
-                    //   star.checkWrap();
+                 //   star.checkWrap();
 
-                    AsteroidsFrame.frame().drawPoint( g, star.color, (int) star.x + AsteroidsFrame.frame().getRumbleX(), (int) star.y + AsteroidsFrame.frame().getRumbleY() );
+                    AsteroidsFrame.frame().drawPoint( g, star.getColor(),(int) star.x + AsteroidsFrame.frame().getRumbleX(),(int) star.y + AsteroidsFrame.frame().getRumbleY());
                 }
         }
         catch ( NullPointerException e )
@@ -188,17 +178,17 @@ public class Background
                 itr.remove();
         }
     }
-
+    
     public void act()
     {
-        if ( theStars == null )
+        if(theStars==null)
             return;
-        for ( Star star : theStars )
+        for(Star star: theStars)
         {
-            if ( star == null )
+            if(star==null)
                 continue;
-            star.x += -AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
-            star.y += -AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+            star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+            star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
             star.checkWrap();
         }
     }
@@ -233,35 +223,60 @@ public class Background
     {
         public double x,  y;
 
-        public Color color;
+        public double dx,  dy;
+
+        private Color color;
 
         public double depth;
+        
+        private boolean twinkle;
+        
+        private int twinkleCount=0;
 
         public Star( int x, int y, Color col )
         {
             this.x = x;
             this.y = y;
             this.color = col;
-
+            twinkle=RandomGenerator.get().nextDouble()<.05;
+            if(twinkle)
+                twinkleCount=RandomGenerator.get().nextInt(50);
             // Simulated depth. Multiplied by the localPlayer's dx and dy to determine speed.
-            depth = RandomGenerator.get().nextDouble() * 2;
+            depth = RandomGenerator.get().nextDouble()*.5;
 
             // Force some to the 'background'.
             if ( RandomGenerator.get().nextInt( 15 ) == 0 )
                 depth /= 3;
+
+            // Some stars also move.
+            if ( !twinkle && RandomGenerator.get().nextInt( 10 ) == 0 )
+            {
+                dx = RandomGenerator.get().nextDouble() - 0.5;
+                dy = RandomGenerator.get().nextDouble() - 0.5;
+                dx*=.07;
+                dy*=.07;
+            }
         }
 
         public void checkWrap()
         {
             // Wrap to stay inside the level.
-            if ( x <= Math.abs( 0 ) )
+            if ( x <= Math.abs( dx ) )
                 x += Game.getInstance().GAME_WIDTH - 1;
-            if ( y <= Math.abs( 0 ) )
+            if ( y <= Math.abs( dy ) )
                 y += Game.getInstance().GAME_HEIGHT - 1;
-            if ( x > Game.getInstance().GAME_WIDTH )
+            if ( x > Game.getInstance().GAME_WIDTH - Math.abs( dx ) )
                 x -= Game.getInstance().GAME_WIDTH - 1;
-            if ( y > Game.getInstance().GAME_HEIGHT )
+            if ( y > Game.getInstance().GAME_HEIGHT - Math.abs( dy ) )
                 y -= Game.getInstance().GAME_HEIGHT - 1;
+        }
+
+        public Color getColor() {
+            if(!twinkle)
+                return color;
+            twinkleCount++;
+            twinkleCount%=50;
+            return twinkleCount==0?Color.black:color;
         }
     }
 

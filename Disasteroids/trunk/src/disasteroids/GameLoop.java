@@ -68,6 +68,8 @@ public class GameLoop extends Thread
     public boolean shouldRun()
     {
         // Don't run if the game is paused.
+        if(Game.getInstance()==null)
+            return false;
         if( Game.getInstance().isPaused() )
             return false;
         

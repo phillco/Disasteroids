@@ -1,6 +1,6 @@
 /**
  * DISASTEROIDS
- * LaserManager.java
+ * BulletManager.java
  */
 package disasteroids;
 
@@ -9,39 +9,51 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * A weapon manager that fires long, straight Lasers
+ * A weapon manager that rapidly fires weak bullets.
  * @author Andy Kooiman
  */
-class LaserManager extends Weapon
+public class FlechetteManager extends Weapon
 {
-    private int speed = 20;
+
+    private int speed = 25;
 
     private int maxShots = 1000;
 
-    private int intervalShoot = 10;
+    private int intervalShoot = 2;
 
-    private int damage = 10;
+    private int radius = 1;
 
-    private int length = 10;
+    private int damage = 1;
 
-    public LaserManager()
+    public FlechetteManager()
     {
         weapons = new ConcurrentLinkedQueue<Unit>();
     }
 
-    public LaserManager( ConcurrentLinkedQueue<Unit> start )
+    public FlechetteManager( ConcurrentLinkedQueue<Unit> start )
     {
         weapons = start;
     }
 
     public void act()
     {
-        super.act( true );
+        super.act(true);
+        /*Iterator<Unit> iter = theBullets.iterator();
+        while ( iter.hasNext() )
+        {
+            Unit w = iter.next();
+            if ( w.needsRemoval() )
+                iter.remove();
+            else
+                w.act();
+        }*/
     }
 
+  
     public int getIntervalShoot()
     {
         return intervalShoot;
@@ -49,32 +61,24 @@ class LaserManager extends Weapon
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( weapons.size() > 2500 || timeTillNextShot > 0 )
+        if ( weapons.size() > maxShots || timeTillNextShot > 0 )
             return false;
         timeTillNextShot = intervalShoot;
-        
-        double X = x;
-        double Y = y;
-        Laser l = null;
-        for ( int i = 0; i < 150; i++ )
-        { 
-            Laser last = new Laser( this, (int) X, (int) Y, angle, dx, dy, col );
-            if ( l != null )
-                l.setNext( last );
-            weapons.add( last );
-            X += length * Math.cos( angle );
-            Y -= length * Math.sin( angle );
-            l = last;
-        }
+        Random rand=RandomGenerator.get();
+        boolean successful=true;
+        for(int num=0; num<5; num++)
+            successful=successful&&weapons.add(new Flechette(this, x,y, angle+(rand.nextDouble()-.5), dx, dy, col));
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 
-        return true;
+        return successful;
     }
 
     public void restoreBonusValues()
     {
-
+        intervalShoot = 2;
+        radius = 1;
+        damage = 1;
     }
 
     public int getDamage()
@@ -96,7 +100,7 @@ class LaserManager extends Weapon
 
     public int getSpeed()
     {
-        return speed;
+        return (int)(speed*RandomGenerator.get().nextDouble());
     }
 
     public int getMaxShots()
@@ -106,23 +110,24 @@ class LaserManager extends Weapon
 
     public int getRadius()
     {
-        return length / 2;
+        return radius;
     }
 
     public void draw( Graphics g )
     {
         for ( Unit w : weapons )
             w.draw( g );
+
     }
 
     public String getWeaponName()
     {
-        return "Laser";
+        return "Flechette Launcher";
     }
 
     public Unit getWeapon( int x, int y, Color col )
     {
-        return new Laser( this, x, y, 0, 0, 0, col );
+        return new Flechette( this, x, y, 0, 0, 0, col );
     }
 
     public void berserk( Ship s )
@@ -132,29 +137,26 @@ class LaserManager extends Weapon
         int temp = timeTillNextShot;
         Sound.playInternal( SoundLibrary.BERSERK );
         timeTillNextShot = 0;
-        for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 5 )
+        Random rand=RandomGenerator.get();
+        for ( int i=0; i<43; i++ )
         {
-            add( (int) s.getX(), (int) s.getY(), angle, s.getDx(), s.getDy(), s.getColor(), false );
+            add( (int)s.getX(), (int)s.getY(),rand.nextDouble()*2*Math.PI , s.getDx(), s.getDy(), s.getColor(), false );
             timeTillNextShot = 0;
         }
         timeTillNextShot = temp;
         timeTillNextBerserk = 50;
     }
 
-    public int length()
-    {
-        return length;
-    }
-
     @Override
     public boolean canShoot()
     {
-        return super.canShoot() && weapons.size() < 500;
+        return super.canShoot()&& weapons.size() < maxShots ;
     }
+
 
     public SoundClip getShootSound()
     {
-        return SoundLibrary.SNIPER_SHOOT;
+        return SoundLibrary.BULLET_SHOOT;
     }
 
     public SoundClip getBerserkSound()

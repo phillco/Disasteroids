@@ -418,58 +418,46 @@ public class Game implements Serializable
         switch ( action )
         {
             case KeyEvent.VK_SPACE:
-            case KeyEvent.VK_CLEAR://5 on numpad w/o numlock
-                actor.startShoot();
+            case KeyEvent.VK_CLEAR: // 5 on numpad w/o numlock
+                actor.setShooting( true );
                 break;
             case -KeyEvent.VK_SPACE:
             case -KeyEvent.VK_CLEAR:
-                actor.stopShoot();
+                actor.setShooting( false );
                 break;
             case KeyEvent.VK_LEFT:
-                actor.left();
+                actor.setLeft( true );
                 break;
             case KeyEvent.VK_RIGHT:
-                actor.right();
+                actor.setRight( true );
                 break;
             case KeyEvent.VK_UP:
-                actor.forward();
+                actor.setForward( true );
                 break;
             case KeyEvent.VK_DOWN:
-                actor.backwards();
+                actor.setBackwards( true );
                 break;
 
             // Releasing keys.
             case -KeyEvent.VK_LEFT:
-                actor.unleft();
+                actor.setLeft( false );
                 break;
             case -KeyEvent.VK_RIGHT:
-                actor.unright();
+                actor.setRight( false );
                 break;
             case -KeyEvent.VK_UP:
-                actor.unforward();
+                actor.setForward( false );
                 break;
             case -KeyEvent.VK_DOWN:
-                actor.unbackwards();
+                actor.setBackwards( false );
                 break;
 
             // Special keys.
-            case KeyEvent.VK_PAGE_UP:
-                actor.fullUp();
-                break;
-            case KeyEvent.VK_PAGE_DOWN:
-                actor.fullDown();
-                break;
-            case KeyEvent.VK_INSERT:
-                actor.fullLeft();
-                break;
-            case KeyEvent.VK_DELETE:
-                actor.fullRight();
-                break;
             case KeyEvent.VK_END:
-                actor.brake();
+                actor.setBrake( true );
                 break;
             case -KeyEvent.VK_END:
-                actor.unBrake();
+                actor.setBrake( false );
                 break;
             case 192:	// ~ activates berserk!
                 actor.berserk();

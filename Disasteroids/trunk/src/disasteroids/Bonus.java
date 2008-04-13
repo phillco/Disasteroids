@@ -191,7 +191,7 @@ public class Bonus extends GameObject
 
         AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );
-        AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 9, (int) getCenterY() - 1, "B", Color.darkGray );
+        AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 4, (int) getCenterY() - 1, "B", Color.darkGray );
     }
 
     double getCenterX()

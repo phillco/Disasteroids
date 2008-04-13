@@ -167,6 +167,7 @@ public class Ship extends GameObject implements ShootingObject
 
     private double healthMax = 100,  health = healthMax;
 
+    // ***************************************************** Standard API **
     public Ship( double x, double y, Color c, int lives, String name )
     {
         super( x, y, 0, 0 );
@@ -198,24 +199,47 @@ public class Ship extends GameObject implements ShootingObject
 
     }
 
-    @Override
-    public String toString()
+    public void act()
     {
-        return "Ship #" + id + " ~ [" + (int) getX() + "," + (int) getY() + "]";
-    }
+        if ( livesLeft >= 0 )
+        {
+            if ( shooting && canShoot() )
+                shoot();
+            invincibilityCount--;
+            checkCollision();
+            generateParticles();
+            move();
+        }
+        else
+        {
+            explosionTime--;
 
-    public void clearWeapons()
-    {
-        for ( Weapon wM : allWeapons )
-            wM.clear();
-        sniperManager.clear();
-    }
+            // Create particles.
+            for ( int i = 0; i < explosionTime / 12; i++ )
+            {
+                ParticleManager.addParticle( new Particle(
+                                             getX() + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             getY() + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
+                                             RandomGenerator.get().nextInt( 4 ) + 3,
+                                             RandomGenerator.get().nextBoolean() ? myColor : myInvicibleColor,
+                                             RandomGenerator.get().nextDouble() * 6,
+                                             RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                             25 + explosionTime / 10, 10 ) );
+            }
+        }
+        for ( Weapon wm : allWeapons )
+        {
+            if ( wm == this.allWeapons[weaponIndex] )
+                wm.act( true );
+            else
+                wm.act( false );
+        }
+        sniperManager.act( true );
 
-    public void restoreBonusValues()
-    {
-        for ( Weapon wM : allWeapons )
-            wM.restoreBonusValues();
-        sniperManager.restoreBonusValues();
+        if ( stopping == true )
+        {
+            slowStop();
+        }
     }
 
     public void draw( Graphics g )
@@ -267,7 +291,7 @@ public class Ship extends GameObject implements ShootingObject
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
             Graphics2D g2d = (Graphics2D) g;
-            AsteroidsFrame.frame().drawString( g, (int) getX() - (int) g2d.getFont().getStringBounds( getWeaponManager().getWeaponName(), g2d.getFontRenderContext() ).getWidth() / 2, (int) getY() - 15, getWeaponManager().getWeaponName(), Color.gray );
+            AsteroidsFrame.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getWeaponName(), Color.gray );
             allWeapons[weaponIndex].getWeapon( (int) getX(), (int) getY() + 25, Color.gray ).draw( g );
         }
 
@@ -286,127 +310,55 @@ public class Ship extends GameObject implements ShootingObject
         }
     }
 
-    public void forward()
+    // ***************************************************** Key press & release **
+    public void setForward( boolean pressed )
     {
-        forward = true;
+        forward = pressed;
     }
 
-    public void backwards()
+    public void setBackwards( boolean pressed )
     {
-        backwards = true;
+        backwards = pressed;
     }
 
-    public void left()
+    public void setLeft( boolean pressed )
     {
-        left = true;
+        left = pressed;
     }
 
-    public void right()
+    public void setRight( boolean pressed )
     {
-        right = true;
+        right = pressed;
     }
 
-    public void unforward()
+    public void setShooting( boolean pressed )
     {
-        forward = false;
+        this.shooting = pressed;
     }
 
-    public void unbackwards()
+    public void setBrake( boolean on )
     {
-        backwards = false;
+        stopping = on;
     }
 
-    public void unleft()
+    @Override
+    public String toString()
     {
-        left = false;
+        return "Ship #" + id + " ~ [" + (int) getX() + "," + (int) getY() + "]";
     }
 
-    public void unright()
+    public void clearWeapons()
     {
-        right = false;
+        for ( Weapon wM : allWeapons )
+            wM.clear();
+        sniperManager.clear();
     }
 
-    public void startShoot()
+    public void restoreBonusValues()
     {
-        this.shooting = true;
-    }
-
-    public void stopShoot()
-    {
-        this.shooting = false;
-    }
-
-    public void act()
-    {
-        if ( livesLeft >= 0 )
-        {
-            if ( shooting && canShoot() )
-                shoot();
-            invincibilityCount--;
-            checkCollision();
-            generateParticles();
-            move();
-        }
-        else
-        {
-            explosionTime--;
-
-            // Create particles.
-            for ( int i = 0; i < explosionTime / 12; i++ )
-            {
-                ParticleManager.addParticle( new Particle(
-                                             getX() + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
-                                             getY() + RandomGenerator.get().nextInt( 16 ) - 8 - RADIUS,
-                                             RandomGenerator.get().nextInt( 4 ) + 3,
-                                             RandomGenerator.get().nextBoolean() ? myColor : myInvicibleColor,
-                                             RandomGenerator.get().nextDouble() * 6,
-                                             RandomGenerator.get().nextDouble() * 2 * Math.PI,
-                                             25 + explosionTime / 10, 10 ) );
-            }
-        }
-        for ( Weapon wm : allWeapons )
-        {
-            if ( wm == this.allWeapons[weaponIndex] )
-                wm.act( true );
-            else
-                wm.act( false );
-        }
-        sniperManager.act( true );
-
-        if ( stopping == true )
-        {
-            slowStop();
-        }
-    }
-
-    public void fullRight()
-    {
-        angle = 0;
-    }
-
-    public void fullLeft()
-    {
-        angle = Math.PI;
-    }
-
-    public void fullUp()
-    {
-        angle = Math.PI / 2;
-    }
-
-    public void fullDown()
-    {
-        angle = Math.PI * 3 / 2;
-    }
-
-    public void brake()
-    {
-        stopping = true;
-    }
-    
-    public void unBrake()
-    {
-        stopping=false;
+        for ( Weapon wM : allWeapons )
+            wM.restoreBonusValues();
+        sniperManager.restoreBonusValues();
     }
 
     public void rotateWeapons()
@@ -624,7 +576,7 @@ public class Ship extends GameObject implements ShootingObject
         {
             invincibilityCount = Integer.MAX_VALUE;
             explosionTime = 160;
-            brake();
+            setBrake( true );
             AsteroidsFrame.frame().rumble( 85 );
             if ( Settings.soundOn && this == AsteroidsFrame.frame().localPlayer() )
                 Sound.playInternal( SoundLibrary.GAME_OVER );
@@ -753,6 +705,7 @@ public class Ship extends GameObject implements ShootingObject
         this.numShipsKilled = numShipsKilled;
     }
 
+    // ***************************************************** Networking **
     /**
      * Writes our position, angle, key presses, and speed.
      * 
@@ -899,7 +852,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public void setWeapon( int index )
     {
-        weaponIndex = (index - 1 ) % allWeapons.length;
+        weaponIndex = ( index - 1 ) % allWeapons.length;
         drawWeaponNameTimer = 50;
     }
 
@@ -914,13 +867,11 @@ public class Ship extends GameObject implements ShootingObject
             setDx( getDx() * .9 );
         if ( getDy() > .4 || getDy() < -.4 )
             setDy( getDy() * .9 );
-        if(Math.abs(getDx())<.4&&Math.abs(getDy())<.4)
-        {    
-            stopping=false;
-            setDx(0);
-            setDy(0);
+        if ( Math.abs( getDx() ) < .4 && Math.abs( getDy() ) < .4 )
+        {
+            stopping = false;
+            setDx( 0 );
+            setDy( 0 );
         }
-             
-
     }
 }

@@ -30,7 +30,7 @@ public abstract class DatagramListener
 
     /**
      * Thread that listens for messages.
-     * @since January 1, 2007
+     * @since January 1, 2008
      */
     private ListenerThread ear;
 
@@ -70,7 +70,7 @@ public abstract class DatagramListener
     /**
      * Stops our listening and interval threads.
      *
-     * @since January 1, 2007
+     * @since January 1, 2008
      */
     void stopListening()
     {
@@ -164,7 +164,7 @@ public abstract class DatagramListener
     /**
      * A simple combined class for reading a byte array.
      *
-     * @since January 1, 2007
+     * @since January 1, 2008
      */
     static class ByteInputStream extends DataInputStream
     {
@@ -172,7 +172,7 @@ public abstract class DatagramListener
          * Constructs the data stream from a byte array.
          *
          * @param buffer    the array of bytes to read
-         * @since January 1, 2007
+         * @since January 1, 2008
          */
         public ByteInputStream( byte[] buffer )
         {
@@ -183,14 +183,14 @@ public abstract class DatagramListener
     /**
      * A simple combined class for writing to a byte array.
      *
-     * @since January 1, 2007
+     * @since January 1, 2008
      */
     static class ByteOutputStream extends DataOutputStream
     {
         /**
          * Constructs the data stream to write to a byte array.
          *
-         * @since January 1, 2007
+         * @since January 1, 2008
          */
         public ByteOutputStream()
         {
@@ -202,7 +202,7 @@ public abstract class DatagramListener
          *
          * @return  the current contents of this output stream, as a byte array.
          * @see     java.io.ByteArrayOutputStream#toByteArray()
-         * @since January 1, 2007
+         * @since January 1, 2008
          */
         public byte[] toByteArray()
         {
@@ -224,7 +224,7 @@ public abstract class DatagramListener
 
         /**
          * Whether we should continue running.
-         * @since January 1, 2007
+         * @since January 1, 2008
          */
         private boolean enabled = true;
 
@@ -242,7 +242,7 @@ public abstract class DatagramListener
         /**
          * Stops the thread as soon as possible.
          *
-         * @since January 1, 2007
+         * @since January 1, 2008
          */
         public void disable()
         {

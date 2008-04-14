@@ -363,6 +363,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public void rotateWeapons()
     {
+        Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
         weaponIndex++;
         weaponIndex %= allWeapons.length;
         drawWeaponNameTimer = 50;
@@ -395,7 +396,7 @@ public class Ship extends GameObject implements ShootingObject
                         else if ( other instanceof Station )
                             obit = getName() + " was shot down by a satellite.";
 
-                        if ( damage( 40, obit ) )
+                        if ( damage( m.getDamage(), obit ) )
                         {
                             m.explode();
                             score -= 5000;

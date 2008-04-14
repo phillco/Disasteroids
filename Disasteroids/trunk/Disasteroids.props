@@ -1,0 +1,13 @@
+#Disasteroids settings file.
+#Sun Apr 13 22:50:35 CDT 2008
+soundOn=true
+playerColor=-65536
+playerName=Phil
+hardwareRendering=false
+antiAlias=false
+lastConnectionIP=
+waitForMissiles=false
+highScoreName=Phil
+fullscreen=true
+musicOn=false
+highScore=1160.0

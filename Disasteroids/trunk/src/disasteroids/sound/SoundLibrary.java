@@ -20,7 +20,7 @@ public class SoundLibrary
     public static final SoundClip BERSERK = berserkSound();
 
     public static final SoundClip SHIP_HIT = shipHit();
-    
+
     public static final SoundClip SHIP_DIE = shipDie();
 
     public static final SoundClip ASTEROID_DIE = asteroidDie();
@@ -38,9 +38,11 @@ public class SoundLibrary
     public static final SoundClip GAME_OVER = gameOver();
 
     public static final SoundClip GET_BONUS = getBonus();
-    
+
     public static final SoundClip BONUS_SPAWN = bonusSpawn();
-    
+
+    public static final SoundClip BONUS_FIZZLE = bonusFizzle();
+
     public static final SoundClip SNIPER_SHOOT = sniperShoot();
 
     /*
@@ -105,7 +107,7 @@ public class SoundLibrary
             temp[index++] = (byte) ( Math.sin( 80f * Math.pow( i, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - i ) );
         return new SoundClip( temp );
     }
-    
+
     private static SoundClip shipDie()
     {
         byte[] temp = new byte[8000];
@@ -113,8 +115,6 @@ public class SoundLibrary
             temp[index] = (byte) ( Math.sin( 880f * Math.pow( index, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - index ) );
         return new SoundClip( temp );
     }
-    
-    
 
     private static SoundClip stationDisabled()
     {
@@ -169,7 +169,7 @@ public class SoundLibrary
         for ( int index = 0; index < 3000; index++ )
         {
             temp[index] = (byte) ( 100 * Math.sin( phase ) );
-            phase += frequency/4;
+            phase += frequency / 4;
             frequency = (int) ( 484 + 200 * Math.cos( freqPhase / 500 ) );
             freqPhase++;
         }
@@ -190,25 +190,39 @@ public class SoundLibrary
         for ( int index = 0; index < 1000; index++ )
         {
             temp[index] = (byte) ( 100 * Math.sin( phase ) );
-            phase += frequency/4;
+            phase += frequency / 4;
             frequency = (int) ( 20 * Math.cos( 5000 / freqPhase ) );
             freqPhase++;
         }
         return new SoundClip( temp );
     }
 
-    private static SoundClip sniperShoot()
+    private static SoundClip bonusFizzle()
     {
-        byte[] temp=new byte[2000];// 1/4 second
-        int frequency=20000;
-        double phase=0;
-        for(int index=0; index<2000; index++)
+        byte[] temp = new byte[3000];
+        int frequency = 20000;
+        double phase = 0;
+        for ( int index = 0; index < 2000; index++ )
         {
-            frequency*=.99;
-            phase+=frequency/8000.0;
-            temp[index]=(byte)(100*Math.sin(phase));
+            frequency *= .999;
+            phase += frequency / 400.0;
+            temp[index] = (byte) ( 20 * Math.sin( phase ) );
         }
         return new SoundClip( temp );
-        
+    }
+
+    private static SoundClip sniperShoot()
+    {
+        byte[] temp = new byte[2000];// 1/4 second
+        int frequency = 20000;
+        double phase = 0;
+        for ( int index = 0; index < 2000; index++ )
+        {
+            frequency *= .99;
+            phase += frequency / 8000.0;
+            temp[index] = (byte) ( 100 * Math.sin( phase ) );
+        }
+        return new SoundClip( temp );
+
     }
 }

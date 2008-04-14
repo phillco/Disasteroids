@@ -23,12 +23,6 @@ import java.io.IOException;
  */
 public class Bonus extends GameObject
 {
-    /**
-     * Unique ID for this class. Used for C/S.
-     * @since April 11, 2008
-     */
-    public static final int TYPE_ID = 2;
-
     final int RADIUS = 12;
 
     static final int MAX_LIFE = 1600;
@@ -94,6 +88,7 @@ public class Bonus extends GameObject
                                              RandomGenerator.get().nextDouble() * 5,
                                              RandomGenerator.get().nextDouble() * 2 * Math.PI,
                                              40, 2 ) );
+            Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
         }
         checkCollision();
         for ( int i = 0; i < 3; i++ )

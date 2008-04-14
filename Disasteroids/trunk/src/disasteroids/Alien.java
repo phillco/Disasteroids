@@ -67,7 +67,7 @@ public class Alien extends GameObject implements ShootingObject
     {
         move();
 
-        setSpeed( Math.min( 6, getDx() + ax ), Math.min( 6, getDy() + ay ) );
+        setSpeed( Math.min( 4, getDx() + ax ), Math.min( 4, getDy() + ay ) );
 
         ax *= 0.98;
         ay *= 0.98;
@@ -179,7 +179,7 @@ public class Alien extends GameObject implements ShootingObject
                         ( s.getY() + s.getRadius() > getY() && s.getY() - s.getRadius() < getY() + size ) )
                 {
                     if ( s.damage( 5, s.getName() + " was abducted." ) )
-                        return;
+                        life -= 20;
                 }
             }
         }
@@ -285,7 +285,7 @@ public class Alien extends GameObject implements ShootingObject
         explosionTime = stream.readInt();
         life = stream.readInt();
         size = stream.readInt();
-        
+
         // TODO [PC]: Sync!
         manager = new AlienMissileManager( size );
     }
@@ -295,7 +295,6 @@ public class Alien extends GameObject implements ShootingObject
     {
         return TYPE_ID;
     }
-    
 
     /**
      * Returns a linked queue containing our one weapon manager. Used for ShootingObject.
@@ -338,8 +337,11 @@ public class Alien extends GameObject implements ShootingObject
             if ( timeTillNextShot > 0 )
                 return false;
             timeTillNextShot = getIntervalShoot();
+            
             super.add( x, y, angle, dx / 8, dy / 8, col, false );
-            return add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
+            if ( RandomGenerator.get().nextBoolean() )
+                add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
+            return true;
         }
 
         @Override
@@ -359,7 +361,7 @@ public class Alien extends GameObject implements ShootingObject
             @Override
             public int getDamage()
             {
-                return 50;
+                return 5;
             }
 
             @Override

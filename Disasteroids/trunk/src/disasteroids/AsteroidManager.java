@@ -199,6 +199,15 @@ public class AsteroidManager implements Serializable
         theAsteroids = new ConcurrentLinkedQueue<Asteroid>();
     }
 
+    /**
+     * Generates and returns a <code>String</code> representation of <code>this</code>
+     * 
+     * @return A <code>String</code> representation.  It will have the form:
+     * "AsteroidManager@######\n[Asteroid, Asteroid, Asteroid, ... , Asteroid], where
+     * ###### is the hashcode in hex and "Asteroid" represents the <code>toString()</code> of
+     * each <code>Asteroid</code> in <code>this</code>
+     * @see Asteroid#toString()
+     */
     @Override
     public String toString()
     {

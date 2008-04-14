@@ -22,7 +22,7 @@ import java.io.Serializable;
 public class Asteroid extends GameObject implements GameElement, Serializable
 {
     /**
-     * The number of child we've spawned.
+     * The number of children we've spawned.
      * @since Classic
      */
     protected int children;
@@ -118,10 +118,6 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public void draw( Graphics g )
     {
-        /*        lifeMax = Math.max( lifeMax, 1 );
-        Color f = new Color( fill.getRed() * life / lifeMax, fill.getGreen() * life / lifeMax, fill.getBlue() * life / lifeMax );
-        AsteroidsFrame.frame().drawOutlinedCircle( g, f, outline, (int) getX(), (int) getY(), radius );
-         */
         AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAsteroid(), (int) getX(), (int) getY(), angle, radius * 2.0 / ImageLibrary.getAsteroid().getWidth( null ) );
     }
 
@@ -281,6 +277,11 @@ public class Asteroid extends GameObject implements GameElement, Serializable
 
     }
 
+    /**
+     * Generates and returns a <code>String</code> representation of <code>this</code>
+     * It will have the form "[Asteroid@(#,#), radius #]".
+     * @return a <code>String</code> representation of <code>this</code>
+     */
     @Override
     public String toString()
     {

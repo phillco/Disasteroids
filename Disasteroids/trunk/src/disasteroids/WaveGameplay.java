@@ -5,6 +5,7 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.RelativeGraphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -50,8 +51,8 @@ public class WaveGameplay implements GameMode
         }
 
         // Spawn asteroids directly opposite from player 1.
-        double x = ( Game.getInstance().players.getFirst().getX() + Game.getInstance().GAME_WIDTH / 2 ) % Game.getInstance().GAME_WIDTH + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
-        double y = ( Game.getInstance().players.getFirst().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT + RandomGenerator.get().nextInt( 100 ) - 50;//RandomGenerator.get().nextBoolean() ? -1999 : 1999;
+        double x =RelativeGraphics.oppositeX()+ RandomGenerator.get().nextInt( 100 ) - 50; 
+        double y =RelativeGraphics.oppositeY()+ RandomGenerator.get().nextInt( 100 ) - 50; 
 
         double spawnRate = Math.min( 9, Math.max( 1, ( Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size() ) / 20.0 ) );
         // System.out.println(spawnRate + " " + wavePoints);

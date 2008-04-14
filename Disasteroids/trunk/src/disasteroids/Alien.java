@@ -7,7 +7,6 @@ package disasteroids;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.ParticleManager;
-import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -16,7 +15,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import javax.swing.plaf.ColorUIResource;
 
 /**
  * Little UFOs that fire at players.
@@ -37,12 +35,24 @@ public class Alien extends GameObject implements ShootingObject
      */
     private MissileManager manager;
 
+    /**
+     * The color of this <code>Alien</code>
+     */
     private Color color;
 
+    /**
+     * The diameter(?!?) of this <code>Alien</code>
+     */
     private int size;
 
+    /**
+     * The health of this <code>Alein</code>.  Starts at 100
+     */
     private int life;
 
+    /**
+     * The current status in an explosion
+     */
     private int explosionTime;
 
     /**
@@ -51,8 +61,20 @@ public class Alien extends GameObject implements ShootingObject
      */
     private double ax = 0,  ay = 0;
 
+    /**
+     * The direction this <code>Alien</code> is "pointing."
+     */
     double angle = RandomGenerator.get().nextDouble() * 2 * Math.PI;
 
+    /**
+     * Creates a new <code>Alien</code>
+     * 
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param dx X velocity
+     * @param dy Y velocity
+     * @see GameObject#GameObject(double, double, double, double)
+     */
     public Alien( double x, double y, double dx, double dy )
     {
         super( x, y, dx, dy );
@@ -63,6 +85,9 @@ public class Alien extends GameObject implements ShootingObject
         explosionTime = 0;
     }
 
+    /**
+     * Iterates through the necessary actions of a single timestep
+     */
     public void act()
     {
         move();
@@ -141,6 +166,10 @@ public class Alien extends GameObject implements ShootingObject
         angle += size / 420.0 + 0.03;
     }
 
+    /**
+     * Checks if any Weapons or players have collided, and updates health, 
+     * explosions, and lives as necessary.
+     */
     private void checkCollision()
     {
         if ( explosionTime > 0 )
@@ -185,6 +214,11 @@ public class Alien extends GameObject implements ShootingObject
         }
     }
 
+    /**
+     * Calculates the desired angle at which to shoot to hit the target.
+     * @param target The <code>Ship</code> to aim at
+     * @return The angle to aim at to hit.
+     */
     private double calculateAngle( Ship target )
     {
         double desiredAngle = 0.0;
@@ -200,11 +234,19 @@ public class Alien extends GameObject implements ShootingObject
         return desiredAngle;
     }
 
+    /**
+     * The x coordinate of the center of <code>this</code>
+     * @return The x coordinate of the center of <code>this</code>
+     */
     double centerX()
     {
         return getX() + 8;
     }
-
+    
+    /**
+     * The y coordinate of the center of <code>this</code>
+     * @return The y coordinate of the center of <code>this</code>
+     */
     double centerY()
     {
         return getY() + 3;
@@ -222,11 +264,12 @@ public class Alien extends GameObject implements ShootingObject
         return Math.sqrt( Math.pow( getX() - s.getX(), 2 ) + Math.pow( getY() - s.getY(), 2 ) );
     }
 
+    /**
+     * Draws <code>this</code> in the given context, using an <code>Image</code>
+     * @param g The context in which to draw.
+     */
     public void draw( Graphics g )
     {
-        int rX = RelativeGraphics.translateX( getX() );
-        int rY = RelativeGraphics.translateY( getY() );
-
         manager.draw( g );
 
         if ( explosionTime > 0 )
@@ -234,17 +277,6 @@ public class Alien extends GameObject implements ShootingObject
             AsteroidsFrame.frame().fillCircle( g, color.darker().darker(), (int) getX(), (int) getY(), (int) ( size * 0.1 * ( explosionTime - 1 ) ) );
             return;
         }
-        /*
-        g.setColor( color );
-        g.fillOval( rX, rY, size, (int) ( size * 0.6 ) );
-        g.setColor( color.darker() );
-        g.drawOval( rX, rY, size, (int) ( size * 0.6 ) );
-        Color window = new Color( 40, 40, 45 );
-        g.setColor( window );
-        g.fillOval( rX + (int) ( size * 0.22 ), (int) ( rY - size / 7.5 ), (int) ( size * 0.6 ), (int) ( size * 0.58 ) );
-        g.setColor( window.brighter().brighter() );
-        g.drawOval( rX + (int) ( size * 0.22 ), (int) ( rY - size / 7.5 ), (int) ( size * 0.6 ), (int) ( size * 0.58 ) );
-         */
         AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAlien(), (int) getX() + size / 2, (int) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
     }
 
@@ -309,14 +341,24 @@ public class Alien extends GameObject implements ShootingObject
         return c;
     }
 
+    /**
+     * The alien's version of a <code>MissileManager</code>, which shoots weird units.
+     */
     private class AlienMissileManager extends MissileManager
     {
+        /**
+         * keeps track of the angle to draw the lines coming radially out of the unit
+         */
         double finRotation = 0.0;
 
-        public AlienMissileManager( int size )
+        /**
+         * Creates a new <code>AlienMissileManager</code>
+         * @param life How long the units last
+         */
+        public AlienMissileManager( int life  )
         {
             setPopQuantity( 0 );
-            setLife( (int) ( size * 1.2 ) );
+            setLife( (int) ( life * 1.2 ) );
         }
 
         /**
@@ -344,26 +386,49 @@ public class Alien extends GameObject implements ShootingObject
             return true;
         }
 
+        /**
+         * The frequency with which an <code>Alien</code> can shoot. (12)
+         */
         @Override
         public int getIntervalShoot()
         {
             return 12;//Math.max( life, 30 );
         }
 
+        /**
+         * The <code>Unit</code> that <code>Alien</code>s fire
+         */
         private class AlienBullet extends Missile
         {
+            /**
+             * Creates a <code>new AlienBullet</code> with little more than a call to super.
+             * @param m The environment
+             * @param x The x coordinate
+             * @param y The y coordinate
+             * @param angle The angle to be pointing 
+             * @param dx The x velocity
+             * @param dy The y velocity
+             * @param c The <code>Color</code> to be drawn in
+             */
             public AlienBullet( MissileManager m, int x, int y, double angle, double dx, double dy, Color c )
             {
                 super( m, x, y, angle, dx, dy, c );
                 setRadius( 1 );
             }
 
+            /**
+             * How much damage this will cause
+             * @return The damage this will cause
+             */
             @Override
             public int getDamage()
             {
                 return 5;
             }
 
+            /**
+             * Iterates <code>this</code> through one timestep
+             */
             @Override
             public void act()
             {
@@ -372,6 +437,9 @@ public class Alien extends GameObject implements ShootingObject
                 finRotation += ( 0.004 * Math.PI ) % Math.PI * 2;
             }
 
+            /**
+             * Updates position and speed as per current velocity.
+             */
             @Override
             public void move()
             {
@@ -380,6 +448,10 @@ public class Alien extends GameObject implements ShootingObject
                 setDy( ( getDy() + getDx() * 0.2 ) * 0.7 );
             }
 
+            /**
+             * Draws <code>this</code> in the specified context.
+             * @param g The context in which to draw.
+             */
             @Override
             public void draw( Graphics g )
             {

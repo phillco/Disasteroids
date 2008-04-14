@@ -92,43 +92,56 @@ public class Running
      */
     public static void quit()
     {
-        System.out.println( "\nShutting down nicely..." );
+        try {
+            System.out.println("\nShutting down nicely...");
 
-        // Tell the server we're quitting.
-        if ( Client.is() )
-            Client.getInstance().quit();    // And I told Bill, that if they move my desk one more time, then, then....
-        // Tell clients we're quitting.
-        else if ( Server.is() )
-            Server.getInstance().quit();
+            // Tell the server we're quitting.
+            if (Client.is()) {
+                Client.getInstance().quit();
+            } // And I told Bill, that if they move my desk one more time, then, then....
+            // Tell clients we're quitting.
+            else if (Server.is()) {
+                Server.getInstance().quit();
+            }
 
-        // Find the player with the highest score.
-        if ( AsteroidsFrame.frame() != null )
-        {
-            Ship highestScorer = Game.getInstance().players.getFirst();
-            for ( Ship s : Game.getInstance().players )
-            {
-                if ( s.getScore() > Settings.highScore )
-                {
-                    Settings.highScoreName = highestScorer.getName();
-                    Settings.highScore = highestScorer.getScore();
+            // Find the player with the highest score.
+            if (AsteroidsFrame.frame() != null) {
+                Ship highestScorer = Game.getInstance().players.getFirst();
+                for (Ship s : Game.getInstance().players) {
+                    if (s.getScore() > Settings.highScore) {
+                        Settings.highScoreName = highestScorer.getName();
+                        Settings.highScore = highestScorer.getScore();
+                    }
                 }
             }
+
+            // Write our settings.
+            Settings.saveToStorage();
+
+            // Show warning / error count.
+            System.out.print("Disasteroids concluded.");
+
+            if (errorCount > 0) {
+                System.out.print(" " + errorCount + " error" + (errorCount == 1 ? "" : "s") + (warningCount > 0 ? "," : "."));
+            }
+
+            if (warningCount > 0) {
+                System.out.print(" " + warningCount + " warning" + (warningCount == 1 ? "." : "s."));
+            }
+
+            // Daisy.....daisy....
+            System.exit(0);
+
+        } catch (Throwable throwable) {
+            System.out.println("\nShut Down Failed! Killing now.");
+            throwable.printStackTrace();
+            System.exit(1);
+        } finally
+        {
+            //shouldn't get here... but if we do, just in case
+            System.exit(1);
         }
 
-        // Write our settings.
-        Settings.saveToStorage();
-
-        // Show warning / error count.
-        System.out.print( "Disasteroids concluded." );
-
-        if ( errorCount > 0 )
-            System.out.print( " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." ) );
-
-        if ( warningCount > 0 )
-            System.out.print( " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." ) );
-
-        // Daisy.....daisy....
-        System.exit( 0 );
     }
 
     /**
@@ -181,6 +194,7 @@ public class Running
                 break;
             default:
                 Running.warning( "Unexpected menu selection." );
+            case EXIT:
                 Running.quit();
             }
     }

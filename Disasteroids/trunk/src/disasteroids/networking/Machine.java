@@ -5,7 +5,6 @@
 package disasteroids.networking;
 
 import java.net.InetAddress;
-import java.util.LinkedList;
 
 /**
  * Represents an IP address, port, and a last seen time.
@@ -29,7 +28,7 @@ public class Machine
 
     /**
      * The last time, in milliseconds, that we last saw this machine.
-     * @see System.currentTimeMillis()
+     * @see System#currentTimeMillis()
      * @since January 10, 2007
      */
     public long lastSeen;

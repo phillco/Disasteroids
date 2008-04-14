@@ -12,10 +12,11 @@ import disasteroids.Settings;
  */
 public class Sound
 {
+    /**
+     * The player that plays the midis
+     */
     private static MusicPlayer musicPlayer;
-
-
-
+    
     /**
      * Ensures that the music is being played if it should.
      */
@@ -54,6 +55,7 @@ public class Sound
 
     /**
      * Returns whether the music is playing.
+     * @return whether the music is playing.
      */
     public static boolean musicPlaying()
     {
@@ -87,7 +89,7 @@ public class Sound
 
     /**
      * Starts a new thread to play the given sound
-     * @param s
+     * @param s the <code>Sound</code> to be played
      */
     public static void playInternal( LayeredSound.SoundClip s )
     {
@@ -109,6 +111,10 @@ public class Sound
          */
         private static int ID=0;
 
+        /**
+         * Constructs a new <code>SpeakerThread</code> to ensure that a given sound is played
+         * @param s The sound that <code>this</code> is responsible for playing
+         */
         public SpeakerThread( LayeredSound.SoundClip s )
         {
             super( "Speaker Thread #" + ID++ );
@@ -116,8 +122,14 @@ public class Sound
             
         }
 
-        @Override
-        public void run()
+
+        /**
+         * Starts <code>this Thread</code> and either exits quickly (if there are
+         * already sounds playing), or lasts indefinitely, playing each sound passed
+         * to it until no other sound is left to play, at which point it terminates normally.
+         */
+         @Override
+         public void run()
         {
             LayeredSound.getInstance().add(sound);
         }

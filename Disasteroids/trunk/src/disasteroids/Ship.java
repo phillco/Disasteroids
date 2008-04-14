@@ -63,7 +63,6 @@ public class Ship extends GameObject implements ShootingObject
 
     /**
      * Our color. The ship, missiles, <code>StarMessages</code>s, and explosions are drawn in this.
-     * @see Game#PLAYER_COLORS
      * @since Classic
      */
     private Color myColor;
@@ -161,7 +160,7 @@ public class Ship extends GameObject implements ShootingObject
     /**
      * If this <code>Ship</code> has a shield; good for one free hit.
      */
-    private boolean shielded = false;
+    private int shielded = 0;
 
     private boolean stopping = false;
 
@@ -283,7 +282,7 @@ public class Ship extends GameObject implements ShootingObject
             AsteroidsFrame.frame().drawPolygon( g, col, ( myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ), outline );
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
-        if ( shielded )
+        if ( shielded > 0 )
             AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) getX(), (int) getY(), RADIUS + 5 );
 
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
@@ -371,9 +370,9 @@ public class Ship extends GameObject implements ShootingObject
 
     public String giveShield()
     {
-        if ( shielded )
+        if ( shielded >= 100 )
             return "";
-        shielded = true;
+        shielded = 100;
         return "Shield";
     }
 
@@ -526,11 +525,20 @@ public class Ship extends GameObject implements ShootingObject
             return false;
 
         // Shield saved us.
-        if ( shielded )
+        if ( shielded > 0 )
         {
-            setInvincibilityCount( 50 );
-            shielded = false;
-            return true;
+            //setInvincibilityCount( 50 );
+            if(shielded>amount*2)
+            {
+                shielded -= amount*2;
+                return true;
+            }
+            else
+            {
+                setInvincibilityCount(50);
+                shielded=0;
+                return true;
+            }
         }
 
         // Lose health, and some max health as well.
@@ -848,7 +856,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public int getRadius()
     {
-        return shielded ? RADIUS + 5 : RADIUS;
+        return shielded > 0 ? RADIUS + 5 : RADIUS;
     }
 
     public void setWeapon( int index )
@@ -860,6 +868,11 @@ public class Ship extends GameObject implements ShootingObject
     public double getHealth()
     {
         return health;
+    }
+    
+    public double getShield()
+    {
+        return shielded;
     }
 
     private void slowStop()

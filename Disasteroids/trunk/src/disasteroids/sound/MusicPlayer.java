@@ -1,12 +1,24 @@
 package disasteroids.sound;
 
+import disasteroids.Running;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaEventListener;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
+
 /*
  * DISASTEROIDS
  * MusicPlayer.java
  */
 
-import javax.sound.midi.*;
-import java.io.*;
+
 
 /**
  * MIDI player.
@@ -20,7 +32,6 @@ public class MusicPlayer implements MetaEventListener
     private String filepath;
     public int loopcount = 0;
     long start = 0;
-    boolean allways = true;
 
     public MusicPlayer( String filepath )
     {
@@ -45,11 +56,11 @@ public class MusicPlayer implements MetaEventListener
         }
         catch ( InvalidMidiDataException imde )
         {
-            System.out.println( "\n|         Not a MIDI File         |\n" );
+            Running.warning("|         Not a MIDI File         |" , imde);
         }
         catch ( MidiUnavailableException mue )
         {
-            System.out.println( "\n| MIDI Device is currently in use |\n" );
+            Running.warning("| MIDI Device is currently in use |", mue);
         }
     }
 
@@ -106,7 +117,6 @@ public class MusicPlayer implements MetaEventListener
             sequencer.removeMetaEventListener( this );
             start = 0;
             loopcount = 0;
-            allways = true;
         }
         catch ( NullPointerException npe )
         {

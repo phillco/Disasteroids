@@ -5,13 +5,13 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.KeystrokeManager;
 import disasteroids.gui.MainMenu;
 import disasteroids.gui.ParticleManager;
 import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
 import disasteroids.networking.Server;
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
@@ -40,7 +40,7 @@ public class Game implements Serializable
      * Stores whether the game is currently paused or not.
      * @since Classic
      */
-    private boolean paused = false;
+    private boolean paused = true;
 
     /**
      * The current game time.
@@ -114,8 +114,7 @@ public class Game implements Serializable
      */
     public Game( GameMode gameMode )
     {
-        if ( instance == null )
-            Game.instance = this;
+         Game.instance = this;
 
         // Start managers and lists.
         timeStep = 0;
@@ -141,6 +140,7 @@ public class Game implements Serializable
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().resetGame();
+
     }
 
     /**
@@ -375,10 +375,12 @@ public class Game implements Serializable
         for ( Ship s : players )
         {
             s.act();
-            if ( s.livesLeft() < 0 & s.getExplosionTime() < 0 && !Client.is() )
+            if ( s.livesLeft() < 0 && s.getExplosionTime() < 0 && !Client.is() )
             {
                 // Return to the menu.
-                Game.instance = null;
+              //  Game.instance = null;
+                AsteroidsFrame.frame().setVisible(false);
+                paused=true;
                 new MainMenu();
 
                 return;
@@ -404,105 +406,102 @@ public class Game implements Serializable
     /**
      * Performs the action specified by the action as applied to the actor.
      * 
-     * @param action    the key code for the action
+     * @param keystroke    the key code for the action
      * @param actor     the <code>Ship</code> to execute the action
      * @since Classic
      */
-    public static void performAction( int action, Ship actor )
+    public static void performAction( int keystroke, Ship actor )
     {
         // Ignore actions about players that have left the game.
         if ( actor == null || !getInstance().players.contains( actor ) )
             return;
-
+        
+        KeystrokeManager.ActionType action = KeystrokeManager.getInstance().translate(keystroke);
         // Decide what key was pressed.
         switch ( action )
         {
-            case KeyEvent.VK_SPACE:
-            case KeyEvent.VK_CLEAR: // 5 on numpad w/o numlock
+            case START_SHOOT: // 5 on numpad w/o numlock
                 actor.setShooting( true );
                 break;
-            case -KeyEvent.VK_SPACE:
-            case -KeyEvent.VK_CLEAR:
+            case STOP_SHOOT:
                 actor.setShooting( false );
                 break;
-            case KeyEvent.VK_LEFT:
+            case LEFT:
                 actor.setLeft( true );
                 break;
-            case KeyEvent.VK_RIGHT:
+            case RIGHT:
                 actor.setRight( true );
                 break;
-            case KeyEvent.VK_UP:
+            case FORWARDS:
                 actor.setForward( true );
                 break;
-            case KeyEvent.VK_DOWN:
+            case BACKWARDS:
                 actor.setBackwards( true );
                 break;
-
-            // Releasing keys.
-            case -KeyEvent.VK_LEFT:
+            case UN_LEFT:
                 actor.setLeft( false );
                 break;
-            case -KeyEvent.VK_RIGHT:
+            case UN_RIGHT:
                 actor.setRight( false );
                 break;
-            case -KeyEvent.VK_UP:
+            case UN_FORWARDS:
                 actor.setForward( false );
                 break;
-            case -KeyEvent.VK_DOWN:
+            case UN_BACKWARDS:
                 actor.setBackwards( false );
                 break;
 
             // Special keys.
-            case KeyEvent.VK_END:
+            case BRAKE:
                 actor.setBrake( true );
                 break;
-            case -KeyEvent.VK_END:
+            case UN_BRAKE:
                 actor.setBrake( false );
                 break;
-            case 192:	// ~ activates berserk!
+            case BERSERK:
                 actor.berserk();
                 break;
-            case KeyEvent.VK_NUMPAD0:
+            case STRAFE_RIGHT:
                 actor.strafe( true );
                 break;
-            case KeyEvent.VK_CONTROL:
+            case STRAFE_LEFT:
                 actor.strafe( false );
                 break;
-            case KeyEvent.VK_HOME:
+            case EXPLODE_ALL:
                 actor.getWeaponManager().explodeAll();
                 break;
-            case KeyEvent.VK_Q:
+            case ROTATE_WEAPONS:
                 actor.rotateWeapons();
                 break;
-            case KeyEvent.VK_1:
+            case SET_WEAPON_1:
                 actor.setWeapon( 1 );
                 break;
-            case KeyEvent.VK_2:
+            case SET_WEAPON_2:
                 actor.setWeapon( 2 );
                 break;
-            case KeyEvent.VK_3:
+            case SET_WEAPON_3:
                 actor.setWeapon( 3 );
                 break;
-            case KeyEvent.VK_4:
+            case SET_WEAPON_4:
                 actor.setWeapon( 4 );
                 break;
-            case KeyEvent.VK_5:
+            case SET_WEAPON_5:
                 actor.setWeapon( 5 );
                 break;
-            case KeyEvent.VK_6:
+            case SET_WEAPON_6:
                 actor.setWeapon( 6 );
                 break;
-            case KeyEvent.VK_7:
+            case SET_WEAPON_7:
                 actor.setWeapon( 7 );
                 break;
-            case KeyEvent.VK_8:
+            case SET_WEAPON_8:
                 actor.setWeapon( 8 );
                 break;
-            case KeyEvent.VK_9:
+            case SET_WEAPON_9:
                 actor.setWeapon( 9 );
                 break;
 
-            case KeyEvent.VK_P:
+            case PAUSE:
                 if ( !Client.is() )
                     Game.getInstance().setPaused( !Game.getInstance().isPaused() );
                 break;
@@ -524,12 +523,12 @@ public class Game implements Serializable
              */
 
             // Saving & loading
-            case KeyEvent.VK_T:
+            case SAVE:
                 if ( !Client.is() )
                     Game.saveToFile();
                 break;
 
-            case KeyEvent.VK_Y:
+            case LOAD:
                 if ( !Client.is() )
                     Game.loadFromFile();
                 break;

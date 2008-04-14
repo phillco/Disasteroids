@@ -110,6 +110,7 @@ public class AsteroidsPanel extends Panel
     public AsteroidsPanel( AsteroidsFrame parent )
     {
         this.parent = parent;
+        background = new Background( Game.getInstance().GAME_WIDTH, Game.getInstance().GAME_HEIGHT );
     }
 
     /**
@@ -251,7 +252,7 @@ public class AsteroidsPanel extends Panel
      * 
      * @since November 15 2007
      */
-    void warpDialog()
+    public void warpDialog()
     {
         showWarpDialog = true;
     }
@@ -340,11 +341,21 @@ public class AsteroidsPanel extends Panel
         // Draw energy.
         x = getWidth() / 2 - 50;
         y = 18;
-        g2d.setColor( new Color( 9, 68, 12 ) );
-        g2d.fillRect( x, y, (int) ( parent.localPlayer().getHealth() ), 20 );
-        g2d.setColor( new Color( 21, 98, 28 ) );
-        g2d.drawRect( x, y, 100, 20 );
 
+        
+        {
+            g2d.setColor( new Color( 9, 68, 12 ) );
+            g2d.fillRect( x, y, (int) ( parent.localPlayer().getHealth() ), 20 );
+            g2d.setColor( new Color( 21, 98, 28 ) );
+            g2d.drawRect( x, y, 100, 20 );            
+        }
+        if(parent.localPlayer().getShield()>0)
+        {
+            g2d.setColor( new Color( 5, 100, 100 ) );
+            g2d.fillRect( x, y, (int) ( parent.localPlayer().getShield() ), 20 );
+            g2d.setColor( new Color( 5, 150, 150 ) );
+            g2d.drawRect( x, y, 100, 20 );
+        }
 
         // Draw notification messages.
         x = 8;
@@ -493,7 +504,7 @@ public class AsteroidsPanel extends Panel
      * 
      * @since November 15, 2007
      */
-    void toggleSound()
+    public void toggleSound()
     {
         Running.log( "Sound " + ( Sound.toggleSound() ? "on." : "off." ) );
     }
@@ -503,11 +514,22 @@ public class AsteroidsPanel extends Panel
      * 
      * @since December 15, 2007
      */
-    void toggleReneringQuality()
+    public void toggleReneringQuality()
     {
         Settings.qualityRendering = !Settings.qualityRendering;
         Running.log( ( Settings.qualityRendering ? "Quality rendering." : "Speed rendering." ) );
     }
+    
+    public void toggleTracker() 
+    {
+        showTracker=!showTracker;
+    }
+    
+    public void toggleScoreboard() 
+    {
+        drawScoreboard=!drawScoreboard;
+    }
+
 
     /**
      * Enables or disables fancy rendering of the provided <code>Graphics</code>.

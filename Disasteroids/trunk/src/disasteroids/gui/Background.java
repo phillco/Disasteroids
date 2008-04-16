@@ -78,16 +78,11 @@ public class Background
     {
         // Create the image if we haven't yet.
         if ( image == null )
-        {
-            if ( Settings.hardwareRendering )
-                image = AsteroidsFrame.frame().getGraphicsConfiguration().createCompatibleVolatileImage( width, height );
-            else
-                image = AsteroidsFrame.frame().createImage( width, height );
-        }
+            image = AsteroidsFrame.frame().createImage( width, height );
 
         // Create the array of stars.
         Random rand = RandomGenerator.get();
-        this.theStars = new Star[ ( width * height / ( rand.nextInt( 600 ) + 750 ) ) ];
+        this.theStars = new Star[( width * height / ( rand.nextInt( 600 ) + 750 ) )];
         for ( int star = 0; star < theStars.length; star++ )
         {
             Color col = Color.getHSBColor( rand.nextFloat(), rand.nextFloat() / 3f, .1f + .9f * rand.nextFloat() );
@@ -104,30 +99,12 @@ public class Background
      */
     public Image render()
     {
-        // Create the background first.
+        // Create the background.
         if ( image == null )
             init();
 
-        // Render in hardware mode.
-        if ( Settings.hardwareRendering )
-        {
-            do
-            {
-                // If the resolution has changed causing an incompatibility, re-create the VolatileImage.
-                if ( ( (VolatileImage) image ).validate( AsteroidsFrame.frame().getGraphicsConfiguration() ) == VolatileImage.IMAGE_INCOMPATIBLE )
-                    init();
-
-                // Draw the game's graphics.
-                drawElements( image.getGraphics() );
-            }
-            while ( ( (VolatileImage) image ).contentsLost() );
-        }
-        // Render in software mode.
-        else
-        {
-            // Draw the game's graphics.
-            drawElements( image.getGraphics() );
-        }
+        // Draw the graphics.
+        drawElements( image.getGraphics() );
 
         return image;
     }
@@ -147,20 +124,20 @@ public class Background
         // Draw stars.
         try
         {
-            int count=0;
+            int count = 0;
             for ( Star star : this.theStars )
-                synchronized ( this )
+                synchronized (this)
                 {
-                    if ( (!Settings.qualityRendering && ++count%3==0) || star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
+                    if ( ( !Settings.isQualityRendering() && ++count % 3 == 0 ) || star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
                         continue;
                     // Move them.
-                 //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
-                 //   star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+                    //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
+                    //   star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
 
                     // Wrap them.
-                 //   star.checkWrap();
+                    //   star.checkWrap();
 
-                    AsteroidsFrame.frame().drawPoint( g, star.getColor(),(int) star.x + AsteroidsFrame.frame().getRumbleX(),(int) star.y + AsteroidsFrame.frame().getRumbleY());
+                    AsteroidsFrame.frame().drawPoint( g, star.getColor(), (int) star.x + AsteroidsFrame.frame().getRumbleX(), (int) star.y + AsteroidsFrame.frame().getRumbleY() );
                 }
         }
         catch ( NullPointerException e )
@@ -178,14 +155,14 @@ public class Background
                 itr.remove();
         }
     }
-    
+
     public void act()
     {
-        if(theStars==null)
+        if ( theStars == null )
             return;
-        for(Star star: theStars)
+        for ( Star star : theStars )
         {
-            if(star==null)
+            if ( star == null )
                 continue;
             star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
             star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
@@ -228,21 +205,21 @@ public class Background
         private Color color;
 
         public double depth;
-        
+
         private boolean twinkle;
-        
-        private int twinkleCount=0;
+
+        private int twinkleCount = 0;
 
         public Star( int x, int y, Color col )
         {
             this.x = x;
             this.y = y;
             this.color = col;
-            twinkle=RandomGenerator.get().nextDouble()<.05;
-            if(twinkle)
-                twinkleCount=RandomGenerator.get().nextInt(50);
+            twinkle = RandomGenerator.get().nextDouble() < .05;
+            if ( twinkle )
+                twinkleCount = RandomGenerator.get().nextInt( 50 );
             // Simulated depth. Multiplied by the localPlayer's dx and dy to determine speed.
-            depth = RandomGenerator.get().nextDouble()*.5;
+            depth = RandomGenerator.get().nextDouble() * .5;
 
             // Force some to the 'background'.
             if ( RandomGenerator.get().nextInt( 15 ) == 0 )
@@ -253,8 +230,8 @@ public class Background
             {
                 dx = RandomGenerator.get().nextDouble() - 0.5;
                 dy = RandomGenerator.get().nextDouble() - 0.5;
-                dx*=.07;
-                dy*=.07;
+                dx *= .07;
+                dy *= .07;
             }
         }
 
@@ -271,12 +248,13 @@ public class Background
                 y -= Game.getInstance().GAME_HEIGHT - 1;
         }
 
-        public Color getColor() {
-            if(!twinkle)
+        public Color getColor()
+        {
+            if ( !twinkle )
                 return color;
             twinkleCount++;
-            twinkleCount%=50;
-            return twinkleCount==0?Color.black:color;
+            twinkleCount %= 50;
+            return twinkleCount == 0 ? Color.black : color;
         }
     }
 
@@ -331,7 +309,7 @@ public class Background
                                  col.getBlue() * life / lifeMax );
 
             gBack.setFont( font );
-            AsteroidsFrame.frame().drawString( gBack, (int) (dy == 0? x : x + 3 * Math.cos( life / 5.0 ) ), (int) y, message, c );
+            AsteroidsFrame.frame().drawString( gBack, (int) ( dy == 0 ? x : x + 3 * Math.cos( life / 5.0 ) ), (int) y, message, c );
         }
     }
 }

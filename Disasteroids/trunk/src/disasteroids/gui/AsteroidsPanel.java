@@ -95,7 +95,7 @@ public class AsteroidsPanel extends Panel
      * @since April 7, 2008
      */
     double rumble = 0.0;
-    
+
     /**
      * Offsets that objects should be drawn at during rumbling.
      * @since April 7, 2008
@@ -123,7 +123,7 @@ public class AsteroidsPanel extends Panel
     {
         if ( parent.localPlayer() == null )
             return;
-        
+
         // Adjust the thread's priority if it's in the foreground/background.
         if ( parent.isActive() && Thread.currentThread().getPriority() != Thread.NORM_PRIORITY )
             Thread.currentThread().setPriority( Thread.NORM_PRIORITY );
@@ -132,7 +132,7 @@ public class AsteroidsPanel extends Panel
 
 
         // Anti-alias, if the user wants it.
-        updateQualityRendering( g, Settings.qualityRendering );
+        updateQualityRendering( g, Settings.isQualityRendering() );
 
         // Calculate FPS.
         if ( ++paintCount % 10 == 0 )
@@ -142,7 +142,7 @@ public class AsteroidsPanel extends Panel
                 lastFPS = (int) ( 10000.0 / timeSinceLast );
         }
 
-        if ( !highScoreAchieved && parent.localPlayer().getScore() > Settings.highScore )
+        if ( !highScoreAchieved && parent.localPlayer().getScore() > Settings.getHighScore() )
         {
             Running.log( "New high score of " + Util.insertThousandCommas( parent.localPlayer().getScore() ) + "!", 800 );
             highScoreAchieved = true;
@@ -183,10 +183,7 @@ public class AsteroidsPanel extends Panel
     private void initBuffering()
     {
         // Create the buffer.
-        if ( Settings.hardwareRendering )
-            virtualMem = getGraphicsConfiguration().createCompatibleVolatileImage( getWidth(), getHeight() );
-        else
-            virtualMem = createImage( getWidth(), getHeight() );
+        virtualMem = createImage( getWidth(), getHeight() );
 
         Game.getInstance().startGame();
     }
@@ -207,7 +204,7 @@ public class AsteroidsPanel extends Panel
 
         // Flashing game objects.
         Local.globalFlash = !Local.globalFlash;
-        
+
         // Shake the screen when hit.
         if ( rumble < 0.1 )
             rumble = 0;
@@ -223,29 +220,14 @@ public class AsteroidsPanel extends Panel
             Game.getInstance().getGameMode().optionsKey();
             showWarpDialog = false;
         }
-        // Render in hardware mode.
-        if ( Settings.hardwareRendering )
-            do
-            {
-                // If the resolution has changed causing an incompatibility, re-create the VolatileImage.
-                if ( ( (VolatileImage) virtualMem ).validate( getGraphicsConfiguration() ) == VolatileImage.IMAGE_INCOMPATIBLE )
-                    initBuffering();
 
-                // Draw the game's graphics.
-                draw( virtualMem.getGraphics() );
-
-            }
-            while ( ( (VolatileImage) virtualMem ).contentsLost() );
-        // Render in software mode.
-        else
-            // Draw the game's graphics.
-            draw( virtualMem.getGraphics() );
+        // Draw the game's graphics.
+        draw( virtualMem.getGraphics() );
 
         // Flip the buffer to the screen.
         g.drawImage( virtualMem, 0, 0, this );
 
         repaint();
-
     }
 
     /**
@@ -342,15 +324,13 @@ public class AsteroidsPanel extends Panel
         // Draw energy.
         x = getWidth() / 2 - 50;
         y = 18;
-
-        
         {
             g2d.setColor( new Color( 9, 68, 12 ) );
             g2d.fillRect( x, y, (int) ( parent.localPlayer().getHealth() ), 20 );
             g2d.setColor( new Color( 21, 98, 28 ) );
-            g2d.drawRect( x, y, 100, 20 );            
+            g2d.drawRect( x, y, 100, 20 );
         }
-        if(parent.localPlayer().getShield()>0)
+        if ( parent.localPlayer().getShield() > 0 )
         {
             g2d.setColor( new Color( 5, 100, 100 ) );
             g2d.fillRect( x, y, (int) ( parent.localPlayer().getShield() ), 20 );
@@ -471,7 +451,7 @@ public class AsteroidsPanel extends Panel
 
         // Draw the high scorer.
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
-        text = "All-time high scorer " + ( highScoreAchieved ? "was " : "is " ) + Settings.highScoreName + " with " + Util.insertThousandCommas( (int) Settings.highScore ) + " points.";
+        text = "All-time high scorer " + ( highScoreAchieved ? "was " : "is " ) + Settings.getHighScoreName() + " with " + Util.insertThousandCommas( (int) Settings.getHighScore() ) + " points.";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         y += 40;
         g2d.setColor( Color.white );
@@ -481,7 +461,7 @@ public class AsteroidsPanel extends Panel
         if ( highScoreAchieved )
         {
             y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
-            if ( parent.localPlayer().getName().equals( Settings.highScoreName ) )
+            if ( parent.localPlayer().getName().equals( Settings.getHighScoreName() ) )
                 text = "But hey, everyone likes to beat their own score.";
             else
                 text = "But you're much better with your shiny " + Util.insertThousandCommas( parent.localPlayer().getScore() ) + "!";
@@ -517,20 +497,19 @@ public class AsteroidsPanel extends Panel
      */
     public void toggleReneringQuality()
     {
-        Settings.qualityRendering = !Settings.qualityRendering;
-        Running.log( ( Settings.qualityRendering ? "Quality rendering." : "Speed rendering." ) );
-    }
-    
-    public void toggleTracker() 
-    {
-        showTracker=!showTracker;
-    }
-    
-    public void toggleScoreboard() 
-    {
-        drawScoreboard=!drawScoreboard;
+        Settings.setQualityRendering( !Settings.isQualityRendering() );
+        Running.log( ( Settings.isQualityRendering() ? "Quality rendering." : "Speed rendering." ) );
     }
 
+    public void toggleTracker()
+    {
+        showTracker = !showTracker;
+    }
+
+    public void toggleScoreboard()
+    {
+        drawScoreboard = !drawScoreboard;
+    }
 
     /**
      * Enables or disables fancy rendering of the provided <code>Graphics</code>.
@@ -589,12 +568,10 @@ public class AsteroidsPanel extends Panel
         paint( g );
     }
 
-    public Background getStarBackground() 
+    public Background getStarBackground()
     {
         return background;
     }
-    
-    
 
     /**
      * A small class for the storage of scoreboard colums.

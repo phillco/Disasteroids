@@ -590,7 +590,7 @@ public class Ship extends GameObject implements ShootingObject
             explosionTime = 160;
             setBrake( true );
             AsteroidsFrame.frame().rumble( 85 );
-            if ( Settings.soundOn && this == AsteroidsFrame.frame().localPlayer() )
+            if ( Settings.isSoundOn() && this == AsteroidsFrame.frame().localPlayer() )
                 Sound.playInternal( SoundLibrary.GAME_OVER );
 
             // Create lots of particles.

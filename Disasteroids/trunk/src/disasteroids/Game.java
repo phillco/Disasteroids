@@ -22,6 +22,8 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Central gameplay class that's separate from graphics.
@@ -112,11 +114,10 @@ public class Game implements Serializable
      * Creates the game.
      * @since December 29, 2007
      */
-    public Game( GameMode gameMode )
+    public Game( Class gameMode )
     {
-         Game.instance = this;
 
-        // Start managers and lists.
+        Game.instance = this;
         timeStep = 0;
         otherPlayerTimeStep = 0;
         asteroidManager = new AsteroidManager();
@@ -133,14 +134,23 @@ public class Game implements Serializable
             players.get( index ).id = id;
             shootingObjects.add( players.get( index ) );
         }
-
-        // Set the game mode.
-        this.gameMode = gameMode;
+        try
+        {
+            // Set the game mode.
+            this.gameMode = (GameMode) gameMode.newInstance();
+        }
+        catch ( InstantiationException ex )
+        {
+            Running.fatalError( "Couldn't create game mode.", ex );
+        }
+        catch ( IllegalAccessException ex )
+        {
+            Running.fatalError( "Couldn't create game mode.", ex );
+        }
 
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().resetGame();
-
     }
 
     /**
@@ -378,9 +388,9 @@ public class Game implements Serializable
             if ( s.livesLeft() < 0 && s.getExplosionTime() < 0 && !Client.is() )
             {
                 // Return to the menu.
-              //  Game.instance = null;
-                AsteroidsFrame.frame().setVisible(false);
-                paused=true;
+                //  Game.instance = null;
+                AsteroidsFrame.frame().setVisible( false );
+                paused = true;
                 new MainMenu();
 
                 return;
@@ -415,8 +425,8 @@ public class Game implements Serializable
         // Ignore actions about players that have left the game.
         if ( actor == null || !getInstance().players.contains( actor ) )
             return;
-        
-        KeystrokeManager.ActionType action = KeystrokeManager.getInstance().translate(keystroke);
+
+        KeystrokeManager.ActionType action = KeystrokeManager.getInstance().translate( keystroke );
         // Decide what key was pressed.
         switch ( action )
         {

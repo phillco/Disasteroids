@@ -13,82 +13,34 @@ import java.util.Properties;
 
 /**
  * Stores user settings and writes/retrieves them from <code>Disasteroids.props</code>.
- * @since Nov 16, 2007
+ * @since November 16, 2007
  * @author Phillip Cohen
  */
 public class Settings implements Serializable
 {
     /**
-     * Whether the user wants music to play.
-     * @since November 15, 2007
-     */
-    public static boolean musicOn = true;
-
-    /**
-     * Whether the user wants sound to play.
-     * @since November 15, 2007
-     */
-    public static boolean soundOn = true;
-
-    /**
-     * Whether the user wants fullscreen (true) or windowed (false).
-     * @since December 7, 2007
-     */
-    public static boolean useFullscreen = true;
-
-    /**
-     * The last address the user entered in the "Select Server" dialog box.
-     * @since December 9, 2007
-     */
-    public static String lastConnectionIP = "";
-
-    /**
-     * Whether the user wants to anti-alias the game graphics.
-     * @since December 15, 2007
-     */
-    public static boolean qualityRendering = true;
-
-    /**
-     * Whether the game should wait for all <code>Missile</code>s to be destroyed before advancing to the next level.
-     * @since December 16, 2007
-     */
-    public static boolean waitForMissiles = false;
-
-    /**
-     * The highest score we've seen on this computer.
-     * @since December 18, 2007
-     */
-    public static double highScore = 1000;
-
-    /**
-     * The name of the high scorer.
-     * @since December 18, 2007
-     */
-    public static String highScoreName = "Phillip & Andy";
-
-    /**
-     * Our local player name.
-     * @since December 20, 2007
-     */
-    public static String playerName = "Player";
-
-    /**
-     * Whether the user would like hardware accelerated graphics (true), or software (false).
-     * @since December 21, 2007
-     */
-    public static boolean hardwareRendering = false;
-
-    /**
-     * The user's ship color.
-     * @since April 9, 2008
-     */
-    public static Color playerColor = Color.red;
-
-    /**
      * First time startup?
      * @since April 9, 2008
      */
-    public static boolean inSetup = false;
+    private static boolean inSetup = false;
+
+    /**
+     * The path to the settings file.
+     * @since April 15, 2008
+     */
+    public static final String SETTINGS_FILE_PATH = "res\\UserSettings2.props";
+
+    /**
+     * The default settings.
+     * @since April 15, 2008
+     */
+    private static Properties defaultSettings;
+
+    /**
+     * The user's settings.
+     * @since April 15, 2008
+     */
+    private static Properties settingsFile;
 
     /**
      * Loads settings from <code>Disasteroids.props</code>, if it exists.
@@ -100,48 +52,24 @@ public class Settings implements Serializable
     {
         try
         {
+            defaultSettings = new Properties();
+            defaultSettings.put( "musicOn", String.valueOf( true ) );
+            defaultSettings.put( "soundOn", String.valueOf( true ) );
+            defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
+            defaultSettings.put( "qualityRendering", String.valueOf( false ) );
+            defaultSettings.put( "lastConnectionIP", "localhost" );
+            defaultSettings.put( "highScore", String.valueOf( 2000 ) );
+            defaultSettings.put( "highScorer", "Phillip & Andy" );
+            defaultSettings.put( "playerName", "Player" );
+            defaultSettings.put( "playerColor", String.valueOf(Color.red.getRGB()) );
+
             // Load the settings file.
-            Properties p = new Properties();
-            p.load( new FileInputStream( "Disasteroids.props" ) );
-
-            // Check for settings, and load them if they exist.
-            if ( p.containsKey( "musicOn" ) )
-                musicOn = Boolean.parseBoolean( p.getProperty( "musicOn" ) );
-
-            if ( p.containsKey( "soundOn" ) )
-                soundOn = Boolean.parseBoolean( p.getProperty( "soundOn" ) );
-
-            if ( p.containsKey( "fullscreen" ) )
-                useFullscreen = Boolean.parseBoolean( p.getProperty( "fullscreen" ) );
-
-            if ( p.containsKey( "antiAlias" ) )
-                qualityRendering = Boolean.parseBoolean( p.getProperty( "antiAlias" ) );
-
-            if ( p.containsKey( "waitForMissiles" ) )
-                waitForMissiles = Boolean.parseBoolean( p.getProperty( "waitForMissiles" ) );
-
-            if ( p.containsKey( "lastConnectionIP" ) )
-                lastConnectionIP = p.getProperty( "lastConnectionIP" );
-
-            if ( p.containsKey( "highScore" ) )
-                highScore = Double.parseDouble( p.getProperty( "highScore" ) );
-
-            if ( p.containsKey( "highScoreName" ) )
-                highScoreName = p.getProperty( "highScoreName" );
-
-            if ( p.containsKey( "playerName" ) )
-                playerName = p.getProperty( "playerName" );
-
-            if ( p.containsKey( "hardwareRendering" ) )
-                hardwareRendering = Boolean.parseBoolean( p.getProperty( "hardwareRendering" ) );
-
-            if ( p.containsKey( "playerColor" ) )
-                playerColor = new Color( Integer.parseInt( p.getProperty( "playerColor" ) ) );
-
+            settingsFile = new Properties( defaultSettings );
+            settingsFile.load( new FileInputStream( SETTINGS_FILE_PATH ) );
         }
         catch ( IOException ex )
         {
-            inSetup = true;
+            setInSetup( true );
             return false;
         }
 
@@ -157,31 +85,14 @@ public class Settings implements Serializable
      */
     public static boolean saveToStorage()
     {
-        Properties p = new Properties();
         try
         {
-            p.put( "musicOn", String.valueOf( musicOn ) );
-            p.put( "soundOn", String.valueOf( soundOn ) );
-            p.put( "fullscreen", String.valueOf( useFullscreen ) );
-            p.put( "antiAlias", String.valueOf( qualityRendering ) );
-            p.put( "waitForMissiles", String.valueOf( waitForMissiles ) );
-            p.put( "lastConnectionIP", lastConnectionIP );
-            p.put( "highScore", String.valueOf( highScore ) );
-            p.put( "highScoreName", highScoreName );
-
-            if ( playerName.equals( "" ) )
-                p.put( "playerName", "Player" );
-            else
-                p.put( "playerName", playerName );
-
-            p.put( "hardwareRendering", String.valueOf( hardwareRendering ) );
-            p.put( "playerColor", String.valueOf( playerColor.getRGB() ) );
-
             // Write the settings file.            
-            p.store( new FileOutputStream( "Disasteroids.props" ), "Disasteroids settings file." );
+            settingsFile.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "Disasteroids settings file (v2)." );
         }
-        catch ( IOException ex )
+        catch ( IOException e )
         {
+            Running.warning( "Failed to save settings.", e );
             return false;
         }
 
@@ -189,21 +100,186 @@ public class Settings implements Serializable
         return true;
     }
 
-    public static String getLocalName()
+    /**
+     * Returns whether the user wants music to play.
+     * @since November 15, 2007
+     */
+    public static boolean isMusicOn()
     {
-        if ( playerName.equals( "" ) )
-            return "Player";
-        else
-            return playerName;
+        return Boolean.parseBoolean( settingsFile.getProperty( "musicOn" ) );
     }
 
+    /**
+     * Sets whether the user wants music to play.
+     * @since November 15, 2007
+     */
+    public static void setMusicOn( boolean aMusicOn )
+    {
+        settingsFile.put( "musicOn", String.valueOf( aMusicOn ) );
+    }
+
+    /**
+     * Returns whether the user wants sound to play.
+     * @since November 15, 2007
+     */
+    public static boolean isSoundOn()
+    {
+        return Boolean.parseBoolean( settingsFile.getProperty( "soundOn" ) );
+    }
+
+    /**
+     * Sets whether the user wants sound to play.
+     * @since November 15, 2007
+     */
+    public static void setSoundOn( boolean aSoundOn )
+    {
+        settingsFile.put( "soundOn", String.valueOf( aSoundOn ) );
+    }
+
+    /**
+     * Returns whether the user wants a fullscreen game (true) or a windowed one (false).
+     * @since December 7, 2007
+     */
+    public static boolean isUseFullscreen()
+    {
+        return Boolean.parseBoolean( settingsFile.getProperty( "fullscreenMode" ) );
+    }
+
+    /**
+     * Saves whether the user wants a fullscreen game (true) or a windowed one (false).
+     * @since December 7, 2007
+     */
+    public static void setUseFullscreen( boolean aUseFullscreen )
+    {
+        settingsFile.put( "fullscreenMode", String.valueOf( aUseFullscreen ) );
+    }
+
+    /**
+     * Returns the last address the user entered in the "Select Server" dialog box.
+     * @since December 9, 2007
+     */
+    public static String getLastConnectionIP()
+    {
+        return settingsFile.getProperty( "lastConnectionIP" );
+    }
+
+    /**
+     * Saves the last address the user entered in the "Select Server" dialog box.
+     * @since December 9, 2007
+     */
+    public static void setLastConnectionIP( String aLastConnectionIP )
+    {
+        settingsFile.put( "lastConnectionIP", aLastConnectionIP );
+    }
+
+    /**
+     * Returns whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.
+     * @since December 15, 2007
+     */
+    public static boolean isQualityRendering()
+    {
+        return Boolean.parseBoolean( settingsFile.getProperty( "qualityRendering" ) );
+    }
+
+    /**
+     * Sets whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.
+     * @since December 15, 2007
+     */
+    public static void setQualityRendering( boolean aQualityRendering )
+    {
+        settingsFile.put( "qualityRendering", String.valueOf( aQualityRendering ) );
+    }
+
+    /**
+     * Returns the highest score we've seen on this computer.
+     * @since December 18, 2007
+     */
+    public static double getHighScore()
+    {
+        return Double.parseDouble( settingsFile.getProperty( "highScore" ) );
+    }
+
+    /**
+     * Updates the highest score we've seen on this computer.
+     * @since December 18, 2007
+     */
+    public static void setHighScore( double aHighScore )
+    {
+        settingsFile.put( "highScore", String.valueOf( aHighScore ) );
+    }
+
+    /**
+     * Returns the name of the high scorer.
+     * @since December 18, 2007
+     */
+    public static String getHighScoreName()
+    {
+        return settingsFile.getProperty( "highScorer" );
+    }
+
+    /**
+     * Sets the name of the high scorer.
+     * @since December 18, 2007
+     */
+    public static void setHighScoreName( String aHighScoreName )
+    {
+        settingsFile.put( "highScorer", aHighScoreName );
+    }
+
+    /**
+     * Returns the user's in-game name, or "Player" if that's empty.
+     * @since December 20, 2007
+     */
+    public static String getPlayerName()
+    {
+        if ( settingsFile.getProperty( "playerName" ).length() == 0 )
+            return "Player";
+        else
+            return settingsFile.getProperty( "playerName" );
+    }
+
+    /**
+     * Sets the user's in-game name.
+     * @since December 20, 2007
+     */
+    public static void setPlayerName( String aPlayerName )
+    {
+        settingsFile.put( "playerName", aPlayerName );
+    }
+
+    /**
+     * Returns the user's in-game ship color.
+     * @since April 9, 2008
+     */
+    public static Color getPlayerColor()
+    {
+        return new Color( Integer.parseInt( settingsFile.getProperty( "playerColor" ) ) );
+    }
+
+    /**
+     * Sets the user's in-game ship color.
+     * @since April 9, 2008
+     */
+    public static void setPlayerColor( Color aPlayerColor )
+    {
+        settingsFile.put( "playerColor", String.valueOf( aPlayerColor.getRGB() ) );
+    }
+
+    /**
+     * Returns if this is a first-time run, where the user has no personal settings.
+     * @since April 9, 2008
+     */
     public static boolean isInSetup()
     {
         return inSetup;
     }
 
-    public static void setInSetup( boolean inSetup )
+    /**
+     * Sets whether this is a first-time, where the user has no personal settings.
+     * @since April 9, 2008
+     */
+    public static void setInSetup( boolean aInSetup )
     {
-        Settings.inSetup = inSetup;
+        inSetup = aInSetup;
     }
 }

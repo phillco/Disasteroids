@@ -98,8 +98,8 @@ public class Client extends DatagramListener
 
             // Send our name and color.
             out.writeInt( Constants.NETCODE_VERSION );
-            out.writeUTF( Settings.getLocalName() );
-            out.writeInt( Settings.playerColor.getRGB() );
+            out.writeUTF( Settings.getPlayerName() );
+            out.writeInt( Settings.getPlayerColor().getRGB() );
 
             sendPacket( server, out );
         }

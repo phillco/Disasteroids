@@ -134,7 +134,7 @@ public class AsteroidsFrame extends Frame
      */
     public void toggleFullscreen()
     {
-        Settings.useFullscreen = !Settings.useFullscreen;
+        Settings.setUseFullscreen( !Settings.isUseFullscreen() );
         updateFullscreen();
     }
 
@@ -172,7 +172,7 @@ public class AsteroidsFrame extends Frame
         GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
         // Set fullscreen mode if we're not already.
-        if ( Settings.useFullscreen && graphicsDevice.getFullScreenWindow() != this )
+        if ( Settings.isUseFullscreen() && graphicsDevice.getFullScreenWindow() != this )
         {
             dispose();
             setUndecorated( true );

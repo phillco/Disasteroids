@@ -169,6 +169,7 @@ public class Server extends DatagramListener
                         int version = in.readInt();
                         if ( version < Constants.NETCODE_VERSION )
                         {
+                            Iterator i;
                             out.writeInt( Message.CONNECT_ERROR_OLDNETCODE.ordinal() );
                             out.writeInt( Constants.NETCODE_VERSION );
                             sendPacket( client, out );

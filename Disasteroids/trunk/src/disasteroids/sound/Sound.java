@@ -22,9 +22,9 @@ public class Sound
      */
     public static void updateMusic()
     {
-        if ( Settings.musicOn && !musicPlaying() )
+        if ( Settings.isMusicOn() && !musicPlaying() )
             startMusic();
-        else if ( !Settings.musicOn && musicPlaying() )
+        else if ( !Settings.isMusicOn() && musicPlaying() )
             stopMusic();
     }
 
@@ -38,8 +38,8 @@ public class Sound
             stopMusic();
         else
             startMusic();
-        Settings.musicOn = musicPlaying();
-        return Settings.musicOn;
+        Settings.setMusicOn( musicPlaying() );
+        return Settings.isMusicOn();
 
     }
 
@@ -49,8 +49,8 @@ public class Sound
      */
     public static boolean toggleSound()
     {
-        Settings.soundOn = !Settings.soundOn;
-        return Settings.soundOn;
+        Settings.setSoundOn( !Settings.isSoundOn() );
+        return Settings.isSoundOn();
     }
 
     /**
@@ -93,7 +93,7 @@ public class Sound
      */
     public static void playInternal( LayeredSound.SoundClip s )
     {
-        if( Settings.soundOn )
+        if( Settings.isSoundOn() )
             new SpeakerThread(s).start();
     }
 

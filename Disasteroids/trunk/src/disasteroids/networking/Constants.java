@@ -65,8 +65,14 @@ public class Constants
 
     public static enum GameModeTIDs
     {
-        LINEAR, WAVE;
+        LINEAR( LinearGameplay.class ), WAVE( WaveGameplay.class );
 
+        final Class myClass;
+
+        private GameModeTIDs( Class myClass )
+        {
+            this.myClass = myClass;
+        }
     }
 
     public static enum GameObjectTIDs

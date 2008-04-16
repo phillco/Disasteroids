@@ -78,13 +78,13 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
 
             g.setColor( Color.lightGray );
             g.setFont( choice == 0 ? accent : normal );
-            g.drawString( "Name:   " + Settings.getLocalName(), 180, y );
+            g.drawString( "Name:   " + Settings.getPlayerName(), 180, y );
 
             y += 20;
             g.setFont( choice == 1 ? accent : normal );
             g.drawString( "Color:", 180, y );
 
-            g.setColor( Settings.playerColor );
+            g.setColor( Settings.getPlayerColor() );
             Polygon outline = new Polygon();
             {
                 double angle = 0.3;
@@ -96,7 +96,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                 outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
             }
             g.fillPolygon( outline );
-            g.setColor( ( Settings.playerColor.getRed() + Settings.playerColor.getGreen() + Settings.playerColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ) );
+            g.setColor( ( Settings.getPlayerColor().getRed() + Settings.getPlayerColor().getGreen() + Settings.getPlayerColor().getBlue() > 64 * 3 ? Color.black : Color.darkGray ) );
             g.drawPolygon( outline );
 
             g.setColor( Color.lightGray );
@@ -129,10 +129,10 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             }
 
             // Draw some settings (this is still hard coded).
-            String musicString = "Music " + ( Settings.musicOn ? "on" : "off" );
-            String soundString = "Sound " + ( Settings.soundOn ? "on" : "off" );
-            String fullscreenString = ( Settings.useFullscreen ? "Fullscreen" : "Windowed" );
-            String renderingString = ( Settings.qualityRendering ? "Quality" : "Speed" );
+            String musicString = "Music " + ( Settings.isMusicOn() ? "on" : "off" );
+            String soundString = "Sound " + ( Settings.isSoundOn() ? "on" : "off" );
+            String fullscreenString = ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" );
+            String renderingString = ( Settings.isQualityRendering() ? "Quality" : "Speed" );
             int height = (int) ( normal.getStringBounds( "|", ( (Graphics2D) g ).getFontRenderContext() ).getHeight() );
             g.setFont( normal );
             g.drawString( musicString, 15, ( WINDOW_HEIGHT - height ) );
@@ -182,15 +182,15 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                     if ( Settings.isInSetup() )
                     {
                         if ( choice == 0 )
-                            Settings.playerName = JOptionPane.showInputDialog( this, "Enter your name.", Settings.playerName );
+                            Settings.setPlayerName( JOptionPane.showInputDialog( this, "Enter your name.", Settings.getPlayerName() ) );
                         else if ( choice == 1 )
                         {
-                            Color oldColor = Settings.playerColor;
-                            Settings.playerColor = JColorChooser.showDialog( this, "Select player color...", Settings.playerColor );
-                            if ( Settings.playerColor.getRed() + Settings.playerColor.getGreen() + Settings.playerColor.getBlue() < 12 * 3 )
+                            Color oldColor = Settings.getPlayerColor();
+                            Settings.setPlayerColor( JColorChooser.showDialog( this, "Select player color...", Settings.getPlayerColor() ) );
+                            if ( Settings.getPlayerColor().getRed() + Settings.getPlayerColor().getGreen() + Settings.getPlayerColor().getBlue() < 12 * 3 )
                             {
                                 JOptionPane.showMessageDialog( this, "Sorry, that's a bit too dark." );
-                                Settings.playerColor = oldColor;
+                                Settings.setPlayerColor( oldColor );
                             }
                         }
                         else
@@ -218,17 +218,17 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
 
             // Changing a setting?
             case KeyEvent.VK_M:
-                Settings.musicOn = !Settings.musicOn;
+                Settings.setMusicOn( !Settings.isMusicOn() );
                 break;
             case KeyEvent.VK_S:
-                Settings.soundOn = !Settings.soundOn;
+                Settings.setSoundOn( !Settings.isSoundOn() );
                 break;
             case KeyEvent.VK_W:
             case KeyEvent.VK_F:
-                Settings.useFullscreen = !Settings.useFullscreen;
+                Settings.setUseFullscreen( !Settings.isUseFullscreen() );
                 break;
             case KeyEvent.VK_A:
-                Settings.qualityRendering = !Settings.qualityRendering;
+                Settings.setQualityRendering( !Settings.isQualityRendering() );
                 break;
 
             // Scrolling?

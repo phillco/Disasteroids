@@ -92,25 +92,31 @@ public class Running
      */
     public static void quit()
     {
-        try {
-            System.out.println("\nShutting down nicely...");
+        try
+        {
+            System.out.println( "\nShutting down nicely..." );
 
             // Tell the server we're quitting.
-            if (Client.is()) {
+            if ( Client.is() )
+            {
                 Client.getInstance().quit();
             } // And I told Bill, that if they move my desk one more time, then, then....
             // Tell clients we're quitting.
-            else if (Server.is()) {
+            else if ( Server.is() )
+            {
                 Server.getInstance().quit();
             }
 
             // Find the player with the highest score.
-            if (AsteroidsFrame.frame() != null) {
+            if ( AsteroidsFrame.frame() != null )
+            {
                 Ship highestScorer = Game.getInstance().players.getFirst();
-                for (Ship s : Game.getInstance().players) {
-                    if (s.getScore() > Settings.highScore) {
-                        Settings.highScoreName = highestScorer.getName();
-                        Settings.highScore = highestScorer.getScore();
+                for ( Ship s : Game.getInstance().players )
+                {
+                    if ( s.getScore() > Settings.getHighScore() )
+                    {
+                        Settings.setHighScoreName( highestScorer.getName() );
+                        Settings.setHighScore( highestScorer.getScore() );
                     }
                 }
             }
@@ -119,27 +125,32 @@ public class Running
             Settings.saveToStorage();
 
             // Show warning / error count.
-            System.out.print("Disasteroids concluded.");
+            System.out.print( "Disasteroids concluded." );
 
-            if (errorCount > 0) {
-                System.out.print(" " + errorCount + " error" + (errorCount == 1 ? "" : "s") + (warningCount > 0 ? "," : "."));
+            if ( errorCount > 0 )
+            {
+                System.out.print( " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." ) );
             }
 
-            if (warningCount > 0) {
-                System.out.print(" " + warningCount + " warning" + (warningCount == 1 ? "." : "s."));
+            if ( warningCount > 0 )
+            {
+                System.out.print( " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." ) );
             }
 
             // Daisy.....daisy....
-            System.exit(0);
+            System.exit( 0 );
 
-        } catch (Throwable throwable) {
-            System.out.println("\nShut Down Failed! Killing now.");
+        }
+        catch ( Throwable throwable )
+        {
+            System.out.println( "\nShut Down Failed! Killing now." );
             throwable.printStackTrace();
-            System.exit(1);
-        } finally
+            System.exit( 1 );
+        }
+        finally
         {
             //shouldn't get here... but if we do, just in case
-            System.exit(1);
+            System.exit( 255 );
         }
 
     }
@@ -150,7 +161,7 @@ public class Running
      * @param option    the selected game choice
      * @since Classic
      */
-    @SuppressWarnings( "fallthrough" )
+    @SuppressWarnings ( "fallthrough" )
     public static void startGame( MenuOption option )
     {
         switch ( option )
@@ -160,26 +171,26 @@ public class Running
             // Fall-through
 
             case SINGLEPLAYER:
-                new Game( new WaveGameplay() );
-                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName(), Settings.playerColor ) );
+                new Game( WaveGameplay.class );
+                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 Sound.updateMusic();
                 break;
 
             case TUTORIAL:
-                new Game( new TutorialMode() );
-                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getLocalName(), Settings.playerColor ) );
+                new Game( TutorialMode.class );
+                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 Sound.updateMusic();
                 break;
 
             case CONNECT:
                 // Get the server address.
-                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.lastConnectionIP );
+                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.getLastConnectionIP() );
                 if ( ( address == null ) || ( address.equals( "" ) ) )
                     return;
 
-                Settings.lastConnectionIP = address;
+                Settings.setLastConnectionIP( address );
                 Settings.saveToStorage();
-                if ( Settings.musicOn )
+                if ( Settings.isMusicOn() )
                     Sound.startMusic();
 
                 // Connect to it.

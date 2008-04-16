@@ -21,11 +21,6 @@ import javax.swing.JOptionPane;
  */
 public class LinearGameplay implements GameMode
 {
-    /**
-     * Unique ID for this class. Used for C/S.
-     * @since April 11, 2008
-     */
-    public static final int TYPE_ID = 0;
 
     /**
      * The current level of the game.
@@ -92,9 +87,8 @@ public class LinearGameplay implements GameMode
 
     /**
      * Returns if the game is ready to advance levels.
-     * Checks if the <code>Asteroids</code> have been cleared, then if we're on the sandbox level, and finally if the <code>Missile</code>s have been cleared.
+     * Checks if the <code>Asteroids</code> have been cleared and then if we're on the sandbox level.
      * 
-     * @see Settings#waitForMissiles
      * @return  whether the game should advance to the next level
      */
     public boolean shouldExitLevel()
@@ -106,12 +100,6 @@ public class LinearGameplay implements GameMode
         // Level -999 is a sandbox and never exits.
         if ( level == -999 )
             return false;
-
-        // The user can choose to wait for missiles.
-        if ( Settings.waitForMissiles )
-            for ( Ship s : Game.getInstance().players )
-                if ( s.getWeaponManager().getNumLiving() > 0 )
-                    return false;
 
         // Ready to advance!
         return true;

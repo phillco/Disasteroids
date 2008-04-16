@@ -444,17 +444,7 @@ public class AsteroidsFrame extends Frame
         return localId == Game.getInstance().players.getFirst().id;
     }
 
-    /**
-     * Inserts comma seperators at each grouping.
-     * 
-     * @param number    The number to be formatted.
-     * @return  the formatted string.
-     * @since December 15, 2007
-     */
-    public static String insertThousandCommas( int number )
-    {   
-        return new DecimalFormat( "" ).format( number );
-    }
+
 
     /**
      * Returns the player at this computer.

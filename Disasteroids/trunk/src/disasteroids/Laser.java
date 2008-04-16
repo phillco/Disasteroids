@@ -21,7 +21,7 @@ class Laser extends Weapon.Unit
     
     private int life;
 
-    private int x1, x2, y1, y2, length;
+    private int length;
     
     private double angle;
     
@@ -30,7 +30,7 @@ class Laser extends Weapon.Unit
     public Laser( LaserManager env, int x, int y, double angle, double dx, double dy, Color col )
     {
         setLocation( x, y );
-        setSpeed( 0, 0 );
+        setSpeed( dx, dy );
         life=3;
         this.angle=angle;
      //   this.x1=x;
@@ -68,7 +68,7 @@ class Laser extends Weapon.Unit
 
     public void act()
     {
-       
+       this.move();
         if (life-- <= 0)
             env.remove( this );
        // if(life<=0)

@@ -28,11 +28,13 @@ class SniperManager extends Weapon
     public SniperManager()
     {
         weapons = new ConcurrentLinkedQueue<Unit>();
+        ammo=20;
     }
 
     public SniperManager( ConcurrentLinkedQueue<Unit> start )
     {
         weapons = start;
+        ammo=20;
     }
 
     public void act()
@@ -47,10 +49,12 @@ class SniperManager extends Weapon
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( timeTillNextShot > 0 )
+        if ( timeTillNextShot > 0 || !( ammo > 0 && ammo != -1 ) )
             return false;
         timeTillNextShot = intervalShoot;
 
+        if ( ammo != -1 )
+            ammo--;
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 

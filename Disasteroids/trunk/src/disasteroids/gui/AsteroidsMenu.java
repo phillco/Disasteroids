@@ -51,7 +51,7 @@ public class AsteroidsMenu extends BufferedFrame
 
         // Draw the background.
         Graphics2D g2d = (Graphics2D) g;
-        GradientPaint gradient = new GradientPaint( 0, 0, Color.darkGray, WINDOW_WIDTH, WINDOW_HEIGHT, Color.black );
+        GradientPaint gradient = new GradientPaint( 0, 0, Settings.playerColor.darker().darker(), WINDOW_WIDTH, WINDOW_HEIGHT, Color.black );
         g2d.setPaint( gradient );
         g2d.fillRect( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
     }

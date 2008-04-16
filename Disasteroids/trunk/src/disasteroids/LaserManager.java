@@ -21,7 +21,7 @@ class LaserManager extends Weapon
 
     private int maxShots = 1000;
 
-    private int intervalShoot = 10;
+    private int intervalShoot = 13;
 
     private int damage = 10;
 

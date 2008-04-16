@@ -10,6 +10,7 @@ import disasteroids.RandomGenerator;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
+import disasteroids.Util;
 import disasteroids.networking.Client;
 import disasteroids.sound.Sound;
 import java.awt.Color;
@@ -143,7 +144,7 @@ public class AsteroidsPanel extends Panel
 
         if ( !highScoreAchieved && parent.localPlayer().getScore() > Settings.highScore )
         {
-            Running.log( "New high score of " + AsteroidsFrame.insertThousandCommas( parent.localPlayer().getScore() ) + "!", 800 );
+            Running.log( "New high score of " + Util.insertThousandCommas( parent.localPlayer().getScore() ) + "!", 800 );
             highScoreAchieved = true;
         }
 
@@ -291,7 +292,7 @@ public class AsteroidsPanel extends Panel
         // Draw the score counter.
         g2d.setColor( Color.gray );
         g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
-        text = AsteroidsFrame.insertThousandCommas( parent.localPlayer().getScore() );
+        text = Util.insertThousandCommas( parent.localPlayer().getScore() );
         y = 18;
         x = getWidth() - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() - 12;
         g2d.drawString( text, x, y );
@@ -412,8 +413,8 @@ public class AsteroidsPanel extends Panel
         // Draw the asteroid count.
         g2d.setColor( Color.lightGray );
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
-        text = AsteroidsFrame.insertThousandCommas( Game.getInstance().asteroidManager().size() ) + " asteroid" + ( Game.getInstance().asteroidManager().size() == 1 ? ", " : "s, " );
-        text += AsteroidsFrame.insertThousandCommas( Game.getInstance().baddies.size() ) + " baddie" + ( Game.getInstance().baddies.size() == 1 ? "" : "s" );
+        text = Util.insertThousandCommas( Game.getInstance().asteroidManager().size() ) + " asteroid" + ( Game.getInstance().asteroidManager().size() == 1 ? ", " : "s, " );
+        text += Util.insertThousandCommas( Game.getInstance().baddies.size() ) + " baddie" + ( Game.getInstance().baddies.size() == 1 ? "" : "s" );
         text += " remain";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         g2d.drawString( text, x, y );
@@ -452,13 +453,13 @@ public class AsteroidsPanel extends Panel
                         text = s.getName();
                         break;
                     case 1:
-                        text = AsteroidsFrame.insertThousandCommas( s.score() );
+                        text = Util.insertThousandCommas( s.score() );
                         break;
                     case 2:
-                        text = AsteroidsFrame.insertThousandCommas( s.livesLeft() );
+                        text = Util.insertThousandCommas( s.livesLeft() );
                         break;
                     case 3:
-                        text = AsteroidsFrame.insertThousandCommas( s.getNumAsteroidsKilled() );
+                        text = Util.insertThousandCommas( s.getNumAsteroidsKilled() );
                         break;
                     default:
                         text = "";
@@ -470,7 +471,7 @@ public class AsteroidsPanel extends Panel
 
         // Draw the high scorer.
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
-        text = "All-time high scorer " + ( highScoreAchieved ? "was " : "is " ) + Settings.highScoreName + " with " + AsteroidsFrame.insertThousandCommas( (int) Settings.highScore ) + " points.";
+        text = "All-time high scorer " + ( highScoreAchieved ? "was " : "is " ) + Settings.highScoreName + " with " + Util.insertThousandCommas( (int) Settings.highScore ) + " points.";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         y += 40;
         g2d.setColor( Color.white );
@@ -483,7 +484,7 @@ public class AsteroidsPanel extends Panel
             if ( parent.localPlayer().getName().equals( Settings.highScoreName ) )
                 text = "But hey, everyone likes to beat their own score.";
             else
-                text = "But you're much better with your shiny " + AsteroidsFrame.insertThousandCommas( parent.localPlayer().getScore() ) + "!";
+                text = "But you're much better with your shiny " + Util.insertThousandCommas( parent.localPlayer().getScore() ) + "!";
             x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
             g2d.drawString( text, x, y );
         }

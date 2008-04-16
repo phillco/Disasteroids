@@ -27,7 +27,7 @@ public class GameLoop extends Thread
     {
         period++;
     }
-
+    
     /**
      * Starts an infinite loop which acts the game, sleeps, and repeats.
      * 

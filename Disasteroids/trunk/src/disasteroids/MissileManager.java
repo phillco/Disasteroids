@@ -65,11 +65,13 @@ public class MissileManager extends Weapon
     public MissileManager()
     {
         weapons = new ConcurrentLinkedQueue<Unit>();
+        ammo=-1;
     }
 
     public MissileManager( ConcurrentLinkedQueue<Unit> start )
     {
         weapons = start;
+        ammo=-1;
     }
 
     /**

@@ -53,10 +53,11 @@ public class MineManager extends Weapon
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( weapons.size() > maxShots || timeTillNextShot > 0 )
+        if ( weapons.size() > maxShots || timeTillNextShot > 0 || ! ( ammo > 0 && ammo != -1 ) )
             return false;
         timeTillNextShot = getIntervalShoot();
-
+        if(ammo!=-1)
+            ammo--;
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 

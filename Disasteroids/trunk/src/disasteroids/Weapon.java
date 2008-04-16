@@ -21,6 +21,8 @@ public abstract class Weapon implements GameElement
     protected int timeTillNextBerserk = 0;
 
     protected int timeTillNextShot = 0;
+    
+    protected int ammo = 0;
 
     public void add( ConcurrentLinkedQueue<Unit> weap )
     {
@@ -36,7 +38,7 @@ public abstract class Weapon implements GameElement
      */
     public boolean canShoot()
     {
-        return timeTillNextShot <= 0;
+        return timeTillNextShot <= 0 && ( ammo == -1 || ammo > 0 );
     }
 
     public void clear()

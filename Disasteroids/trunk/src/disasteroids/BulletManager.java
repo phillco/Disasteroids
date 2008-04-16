@@ -32,6 +32,7 @@ class BulletManager extends Weapon
     public BulletManager()
     {
         weapons = new ConcurrentLinkedQueue<Unit>();
+        ammo=-1;
     }
 
     public BulletManager( ConcurrentLinkedQueue<Unit> start )

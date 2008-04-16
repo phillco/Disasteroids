@@ -289,7 +289,6 @@ public class Ship extends GameObject implements ShootingObject
         {
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
-            Graphics2D g2d = (Graphics2D) g;
             AsteroidsFrame.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getWeaponName(), Color.gray );
             allWeapons[weaponIndex].getWeapon( (int) getX(), (int) getY() + 25, Color.gray ).draw( g );
         }
@@ -421,7 +420,7 @@ public class Ship extends GameObject implements ShootingObject
     private void generateParticles()
     {
         // System.out.println( 9 * -+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- 8 ); // :O
-
+        //gotta love old comments that live for a while
         if ( forward && !( Math.abs( getDx() ) < 0.1 && Math.abs( getDy() ) < 0.15 ) )
             particleRateForward = Math.min( 1, Math.max( 0.4, particleRateForward + 0.05 ) );
         else
@@ -480,6 +479,10 @@ public class Ship extends GameObject implements ShootingObject
             if ( Math.abs( strafeSpeed ) <= 0.11 )
                 strafeSpeed = 0;
         }
+        
+        //attrition of speed
+        setSpeed(getDx()*.995, getDy()*.995);
+        
     }
 
     public void shoot()
@@ -487,9 +490,9 @@ public class Ship extends GameObject implements ShootingObject
         if ( livesLeft < 0 )
             return;
 
-        if ( sniping )
-            sniperManager.add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
-        else
+//        if ( sniping )
+//            sniperManager.add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
+//        else
             getWeaponManager().add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
     }
 
@@ -618,7 +621,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public Weapon getWeaponManager()
     {
-        return allWeapons[weaponIndex];
+        return sniping ? this.sniperManager : allWeapons[weaponIndex];
     }
 
     public void increaseScore( int points )
@@ -654,7 +657,7 @@ public class Ship extends GameObject implements ShootingObject
 
         if ( Server.is() )
             Server.getInstance().berserk( id );
-        allWeapons[weaponIndex].berserk( this );
+        getWeaponManager().berserk( this );
     }
 
     /**

@@ -61,12 +61,25 @@ public class FlechetteManager extends Weapon
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( weapons.size() > maxShots || timeTillNextShot > 0 )
+        if ( weapons.size() > maxShots || timeTillNextShot > 0 || !(ammo > 0 && ammo == -1 ) )
             return false;
+        int  numShots=0;
+        if( ammo == -1 )
+            numShots=5;
+        else
+        {
+            for(int k=0; k<5; k++)
+            {
+                if(ammo==0)
+                    break;
+                ammo--;
+                numShots++;
+            }
+        }
         timeTillNextShot = intervalShoot;
         Random rand=RandomGenerator.get();
         boolean successful=true;
-        for(int num=0; num<5; num++)
+        for(int num=0; num<numShots; num++)
             successful=successful&&weapons.add(new Flechette(this, x,y, angle+(rand.nextDouble()-.5), dx, dy, col));
         if ( playShootSound )
             Sound.playInternal( getShootSound() );

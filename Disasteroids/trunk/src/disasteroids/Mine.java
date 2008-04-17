@@ -153,4 +153,10 @@ public class Mine extends Weapon.Unit
         else
             AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), ( 5 - life ) * 20 );
     }
+
+    @Override
+    public String getName()
+    {
+        return "Mine";
+    }
 }

@@ -67,4 +67,10 @@ class Bullet extends Weapon.Unit
     {
         return env.getDamage();
     }
+
+    @Override
+    public String getName()
+    {
+        return "Bullet";
+    }
 }

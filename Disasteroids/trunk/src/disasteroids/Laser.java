@@ -77,13 +77,17 @@ class Laser extends Weapon.Unit
 
     public void draw( Graphics g )
     {
-        
         AsteroidsFrame.frame().drawLine( g, myColor, (int)getX(), (int)getY(), length, angle);
-
     }
 
     public int getDamage()
     {
         return env.getDamage();
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Laser";
     }
 }

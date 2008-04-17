@@ -23,11 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Alien extends GameObject implements ShootingObject
 {
-    /**
-     * Unique ID for this class. Used for C/S.
-     * @since April 11, 2008
-     */
-    public static final int TYPE_ID = 0;
 
     /**
      * Our firing manager.
@@ -109,7 +104,7 @@ public class Alien extends GameObject implements ShootingObject
 
 
         checkCollision();
-        manager.act( true );
+        manager.act();
 
         // Prepare to flash.
         if ( life <= 0 )

@@ -26,12 +26,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Station extends GameObject implements ShootingObject
 {
     /**
-     * Unique ID for this class. Used for C/S.
-     * @since April 11, 2008
-     */
-    public static final int TYPE_ID = 1;
-
-    /**
      * The angle we're facing.
      * @since January 6, 2008
      */
@@ -102,7 +96,7 @@ public class Station extends GameObject implements ShootingObject
     {
         move();
         checkCollision();
-        manager.act( true );
+        manager.act();
 
         angle %= 2 * Math.PI; //Make sure the angle does not grow without bound
 

@@ -21,9 +21,9 @@ class LaserManager extends Weapon
 
     private int maxShots = 1000;
 
-    private int intervalShoot = 13;
+    private int intervalShoot = 4;
 
-    private int damage = 10;
+    private int damage = 5;
 
     private int length = 10;
 
@@ -37,11 +37,6 @@ class LaserManager extends Weapon
         weapons = start;
     }
 
-    public void act()
-    {
-        super.act( true );
-    }
-
     public int getIntervalShoot()
     {
         return intervalShoot;
@@ -49,9 +44,11 @@ class LaserManager extends Weapon
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( weapons.size() > 2500 || timeTillNextShot > 0 )
+        if ( weapons.size() > 2500 || !canShoot() )
             return false;
-        timeTillNextShot = intervalShoot;
+        
+        timeTillNextShot = getIntervalShoot();
+        ammo--;
         
         double X = x;
         double Y = y;
@@ -120,7 +117,7 @@ class LaserManager extends Weapon
         return "Laser";
     }
 
-    public Unit getWeapon( int x, int y, Color col )
+    public Unit getOrphanUnit( int x, int y, Color col )
     {
         return new Laser( this, x, y, 0, 0, 0, col );
     }
@@ -160,5 +157,17 @@ class LaserManager extends Weapon
     public SoundClip getBerserkSound()
     {
         return SoundLibrary.BERSERK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Lasergun";
+    }
+
+    @Override
+    public int getEntryAmmo()
+    {
+       return 260;
     }
 }

@@ -11,7 +11,7 @@ import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Interface for a Ship's weapon.
+ * A ship's weapon.
  * @author Andy Kooiman
  */
 public abstract class Weapon implements GameElement
@@ -21,7 +21,7 @@ public abstract class Weapon implements GameElement
     protected int timeTillNextBerserk = 0;
 
     protected int timeTillNextShot = 0;
-    
+
     protected int ammo = 0;
 
     public void add( ConcurrentLinkedQueue<Unit> weap )
@@ -41,26 +41,32 @@ public abstract class Weapon implements GameElement
         return timeTillNextShot <= 0 && ( ammo == -1 || ammo > 0 );
     }
 
+    /**
+     * Removes all units from play.
+     */
     public void clear()
     {
         weapons.clear();
     }
 
     /**
-     * Executes one timestep, but only steps the timer if it is active.
+     * Executes one timestep. Does not reload.
      * 
-     * @param active    if <code>this</code> is the current <code>WeaponManager</code> of its parent ship
      * @since January 10, 2008
      */
-    public void act( boolean active )
+    public void act()
     {
         for ( Unit w : weapons )
             w.act();
-        if ( active )
-        {
-            timeTillNextShot--;
-            timeTillNextBerserk--;
-        }
+    }
+
+    /**
+     * Reloads this weapon by one notch. Should be called each step that the weapon is selected.
+     */
+    public void reload()
+    {
+        timeTillNextShot--;
+        timeTillNextBerserk--;
     }
 
     public void explodeAll()
@@ -68,6 +74,8 @@ public abstract class Weapon implements GameElement
         for ( Unit w : weapons )
             w.explode();
     }
+
+    public abstract String getName();
 
     public abstract int getIntervalShoot();
 
@@ -94,30 +102,38 @@ public abstract class Weapon implements GameElement
 
     public abstract int getMaxShots();
 
-    /**
-     * Returns the name of the <code>Unit</code>.
-     * Examples: "Missiles", "Bullets".
-     * 
-     * @since December 25, 2007
-     * @return  plural name of the <code>Unit</code>
-     */
-    public abstract String getWeaponName();
+    public int getAmmo()
+    {
+        return ammo;
+    }
 
     /**
-     * Gets a new instance of the type of <code>Unit</code>s held
-     * by this <code>WeaponManager</code>, but does not add it to the 
-     * list of currently valid <code>Unit</code>s.
+     * Returns the starting amount of ammo that this gun should come with.
+     * @return  starting level of ammo
+     */
+    public abstract int getEntryAmmo();
+
+    /**
+     * Gives this weapon a decent cache of ammo, as if it was picked up anew.
+     */
+    public void giveAmmo()
+    {
+        ammo += getEntryAmmo();
+    }
+
+    /**
+     * Returns a new unit that isn't part of the game. Useful for the GUI.
      * 
-     * @return A new instance of the type of <code>Unit</code> stored
+     * @return  a new instance of the type of <code>Unit</code> stored
      * @since December 30, 2007
      */
-    public abstract Unit getWeapon( int x, int y, Color col );
+    public abstract Unit getOrphanUnit( int x, int y, Color col );
 
     /**
-     * Executes a powerful blast of this <code>Unit</code> type
+     * Executes a powerful blast that must charge up. Typically operates in a circle.
      * 
-     * @since January 7, 2008
      * @param s the <code>Ship</code> which is shooting
+     * @since January 7, 2008
      */
     public abstract void berserk( Ship s );
 
@@ -133,6 +149,10 @@ public abstract class Weapon implements GameElement
         g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
         int width = ( 200 - Math.max( timeTillNextBerserk, 0 ) ) / 2;
         g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
+
+        if ( ammo != -1 )
+            g.drawString( "" + ammo, AsteroidsFrame.frame().getWidth() - 40, 60 );
+
     }
 
     /**
@@ -150,7 +170,7 @@ public abstract class Weapon implements GameElement
     public abstract SoundClip getBerserkSound();
 
     /**
-     * A weapon manager's individual bullets.
+     * An individual bullet.
      * @author Andy Kooiman
      */
     public static abstract class Unit extends GameObject
@@ -163,10 +183,6 @@ public abstract class Weapon implements GameElement
 
         public abstract int getDamage();
 
-        public Unit()
-        {
-        }
-        
-        
+        public abstract String getName();
     }
 }

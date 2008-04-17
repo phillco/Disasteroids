@@ -12,38 +12,18 @@ import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * A weapon that lays dangerous <code>Mine</code>s.
+ * A bonus weapon that lays rather dangerous <code>Mine</code>s.
  * @author Andy Kooiman
  */
 public class MineManager extends Weapon
 {
-
-    private int maxShots = 20;
+    private int maxShots = 200;
 
     private double berserkAngleOffset = 0;
-
 
     public MineManager()
     {
         weapons = new ConcurrentLinkedQueue<Unit>();
-    }
-
-
-
-    public void act()
-    {
-        super.act(true);/*
-        Iterator<Unit> itr = mines.iterator();
-        while ( itr.hasNext() )
-        {
-            Unit w = itr.next();
-            if ( w.needsRemoval() )
-                itr.remove();
-            else
-                w.act();
-
-        }
-        */
     }
 
     public int getIntervalShoot()
@@ -53,13 +33,15 @@ public class MineManager extends Weapon
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( weapons.size() > maxShots || timeTillNextShot > 0 || ! ( ammo > 0 && ammo != -1 ) )
+        if ( !canShoot() )
             return false;
+        
         timeTillNextShot = getIntervalShoot();
-        if(ammo!=-1)
-            ammo--;
+
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
+        
+        ammo--;
 
         return weapons.add( new Mine( x, y, col, this ) );
     }
@@ -90,9 +72,9 @@ public class MineManager extends Weapon
         return "Mines";
     }
 
-    public Unit getWeapon( int x, int y, Color col )
+    public Unit getOrphanUnit( int x, int y, Color col )
     {
-        Mine m = new Mine( x, y, col, this);
+        Mine m = new Mine( x, y, col, this );
         m.setLife( 500 );
         return m;
     }
@@ -117,7 +99,7 @@ public class MineManager extends Weapon
     @Override
     public boolean canShoot()
     {
-        return super.canShoot()&& weapons.size() < maxShots;
+        return super.canShoot() && weapons.size() < maxShots;
     }
 
     public SoundClip getShootSound()
@@ -128,5 +110,17 @@ public class MineManager extends Weapon
     public SoundClip getBerserkSound()
     {
         return SoundLibrary.MINE_ARM;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Mine Layer";
+    }
+
+    @Override
+    public int getEntryAmmo()
+    {
+        return 15;
     }
 }

@@ -24,7 +24,7 @@ class Flechette extends Weapon.Unit
 
     public Flechette( FlechetteManager env, int x, int y, double angle, double dx, double dy, Color col )
     {
-        int speed=env.getSpeed();
+        int speed = env.getSpeed();
         setLocation( x, y );
         setSpeed( dx + speed * Math.cos( angle ), dy - speed * Math.sin( angle ) );
         this.myColor = col;
@@ -67,5 +67,11 @@ class Flechette extends Weapon.Unit
     public int getDamage()
     {
         return env.getDamage();
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Flachettespray";
     }
 }

@@ -227,17 +227,18 @@ public class Ship extends GameObject implements ShootingObject
             }
         }
         for ( Weapon wm : allWeapons )
-        {
-            if ( wm == this.allWeapons[weaponIndex] )
-                wm.act( true );
-            else
-                wm.act( false );
-        }
-        sniperManager.act( true );
+            wm.act();
 
-        if ( stopping == true )
+        // Reload active gun, and the sniper.
+        getWeaponManager().reload();
+        sniperManager.reload();
+
+        // Out of ammo. :(
+        if ( getWeaponManager().getAmmo() == 0 )
         {
-            slowStop();
+            Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
+            Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+            rotateWeapons();
         }
     }
 
@@ -289,8 +290,8 @@ public class Ship extends GameObject implements ShootingObject
         {
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
-            AsteroidsFrame.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getWeaponName(), Color.gray );
-            allWeapons[weaponIndex].getWeapon( (int) getX(), (int) getY() + 25, Color.gray ).draw( g );
+            AsteroidsFrame.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getName(), Color.gray );
+            allWeapons[weaponIndex].getOrphanUnit( (int) getX(), (int) getY() + 25, Color.gray ).draw( g );
         }
 
         if ( sniping )
@@ -359,11 +360,20 @@ public class Ship extends GameObject implements ShootingObject
         sniperManager.restoreBonusValues();
     }
 
+    /**
+     * Rotates to the player's next weapon that has ammo.
+     */
     public void rotateWeapons()
     {
         Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
-        weaponIndex++;
-        weaponIndex %= allWeapons.length;
+        Game.getInstance().gameObjects.add( new Bonus( getX(), getY() - 90 ) );
+        int startIndex = weaponIndex;
+        do
+        {
+            weaponIndex++;
+            weaponIndex %= allWeapons.length;
+        }
+        while ( allWeapons[weaponIndex].getAmmo() == 0 && weaponIndex != startIndex );
         drawWeaponNameTimer = 50;
     }
 
@@ -479,10 +489,12 @@ public class Ship extends GameObject implements ShootingObject
             if ( Math.abs( strafeSpeed ) <= 0.11 )
                 strafeSpeed = 0;
         }
-        
-        //attrition of speed
-        setSpeed(getDx()*.995, getDy()*.995);
-        
+
+        // Attrition of speed.
+        setSpeed( getDx() * .995, getDy() * .995 );
+
+        if ( stopping == true )
+            slowStop();
     }
 
     public void shoot()
@@ -493,7 +505,7 @@ public class Ship extends GameObject implements ShootingObject
 //        if ( sniping )
 //            sniperManager.add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
 //        else
-            getWeaponManager().add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
+        getWeaponManager().add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
     }
 
     public boolean canShoot()
@@ -531,15 +543,15 @@ public class Ship extends GameObject implements ShootingObject
         if ( shielded > 0 )
         {
             //setInvincibilityCount( 50 );
-            if(shielded>amount*2)
+            if ( shielded > amount * 2 )
             {
-                shielded -= amount*2;
+                shielded -= amount * 2;
                 return true;
             }
             else
             {
-                setInvincibilityCount(50);
-                shielded=0;
+                setInvincibilityCount( 50 );
+                shielded = 0;
                 return true;
             }
         }
@@ -808,6 +820,9 @@ public class Ship extends GameObject implements ShootingObject
         return weaponIndex;
     }
 
+    /**
+     * @Deprecated  inefficient and only used to satisfy the interface. Use getWeapons() when possible.
+     */
     public ConcurrentLinkedQueue<Weapon> getManagers()
     {
         ConcurrentLinkedQueue<Weapon> c = new ConcurrentLinkedQueue<Weapon>();
@@ -815,6 +830,11 @@ public class Ship extends GameObject implements ShootingObject
             c.add( w );
         c.add( sniperManager );
         return c;
+    }
+
+    public Weapon[] getWeapons()
+    {
+        return allWeapons;
     }
 
     public int getExplosionTime()
@@ -862,9 +882,18 @@ public class Ship extends GameObject implements ShootingObject
         return shielded > 0 ? RADIUS + 5 : RADIUS;
     }
 
+    /**
+     * Switches to the given weapon slot, if it has ammo.
+     * Note: Slot is 0-based.
+     * 
+     * @param newIndex  the slot
+     */
     public void setWeapon( int index )
     {
-        weaponIndex = ( index - 1 ) % allWeapons.length;
+        if ( allWeapons[index % allWeapons.length].getAmmo() == 0 )
+            return;
+
+        weaponIndex = index % allWeapons.length;
         drawWeaponNameTimer = 50;
     }
 
@@ -872,7 +901,7 @@ public class Ship extends GameObject implements ShootingObject
     {
         return health;
     }
-    
+
     public double getShield()
     {
         return shielded;

@@ -22,8 +22,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Central gameplay class that's separate from graphics.
@@ -484,54 +482,37 @@ public class Game implements Serializable
                 actor.rotateWeapons();
                 break;
             case SET_WEAPON_1:
-                actor.setWeapon( 1 );
+                actor.setWeapon( 0 );
                 break;
             case SET_WEAPON_2:
-                actor.setWeapon( 2 );
+                actor.setWeapon( 1 );
                 break;
             case SET_WEAPON_3:
-                actor.setWeapon( 3 );
+                actor.setWeapon( 2 );
                 break;
             case SET_WEAPON_4:
-                actor.setWeapon( 4 );
+                actor.setWeapon( 3 );
                 break;
             case SET_WEAPON_5:
-                actor.setWeapon( 5 );
+                actor.setWeapon( 4 );
                 break;
             case SET_WEAPON_6:
-                actor.setWeapon( 6 );
+                actor.setWeapon( 5 );
                 break;
             case SET_WEAPON_7:
-                actor.setWeapon( 7 );
+                actor.setWeapon( 6 );
                 break;
             case SET_WEAPON_8:
-                actor.setWeapon( 8 );
+                actor.setWeapon( 7 );
                 break;
             case SET_WEAPON_9:
-                actor.setWeapon( 9 );
+                actor.setWeapon( 8 );
                 break;
-
             case PAUSE:
+
                 if ( !Client.is() )
                     Game.getInstance().setPaused( !Game.getInstance().isPaused() );
                 break;
-
-
-            /*
-            case KeyEvent.VK_EQUALS:
-            case KeyEvent.VK_PLUS:
-            GameLoop.increaseSpeed();
-            AsteroidsFrame.addNotificationMessage( "Game speed increased." );
-            break;
-            case KeyEvent.VK_MINUS:
-            if ( Game.getInstance().gameSpeed > 1 )
-            {
-            GameLoop.decreaseSpeed();
-            AsteroidsFrame.addNotificationMessage( "Game speed decreased." );
-            }
-            break;
-             */
-
             // Saving & loading
             case SAVE:
                 if ( !Client.is() )

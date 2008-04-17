@@ -383,6 +383,10 @@ public class Missile extends Weapon.Unit
     {
         return isExploding;
     }
-    
-    
+
+    @Override
+    public String getName()
+    {
+        return "Missile";
+    }
 }

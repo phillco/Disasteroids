@@ -21,19 +21,19 @@ class SniperRound extends Weapon.Unit
     private boolean needsRemoval = false;
 
     private int age = 0;
-    
+
     private double angle;
-    
+
     private int damage;
 
     public SniperRound( SniperManager env, int x, int y, double angle, double dx, double dy, Color col )
     {
         setLocation( x, y );
-        this.angle=angle;
+        this.angle = angle;
         setSpeed( dx + env.getSpeed() * Math.cos( angle ), dy - env.getSpeed() * Math.sin( angle ) );
         this.myColor = col;
         this.env = env;
-        damage=env.getDamage();
+        damage = env.getDamage();
     }
 
     public int getRadius()
@@ -43,7 +43,7 @@ class SniperRound extends Weapon.Unit
 
     public void explode()
     {
-        damage*=.8;
+        damage *= .8;
     }
 
     public boolean needsRemoval()
@@ -66,11 +66,17 @@ class SniperRound extends Weapon.Unit
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawLine(g, myColor, (int) getX(), (int) getY(), 10,Math.PI+ angle);
+        AsteroidsFrame.frame().drawLine( g, myColor, (int) getX(), (int) getY(), 10, Math.PI + angle );
     }
 
     public int getDamage()
     {
         return damage;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Sniper round";
     }
 }

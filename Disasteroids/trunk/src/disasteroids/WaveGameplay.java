@@ -22,11 +22,6 @@ import javax.swing.JOptionPane;
  */
 public class WaveGameplay implements GameMode
 {
-    /**
-     * Unique ID for this class. Used for C/S.
-     * @since April 11, 2008
-     */
-    public static final int TYPE_ID = 1;
 
     private int currentWave;
 
@@ -67,13 +62,13 @@ public class WaveGameplay implements GameMode
             {
                 Game.getInstance().asteroidManager().add(
                         new BonusAsteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
-                                           RandomGenerator.get().nextInt( 60 ) + 40, 15 ), true );
+                                           RandomGenerator.get().nextInt( 80 ) + 40, 15 ), true );
             }
             else
             {
                 Game.getInstance().asteroidManager().add(
                         new Asteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
-                                      RandomGenerator.get().nextInt( 70 ) + 10, 15 ), true );
+                                      RandomGenerator.get().nextInt( 190 ) + 90, 15 ), true );
 
             }
         }

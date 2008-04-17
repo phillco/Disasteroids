@@ -28,18 +28,13 @@ class SniperManager extends Weapon
     public SniperManager()
     {
         weapons = new ConcurrentLinkedQueue<Unit>();
-        ammo=20;
+        ammo = 20;
     }
 
     public SniperManager( ConcurrentLinkedQueue<Unit> start )
     {
         weapons = start;
-        ammo=20;
-    }
-
-    public void act()
-    {
-        super.act( true );
+        ammo = 20;
     }
 
     public int getIntervalShoot()
@@ -116,7 +111,7 @@ class SniperManager extends Weapon
         return "Sniper";
     }
 
-    public Unit getWeapon( int x, int y, Color col )
+    public Unit getOrphanUnit( int x, int y, Color col )
     {
         return new SniperRound( this, x, y, 0, 0, 0, col );
     }
@@ -151,5 +146,16 @@ class SniperManager extends Weapon
     public SoundClip getBerserkSound()
     {
         return SoundLibrary.BERSERK;
+    }
+
+    public String getName()
+    {
+        return "Sniper Rifle";
+    }
+
+    @Override
+    public int getEntryAmmo()
+    {
+        return 20;
     }
 }

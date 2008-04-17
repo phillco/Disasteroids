@@ -40,20 +40,6 @@ class BulletManager extends Weapon
         weapons = start;
     }
 
-    public void act()
-    {
-        super.act( true );
-    /*Iterator<Unit> iter = theBullets.iterator();
-    while ( iter.hasNext() )
-    {
-    Unit w = iter.next();
-    if ( w.needsRemoval() )
-    iter.remove();
-    else
-    w.act();
-    }*/
-    }
-
     public int getIntervalShoot()
     {
         return intervalShoot;
@@ -144,7 +130,7 @@ class BulletManager extends Weapon
         return "Bullets";
     }
 
-    public Unit getWeapon( int x, int y, Color col )
+    public Unit getOrphanUnit( int x, int y, Color col )
     {
         return new Bullet( this, x, y, 0, 0, 0, col );
     }
@@ -179,5 +165,17 @@ class BulletManager extends Weapon
     public SoundClip getBerserkSound()
     {
         return SoundLibrary.BERSERK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Machine Gun";
+    }
+
+    @Override
+    public int getEntryAmmo()
+    {
+        return -1;
     }
 }

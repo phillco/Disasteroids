@@ -75,25 +75,6 @@ public class MissileManager extends Weapon
     }
 
     /**
-     * Iterates through each <code>Missile</code> and either removes it or instructs it to act.
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    public void act()
-    {
-        super.act( true );/*
-    Iterator<Unit> iter = theMissiles.iterator();
-    while ( iter.hasNext() )
-    {
-    Unit w = iter.next();
-    if ( w.needsRemoval() )
-    iter.remove();
-    else
-    w.act();
-    }*/
-    }
-
-    /**
      * Instructs each <code>Missile</code> to explode, without splitting.
      * @author Andy Kooiman
      * @since Classic
@@ -344,12 +325,12 @@ public class MissileManager extends Weapon
             w.draw( g );
     }
 
-    public String getWeaponName()
+    public String getName()
     {
-        return "Missiles";
+        return "Missile Launcher";
     }
 
-    public Unit getWeapon( int x, int y, Color col )
+    public Unit getOrphanUnit( int x, int y, Color col )
     {
         return new Missile( this, x, y, 0, 0, 0, col );
     }
@@ -378,5 +359,11 @@ public class MissileManager extends Weapon
     public SoundClip getBerserkSound()
     {
         return SoundLibrary.BERSERK;
+    }
+
+    @Override
+    public int getEntryAmmo()
+    {
+        return -1;
     }
 }

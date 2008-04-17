@@ -18,10 +18,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class FlechetteManager extends Weapon
 {
-
     private int speed = 25;
 
-    private int maxShots = 1000;
+    private int maxShots = 8000;
 
     private int intervalShoot = 2;
 
@@ -39,21 +38,6 @@ public class FlechetteManager extends Weapon
         weapons = start;
     }
 
-    public void act()
-    {
-        super.act(true);
-        /*Iterator<Unit> iter = theBullets.iterator();
-        while ( iter.hasNext() )
-        {
-            Unit w = iter.next();
-            if ( w.needsRemoval() )
-                iter.remove();
-            else
-                w.act();
-        }*/
-    }
-
-  
     public int getIntervalShoot()
     {
         return intervalShoot;
@@ -61,26 +45,27 @@ public class FlechetteManager extends Weapon
 
     public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
     {
-        if ( weapons.size() > maxShots || timeTillNextShot > 0 || !(ammo > 0 && ammo == -1 ) )
+        if ( weapons.size() > maxShots || !canShoot() )
             return false;
-        int  numShots=0;
-        if( ammo == -1 )
-            numShots=5;
+        
+        int numShots = 0;
+        if ( ammo == -1 )
+            numShots = 5;
         else
         {
-            for(int k=0; k<5; k++)
+            for ( int k = 0; k < 5; k++ )
             {
-                if(ammo==0)
+                if ( ammo == 0 )
                     break;
                 ammo--;
                 numShots++;
             }
         }
         timeTillNextShot = intervalShoot;
-        Random rand=RandomGenerator.get();
-        boolean successful=true;
-        for(int num=0; num<numShots; num++)
-            successful=successful&&weapons.add(new Flechette(this, x,y, angle+(rand.nextDouble()-.5), dx, dy, col));
+        Random rand = RandomGenerator.get();
+        boolean successful = true;
+        for ( int num = 0; num < numShots; num++ )
+            successful = successful && weapons.add( new Flechette( this, x, y, angle + ( rand.nextDouble() - .5 ), dx, dy, col ) );
         if ( playShootSound )
             Sound.playInternal( getShootSound() );
 
@@ -113,7 +98,7 @@ public class FlechetteManager extends Weapon
 
     public int getSpeed()
     {
-        return (int)(speed*RandomGenerator.get().nextDouble());
+        return (int) ( speed * RandomGenerator.get().nextDouble() );
     }
 
     public int getMaxShots()
@@ -133,27 +118,22 @@ public class FlechetteManager extends Weapon
 
     }
 
-    public String getWeaponName()
-    {
-        return "Flechette Launcher";
-    }
-
-    public Unit getWeapon( int x, int y, Color col )
+    public Unit getOrphanUnit( int x, int y, Color col )
     {
         return new Flechette( this, x, y, 0, 0, 0, col );
     }
 
     public void berserk( Ship s )
     {
-        if ( timeTillNextBerserk > 0 )
+        if ( timeTillNextBerserk > 0 || ammo == 0 )
             return;
         int temp = timeTillNextShot;
         Sound.playInternal( SoundLibrary.BERSERK );
         timeTillNextShot = 0;
-        Random rand=RandomGenerator.get();
-        for ( int i=0; i<43; i++ )
+        Random rand = RandomGenerator.get();
+        for ( int i = 0; i < 43; i++ )
         {
-            add( (int)s.getX(), (int)s.getY(),rand.nextDouble()*2*Math.PI , s.getDx(), s.getDy(), s.getColor(), false );
+            add( (int) s.getX(), (int) s.getY(), rand.nextDouble() * 2 * Math.PI, s.getDx(), s.getDy(), s.getColor(), false );
             timeTillNextShot = 0;
         }
         timeTillNextShot = temp;
@@ -163,9 +143,8 @@ public class FlechetteManager extends Weapon
     @Override
     public boolean canShoot()
     {
-        return super.canShoot()&& weapons.size() < maxShots ;
+        return super.canShoot() && weapons.size() < maxShots;
     }
-
 
     public SoundClip getShootSound()
     {
@@ -175,5 +154,17 @@ public class FlechetteManager extends Weapon
     public SoundClip getBerserkSound()
     {
         return SoundLibrary.BERSERK;
+    }
+
+    @Override
+    public String getName()
+    {
+        return "Flachette";
+    }
+
+    @Override
+    public int getEntryAmmo()
+    {
+        return 1500;
     }
 }

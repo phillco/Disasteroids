@@ -7,14 +7,18 @@ package disasteroids;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
+import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -23,6 +27,29 @@ import java.io.IOException;
  */
 public class Bonus extends GameObject
 {
+    static enum Class
+    {
+        WEAPON( 3 ), POWERUP( 9 );
+
+        final int types;
+
+        private Class( int types )
+        {
+            this.types = types;
+        }
+    }
+    /**
+     * The class of bonus (category).
+     * @since April 12, 2008
+     */
+    private Class myClass = Class.values()[RandomGenerator.get().nextInt( Class.values().length )];
+
+    /**
+     * The type of bonus (within its category).
+     * @since Classic
+     */
+    private int bonusType = RandomGenerator.get().nextInt( myClass.types );
+
     final int RADIUS = 12;
 
     static final int MAX_LIFE = 1600;
@@ -33,22 +60,17 @@ public class Bonus extends GameObject
 
     private int age = 0;
 
+    private double angle = Math.PI / 2;
+
     /**
      * Acceleration vectors.
      * @since March 30, 2008
      */
     private double ax = 0,  ay = 0;
 
-    /**
-     * The type of bonus.
-     * @since Classic
-     */
-    private int bonusType;
-
     public Bonus( double x, double y, double dx, double dy )
     {
         super( x, y, dx, dy );
-        bonusType = RandomGenerator.get().nextInt( 9 );
         Sound.playInternal( SoundLibrary.BONUS_SPAWN );
     }
 
@@ -100,6 +122,7 @@ public class Bonus extends GameObject
                                          RandomGenerator.get().nextDouble() * 3,
                                          RandomGenerator.get().nextDouble() * 2 * Math.PI,
                                          50, 1 ) );
+        angle = ( angle + 0.03 ) % ( 2 * Math.PI );
     }
 
     /**
@@ -118,65 +141,88 @@ public class Bonus extends GameObject
                 if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) <
                         ( RADIUS + s.getRadius() ) * ( RADIUS + s.getRadius() ) )
                 {
-                    Sound.playInternal( SoundLibrary.GET_BONUS );
-                    Game.getInstance().removeObject( this );
-                    applyBonus( s );
+                    if ( applyBonus( s ) )
+                    {
+                        Sound.playInternal( SoundLibrary.GET_BONUS );
+                        Game.getInstance().removeObject( this );
+                    }
                 }
             }
         }
     }
 
     /**
-     * Applies the bonus to the killer
-     * @param killer The <code>Ship</code> which killed <code>this</code>
+     * Applies the bonus to the ship who won the bonus..
+     * 
+     * @param player    the <code>Ship</code> which picked up the bonus
+     * @return          whether it was awarded
      * @since Classic
      */
-    private void applyBonus( Ship killer )
+    private boolean applyBonus( Ship player )
     {
-        if ( killer == null )
-            return;
+        if ( player == null )
+            return false;
+
         String message = "";
-        switch ( bonusType )
+        switch ( myClass )
         {
-            case 0:
-                message = killer.getWeaponManager().ApplyBonus( 0 );
+            case WEAPON:
+                // "Give" the weapon.
+                if ( player.getWeapons()[bonusType + 2].getAmmo() == 0 )
+                    message = "Picked up a " + player.getWeapons()[bonusType + 2].getName() + "!";
+                else
+                    message = "Got ammo for " + player.getWeapons()[bonusType + 2].getName() + ".";
+
+                player.getWeapons()[bonusType + 2].giveAmmo();
+                player.setWeapon( bonusType + 2 );
                 break;
-            case 1:
-                message = killer.getWeaponManager().ApplyBonus( 1 );
-                break;
-            case 2:
-                message = killer.getWeaponManager().ApplyBonus( 2 );
-                break;
-            case 3:
-                message = "+1 Life";
-                killer.addLife();
-                break;
-            case 4:
-                message = killer.getWeaponManager().ApplyBonus( 4 );
-                break;
-            case 5:
-                killer.increaseScore( 10000 );
-                message = "+10,000 Points";
-                break;
-            case 6:
-                message = killer.getWeaponManager().ApplyBonus( 6 );
-                break;
-            case 7:
-                message = killer.getWeaponManager().ApplyBonus( 7 );
-                break;
-            case 8:
-                message = killer.giveShield();
+            case POWERUP:
+                switch ( bonusType )
+                {
+                    case 0:
+                        message = player.getWeaponManager().ApplyBonus( 0 );
+                        break;
+                    case 1:
+                        message = player.getWeaponManager().ApplyBonus( 1 );
+                        break;
+                    case 2:
+                        message = player.getWeaponManager().ApplyBonus( 2 );
+                        break;
+                    case 3:
+                        message = "+1 Life";
+                        player.addLife();
+                        break;
+                    case 4:
+                        message = player.getWeaponManager().ApplyBonus( 4 );
+                        break;
+                    case 5:
+                        player.increaseScore( 10000 );
+                        message = "+10,000 Points";
+                        break;
+                    case 6:
+                        message = player.getWeaponManager().ApplyBonus( 6 );
+                        break;
+                    case 7:
+                        message = player.getWeaponManager().ApplyBonus( 7 );
+                        break;
+                    case 8:
+                        message = player.giveShield();
+                        break;
+                }
                 break;
         }
-        if ( message.equals( "" ) )
-            return;
+
+        if ( message.length() == 0 )
+            return false;
 
         if ( AsteroidsFrame.frame() != null )
         {
-            AsteroidsFrame.frame().writeOnBackground( message, (int) getX(), (int) getY(), killer.getColor() );
-            if ( killer == AsteroidsFrame.frame().localPlayer() )
+            AsteroidsFrame.frame().writeOnBackground( message, (int) getX(), (int) getY(), player.getColor() );
+            if ( player == AsteroidsFrame.frame().localPlayer() )
                 Running.log( "Bonus: " + message );
         }
+
+        return true;
     }
 
     public void draw( Graphics g )
@@ -184,7 +230,34 @@ public class Bonus extends GameObject
         lastHue = ( ( lastHue + 0.01f ) % 1 );
         lastHB = ( ( lastHB + 0.03f ) % 1 );
 
-        AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
+        switch ( myClass )
+        {
+            case POWERUP:
+                AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( ( (float) bonusType ) / myClass.types, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
+                break;
+            case WEAPON:
+
+                int cX = RelativeGraphics.translateX( getX() );
+                int cY = RelativeGraphics.translateY( getY() );
+                int deviance = Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 );
+
+                g.setColor( Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ) );
+                g.fillRect( cX - deviance, cY - deviance, deviance * 2, deviance * 2 );
+                g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
+                g.drawRect( cX - deviance, cY - deviance, deviance * 2, deviance * 2 );
+
+                /* [PC] Triangle version - couldn't get the angles right.
+                Polygon outline = new Polygon();
+                outline.addPoint( RelativeGraphics.translateX( ( getX() + 4 + RADIUS * 1.5 * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX() ),
+                RelativeGraphics.translateY( ( getY() + 4 - RADIUS * 1.5 * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY() ) );
+                outline.addPoint( RelativeGraphics.translateX( ( getX() + 4 + RADIUS * 1.5 * Math.cos( angle + Math.PI * .5 ) ) + AsteroidsFrame.frame().getRumbleX() ),
+                RelativeGraphics.translateY( ( getY() + 4 - RADIUS * 1.9 * Math.sin( angle + Math.PI * .5 ) ) + AsteroidsFrame.frame().getRumbleY() ) );
+                outline.addPoint( RelativeGraphics.translateX( ( getX() + 4 + RADIUS * 1.5 * Math.cos( angle - Math.PI * .5 ) )+ AsteroidsFrame.frame().getRumbleX() ),
+                RelativeGraphics.translateY( getY() + 4 - RADIUS * 1.5 * Math.sin( angle - Math.PI * .5 ) ) + AsteroidsFrame.frame().getRumbleY() );
+                AsteroidsFrame.frame().drawPolygon( g, Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), outline );
+                 * */
+                break;
+        }
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );
         AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 4, (int) getCenterY() - 1, "B", Color.darkGray );
     }

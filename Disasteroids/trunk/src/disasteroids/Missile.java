@@ -111,7 +111,7 @@ public class Missile extends Weapon.Unit
         explodeCount = 0;
         isExploding = false;
         myColor = c;
-        hugeBlast = ( RandomGenerator.get().nextInt( manager.hugeBlastProb() ) <= 1 );
+        hugeBlast = ( Util.getRandomGenerator().nextInt( manager.hugeBlastProb() ) <= 1 );
     }
 
     /**
@@ -192,7 +192,7 @@ public class Missile extends Weapon.Unit
     {
         if ( age < 30 )
         {
-            Random rand = RandomGenerator.get();
+            Random rand = Util.getRandomGenerator();
             for ( int i = 0; i < (int) ( 7 - Math.sqrt( getDx() * getDx() + getDy() * getDy() ) ); i++ )
                 ParticleManager.addParticle( new Particle(
                                              getX() + rand.nextInt( 8 ) - 4,
@@ -231,7 +231,7 @@ public class Missile extends Weapon.Unit
             return;
 
         // Simply pop into several other <code>Missiles</code>.
-        if ( RandomGenerator.get().nextInt( manager.probPop() ) <= 101 )
+        if ( Util.getRandomGenerator().nextInt( manager.probPop() ) <= 101 )
             pop();
 
         explodeCount = 1;

@@ -47,7 +47,7 @@ public class FlechetteManager extends Weapon
     {
         if ( weapons.size() > maxShots || !canShoot() )
             return false;
-        
+
         int numShots = 0;
         if ( ammo == -1 )
             numShots = 5;
@@ -62,7 +62,7 @@ public class FlechetteManager extends Weapon
             }
         }
         timeTillNextShot = intervalShoot;
-        Random rand = RandomGenerator.get();
+        Random rand = Util.getRandomGenerator();
         boolean successful = true;
         for ( int num = 0; num < numShots; num++ )
             successful = successful && weapons.add( new Flechette( this, x, y, angle + ( rand.nextDouble() - .5 ), dx, dy, col ) );
@@ -98,7 +98,7 @@ public class FlechetteManager extends Weapon
 
     public int getSpeed()
     {
-        return (int) ( speed * RandomGenerator.get().nextDouble() );
+        return (int) ( speed * Util.getRandomGenerator().nextDouble() );
     }
 
     public int getMaxShots()
@@ -130,7 +130,7 @@ public class FlechetteManager extends Weapon
         int temp = timeTillNextShot;
         Sound.playInternal( SoundLibrary.BERSERK );
         timeTillNextShot = 0;
-        Random rand = RandomGenerator.get();
+        Random rand = Util.getRandomGenerator();
         for ( int i = 0; i < 43; i++ )
         {
             add( (int) s.getX(), (int) s.getY(), rand.nextDouble() * 2 * Math.PI, s.getDx(), s.getDy(), s.getColor(), false );

@@ -46,48 +46,48 @@ public class WaveGameplay implements GameMode
         }
 
         // Spawn asteroids directly opposite from player 1.
-        double x =RelativeGraphics.oppositeX()+ RandomGenerator.get().nextInt( 100 ) - 50; 
-        double y =RelativeGraphics.oppositeY()+ RandomGenerator.get().nextInt( 100 ) - 50; 
+        double x =RelativeGraphics.oppositeX()+ Util.getRandomGenerator().nextInt( 100 ) - 50; 
+        double y =RelativeGraphics.oppositeY()+ Util.getRandomGenerator().nextInt( 100 ) - 50; 
 
         double spawnRate = Math.min( 9, Math.max( 1, ( Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size() ) / 20.0 ) );
         // System.out.println(spawnRate + " " + wavePoints);
 
         // Spawn an asteroid.
-        if ( wavePoints >= 50 && RandomGenerator.get().nextDouble() * spawnRate <= 0.3 )
+        if ( wavePoints >= 50 && Util.getRandomGenerator().nextDouble() * spawnRate <= 0.3 )
         {
             wavePoints -= 50;
 
             // Make it a bonus asteroid.
-            if ( RandomGenerator.get().nextDouble() * 12 * spawnRate <= 0.3 )
+            if ( Util.getRandomGenerator().nextDouble() * 12 * spawnRate <= 0.3 )
             {
                 Game.getInstance().asteroidManager().add(
-                        new BonusAsteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
-                                           RandomGenerator.get().nextInt( 80 ) + 40, 15 ), true );
+                        new BonusAsteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
+                                           Util.getRandomGenerator().nextInt( 60 ) + 40, 15 ), true );
             }
             else
             {
                 Game.getInstance().asteroidManager().add(
-                        new Asteroid( x, y, RandomGenerator.get().nextInt( 6 ) - 3, RandomGenerator.get().nextInt( 6 ) - 3,
-                                      RandomGenerator.get().nextInt( 190 ) + 90, 15 ), true );
+                        new Asteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
+                                      Util.getRandomGenerator().nextInt( 70 ) + 10, 15 ), true );
 
             }
         }
 
         // Spawn an alien.
-        if ( wavePoints >= 100 && RandomGenerator.get().nextDouble() * 3 * spawnRate <= 0.3 )
+        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 3 * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
-            Alien a = new Alien( x, y, RandomGenerator.get().nextDouble() * 8 - 4, RandomGenerator.get().nextDouble() * 8 - 4 );
+            Alien a = new Alien( x, y, Util.getRandomGenerator().nextDouble() * 8 - 4, Util.getRandomGenerator().nextDouble() * 8 - 4 );
             Game.getInstance().gameObjects.add( a );
             Game.getInstance().shootingObjects.add( a );
             Game.getInstance().baddies.add( a );
         }
 
         // Spawn a station.
-        if ( wavePoints >= 150 && RandomGenerator.get().nextDouble() * 11 * spawnRate <= 0.3 )
+        if ( wavePoints >= 150 && Util.getRandomGenerator().nextDouble() * 11 * spawnRate <= 0.3 )
         {
             wavePoints -= 150;
-            Station s = new Station( x, y, RandomGenerator.get().nextInt( 4 ) - 2, RandomGenerator.get().nextInt( 4 ) - 2 );
+            Station s = new Station( x, y, Util.getRandomGenerator().nextInt( 4 ) - 2, Util.getRandomGenerator().nextInt( 4 ) - 2 );
             Game.getInstance().gameObjects.add( s );
             Game.getInstance().shootingObjects.add( s );
             Game.getInstance().baddies.add( s );

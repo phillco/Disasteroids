@@ -77,9 +77,9 @@ public class ParticleManager implements Serializable
     {
         for ( int i = 0; i < getNumberToMake( amount ); i++ )
         {
-            addParticle( new Particle( x, y, RandomGenerator.get().nextInt( 5 ) + 2,
-                                       RandomGenerator.get().nextBoolean() ? Color.gray : Color.darkGray,
-                                       RandomGenerator.get().nextDouble() * 3 + 1, RandomGenerator.get().nextDouble() * 1.6 + 0.3,
+            addParticle( new Particle( x, y, Util.getRandomGenerator().nextInt( 5 ) + 2,
+                                       Util.getRandomGenerator().nextBoolean() ? Color.gray : Color.darkGray,
+                                       Util.getRandomGenerator().nextDouble() * 3 + 1, Util.getRandomGenerator().nextDouble() * 1.6 + 0.3,
                                        50, 30 ) );
         }
     }
@@ -88,10 +88,10 @@ public class ParticleManager implements Serializable
     {
         for ( int i = 0; i < getNumberToMake( amount ); i++ )
         {
-            addParticle( new Particle( x, y, RandomGenerator.get().nextInt( 5 ) + 2,
-                                       new Color( (float) ( RandomGenerator.get().nextDouble() * 0.4 + 0.6 ),
-                                                  (float) ( RandomGenerator.get().nextDouble() * 0.3 + 0.2 ), 0.01f, 1 ),
-                                       RandomGenerator.get().nextDouble() * 3 + 1, RandomGenerator.get().nextDouble() * 1.6 + 0.3,
+            addParticle( new Particle( x, y, Util.getRandomGenerator().nextInt( 5 ) + 2,
+                                       new Color( (float) ( Util.getRandomGenerator().nextDouble() * 0.4 + 0.6 ),
+                                                  (float) ( Util.getRandomGenerator().nextDouble() * 0.3 + 0.2 ), 0.01f, 1 ),
+                                       Util.getRandomGenerator().nextDouble() * 3 + 1, Util.getRandomGenerator().nextDouble() * 1.6 + 0.3,
                                        50, 30 ) );
         }
     }
@@ -99,7 +99,7 @@ public class ParticleManager implements Serializable
     private static int getNumberToMake( double amountScalar )
     {
         if ( amountScalar < 0 )
-            return RandomGenerator.get().nextDouble() < amountScalar ? 1 : 0;
+            return Util.getRandomGenerator().nextDouble() < amountScalar ? 1 : 0;
         else
             return (int) amountScalar;
     }

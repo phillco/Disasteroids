@@ -6,8 +6,8 @@ package disasteroids.gui;
 
 
 import disasteroids.GameElement;
-import disasteroids.RandomGenerator;
 import disasteroids.Settings;
+import disasteroids.Util;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -86,7 +86,7 @@ public class Particle implements GameElement
      */
     public Particle( double x, double y, double size, Color c, double speed, double angle, double lifemax, double lifemin )
     {
-        life = ( RandomGenerator.get().nextDouble() ) * lifemax + lifemin;
+        life = ( Util.getRandomGenerator().nextDouble() ) * lifemax + lifemin;
         this.life_max = life;
         this.x = x;
         this.y = y;
@@ -99,8 +99,8 @@ public class Particle implements GameElement
         rgb[1] = c.getGreen();
         rgb[2] = c.getBlue();
 
-        deltaSize = RandomGenerator.get().nextDouble() - 0.6;
-        drawInSpeedRendering = RandomGenerator.get().nextInt( 10 ) == 0;
+        deltaSize = Util.getRandomGenerator().nextDouble() - 0.6;
+        drawInSpeedRendering = Util.getRandomGenerator().nextInt( 10 ) == 0;
 
     }
 

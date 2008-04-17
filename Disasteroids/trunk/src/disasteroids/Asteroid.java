@@ -77,7 +77,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
         angle = 0;
         // Enforce a minimum size.
         if ( size < 25 )
-            size = 25 + RandomGenerator.get().nextInt( 25 );
+            size = 25 + Util.getRandomGenerator().nextInt( 25 );
 
         // Enforce a mininum speed.
         checkMovement();
@@ -94,7 +94,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
      */
     public Asteroid( Asteroid parent )
     {
-        super( parent.getX(), parent.getY(), RandomGenerator.get().nextDouble() * 2 - 1, RandomGenerator.get().nextDouble() * 2 - 1 );
+        super( parent.getX(), parent.getY(), Util.getRandomGenerator().nextDouble() * 2 - 1, Util.getRandomGenerator().nextDouble() * 2 - 1 );
         parent.children++;
         angle = 0;
         if ( parent.children > 2 )

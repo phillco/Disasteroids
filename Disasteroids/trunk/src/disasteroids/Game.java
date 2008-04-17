@@ -294,7 +294,6 @@ public class Game implements Serializable
     {
         players.remove( leavingPlayer );
         shootingObjects.remove( leavingPlayer );
-
         if ( quitReason.length() > 0 )
             Running.log( leavingPlayer.getName() + quitReason, 800 );
     }

@@ -59,7 +59,7 @@ public class Alien extends GameObject implements ShootingObject
     /**
      * The direction this <code>Alien</code> is "pointing."
      */
-    double angle = RandomGenerator.get().nextDouble() * 2 * Math.PI;
+    double angle = Util.getRandomGenerator().nextDouble() * 2 * Math.PI;
 
     /**
      * Creates a new <code>Alien</code>
@@ -73,9 +73,9 @@ public class Alien extends GameObject implements ShootingObject
     public Alien( double x, double y, double dx, double dy )
     {
         super( x, y, dx, dy );
-        size = RandomGenerator.get().nextInt( 60 ) + 25;
+        size = Util.getRandomGenerator().nextInt( 60 ) + 25;
         manager = new AlienMissileManager( size );
-        color = new Color( RandomGenerator.get().nextInt( 60 ), RandomGenerator.get().nextInt( 128 ) + 96, RandomGenerator.get().nextInt( 60 ) );
+        color = new Color( Util.getRandomGenerator().nextInt( 60 ), Util.getRandomGenerator().nextInt( 128 ) + 96, Util.getRandomGenerator().nextInt( 60 ) );
         life = 100;
         explosionTime = 0;
     }
@@ -92,11 +92,11 @@ public class Alien extends GameObject implements ShootingObject
         ax *= 0.98;
         ay *= 0.98;
 
-        if ( Math.abs( ax ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
-            ax = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
-        if ( Math.abs( ay ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
-            ay = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
-        if ( RandomGenerator.get().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
+        if ( Math.abs( ax ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+            ax = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
+        if ( Math.abs( ay ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+            ay = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
+        if ( Util.getRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
         {
             ax *= -1.8;
             ay *= -1.8;
@@ -113,7 +113,7 @@ public class Alien extends GameObject implements ShootingObject
             {
                 explosionTime = 20;
 
-                if ( RandomGenerator.get().nextInt( 10 ) == 0 )
+                if ( Util.getRandomGenerator().nextInt( 10 ) == 0 )
                     Game.getInstance().createBonus( this );
             }
 
@@ -128,11 +128,11 @@ public class Alien extends GameObject implements ShootingObject
 
         // Smoke when low on health.
         if ( life < 80 )
-            ParticleManager.createSmoke( getX() + RandomGenerator.get().nextInt( size ), centerY(), 1 );
+            ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), 1 );
 
         // Flames when doomed!
         if ( life < 40 )
-            ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ), centerY(), ( 50 - life ) / 10 );
+            ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), ( 50 - life ) / 10 );
 
         // Find players within our range.        
         int range = 300;
@@ -218,7 +218,7 @@ public class Alien extends GameObject implements ShootingObject
     {
         double desiredAngle = 0.0;
         double distance = getProximity( target );
-        double time = Math.log( distance ) * ( 5 + RandomGenerator.get().nextInt( 2 ) );
+        double time = Math.log( distance ) * ( 5 + Util.getRandomGenerator().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 
@@ -376,7 +376,7 @@ public class Alien extends GameObject implements ShootingObject
             timeTillNextShot = getIntervalShoot();
             
             super.add( x, y, angle, dx / 8, dy / 8, col, false );
-            if ( RandomGenerator.get().nextBoolean() )
+            if ( Util.getRandomGenerator().nextBoolean() )
                 add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
             return true;
         }

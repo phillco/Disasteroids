@@ -5,6 +5,7 @@
 package disasteroids;
 
 import java.text.DecimalFormat;
+import java.util.Random;
 
 /**
  *
@@ -38,5 +39,26 @@ public class Util
         double deltaX = ( one.getX() - two.getX() + Game.getInstance().GAME_WIDTH * 2 ) % Game.getInstance().GAME_WIDTH;
         double deltaY = ( one.getY() - two.getY() + Game.getInstance().GAME_HEIGHT * 2 ) % Game.getInstance().GAME_HEIGHT;
         return Math.sqrt( deltaX * deltaX + deltaY * deltaY );
+    }
+    private static Random[] instances = { new Random(), new Random(), new Random() };
+
+    private static int nextRandomGenerator = 0;
+
+    /**
+     * Returns the global random generator.
+     * 
+     * @return  a static instance of <code>Random</code>
+     * @since January 18, 2008
+     */
+    public static Random getRandomGenerator()
+    {
+
+        nextRandomGenerator = ( nextRandomGenerator + 1 ) % instances.length;
+        return instances[nextRandomGenerator];
+    }
+
+    public static double nextMidpointDouble()
+    {
+        return getRandomGenerator().nextDouble() * 2 - 1;
     }
 }

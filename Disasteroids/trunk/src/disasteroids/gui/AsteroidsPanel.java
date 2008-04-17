@@ -6,7 +6,6 @@ package disasteroids.gui;
 
 import disasteroids.Game;
 import disasteroids.GameObject;
-import disasteroids.RandomGenerator;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
@@ -20,7 +19,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Panel;
 import java.awt.RenderingHints;
-import java.awt.image.VolatileImage;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -210,8 +208,8 @@ public class AsteroidsPanel extends Panel
             rumble = 0;
         else
         {
-            rumbleX = (int) ( RandomGenerator.get().nextDouble() * rumble - rumble / 2 );
-            rumbleY = (int) ( RandomGenerator.get().nextDouble() * rumble - rumble / 2 );
+            rumbleX = (int) ( Util.getRandomGenerator().nextDouble() * rumble - rumble / 2 );
+            rumbleY = (int) ( Util.getRandomGenerator().nextDouble() * rumble - rumble / 2 );
             rumble *= 0.9;
         }
 

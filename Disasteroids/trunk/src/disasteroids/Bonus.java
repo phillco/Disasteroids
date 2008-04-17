@@ -42,13 +42,13 @@ public class Bonus extends GameObject
      * The class of bonus (category).
      * @since April 12, 2008
      */
-    private Class myClass = Class.values()[RandomGenerator.get().nextInt( Class.values().length )];
+    private Class myClass = Class.values()[Util.getRandomGenerator().nextInt( Class.values().length )];
 
     /**
      * The type of bonus (within its category).
      * @since Classic
      */
-    private int bonusType = RandomGenerator.get().nextInt( myClass.types );
+    private int bonusType = Util.getRandomGenerator().nextInt( myClass.types );
 
     final int RADIUS = 12;
 
@@ -76,7 +76,7 @@ public class Bonus extends GameObject
 
     public Bonus( double x, double y )
     {
-        this( x, y, RandomGenerator.get().nextDouble() * 2 - 1, RandomGenerator.get().nextDouble() * 2 - 1 );
+        this( x, y, Util.getRandomGenerator().nextDouble() * 2 - 1, Util.getRandomGenerator().nextDouble() * 2 - 1 );
     }
 
     public void act()
@@ -87,11 +87,11 @@ public class Bonus extends GameObject
         ax *= 0.98;
         ay *= 0.98;
 
-        if ( Math.abs( ax ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
-            ax = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
-        if ( Math.abs( ay ) <= 0.01 || RandomGenerator.get().nextInt( 60 ) == 0 )
-            ay = RandomGenerator.get().nextDouble() * 0.12 - 0.06;
-        if ( RandomGenerator.get().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
+        if ( Math.abs( ax ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+            ax = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
+        if ( Math.abs( ay ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+            ay = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
+        if ( Util.getRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
         {
             ax *= -1.8;
             ay *= -1.8;
@@ -103,24 +103,24 @@ public class Bonus extends GameObject
             Game.getInstance().removeObject( this );
             for ( int i = 0; i < 500; i++ )
                 ParticleManager.addParticle( new Particle(
-                                             getX() + RandomGenerator.get().nextInt( 8 ) - 4,
-                                             getY() + RandomGenerator.get().nextInt( 8 ) - 4,
-                                             RandomGenerator.get().nextInt( 8 ),
+                                             getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                                             getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                                             Util.getRandomGenerator().nextInt( 8 ),
                                              Color.getHSBColor( bonusType / 9.0f, 1f, .7f ),
-                                             RandomGenerator.get().nextDouble() * 5,
-                                             RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                             Util.getRandomGenerator().nextDouble() * 5,
+                                             Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
                                              40, 2 ) );
             Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
         }
         checkCollision();
         for ( int i = 0; i < 3; i++ )
             ParticleManager.addParticle( new Particle(
-                                         getX() + RandomGenerator.get().nextInt( 8 ) - 4,
-                                         getY() + RandomGenerator.get().nextInt( 8 ) - 4,
-                                         RandomGenerator.get().nextInt( 4 ),
+                                         getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                                         getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                                         Util.getRandomGenerator().nextInt( 4 ),
                                          Color.getHSBColor( lastHue, lastHB, 1 - lastHB ),
-                                         RandomGenerator.get().nextDouble() * 3,
-                                         RandomGenerator.get().nextDouble() * 2 * Math.PI,
+                                         Util.getRandomGenerator().nextDouble() * 3,
+                                         Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
                                          50, 1 ) );
         angle = ( angle + 0.03 ) % ( 2 * Math.PI );
     }

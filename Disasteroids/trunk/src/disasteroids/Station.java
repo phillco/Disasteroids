@@ -113,11 +113,11 @@ public class Station extends GameObject implements ShootingObject
             disableCounter--;
 
             // Smoke and spin the turret.
-            angle += 0.07 + RandomGenerator.get().nextDouble() / 7;
-            ParticleManager.createSmoke( getX() + RandomGenerator.get().nextInt( size ), centerY(), 1 + hitsWhileDisabled );
+            angle += 0.07 + Util.getRandomGenerator().nextDouble() / 7;
+            ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), 1 + hitsWhileDisabled );
 
             // If hit again, set fire.
-            ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ), centerY(), hitsWhileDisabled * 2 );
+            ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), hitsWhileDisabled * 2 );
 
             if ( disableCounter == 0 )
                 hitsWhileDisabled = 0;
@@ -375,10 +375,10 @@ public class Station extends GameObject implements ShootingObject
     {
         Game.getInstance().removeObject( this );
 
-        ParticleManager.createSmoke( getX() + RandomGenerator.get().nextInt( size ) / 2, centerY() + RandomGenerator.get().nextInt( size ) / 2, 100 );
-        ParticleManager.createFlames( getX() + RandomGenerator.get().nextInt( size ) / 2, centerY() + RandomGenerator.get().nextInt( size ) / 2, 250 );
+        ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 100 );
+        ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 250 );
 
-        if ( RandomGenerator.get().nextInt( 4 ) == 0 )
+        if ( Util.getRandomGenerator().nextInt( 4 ) == 0 )
             Game.getInstance().createBonus( this );
 
         Sound.playInternal( SoundLibrary.STATION_DIE );
@@ -393,7 +393,7 @@ public class Station extends GameObject implements ShootingObject
     private void calculateAngle( Ship target )
     {
         double distance = getProximity( target );
-        double time = Math.log( distance ) * ( 5 + RandomGenerator.get().nextInt( 2 ) );
+        double time = Math.log( distance ) * ( 5 + Util.getRandomGenerator().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 

@@ -110,7 +110,7 @@ public class Running
             // Find the player with the highest score.
             if ( AsteroidsFrame.frame() != null )
             {
-                Ship highestScorer = Game.getInstance().players.getFirst();
+                Ship highestScorer = Game.getInstance().players.peek();
                 for ( Ship s : Game.getInstance().players )
                 {
                     if ( s.getScore() > Settings.getHighScore() )
@@ -171,7 +171,7 @@ public class Running
             // Fall-through
 
             case SINGLEPLAYER:
-                new Game( WaveGameplay.class );
+                new Game( LinearGameplay.class );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 Sound.updateMusic();
                 break;

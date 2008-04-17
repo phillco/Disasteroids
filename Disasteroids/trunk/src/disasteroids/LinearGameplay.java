@@ -31,7 +31,7 @@ public class LinearGameplay implements GameMode
     public LinearGameplay()
     {
         level = 1;
-        Game.getInstance().asteroidManager().setUpAsteroidField( level );
+        Game.getInstance().getAsteroidManager().setUpAsteroidField( level );
     }
 
     public void act()

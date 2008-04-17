@@ -187,7 +187,7 @@ public class Client extends DatagramListener
                         Game.getInstance().getPlayerFromId( in.readInt() ).restorePosition( in );
                         break;
                     case NEW_ASTEROID:
-                        Game.getInstance().asteroidManager().add( new Asteroid( in ), false );
+                        Game.getInstance().getAsteroidManager().add( new Asteroid( in ), false );
                         break;
                     case REMOVE_ASTEROID:
                     {
@@ -195,7 +195,7 @@ public class Client extends DatagramListener
                         Ship s = null;
                         if ( in.readBoolean() )
                             s = Game.getInstance().getPlayerFromId( in.readInt() );
-                        Game.getInstance().asteroidManager().remove( aId, s, false );
+                        Game.getInstance().getAsteroidManager().remove( aId, s, false );
                         break;
                     }
                     case BERSERK:

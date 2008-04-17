@@ -24,7 +24,6 @@ import java.awt.Polygon;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.DecimalFormat;
 import java.awt.geom.AffineTransform;
 
 /**
@@ -431,20 +430,6 @@ public class AsteroidsFrame extends Frame
 
         addNotificationMessage( message, 250 );
     }
-
-    /**
-     * Returns whether this computer is the first player.
-     * This occurs in singleplayer or when hosting.
-     * 
-     * @return  whether the local computer is player #1
-     * @since Classic
-     */
-    public boolean isPlayerOne()
-    {
-        return localId == Game.getInstance().players.getFirst().id;
-    }
-
-
 
     /**
      * Returns the player at this computer.

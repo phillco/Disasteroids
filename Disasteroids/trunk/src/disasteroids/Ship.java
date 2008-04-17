@@ -365,8 +365,6 @@ public class Ship extends GameObject implements ShootingObject
      */
     public void rotateWeapons()
     {
-        Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
-        Game.getInstance().gameObjects.add( new Bonus( getX(), getY() - 90 ) );
         int startIndex = weaponIndex;
         do
         {

@@ -155,35 +155,17 @@ public class AsteroidsPanel extends Panel
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );
 
-        Game.getInstance().asteroidManager().draw( g );
+        Game.getInstance().getAsteroidManager().draw( g );
 
         for ( GameObject go : Game.getInstance().gameObjects )
             go.draw( g );
-
-        // Update the ships.
-        for ( Ship s : Game.getInstance().players )
-            s.draw( g );
-
+        
         // Draw the on-screen HUD.
         drawHud( g );
 
         // Draw the entire scoreboard.
         if ( drawScoreboard )
             drawScoreboard( g );
-    }
-
-    /**
-     * Sets up double buffering.
-     * Uses hardware acceleration, if desired.
-     * 
-     * @since December 25, 2007
-     */
-    private void initBuffering()
-    {
-        // Create the buffer.
-        virtualMem = createImage( getWidth(), getHeight() );
-
-        Game.getInstance().startGame();
     }
 
     /**
@@ -198,7 +180,7 @@ public class AsteroidsPanel extends Panel
     {
         // Create the image if needed.
         if ( virtualMem == null )
-            initBuffering();
+            virtualMem = createImage( getWidth(), getHeight() );
 
         // Flashing game objects.
         Local.globalFlash = !Local.globalFlash;
@@ -391,7 +373,7 @@ public class AsteroidsPanel extends Panel
         // Draw the asteroid count.
         g2d.setColor( Color.lightGray );
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
-        text = Util.insertThousandCommas( Game.getInstance().asteroidManager().size() ) + " asteroid" + ( Game.getInstance().asteroidManager().size() == 1 ? ", " : "s, " );
+        text = Util.insertThousandCommas( Game.getInstance().getAsteroidManager().size() ) + " asteroid" + ( Game.getInstance().getAsteroidManager().size() == 1 ? ", " : "s, " );
         text += Util.insertThousandCommas( Game.getInstance().baddies.size() ) + " baddie" + ( Game.getInstance().baddies.size() == 1 ? "" : "s" );
         text += " remain";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;

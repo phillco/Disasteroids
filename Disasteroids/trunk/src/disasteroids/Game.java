@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.KeystrokeManager;
+import disasteroids.gui.Local;
 import disasteroids.gui.MainMenu;
 import disasteroids.gui.ParticleManager;
 import disasteroids.networking.Client;
@@ -21,6 +22,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -49,12 +51,6 @@ public class Game implements Serializable
     public long timeStep = 0;
 
     /**
-     * The current game time of the other player.
-     * @since Classic
-     */
-    public long otherPlayerTimeStep = 0;
-
-    /**
      * Stores the current <code>Asteroid</code> field.
      * @since Classic
      */
@@ -67,19 +63,19 @@ public class Game implements Serializable
     ActionManager actionManager = new ActionManager();
 
     /**
-     * List of players.
-     * @since December 14, 2007
-     */
-    public LinkedList<Ship> players = new LinkedList<Ship>();
-
-    /**
-     * List of miscellaneous game objects that aren't players or asteroids.
+     * The mother list of all game objects, excluding asteroids.
      * @since January 7, 2008
      */
     public ConcurrentLinkedQueue<GameObject> gameObjects;
 
     /**
-     * List of all objects that shoot.
+     * Reference list of players.
+     * @since December 14, 2007
+     */
+    public ConcurrentLinkedQueue<Ship> players = new ConcurrentLinkedQueue<Ship>();
+
+    /**
+     * Reference list of all objects that shoot.
      * @since January 7, 2008
      */
     public ConcurrentLinkedQueue<ShootingObject> shootingObjects;
@@ -114,24 +110,14 @@ public class Game implements Serializable
      */
     public Game( Class gameMode )
     {
-
         Game.instance = this;
         timeStep = 0;
-        otherPlayerTimeStep = 0;
         asteroidManager = new AsteroidManager();
         actionManager = new ActionManager();
         shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
         baddies = new ConcurrentLinkedQueue<GameObject>();
 
-        // Spawn players.
-        for ( int index = 0; index < players.size(); index++ )
-        {
-            int id = players.get( index ).id;
-            players.set( index, new Ship( players.get( index ).getX(), players.get( index ).getY(), players.get( index ).getColor(), Ship.START_LIVES, players.get( index ).getName() ) );
-            players.get( index ).id = id;
-            shootingObjects.add( players.get( index ) );
-        }
         try
         {
             // Set the game mode.
@@ -149,6 +135,10 @@ public class Game implements Serializable
         // Update the GUI.
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().resetGame();
+
+        thread = new GameLoop();
+        thread.setPriority( Thread.MAX_PRIORITY );
+        thread.start();
     }
 
     /**
@@ -239,9 +229,7 @@ public class Game implements Serializable
     public int addPlayer( String name, Color c )
     {
         Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, c, Ship.START_LIVES, name );
-        players.add( s );
-        shootingObjects.add( s );
-        Running.log( s.getName() + " entered the game (id " + s.id + ")." );
+        addPlayer( s );
         return s.id;
     }
 
@@ -254,6 +242,7 @@ public class Game implements Serializable
     public void addPlayer( Ship newPlayer )
     {
         players.add( newPlayer );
+        gameObjects.add( newPlayer );
         shootingObjects.add( newPlayer );
         Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ").", 800 );
     }
@@ -270,6 +259,21 @@ public class Game implements Serializable
     }
 
     /**
+     * Removes a player from the game with a custom message.
+     * "(player name)" + quitReason
+     * 
+     * @param leavingPlayer     the player
+     * @param quitReason        the message
+     * @since January 11, 2007
+     */
+    public void removePlayer( Ship leavingPlayer, String quitReason )
+    {
+        removeObject( leavingPlayer );
+        if ( quitReason.length() > 0 )
+            Running.log( leavingPlayer.getName() + quitReason, 800 );
+    }
+
+    /**
      * Removes an object from the game.
      * 
      * @param o the object
@@ -280,22 +284,6 @@ public class Game implements Serializable
         gameObjects.remove( o );
         shootingObjects.remove( o );
         baddies.remove( o );
-    }
-
-    /**
-     * Removes a player from the game with a custom message.
-     * "(player name)" + quitReason
-     * 
-     * @param leavingPlayer     the player
-     * @param quitReason        the message
-     * @since January 11, 2007
-     */
-    public void removePlayer( Ship leavingPlayer, String quitReason )
-    {
-        players.remove( leavingPlayer );
-        shootingObjects.remove( leavingPlayer );
-        if ( quitReason.length() > 0 )
-            Running.log( leavingPlayer.getName() + quitReason, 800 );
     }
 
     /**
@@ -310,40 +298,12 @@ public class Game implements Serializable
     }
 
     /**
-     * Sets the current time of the other player.
-     * 
-     * @param step  the new value for the other player's current time
-     * @since Classic
-     */
-    public void setOtherPlayerTimeStep( int step )
-    {
-        otherPlayerTimeStep = step;
-    }
-
-    /**
-     * Sleeps the game for the specified time.
-     * 
-     * @param millis How many milliseconds to sleep for.
-     * @since Classic
-     */
-    public void safeSleep( int millis )
-    {
-        try
-        {
-            Thread.sleep( millis );
-        }
-        catch ( InterruptedException e )
-        {
-        }
-    }
-
-    /**
      * Returns the game's <code>ActionManager</code>.
      * 
      * @return  the <code>ActionManager</code>
      * @since Classic
      */
-    public ActionManager actionManager()
+    public ActionManager getActionManager()
     {
         return actionManager;
     }
@@ -354,7 +314,7 @@ public class Game implements Serializable
      * @return  the <code>AsteroidManager</code>
      * @since January 11, 2008
      */
-    public AsteroidManager asteroidManager()
+    public AsteroidManager getAsteroidManager()
     {
         return asteroidManager;
     }
@@ -378,36 +338,18 @@ public class Game implements Serializable
         ParticleManager.act();
         asteroidManager.act();
 
-        // Update the ships.
-        for ( Ship s : players )
+        // Check if we've lost in singleplayer.
+        if ( Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 && !Client.is() )
         {
-            s.act();
-            if ( s.livesLeft() < 0 && s.getExplosionTime() < 0 && !Client.is() )
-            {
-                // Return to the menu.
-                //  Game.instance = null;
-                AsteroidsFrame.frame().setVisible( false );
-                paused = true;
-                new MainMenu();
-
-                return;
-            }
+            // Return to the menu.
+            AsteroidsFrame.frame().setVisible( false );
+            paused = true;
+            new MainMenu();
+            return;
         }
 
         for ( GameObject g : gameObjects )
             g.act();
-    }
-
-    public boolean gameIsActive()
-    {
-        return ( Game.getInstance().players.size() > 1 );
-    }
-
-    public void startGame()
-    {
-        thread = new GameLoop();
-        thread.setPriority( Thread.MAX_PRIORITY );
-        thread.start();
     }
 
     /**
@@ -424,6 +366,7 @@ public class Game implements Serializable
             return;
 
         KeystrokeManager.ActionType action = KeystrokeManager.getInstance().translate( keystroke );
+
         // Decide what key was pressed.
         switch ( action )
         {
@@ -574,7 +517,7 @@ public class Game implements Serializable
         gameMode = Constants.parseGameMode( stream.readInt(), stream );
         this.timeStep = stream.readLong();
 
-        players = new LinkedList<Ship>();
+        players = new ConcurrentLinkedQueue<Ship>();
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
             players.add( new Ship( stream ) );

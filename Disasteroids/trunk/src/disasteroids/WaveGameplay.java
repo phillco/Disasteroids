@@ -36,7 +36,7 @@ public class WaveGameplay implements GameMode
     public void act()
     {
         // Is the wave over? Advance.
-        if ( wavePoints <= 0 && Game.getInstance().baddies.size() <= 0 && Game.getInstance().asteroidManager().size() <= 0 )
+        if ( wavePoints <= 0 && Game.getInstance().baddies.size() <= 0 && Game.getInstance().getAsteroidManager().size() <= 0 )
         {
             Running.log( "Wave " + currentWave + " completed!", 300 );
             currentWave += 1;
@@ -49,7 +49,7 @@ public class WaveGameplay implements GameMode
         double x =RelativeGraphics.oppositeX()+ Util.getRandomGenerator().nextInt( 100 ) - 50; 
         double y =RelativeGraphics.oppositeY()+ Util.getRandomGenerator().nextInt( 100 ) - 50; 
 
-        double spawnRate = Math.min( 9, Math.max( 1, ( Game.getInstance().baddies.size() + Game.getInstance().asteroidManager().size() ) / 20.0 ) );
+        double spawnRate = Math.min( 9, Math.max( 1, ( Game.getInstance().baddies.size() + Game.getInstance().getAsteroidManager().size() ) / 20.0 ) );
         // System.out.println(spawnRate + " " + wavePoints);
 
         // Spawn an asteroid.
@@ -60,13 +60,13 @@ public class WaveGameplay implements GameMode
             // Make it a bonus asteroid.
             if ( Util.getRandomGenerator().nextDouble() * 12 * spawnRate <= 0.3 )
             {
-                Game.getInstance().asteroidManager().add(
+                Game.getInstance().getAsteroidManager().add(
                         new BonusAsteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
                                            Util.getRandomGenerator().nextInt( 60 ) + 40, 15 ), true );
             }
             else
             {
-                Game.getInstance().asteroidManager().add(
+                Game.getInstance().getAsteroidManager().add(
                         new Asteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
                                       Util.getRandomGenerator().nextInt( 70 ) + 10, 15 ), true );
 
@@ -147,7 +147,7 @@ public class WaveGameplay implements GameMode
         try
         {
             int newWave = Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the wave to start.", currentWave ) );
-            Game.getInstance().asteroidManager().clear();
+            Game.getInstance().getAsteroidManager().clear();
             Game.getInstance().gameObjects.clear();
             Game.getInstance().baddies.clear();
             Game.getInstance().shootingObjects = new ConcurrentLinkedQueue<ShootingObject>( Game.getInstance().players );

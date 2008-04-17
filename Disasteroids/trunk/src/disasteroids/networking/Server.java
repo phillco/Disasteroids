@@ -213,7 +213,7 @@ public class Server extends DatagramListener
                             break;
 
                         int keyCode = in.readInt();
-                        Game.getInstance().actionManager().add( new Action( client.inGamePlayer, keyCode, Game.getInstance().timeStep + 2 ) );
+                        Game.getInstance().getActionManager().add( new Action( client.inGamePlayer, keyCode, Game.getInstance().timeStep + 2 ) );
                         break;
 
                     // Client wishes to resume life.
@@ -228,8 +228,9 @@ public class Server extends DatagramListener
                         out = new ByteOutputStream();
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
-                        out.writeInt( client.inGamePlayer.id );
                         out.writeBoolean( false ); // Not a timeout.
+                        out.writeInt( client.inGamePlayer.id );
+                        
                         sendPacketToAllButOnePlayer( out, client );
                 }
             }
@@ -343,8 +344,8 @@ public class Server extends DatagramListener
                         ByteOutputStream out = new ByteOutputStream();
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
-                        out.writeInt( cm.inGamePlayer.id );
                         out.writeBoolean( true );
+                        out.writeInt( cm.inGamePlayer.id );
                         sendPacketToAllButOnePlayer( out, cm );
                     }
                     catch (  IOException ex )

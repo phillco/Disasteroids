@@ -97,7 +97,7 @@ public class KeystrokeManager implements KeyListener{
      */
     public synchronized void keyReleased( KeyEvent e )
     {
-        Game.getInstance().actionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+        Game.getInstance().getActionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
         if ( e.isShiftDown() )
             AsteroidsFrame.frame().localPlayer().setSnipeMode( true );
         else
@@ -160,7 +160,7 @@ public class KeystrokeManager implements KeyListener{
                 AsteroidsFrame.frame().getPanel().toggleTracker();
                 break;
             default:
-                Game.getInstance().actionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+                Game.getInstance().getActionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
 
                 if ( Client.is() )
                     Client.getInstance().keyStroke( e.getKeyCode() );

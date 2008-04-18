@@ -5,6 +5,7 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.Local;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.RelativeGraphics;
@@ -13,12 +14,9 @@ import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Polygon;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  *
@@ -215,9 +213,9 @@ public class Bonus extends GameObject
         if ( message.length() == 0 )
             return false;
 
-        if ( AsteroidsFrame.frame() != null )
+        if ( !Local.isStuffNull() )
         {
-            AsteroidsFrame.frame().writeOnBackground( message, (int) getX(), (int) getY(), player.getColor() );
+            Local.getStarBackground().writeOnBackground( message, (int) getX(), (int) getY(), player.getColor() );
             if ( player == AsteroidsFrame.frame().localPlayer() )
                 Running.log( "Bonus: " + message );
         }

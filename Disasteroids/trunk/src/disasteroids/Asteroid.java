@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ImageLibrary;
+import disasteroids.gui.Local;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -164,9 +165,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
 
             // Write the score on the background.
             if ( AsteroidsFrame.frame() != null )
-            {
-                AsteroidsFrame.frame().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) getX(), (int) getY(), killer.getColor().darker() );
-            }
+                Local.getStarBackground().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) getX(), (int) getY(), killer.getColor().darker() );
         }
 
         if ( radius >= 12 )

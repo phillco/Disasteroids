@@ -12,6 +12,7 @@ import disasteroids.networking.Client;
 import disasteroids.networking.Server;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -22,6 +23,9 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
@@ -81,15 +85,16 @@ public class AsteroidsFrame extends Frame
             setTitle( "Disasteroids" );
 
         panel = new AsteroidsPanel( this );
-        AsteroidsFrame.
-                frame().getPanel().getStarBackground().writeOnBackground("Press any key to begin.",
-                (int)AsteroidsFrame.frame().localPlayer().getX(), (int)AsteroidsFrame.frame().localPlayer().getY()-40, 0, 50,
-                AsteroidsFrame.frame().localPlayer().getColor(), new Font("Century Gothic", Font.BOLD, 20) );
+        AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( "Press any key to begin.",
+                                                                                 (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
+                                                                                 AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
         add( panel );
-        setResizable( false );
+        setResizable( true );
 
         // Close when the exit key is pressed.
-        addWindowListener( new AsteroidsFrameAdapter() );
+        AsteroidsFrameAdapter a = new AsteroidsFrameAdapter();
+        addWindowListener( a );
+        addComponentListener( a );
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
@@ -127,38 +132,35 @@ public class AsteroidsFrame extends Frame
     }
 
     /**
-     * Toggles fullscreen on/off. This is rather problematic.
+     * Toggles fullscreen on/off. 
      * 
      * @since December 11, 2007
      */
     public void toggleFullscreen()
     {
         Settings.setUseFullscreen( !Settings.isUseFullscreen() );
-        updateFullscreen();
+        Running.log( "The game will run " + ( Settings.isUseFullscreen() ? "in fullscreen" : "as a window" ) + " after you restart." );
+    /* [PC] This is rather problematic.
+    updateFullscreen();
+     */
     }
 
-    public void toggleMusic() {
-        panel.toggleMusic();
+    @Override
+    public void setSize( int width, int height )
+    {
+        super.setSize( width, height );
+
+        // Force the main image to be resized.
+        panel.virtualMem = null;
     }
 
-    public void toggleReneringQuality() {
-        panel.toggleReneringQuality();
-    }
+    @Override
+    public void setSize( Dimension d )
+    {
+        super.setSize( d );
 
-    public void toggleScoreboard() {
-        panel.drawScoreboard=!panel.drawScoreboard;
-    }
-
-    public void toggleSound() {
-        panel.toggleSound();
-    }
-
-    public void toggleTracker() {
-        panel.showTracker=!panel.showTracker;
-    }
-
-    public void warpDialog() {
-        panel.warpDialog();
+        // Force the main image to be resized.
+        panel.virtualMem = null;
     }
 
     /**
@@ -215,37 +217,11 @@ public class AsteroidsFrame extends Frame
     }
 
     /**
-     * Returns if we're in fullscreen (regardless of the setting).
-     * 
-     * @return  whether the frame is in fullscreen mode
-     * @since December 15, 2007
-     */
-    public boolean isFullscreen()
-    {
-        return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getFullScreenWindow() == this;
-    }
-
-    /**
-     * Writes a message onto the background.
-     * 
-     * @param message   the message to be written
-     * @param x         the x coordinate where the message should be drawn
-     * @param y         the y coordinate where the message should be drawn
-     * @param col       the <code>Color</code> in which the message should be drawn
-     * @since Classic
-     */
-    public void writeOnBackground( String message, int x, int y, Color col )
-    {
-        panel.background.writeOnBackground( message, x, y, col );
-    }
-
-    /**
      * Draws a point at specified coordinates, translated relative to local ship.
      * @param graph The <code>Graphics</code> context in which to draw
      * @param col The <code>Color</code> in which to draw
      * @param x The x coordinate
      * @param y The y coordinate
-     * @author Andy Kooiman
      * @since December 16, 2007
      */
     public void drawPoint( Graphics graph, Color col, int x, int y )
@@ -454,7 +430,7 @@ public class AsteroidsFrame extends Frame
      * 
      * @since December 15, 2007
      */
-    private static class AsteroidsFrameAdapter extends WindowAdapter
+    private static class AsteroidsFrameAdapter extends WindowAdapter implements ComponentListener
     {
         /**
          * Invoked when a window has been closed.
@@ -467,12 +443,31 @@ public class AsteroidsFrame extends Frame
             frame().dispose();
             Running.quit();
         }
-        
-        
+
         @Override
-        public void windowGainedFocus(WindowEvent e)
+        public void windowGainedFocus( WindowEvent e )
         {
-            AsteroidsFrame.frame().addKeyListener(KeystrokeManager.getInstance());
+            AsteroidsFrame.frame().addKeyListener( KeystrokeManager.getInstance() );
+        }
+
+        public void componentResized( ComponentEvent e )
+        {
+            AsteroidsFrame.frame().setSize( e.getComponent().getWidth(), e.getComponent().getHeight() );
+        }
+
+        public void componentMoved( ComponentEvent e )
+        {
+
+        }
+
+        public void componentShown( ComponentEvent e )
+        {
+
+        }
+
+        public void componentHidden( ComponentEvent e )
+        {
+
         }
     }
 

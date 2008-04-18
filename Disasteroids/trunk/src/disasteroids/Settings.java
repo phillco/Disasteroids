@@ -58,10 +58,11 @@ public class Settings implements Serializable
             defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
             defaultSettings.put( "qualityRendering", String.valueOf( false ) );
             defaultSettings.put( "lastConnectionIP", "localhost" );
+            defaultSettings.put( "lastGameMode", "wave" );
             defaultSettings.put( "highScore", String.valueOf( 2000 ) );
             defaultSettings.put( "highScorer", "Phillip & Andy" );
             defaultSettings.put( "playerName", "Player" );
-            defaultSettings.put( "playerColor", String.valueOf(Color.red.getRGB()) );
+            defaultSettings.put( "playerColor", String.valueOf( Color.red.getRGB() ) );
 
             // Load the settings file.
             settingsFile = new Properties( defaultSettings );
@@ -171,6 +172,31 @@ public class Settings implements Serializable
     {
         settingsFile.put( "lastConnectionIP", aLastConnectionIP );
     }
+
+    /**
+     * Saves the last used game mode.
+     * @since April 17, 2008
+     */
+    public static void setLastGameMode( Class aMode )
+    {
+        if ( aMode == WaveGameplay.class )
+            settingsFile.put( "lastGameMode", "wave" );
+        else
+            settingsFile.put( "lastGameMode", "linear" );
+    }
+    
+    /**
+     * Gets the last used game mode.
+     * @since April 17, 2008
+     */
+    public static Class getLastGameMode( )
+    {
+        if ( settingsFile.getProperty("lastGameMode").equalsIgnoreCase("wave"))
+            return WaveGameplay.class;
+        else
+            return LinearGameplay.class;
+    }
+    
 
     /**
      * Returns whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.

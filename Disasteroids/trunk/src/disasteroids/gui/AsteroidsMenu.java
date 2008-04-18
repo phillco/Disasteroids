@@ -22,9 +22,9 @@ import java.awt.event.WindowEvent;
  */
 public class AsteroidsMenu extends BufferedFrame
 {
-    public static final int WINDOW_HEIGHT = 400;
+    public static final int WINDOW_HEIGHT = 450;
 
-    public static final int WINDOW_WIDTH = 500;
+    public static final int WINDOW_WIDTH = 550;
 
     public AsteroidsMenu()
     {

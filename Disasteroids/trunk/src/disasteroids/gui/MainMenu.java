@@ -4,9 +4,11 @@
  */
 package disasteroids.gui;
 
+import disasteroids.LinearGameplay;
 import disasteroids.Running;
 import disasteroids.Settings;
 
+import disasteroids.WaveGameplay;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -51,45 +53,45 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         // Some positioning.
         int y = 0;
 
-        flashControl = ( flashControl + 1 ) % 50;
+        flashControl = ( flashControl + 1 ) % 40;
 
         Font normal = new Font( "Tahoma", Font.PLAIN, 14 );
         Font accent = new Font( "Tahoma", Font.BOLD, 14 );
 
         // Draw the title.
         y += 75;
-        g.setColor( Color.darkGray );
+        g.setColor( Settings.getPlayerColor().darker().darker().darker().darker() );
         g.setFont( new Font( "Tahoma", Font.BOLD, 36 ) );
-        g.drawString( title, 110, 80 );
+        g.drawString( title, 140, 80 );
 
-        y += 80;
+        y += 90;
 
         if ( Settings.isInSetup() )
         {
             g.setColor( Color.white );
-            if ( flashControl < 25 )
+            if ( flashControl < 20 )
             {
                 int ff = ( choice == 2 ? 3 : choice );
                 g.setFont( accent );
-                int[] xp = { 160, 160, 160 + 5 };
+                int[] xp = { 190, 190, 190 + 5 };
                 int[] yp = { y - 10 + 20 * ff, y + 20 * ff, y - 5 + 20 * ff };
                 g.fillPolygon( new Polygon( xp, yp, 3 ) );
             }
 
             g.setColor( Color.lightGray );
             g.setFont( choice == 0 ? accent : normal );
-            g.drawString( "Name:   " + Settings.getPlayerName(), 180, y );
+            g.drawString( "Name:   " + Settings.getPlayerName(), 210, y );
 
             y += 20;
             g.setFont( choice == 1 ? accent : normal );
-            g.drawString( "Color:", 180, y );
+            g.drawString( "Color:", 210, y );
 
             g.setColor( Settings.getPlayerColor() );
             Polygon outline = new Polygon();
             {
                 double angle = 0.3;
                 double RADIUS = 10;
-                int centerX = 250;
+                int centerX = 280;
                 int centerY = y - 2;
                 outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
                 outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
@@ -103,7 +105,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
 
             y += 40;
             g.setFont( choice == 2 ? accent : normal );
-            g.drawString( "OK", 210, y );
+            g.drawString( "OK", 240, y );
             repaint();
         }
         else
@@ -128,22 +130,35 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                 y += 25;
             }
 
-            // Draw some settings (this is still hard coded).
-            String musicString = "Music " + ( Settings.isMusicOn() ? "on" : "off" );
-            String soundString = "Sound " + ( Settings.isSoundOn() ? "on" : "off" );
-            String fullscreenString = ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" );
-            String renderingString = ( Settings.isQualityRendering() ? "Quality" : "Speed" );
+            // Draw some settings.
             int height = (int) ( normal.getStringBounds( "|", ( (Graphics2D) g ).getFontRenderContext() ).getHeight() );
-            g.setFont( normal );
-            g.drawString( musicString, 15, ( WINDOW_HEIGHT - height ) );
-            g.drawString( soundString, 15, ( WINDOW_HEIGHT - 2 * height ) );
-            g.drawString( fullscreenString,
-                          WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
-                          ( WINDOW_HEIGHT - height ) );
-            g.drawString( renderingString,
-                          WINDOW_WIDTH - 15 - (int) ( normal.getStringBounds( soundString, ( (Graphics2D) g ).getFontRenderContext() ).getWidth() ),
-                          ( WINDOW_HEIGHT - 2 * height ) );
+            drawSetting( ( (Graphics2D) g ), "Music " + ( Settings.isMusicOn() ? "on" : "off" ), 'M', 14, ( WINDOW_HEIGHT - height ), normal, false );
+            drawSetting( ( (Graphics2D) g ), "Sound " + ( Settings.isSoundOn() ? "on" : "off" ), 'S', 14, ( WINDOW_HEIGHT - 2 * height ), normal, false );
+            drawSetting( ( (Graphics2D) g ), ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" ), 'F', getWidth(), ( WINDOW_HEIGHT - height ), normal, false );
+            drawSetting( ( (Graphics2D) g ), ( Settings.isQualityRendering() ? "Quality" : "Speed" ), 'A', getWidth(), ( WINDOW_HEIGHT - height * 2 ), normal, false );
+            drawSetting( ( (Graphics2D) g ), ( Settings.getLastGameMode() == WaveGameplay.class ? "Wave" : "Linear" ) + " gameplay", 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
+
         }
+    }
+
+    private void drawSetting( Graphics2D g, String statusString, char hotKey, int x, int y, Font normal, boolean centerAlign )
+    {
+        // Align right if on the right edge of the window.
+        if ( getWidth() < x + normal.getStringBounds( statusString + "    (A)", g.getFontRenderContext() ).getWidth() )
+            x -= normal.getStringBounds( statusString + "    (A)", g.getFontRenderContext() ).getWidth();
+        else if ( centerAlign )
+            x -= normal.getStringBounds( statusString + "    (A)", g.getFontRenderContext() ).getWidth() / 2;
+
+        // Draw the main label.
+        g.setFont( normal );
+        g.setColor( Color.lightGray );
+        g.drawString( statusString, x, y );
+        x += (int) ( normal.getStringBounds( statusString, g.getFontRenderContext() ).getWidth() ) + 5;
+
+        // Draw the hotkey.
+        g.setFont( normal.deriveFont( Font.ITALIC ) );
+        g.setColor( Color.gray );
+        g.drawString( "(" + hotKey + ")", x, y );
     }
 
     private void moveSelectionUp()
@@ -208,7 +223,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                         }
                         else
                         {
-                            setVisible(false);
+                            setVisible( false );
                             dispose();
                             Running.startGame( MenuOption.values()[choice] );
                         }
@@ -223,12 +238,17 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             case KeyEvent.VK_S:
                 Settings.setSoundOn( !Settings.isSoundOn() );
                 break;
-            case KeyEvent.VK_W:
             case KeyEvent.VK_F:
                 Settings.setUseFullscreen( !Settings.isUseFullscreen() );
                 break;
             case KeyEvent.VK_A:
                 Settings.setQualityRendering( !Settings.isQualityRendering() );
+                break;
+            case KeyEvent.VK_G:
+                if ( Settings.getLastGameMode() == WaveGameplay.class )
+                    Settings.setLastGameMode( LinearGameplay.class );
+                else
+                    Settings.setLastGameMode( WaveGameplay.class );
                 break;
 
             // Scrolling?

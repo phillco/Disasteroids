@@ -171,7 +171,7 @@ public class Running
             // Fall-through
 
             case SINGLEPLAYER:
-                new Game( LinearGameplay.class );
+                new Game( Settings.getLastGameMode() );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 Sound.updateMusic();
                 break;

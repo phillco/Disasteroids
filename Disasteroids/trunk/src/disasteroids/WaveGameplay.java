@@ -148,7 +148,7 @@ public class WaveGameplay implements GameMode
         {
             int newWave = Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the wave to start.", currentWave ) );
             Game.getInstance().getAsteroidManager().clear();
-            Game.getInstance().gameObjects.clear();
+            Game.getInstance().gameObjects = new ConcurrentLinkedQueue<GameObject>( Game.getInstance().players );
             Game.getInstance().baddies.clear();
             Game.getInstance().shootingObjects = new ConcurrentLinkedQueue<ShootingObject>( Game.getInstance().players );
             currentWave = newWave;

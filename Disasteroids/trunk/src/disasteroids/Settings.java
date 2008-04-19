@@ -96,6 +96,11 @@ public class Settings implements Serializable
             Running.warning( "Failed to save settings.", e );
             return false;
         }
+        catch ( RuntimeException t )
+        {
+            Running.warning( "Failed to save settings.", t );
+            throw t;
+        }
 
         // Success!
         return true;

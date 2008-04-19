@@ -17,6 +17,11 @@ public class GameLoop extends Thread
      * @since December 30, 2007
      */
     private static int period = 10;
+    
+    public GameLoop()
+    {
+        super("Game Loop");
+    }
 
     public static void increaseSpeed()
     {
@@ -42,15 +47,15 @@ public class GameLoop extends Thread
         while ( true )
         {
             try
-            {
+            {    
                 timeOfLast = System.currentTimeMillis();
                 
                 if ( shouldRun() )
                     Game.getInstance().act();
-
+                
                 while ( System.currentTimeMillis() - timeOfLast < period )
                     Thread.sleep( 1 );
-
+                
             }
             catch ( InterruptedException ex )
             {

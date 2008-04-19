@@ -144,13 +144,27 @@ public class Running
         catch ( Throwable throwable )
         {
             System.out.println( "\nShut Down Failed! Killing now." );
+            
+            //this should help if we ran out of memory
+            if( throwable instanceof java.lang.OutOfMemoryError )
+            {
+                System.gc();
+                Game.getInstance().gameObjects=null;
+                Game.getInstance().shootingObjects=null;
+                disasteroids.gui.ParticleManager.clear();
+                System.gc();
+            }
+            
+            // Write our settings.
+            Settings.saveToStorage(); //we really hope that this survived
+
             throwable.printStackTrace();
             System.exit( 1 );
         }
         finally
         {
             //shouldn't get here... but if we do, just in case
-            System.exit( 255 );
+            System.exit( 255 ); //It failed <i>real</i> bad
         }
 
     }
@@ -253,13 +267,13 @@ public class Running
      * Logs a warning and exception to the console and bumps the warningCount.
      * 
      * @param message   the message
-     * @param e         the exception
+     * @param t         the Throwable
      * @since January 18, 2008
      */
-    public static void warning( String message, Exception e )
+    public static void warning( String message, Throwable t )
     {
         log( "WARNING: " + message, 1200 );
-        e.printStackTrace();
+        t.printStackTrace();
         warningCount++;
     }
 

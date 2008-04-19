@@ -7,6 +7,8 @@ package disasteroids;
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A weapon that sits without moving or exploding, until something strays too close.
@@ -38,8 +40,14 @@ public class Mine extends Weapon.Unit
      * Whether this <code>Mine</code> needs removing.
      */
     private boolean needsRemoval;
+    
+    /**
+     * Stores whether or not this <code>Mine</code> is accelerating towards a 
+     * target
+     */
+    private boolean shouldAccelerate = false;
 
-    private Weapon env;
+    private MineManager env;
 
     /**
      * Creates a new <code>Minde</code>
@@ -49,9 +57,10 @@ public class Mine extends Weapon.Unit
      * @param col The <code>Color</code> of the outside ring.
      * @author Andy Kooiman
      */
-    Mine( int x, int y, Color col, Weapon env )
+    Mine( int x, int y, double dx, double dy, Color col, MineManager env )
     {
         setLocation( x, y );
+        setSpeed(dx, dy);
         this.isExploding = false;
         this.needsRemoval = false;
         this.color = col;
@@ -116,6 +125,42 @@ public class Mine extends Weapon.Unit
             needsRemoval = true;
             env.remove( this );
         }
+        
+        move();
+        setSpeed(getDx()*.95, getDy()*.95);
+        
+        
+        shouldAccelerate=false;
+        if (life > 9900 )
+            return;
+        Set<GameObject> close=new HashSet<GameObject>();
+        for(Asteroid ast : Game.getInstance().getAsteroidManager().getAsteroids() )
+        {
+            if(Math.pow( ast.getX() - getX(), 2 ) + Math.pow( ast.getY() - getY(), 2 ) < env.sight() * env.sight() )
+            {
+                shouldAccelerate=true;
+                close.add( ast );
+            }
+        }
+        for(GameObject go : Game.getInstance().baddies)
+        {
+            if(Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) < env.sight() * env.sight() )
+            {
+                shouldAccelerate=true;
+                close.add( go );
+            }
+        }
+        if( !shouldAccelerate )
+            return;
+        for( GameObject go : close )
+        {
+            double angle = Math.atan((go.getY()-getY())/(go.getX()-getX()));
+            if(go.getX()<getX())
+                angle+=Math.PI;
+            double magnitude = 10.0 / Math.sqrt( ( Math.pow( go.getX() - getX() , 2 ) + Math.pow( go.getY() - getY() , 2 ) ) );
+            magnitude=Math.min(magnitude, 1);//regulate the acceleration for (essentially) dividing by zero
+            setSpeed(getDx()+magnitude*Math.cos(angle), getDy()+magnitude*Math.sin(angle));
+        }
     }
 
     /**
@@ -126,7 +171,7 @@ public class Mine extends Weapon.Unit
     public int getDamage()
     {
         if ( life < 9900 )
-            return 10000;
+            return 200;
         else
             return 0;
     }
@@ -143,15 +188,25 @@ public class Mine extends Weapon.Unit
             double multiplier = ( 10000 - life ) / 100.0;
             Color outline = new Color( (int) ( color.getRed() * multiplier ), (int) ( color.getGreen() * multiplier ), (int) ( color.getBlue() * multiplier ) );
             AsteroidsFrame.frame().fillCircle( g, outline, (int) getX(), (int) getY(), 10 );
-            AsteroidsFrame.frame().fillCircle( g, Color.black, (int) getX(), (int) getY(), 4 );
+     //       AsteroidsFrame.frame().fillCircle( g, Color.black, (int) getX(), (int) getY(), 4 );
         }
         else if ( !isExploding )
         {
             AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), 10 );
-            AsteroidsFrame.frame().fillCircle( g, Color.black, (int) getX(), (int) getY(), 4 );
+            AsteroidsFrame.frame().fillCircle( g, shouldAccelerate ? Color.red : Color.black, (int) getX(), (int) getY(), 4 );
         }
         else
             AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), ( 5 - life ) * 20 );
+    }
+    
+    public boolean isExploding()
+    {
+        return isExploding;
+    }
+    
+    public boolean isArmed()
+    {
+        return life < 9900;
     }
 
     @Override

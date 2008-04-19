@@ -188,6 +188,17 @@ public class Station extends GameObject implements ShootingObject
                             hitsWhileDisabled++;
                             if ( hitsWhileDisabled > 3 )
                             {
+                                m.explode();
+                                destroy();
+                                return;
+                            }
+                        }
+                        if ( m instanceof Mine && disableCounter > 0 && !( (Mine) m ).isExploding() && ( (Mine) m ).isArmed() )
+                        {
+                            hitsWhileDisabled++;
+                            if( hitsWhileDisabled > 3 )
+                            {
+                                m.explode();
                                 destroy();
                                 return;
                             }

@@ -22,6 +22,13 @@ public class ParticleManager implements Serializable
      * @since Classic
      */
     private static ConcurrentLinkedQueue<Particle> allParticles = new ConcurrentLinkedQueue<Particle>();
+    
+    /**
+     * An estimated count of the <code>Particles</code>, since allParticles#size() is an O(n) operation
+     * @see ConcurrentLinkedQueue#allParticles
+     */
+    private static int particleCount = 0;
+    
 
     /**
      * Adds the specified <code>Particle</code>.
@@ -30,8 +37,12 @@ public class ParticleManager implements Serializable
      * @since Classic
      */
     public static void addParticle( Particle p )
-    {
-        allParticles.add( p );
+    {   //always add if less than 1000; less likely if there are already that many in the list.
+        if( Util.getRandomGenerator().nextInt( Math.max( particleCount , 1 ) ) < 400 )
+        {
+            allParticles.add( p );
+            ++particleCount;
+        }
     }
 
     /**
@@ -46,7 +57,10 @@ public class ParticleManager implements Serializable
         {
             Particle p = itr.next();
             if ( p.shouldRemove() )
+            {
                 itr.remove();
+                --particleCount;
+            }
             else
                 p.act();
         }
@@ -71,6 +85,7 @@ public class ParticleManager implements Serializable
     public static void clear()
     {
         allParticles.clear();
+        particleCount=0;
     }
 
     public static void createSmoke( double x, double y, double amount )

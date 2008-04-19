@@ -202,8 +202,21 @@ public class Ship extends GameObject implements ShootingObject
     {
         if ( livesLeft >= 0 )
         {
-            if ( shooting && canShoot() )
-                shoot();
+            if ( shooting )
+            {
+                if( getWeaponManager().getAmmo() == 0 )
+                {
+                    Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
+                    Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+                    rotateWeapons();
+                    shooting=false;
+                }
+                else
+                {
+                    if( canShoot() )
+                      shoot();
+                }
+            }
             invincibilityCount--;
             checkCollision();
             generateParticles();
@@ -228,18 +241,19 @@ public class Ship extends GameObject implements ShootingObject
         }
         for ( Weapon wm : allWeapons )
             wm.act();
+        sniperManager.act();
 
         // Reload active gun, and the sniper.
         getWeaponManager().reload();
         sniperManager.reload();
 
         // Out of ammo. :(
-        if ( getWeaponManager().getAmmo() == 0 )
+/*        if ( getWeaponManager().getAmmo() == 0 )
         {
             Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
             Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
             rotateWeapons();
-        }
+        }*/
     }
 
     public void draw( Graphics g )
@@ -401,15 +415,17 @@ public class Ship extends GameObject implements ShootingObject
                             obit = getName() + " was blasted by " + ( (Ship) other ).getName() + ".";
                         else if ( other instanceof Station )
                             obit = getName() + " was shot down by a satellite.";
+                        else if( other instanceof Alien )
+                            obit = getName() + " was scanned unsuccessfully for inteligent lifeforms.";
 
                         if ( damage( m.getDamage(), obit ) )
                         {
                             m.explode();
-                            score -= 5000;
+                            score -= 500;
                             if ( other.getClass().isInstance( this ) )
                             {
                                 Ship s = (Ship) other;
-                                s.score += 5000;
+                                s.score += 500;
                                 s.numShipsKilled++;
                                 s.livesLeft++;
                             }
@@ -499,10 +515,6 @@ public class Ship extends GameObject implements ShootingObject
     {
         if ( livesLeft < 0 )
             return;
-
-//        if ( sniping )
-//            sniperManager.add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
-//        else
         getWeaponManager().add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
     }
 
@@ -662,9 +674,12 @@ public class Ship extends GameObject implements ShootingObject
 
     public void berserk()
     {
-        if ( !canShoot() )
-            return;
-
+        if ( getWeaponManager().getAmmo() == 0)
+        {
+            Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
+            Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+            rotateWeapons();
+        }
         if ( Server.is() )
             Server.getInstance().berserk( id );
         getWeaponManager().berserk( this );

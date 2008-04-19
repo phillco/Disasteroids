@@ -200,6 +200,16 @@ public class AsteroidManager implements Serializable
     }
 
     /**
+     * Accessor method for the <code>ConcurrentLinkedQueue</code> holding all of the
+     * <code>Asteroids</code>
+     * 
+     * @return A reference to the <code>Asteroids</code>
+     */
+    public ConcurrentLinkedQueue<Asteroid> getAsteroids() {
+        return theAsteroids;
+    }
+    
+    /**
      * Generates and returns a <code>String</code> representation of <code>this</code>
      * 
      * @return A <code>String</code> representation.  It will have the form:

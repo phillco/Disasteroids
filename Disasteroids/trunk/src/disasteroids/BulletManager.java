@@ -8,7 +8,9 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A default weapon that rapidly fires weak bullets.
@@ -62,10 +64,10 @@ class BulletManager extends Weapon
                 break;
 
             units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
-            
+
             if ( !isInfiniteAmmo() )
                 --ammo;
-            
+
             firedShots += 1;
         }
 
@@ -145,5 +147,28 @@ class BulletManager extends Weapon
     public int getRadius()
     {
         return radius;
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            u.flatten( stream );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public BulletManager( DataInputStream stream ) throws IOException
+    {
+        for ( int i = 0; i < stream.readInt(); i++ )
+            units.add( new Bullet( stream ) );
     }
 }

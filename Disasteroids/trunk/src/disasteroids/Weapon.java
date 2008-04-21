@@ -232,10 +232,6 @@ public abstract class Weapon implements GameElement
      */
     public Weapon( DataInputStream stream ) throws IOException
     {
-        for ( int i = 0; i < stream.readInt(); i++ )
-        {
-            //weapons.add( new Unit() );
-        }
     }
 
     /**
@@ -254,15 +250,31 @@ public abstract class Weapon implements GameElement
             this.color = color;
         }
 
-        public Unit( DataInputStream stream ) throws IOException
-        {
-            super( stream );
-        }
-
         public void act()
         {
             ++age;
             move();
+        }
+
+        /**
+         * Writes <code>this</code> to a stream for client/server transmission.
+         */
+        @Override
+        public void flatten( DataOutputStream stream ) throws IOException
+        {
+            super.flatten( stream );
+            stream.writeInt( color.getRGB() );
+            stream.writeInt( age );
+        }
+
+        /**
+         * Reads <code>this</code> from a stream for client/server transmission.
+         */
+        public Unit( DataInputStream stream ) throws IOException
+        {
+            super( stream );
+            color = new Color( stream.readInt() );
+            age = stream.readInt();
         }
 
         public abstract double getRadius();

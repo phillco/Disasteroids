@@ -4,13 +4,10 @@
  */
 package disasteroids;
 
-import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A weapon manager that rapidly fires weak bullets.
@@ -20,8 +17,6 @@ public class FlechetteManager extends Weapon
 {
     private int speed = 25;
 
-    private int maxShots = 8000;
-
     private int intervalShoot = 2;
 
     private int radius = 1;
@@ -30,49 +25,67 @@ public class FlechetteManager extends Weapon
 
     public FlechetteManager()
     {
-        weapons = new ConcurrentLinkedQueue<Unit>();
     }
 
-    public FlechetteManager( ConcurrentLinkedQueue<Unit> start )
+    @Override
+    public void shoot( GameObject parent, Color color, double angle )
     {
-        weapons = start;
+        if ( !canShoot() )
+            return;
+
+        for ( int num = 0; num < 5; num++ )
+        {
+            if ( !canShoot() )
+                break;
+
+            units.add( new Flechette( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(),
+                                      angle + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
+            if ( !isInfiniteAmmo() )
+                --ammo;
+        }
+
+        timeTillNextShot = intervalShoot;
+        Sound.playInternal( SoundLibrary.BULLET_SHOOT );
     }
 
-    public int getIntervalShoot()
+    @Override
+    public void berserk( GameObject parent, Color color )
+    {
+        int firedShots = 0;
+        for ( int i = 0; i < 43; i++ )
+        {
+            for ( int j = 0; j < 5; j++ )
+            {
+                if ( !canBerserk() )
+                    break;
+
+                units.add( new Flechette( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(),
+                                          Util.getRandomGenerator().nextDouble() * 2 * Math.PI + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
+                ++firedShots;
+                if ( !isInfiniteAmmo() )
+                    --ammo;
+            }
+        }
+
+        if ( firedShots > 0 )
+        {
+            timeTillNextBerserk = firedShots;
+            Sound.playInternal( SoundLibrary.BERSERK );
+        }
+    }
+
+    @Override
+    public void drawOrphanUnit( Graphics g, double x, double y, Color col )
+    {
+        new Flechette( this, col, x, y, 0, 0, 0 ).draw( g );
+    }
+
+    public int getReloadTime()
     {
         return intervalShoot;
     }
 
-    public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
-    {
-        if ( weapons.size() > maxShots || !canShoot() )
-            return false;
-
-        int numShots = 0;
-        if ( ammo == -1 )
-            numShots = 5;
-        else
-        {
-            for ( int k = 0; k < 5; k++ )
-            {
-                if ( ammo == 0 )
-                    break;
-                ammo--;
-                numShots++;
-            }
-        }
-        timeTillNextShot = intervalShoot;
-        Random rand = Util.getRandomGenerator();
-        boolean successful = true;
-        for ( int num = 0; num < numShots; num++ )
-            successful = successful && weapons.add( new Flechette( this, x, y, angle + ( rand.nextDouble() - .5 ), dx, dy, col ) );
-        if ( playShootSound )
-            Sound.playInternal( getShootSound() );
-
-        return successful;
-    }
-
-    public void restoreBonusValues()
+    public void undoBonuses()
     {
         intervalShoot = 2;
         radius = 1;
@@ -84,7 +97,7 @@ public class FlechetteManager extends Weapon
         return damage;
     }
 
-    public String ApplyBonus( int key )
+    public String applyBonus( int key )
     {
         String ret = "";
 
@@ -96,64 +109,19 @@ public class FlechetteManager extends Weapon
         return ret;
     }
 
-    public int getSpeed()
+    public double getSpeed()
     {
-        return (int) ( speed * Util.getRandomGenerator().nextDouble() );
+        return ( speed * Util.getRandomGenerator().nextDouble() );
     }
 
-    public int getMaxShots()
+    public int getMaxUnits()
     {
-        return maxShots;
+        return 8000;
     }
 
     public int getRadius()
     {
         return radius;
-    }
-
-    public void draw( Graphics g )
-    {
-        for ( Unit w : weapons )
-            w.draw( g );
-
-    }
-
-    public Unit getOrphanUnit( int x, int y, Color col )
-    {
-        return new Flechette( this, x, y, 0, 0, 0, col );
-    }
-
-    public void berserk( Ship s )
-    {
-        if ( timeTillNextBerserk > 0 || ammo == 0 )
-            return;
-        int temp = timeTillNextShot;
-        Sound.playInternal( SoundLibrary.BERSERK );
-        timeTillNextShot = 0;
-        Random rand = Util.getRandomGenerator();
-        for ( int i = 0; i < 43; i++ )
-        {
-            add( (int) s.getX(), (int) s.getY(), rand.nextDouble() * 2 * Math.PI, s.getDx(), s.getDy(), s.getColor(), false );
-            timeTillNextShot = 0;
-        }
-        timeTillNextShot = temp;
-        timeTillNextBerserk = 50;
-    }
-
-    @Override
-    public boolean canShoot()
-    {
-        return super.canShoot() && weapons.size() < maxShots;
-    }
-
-    public SoundClip getShootSound()
-    {
-        return SoundLibrary.BULLET_SHOOT;
-    }
-
-    public SoundClip getBerserkSound()
-    {
-        return SoundLibrary.BERSERK;
     }
 
     @Override

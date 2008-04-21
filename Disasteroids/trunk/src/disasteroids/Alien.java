@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Alien extends GameObject implements ShootingObject
 {
-
     /**
      * Our firing manager.
      * @since January 6, 2008
@@ -73,10 +72,10 @@ public class Alien extends GameObject implements ShootingObject
     public Alien( double x, double y, double dx, double dy )
     {
         super( x, y, dx, dy );
-        size = Util.getRandomGenerator().nextInt( 60 ) + 25;
+        size = Util.getRandomGenerator().nextInt( 50 ) + 30;
         manager = new AlienMissileManager( size );
         color = new Color( Util.getRandomGenerator().nextInt( 60 ), Util.getRandomGenerator().nextInt( 128 ) + 96, Util.getRandomGenerator().nextInt( 60 ) );
-        life = 100;
+        life = 500;
         explosionTime = 0;
     }
 
@@ -87,10 +86,10 @@ public class Alien extends GameObject implements ShootingObject
     {
         move();
 
-        setSpeed( Math.min( 4, getDx() + ax ), Math.min( 4, getDy() + ay ) );
+        setSpeed( Math.min( 3, getDx() + ax ), Math.min( 3, getDy() + ay ) );
 
-        ax *= 0.98;
-        ay *= 0.98;
+        ax *= 0.94;
+        ay *= 0.94;
 
         if ( Math.abs( ax ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
             ax = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
@@ -113,7 +112,7 @@ public class Alien extends GameObject implements ShootingObject
             {
                 explosionTime = 20;
 
-                if ( Util.getRandomGenerator().nextInt( 10 ) == 0 )
+                if ( Util.getRandomGenerator().nextInt( 5 ) == 0 )
                     Game.getInstance().createBonus( this );
             }
 
@@ -155,10 +154,10 @@ public class Alien extends GameObject implements ShootingObject
         if ( closestShip != null )
         {
             double mAngle = calculateAngle( closestShip );
-            manager.add( (int) centerX(), (int) centerY(), 0 - mAngle, Math.cos( 0 - mAngle ) * 5, Math.sin( 0 - mAngle ) * 5, color, false );
+            manager.shoot( this, color, mAngle );
         }
 
-        angle += size / 420.0 + 0.03;
+        angle += size / 560.0 + 0.015;
     }
 
     /**
@@ -180,7 +179,7 @@ public class Alien extends GameObject implements ShootingObject
             for ( Weapon wm : s.getManagers() )
             {
                 // Loop through the bullets.
-                for ( Weapon.Unit m : wm.getWeapons() )
+                for ( Weapon.Unit m : wm.getUnits() )
                 {
                     // Were we hit by a bullet?
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
@@ -237,7 +236,7 @@ public class Alien extends GameObject implements ShootingObject
     {
         return getX() + 8;
     }
-    
+
     /**
      * The y coordinate of the center of <code>this</code>
      * @return The y coordinate of the center of <code>this</code>
@@ -350,85 +349,51 @@ public class Alien extends GameObject implements ShootingObject
          * Creates a new <code>AlienMissileManager</code>
          * @param life How long the units last
          */
-        public AlienMissileManager( int life  )
+        public AlienMissileManager( int life )
         {
             setPopQuantity( 0 );
             setLife( (int) ( life * 1.2 ) );
         }
 
-        /**
-         * Creates and prepares to add a <code>Missile</code> with the specified properties.
-         * @param x The x coordinate.
-         * @param y The y coordinate.
-         * @param angle The angle the <code>Missile</code> will be pointing (not necessarily the angle it will be traveling).
-         * @param dx The x component of velocity.
-         * @param dy The y component of velocity (up is negative).
-         * @param col The <code>Color</code> of the <code>Missile</code>..
-         * @return True if the <code>Missile</code> was successfully added, false otherwise.
-         * @author Andy Kooiman
-         * @since Classic
-         */
         @Override
-        public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
+        public void shoot( GameObject parent, Color color, double angle )
         {
-            if ( timeTillNextShot > 0 )
-                return false;
-            timeTillNextShot = getIntervalShoot();
-            
-            super.add( x, y, angle, dx / 8, dy / 8, col, false );
+            if ( !canShoot() )
+                return;
+
+            // Shoot a missile, and, randomly, an alien bullet. 
+            units.add( new Missile( this, color, parent.getX(), parent.getY(), parent.getDx() / 8, parent.getDy() / 8, angle ) );
             if ( Util.getRandomGenerator().nextBoolean() )
-                add( new AlienBullet( this, x, y, angle, dx * 10, dy * 10, col ), playShootSound );
-            return true;
+                units.add( new AlienBullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+
+            if ( !isInfiniteAmmo() )
+                --ammo;
+
+            timeTillNextShot = 12;
         }
 
         /**
-         * The frequency with which an <code>Alien</code> can shoot. (12)
-         */
-        @Override
-        public int getIntervalShoot()
-        {
-            return 12;//Math.max( life, 30 );
-        }
-
-        /**
-         * The <code>Unit</code> that <code>Alien</code>s fire
+         * The circular, spinning unit that does constant damage to whoever touches it.
          */
         private class AlienBullet extends Missile
         {
-            /**
-             * Creates a <code>new AlienBullet</code> with little more than a call to super.
-             * @param m The environment
-             * @param x The x coordinate
-             * @param y The y coordinate
-             * @param angle The angle to be pointing 
-             * @param dx The x velocity
-             * @param dy The y velocity
-             * @param c The <code>Color</code> to be drawn in
-             */
-            public AlienBullet( MissileManager m, int x, int y, double angle, double dx, double dy, Color c )
+            public AlienBullet( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
-                super( m, x, y, angle, dx, dy, c );
-                setRadius( 1 );
+                super( manager, color, x, y, dx, dy, angle );
+                radius = 1;
             }
 
-            /**
-             * How much damage this will cause
-             * @return The damage this will cause
-             */
             @Override
             public int getDamage()
             {
                 return 5;
             }
 
-            /**
-             * Iterates <code>this</code> through one timestep
-             */
             @Override
             public void act()
             {
                 super.act();
-                setRadius( 5 + ( getAge() - getManager().life() * .2 ) * ( getManager().life() - getAge() ) * 0.05 );
+                radius = 5 + ( age - parent.life() * .2 ) * ( parent.life() - age ) * 0.05;
                 finRotation += ( 0.004 * Math.PI ) % Math.PI * 2;
             }
 
@@ -443,17 +408,13 @@ public class Alien extends GameObject implements ShootingObject
                 setDy( ( getDy() + getDx() * 0.2 ) * 0.7 );
             }
 
-            /**
-             * Draws <code>this</code> in the specified context.
-             * @param g The context in which to draw.
-             */
             @Override
             public void draw( Graphics g )
             {
-                AsteroidsFrame.frame().drawLine( g, getMyColor(), (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * finRotation );
-                AsteroidsFrame.frame().drawLine( g, getMyColor(), (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
-                AsteroidsFrame.frame().drawLine( g, getMyColor(), (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
-                AsteroidsFrame.frame().fillCircle( g, getMyColor(), (int) getX(), (int) getY(), getRadius() );
+                AsteroidsFrame.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * finRotation );
+                AsteroidsFrame.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
+                AsteroidsFrame.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
+                AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), (int) getRadius() );
             }
         }
     }

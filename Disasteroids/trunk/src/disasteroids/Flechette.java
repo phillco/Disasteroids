@@ -9,69 +9,47 @@ import java.awt.Graphics;
 import java.awt.Color;
 
 /**
- * A fast but simple bullet that dies on impact.
+ * A weak particle fired in the dozens.
  * @author Andy Kooiman
  */
 class Flechette extends Weapon.Unit
 {
-    private FlechetteManager env;
+    private FlechetteManager parent;
 
-    private Color myColor;
-
-    private boolean needsRemoval = false;
-
-    private int age = 0;
-
-    public Flechette( FlechetteManager env, int x, int y, double angle, double dx, double dy, Color col )
+    public Flechette( FlechetteManager parent, Color color, double x, double y, double dx, double dy, double angle )
     {
-        int speed = env.getSpeed();
-        setLocation( x, y );
-        setSpeed( dx + speed * Math.cos( angle ), dy - speed * Math.sin( angle ) );
-        this.myColor = col;
-        this.env = env;
+        super( color, x, y, dx + parent.getSpeed() * Math.cos( angle ), dy - parent.getSpeed() * Math.sin( angle ) );
+        this.parent = parent;
     }
 
-    public int getRadius()
-    {
-        return env.getRadius() + 1;
-    }
-
-    public void explode()
-    {
-        env.remove( this );
-    }
-
-    public boolean needsRemoval()
-    {
-        if ( needsRemoval )
-            env.remove( this );
-        return needsRemoval;
-    }
-
+    @Override
     public void act()
     {
-        age++;
+        super.act();
         if ( age > 50 )
-        {
-            needsRemoval = true;
-            env.remove( this );
-        }
-        move();
+            parent.remove( this );
     }
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().fillCircle( g, myColor, (int) getX(), (int) getY(), env.getRadius() );
+        AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), parent.getRadius() );
+    }
+
+    /**
+     * Removes the bullet immediately.
+     */
+    public void explode()
+    {
+        parent.remove( this );
+    }
+
+    public double getRadius()
+    {
+        return parent.getRadius() + 1;
     }
 
     public int getDamage()
     {
-        return env.getDamage();
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Flachettespray";
+        return parent.getDamage();
     }
 }

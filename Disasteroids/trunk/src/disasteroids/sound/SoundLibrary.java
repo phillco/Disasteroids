@@ -64,7 +64,7 @@ public class SoundLibrary
     {
         Tone[] temp = new Tone[10];
         int idx = 0;
-        for ( int i = 40; i < 70; i += 10 )
+        for ( int i = 40; i < 130; i += 20 )
             temp[idx++] = new Tone( i, 60, 0 );
         temp[idx++] = new Tone( 72, 200, 0 );
         return new LayeredSound.SoundClip( Tone.toByteArray( temp ) );
@@ -81,7 +81,7 @@ public class SoundLibrary
         {
             temp[index] = (byte) ( 100 * Math.sin( phase ) );
             phase += frequency;
-            frequency = (int) ( 440 + 220 * Math.tan( freqPhase / 50 ) );
+            frequency = (int) ( 440 + 100 * Math.tan( freqPhase / 20 ) );
             freqPhase++;
         }
         return new SoundClip( temp );

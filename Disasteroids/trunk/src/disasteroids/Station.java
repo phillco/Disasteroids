@@ -152,8 +152,12 @@ public class Station extends GameObject implements ShootingObject
             // Fire!
             if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI ) < SWEEP_SPEED * 6 && !closestShip.cannotDie() )
             {
-                if ( manager.canShoot() && manager.add( (int) ( centerX() + 25 * Math.cos( 0 - angle ) ), (int) ( centerY() - 25 * Math.sin( 0 - angle ) ), 0 - angle, 0, 0, Color.white, false ) )
+                if ( manager.canShoot() )
+                {
+                    manager.shoot( this, Color.white, angle );
                     Sound.playInternal( SoundLibrary.STATION_SHOOT );  // Play a custom sound.
+
+                }
             }
         }
         else
@@ -177,7 +181,7 @@ public class Station extends GameObject implements ShootingObject
             for ( Weapon wm : s.getManagers() )
             {
                 // Loop through the bullets.
-                for ( Weapon.Unit m : wm.getWeapons() )
+                for ( Weapon.Unit m : wm.getUnits() )
                 {
                     // Were we hit by a bullet?
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
@@ -196,7 +200,7 @@ public class Station extends GameObject implements ShootingObject
                         if ( m instanceof Mine && disableCounter > 0 && !( (Mine) m ).isExploding() && ( (Mine) m ).isArmed() )
                         {
                             hitsWhileDisabled++;
-                            if( hitsWhileDisabled > 3 )
+                            if ( hitsWhileDisabled > 3 )
                             {
                                 m.explode();
                                 destroy();
@@ -376,7 +380,7 @@ public class Station extends GameObject implements ShootingObject
         else
             disableCounter = 290;
 
-        for ( Weapon.Unit w : manager.getWeapons() )
+        for ( Weapon.Unit w : manager.getUnits() )
             w.explode();
 
         Sound.playInternal( SoundLibrary.STATION_DISABLED );
@@ -390,7 +394,10 @@ public class Station extends GameObject implements ShootingObject
         ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 250 );
 
         if ( Util.getRandomGenerator().nextInt( 4 ) == 0 )
+        {
             Game.getInstance().createBonus( this );
+            Game.getInstance().createBonus( this );
+        }
 
         Sound.playInternal( SoundLibrary.STATION_DIE );
     }
@@ -421,6 +428,7 @@ public class Station extends GameObject implements ShootingObject
                 angle += SWEEP_SPEED;
         }
         else //if it shouldn't move counterclockwise, moveclockwise
+
         {
             if ( Math.abs( angle - desiredAngle ) < SWEEP_SPEED )
                 angle = desiredAngle;

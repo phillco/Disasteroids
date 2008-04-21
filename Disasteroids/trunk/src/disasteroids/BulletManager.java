@@ -4,7 +4,6 @@
  */
 package disasteroids;
 
-import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -12,159 +11,74 @@ import java.awt.Graphics;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * A weapon manager that rapidly fires weak bullets.
+ * A default weapon that rapidly fires weak bullets.
  * @author Andy Kooiman
  */
 class BulletManager extends Weapon
 {
     private int speed = 20;
 
-    private int maxShots = 100;
+    private boolean threeWayShot;
 
-    private boolean threeWayShot = false;
+    private int intervalShoot;
 
-    private int intervalShoot = 4;
+    private int radius;
 
-    private int radius = 2;
-
-    private int damage = 10;
+    private int damage;
 
     public BulletManager()
     {
-        weapons = new ConcurrentLinkedQueue<Unit>();
-        ammo=-1;
-    }
-
-    public BulletManager( ConcurrentLinkedQueue<Unit> start )
-    {
-        weapons = start;
-    }
-
-    public int getIntervalShoot()
-    {
-        return intervalShoot;
-    }
-
-    public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
-    {
-        if ( weapons.size() > 500 || timeTillNextShot > 0 )
-            return false;
-        if ( threeWayShot )
-        {
-            weapons.add( new Bullet( this, x, y, angle + Math.PI / 8, dx, dy, col ) );
-            weapons.add( new Bullet( this, x, y, angle - Math.PI / 8, dx, dy, col ) );
-        }
-        timeTillNextShot = intervalShoot;
-
-        if ( playShootSound )
-            Sound.playInternal( getShootSound() );
-
-        return weapons.add( new Bullet( this, x, y, angle, dx, dy, col ) );
-    }
-
-    public void restoreBonusValues()
-    {
-        threeWayShot = false;
-        intervalShoot = 4;
-        radius = 2;
-        damage = 10;
-    }
-
-    public int getDamage()
-    {
-        return damage;
-    }
-
-    public String ApplyBonus( int key )
-    {
-        String ret = "";
-
-        switch ( key )
-        {
-            case 0:
-                damage += 50;
-                ret += "Depleted Uranium Bullets!!";
-                break;
-            case 1:
-                intervalShoot = 1;
-                ret += "Rapid Fire";
-                break;
-            case 4:
-                threeWayShot = true;
-                ret += "Three Way Shot";
-                break;
-            case 7:
-                radius = 6;
-                ret += "Huge Bullets";
-                break;
-            default:
-                ret = "";
-        }
-        return ret;
-    }
-
-    public int getSpeed()
-    {
-        return speed;
-    }
-
-    public int getMaxShots()
-    {
-        return maxShots;
-    }
-
-    public int getRadius()
-    {
-        return radius;
-    }
-
-    public void draw( Graphics g )
-    {
-        for ( Unit w : weapons )
-            w.draw( g );
-
-    }
-
-    public String getWeaponName()
-    {
-        return "Bullets";
-    }
-
-    public Unit getOrphanUnit( int x, int y, Color col )
-    {
-        return new Bullet( this, x, y, 0, 0, 0, col );
-    }
-
-    public void berserk( Ship s )
-    {
-        if ( timeTillNextBerserk > 0 )
-            return;
-        int temp = timeTillNextShot;
-        Sound.playInternal( SoundLibrary.BERSERK );
-        timeTillNextShot = 0;
-        for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 50 )
-        {
-            add( (int) s.getX(), (int) s.getY(), angle, s.getDx(), s.getDy(), s.getColor(), false );
-            timeTillNextShot = 0;
-        }
-        timeTillNextShot = temp;
-        timeTillNextBerserk = 50;
     }
 
     @Override
-    public boolean canShoot()
+    public void shoot( GameObject parent, Color color, double angle )
     {
-        return super.canShoot() && weapons.size() < 500;
+        if ( !canShoot() )
+            return;
+
+        units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+
+        // This bonus fires two extra bullets at an angle.
+        if ( threeWayShot )
+        {
+            units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle + Math.PI / 8 ) );
+            units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle - Math.PI / 8 ) );
+        }
+
+        if ( !isInfiniteAmmo() )
+            --ammo;
+
+        timeTillNextShot = intervalShoot;
+        Sound.playInternal( SoundLibrary.BULLET_SHOOT );
     }
 
-    public SoundClip getShootSound()
+    @Override
+    public void berserk( GameObject parent, Color color )
     {
-        return SoundLibrary.BULLET_SHOOT;
+        int firedShots = 0;
+        for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 50 )
+        {
+            if ( !canBerserk() )
+                break;
+
+            units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+            
+            if ( !isInfiniteAmmo() )
+                --ammo;
+            
+            firedShots += 1;
+        }
+
+        if ( firedShots > 0 )
+        {
+            timeTillNextBerserk = firedShots * 2;
+            Sound.playInternal( SoundLibrary.BERSERK );
+        }
     }
 
-    public SoundClip getBerserkSound()
+    public int getMaxUnits()
     {
-        return SoundLibrary.BERSERK;
+        return 500;
     }
 
     @Override
@@ -177,5 +91,59 @@ class BulletManager extends Weapon
     public int getEntryAmmo()
     {
         return -1;
+    }
+
+    @Override
+    public void drawOrphanUnit( Graphics g, double x, double y, Color color )
+    {
+        new Bullet( this, color, x, y, 0, 0, 0 ).draw( g );
+    }
+
+    //                                                                            \\
+    // --------------------------------- BONUS ---------------------------------- \\
+    //                                                                            \\
+    public void undoBonuses()
+    {
+        threeWayShot = false;
+        intervalShoot = 4;
+        radius = 2;
+        damage = 10;
+        ammo = -1;
+    }
+
+    public int getDamage()
+    {
+        return damage;
+    }
+
+    public String applyBonus( int key )
+    {
+        switch ( key )
+        {
+            case 0:
+                damage += 50;
+                return "Depleted Uranium Bullets!";
+            case 1:
+                intervalShoot = 1;
+                return "Rapid Fire";
+            case 4:
+                threeWayShot = true;
+                return "Three Way Shoot";
+            case 7:
+                radius = 6;
+                return "Huge Bullets";
+            default:
+                return "";
+        }
+    }
+
+    public int getSpeed()
+    {
+        return speed;
+    }
+
+    public int getRadius()
+    {
+        return radius;
     }
 }

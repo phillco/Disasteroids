@@ -5,59 +5,115 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
-import disasteroids.sound.LayeredSound.SoundClip;
+import disasteroids.gui.Local;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * A ship's weapon.
+ * A ship's weapon, which fires <code>Unit</code>s.
  * @author Andy Kooiman
  */
 public abstract class Weapon implements GameElement
 {
-    protected ConcurrentLinkedQueue<Unit> weapons;
+    /**
+     * All of the living units fired by this weapon.
+     */
+    protected ConcurrentLinkedQueue<Unit> units = new ConcurrentLinkedQueue<Unit>();
+
+    /**
+     * Remaining ammo (-1 means infinite). All bonus weapons start with zero ammo and are "picked up" by getting entryAmmo().
+     */
+    protected int ammo = 0;
 
     protected int timeTillNextBerserk = 0;
 
     protected int timeTillNextShot = 0;
 
-    protected int ammo = 0;
-
-    public void add( ConcurrentLinkedQueue<Unit> weap )
+    public Weapon()
     {
-        while ( !weap.isEmpty() )
-            weapons.add( weap.remove() );
+        // Set up these values.
+        undoBonuses();
     }
 
     /**
-     * Returns whether we've finished reloading.
-     * 
-     * @return  if this <code>WeaponManager</code> can shoot
-     * @since January 10, 2008
-     */
-    public boolean canShoot()
-    {
-        return timeTillNextShot <= 0 && ( ammo == -1 || ammo > 0 );
-    }
-
-    /**
-     * Removes all units from play.
-     */
-    public void clear()
-    {
-        weapons.clear();
-    }
-
-    /**
-     * Executes one timestep. Does not reload.
-     * 
-     * @since January 10, 2008
+     * Executes one timestep, but does not reload.
      */
     public void act()
     {
-        for ( Unit w : weapons )
+        for ( Unit w : units )
             w.act();
+    }
+
+    /**
+     * Draws this weapon's units.
+     */
+    public void draw( Graphics g )
+    {
+        for ( Unit u : units )
+            u.draw( g );
+    }
+
+    /**
+     * Draws the berserk reload bar and ammo.
+     */
+    public void drawHUD( Graphics g, Ship parentShip )
+    {
+        // Only draw if we're the local player, and if this is the selected weapon.
+        if ( parentShip == Local.getLocalPlayer() && parentShip.getWeaponManager() == this )
+        {
+            // Draw a reload bar for the next berserk.
+            g.setColor( units.size() < getMaxUnits() ? parentShip.getColor() : parentShip.getColor().darker().darker() );
+            g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
+            int width = ( 200 - Math.max( timeTillNextBerserk, 0 ) ) / 2;
+            g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
+
+            // Draw ammo.
+            if ( !isInfiniteAmmo() )
+                g.drawString( "" + ammo, AsteroidsFrame.frame().getWidth() - 40, 60 );
+        }
+    }
+
+    /**
+     * Draws an example unit reflecting current bonus values.
+     */
+    public abstract void drawOrphanUnit( Graphics g, double x, double y, Color col );
+
+    /**
+     * Returns the weapon's name, e.g. "Flamethrower".
+     */
+    public abstract String getName();
+
+    //                                                                            \\
+    // ------------------------------ OPERATION --------------------------------- \\
+    //                                                                            \\
+    /**
+     * Shoots from the given origin.
+     */
+    public abstract void shoot( GameObject parent, Color color, double angle );
+
+    /**
+     * Fires a powerful blast from the given origin, typically in a circular pattern. The weapon must charge up first.
+     */
+    public abstract void berserk( GameObject parent, Color color );
+
+    /**
+     * Returns whether we can fire. Factors include ammo, max units, and the shooting timer.
+     */
+    public boolean canShoot()
+    {
+        return ( timeTillNextShot <= 0 ) && ( ammo > 0 || isInfiniteAmmo() ) && ( units.size() < getMaxUnits() );
+    }
+
+    /**
+     * Returns whether we can berserk. Exactly like canShoot(), but uses the berserk timer.
+     */
+    public boolean canBerserk()
+    {
+        return ( timeTillNextBerserk <= 0 ) && ( ammo > 0 || isInfiniteAmmo() ) && ( units.size() < getMaxUnits() );
     }
 
     /**
@@ -66,52 +122,68 @@ public abstract class Weapon implements GameElement
     public void reload()
     {
         timeTillNextShot--;
-        timeTillNextBerserk--;
+        timeTillNextBerserk = Math.max( 0, timeTillNextBerserk - 1 );
     }
 
-    public void explodeAll()
+    //                                                                            \\
+    // --------------------------------- UNITS ---------------------------------- \\
+    //                                                                            \\
+    /**
+     * Detonates all living units.
+     */
+    public void explodeAllUnits()
     {
-        for ( Unit w : weapons )
+        for ( Unit w : units )
             w.explode();
     }
 
-    public abstract String getName();
-
-    public abstract int getIntervalShoot();
-
-    public abstract boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound );
-
-    public void remove( Unit w )
+    /**
+     * Removes all units from play.
+     */
+    public void clear()
     {
-        weapons.remove( w );
+        units.clear();
     }
 
-    public int getNumLiving()
+    /**
+     * Removes the given unit from play.
+     */
+    public void remove( Unit u )
     {
-        return weapons.size();
+        units.remove( u );
     }
 
-    public ConcurrentLinkedQueue<Unit> getWeapons()
+    /**
+     * Returns all living units.
+     */
+    public ConcurrentLinkedQueue<Unit> getUnits()
     {
-        return weapons;
+        return units;
     }
 
-    public abstract void restoreBonusValues();
+    /**
+     * Returns the max amount of units that can be in-game at once.
+     */
+    public abstract int getMaxUnits();
 
-    public abstract String ApplyBonus( int key );
-
-    public abstract int getMaxShots();
-
+    //                                                                            \\
+    // --------------------------------- AMMO ----------------------------------- \\
+    //                                                                            \\
+    /**
+     * Returns the amount of this weapon's remaining ammo. -1 is infinite.
+     */
     public int getAmmo()
     {
         return ammo;
     }
 
     /**
-     * Returns the starting amount of ammo that this gun should come with.
-     * @return  starting level of ammo
+     * Returns whether this weapon has infinite ammo.
      */
-    public abstract int getEntryAmmo();
+    public boolean isInfiniteAmmo()
+    {
+        return ( ammo == -1 );
+    }
 
     /**
      * Gives this weapon a decent cache of ammo, as if it was picked up anew.
@@ -122,52 +194,49 @@ public abstract class Weapon implements GameElement
     }
 
     /**
-     * Returns a new unit that isn't part of the game. Useful for the GUI.
-     * 
-     * @return  a new instance of the type of <code>Unit</code> stored
-     * @since December 30, 2007
+     * Returns the amount of ammo that this gun comes with.
      */
-    public abstract Unit getOrphanUnit( int x, int y, Color col );
+    public abstract int getEntryAmmo();
+
+    //                                                                            \\
+    // --------------------------------- BONUS ---------------------------------- \\
+    //                                                                            \\
+    /**
+     * Applies a bonus to this weapon. 
+     * 
+     * @param key   the index of the bonus.
+     * @return      the name of the applied bonus, e.g. "Rapid fire!", or "" if none.
+     */
+    public abstract String applyBonus( int key );
 
     /**
-     * Executes a powerful blast that must charge up. Typically operates in a circle.
-     * 
-     * @param s the <code>Ship</code> which is shooting
-     * @since January 7, 2008
+     * Restores all atrributes to normal levels.
      */
-    public abstract void berserk( Ship s );
+    public abstract void undoBonuses();
 
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
     /**
-     * Draws a timer for how long until the next Berserk
-     * 
-     * @param g The context in which to draw
-     * @param c The color of the ship calling
+     * Writes <code>this</code> to a stream for client/server transmission.
      */
-    public void drawTimer( Graphics g, Color c )
+    public void flatten( DataOutputStream stream ) throws IOException
     {
-        g.setColor( weapons.size() < getMaxShots() ? c : c.darker().darker() );
-        g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
-        int width = ( 200 - Math.max( timeTillNextBerserk, 0 ) ) / 2;
-        g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
-
-        if ( ammo != -1 )
-            g.drawString( "" + ammo, AsteroidsFrame.frame().getWidth() - 40, 60 );
-
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            u.flatten( stream );
     }
 
     /**
-     * Returns the sound to play when the weapon is fired.
-     * 
-     * @since January 11, 2008
+     * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public abstract SoundClip getShootSound();
-
-    /**
-     * Returns the sound to play when the berserk is activated.
-     * 
-     * @since January 11, 2008
-     */
-    public abstract SoundClip getBerserkSound();
+    public Weapon( DataInputStream stream ) throws IOException
+    {
+        for ( int i = 0; i < stream.readInt(); i++ )
+        {
+            //weapons.add( new Unit() );
+        }
+    }
 
     /**
      * An individual bullet.
@@ -175,14 +244,31 @@ public abstract class Weapon implements GameElement
      */
     public static abstract class Unit extends GameObject
     {
-        public abstract int getRadius();
+        protected Color color;
+
+        protected int age = 0;
+
+        public Unit( Color color, double x, double y, double dx, double dy )
+        {
+            super( x, y, dx, dy );
+            this.color = color;
+        }
+
+        public Unit( DataInputStream stream ) throws IOException
+        {
+            super( stream );
+        }
+
+        public void act()
+        {
+            ++age;
+            move();
+        }
+
+        public abstract double getRadius();
 
         public abstract void explode();
 
-        public abstract boolean needsRemoval();
-
         public abstract int getDamage();
-
-        public abstract String getName();
     }
 }

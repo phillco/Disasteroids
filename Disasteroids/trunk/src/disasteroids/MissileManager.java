@@ -4,17 +4,14 @@
  */
 package disasteroids;
 
-import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The classic weapon that fires <code>Missiles</code>.
  * @author Andy Kooiman
- * @since Classic
  */
 public class MissileManager extends Weapon
 {
@@ -58,64 +55,80 @@ public class MissileManager extends Weapon
      * The number of timesteps for which the <code>Missile</code>s will live before
      * self destructing.
      */
-    private int life = 300;
+    private int life = 125;
 
-    private int maxShots = 10;
+    protected int maxShots = 200;
 
     public MissileManager()
     {
-        weapons = new ConcurrentLinkedQueue<Unit>();
-        ammo=-1;
+        ammo = -1;
     }
 
-    public MissileManager( ConcurrentLinkedQueue<Unit> start )
+    @Override
+    public void drawOrphanUnit( Graphics g, double x, double y, Color col )
     {
-        weapons = start;
-        ammo=-1;
+        new Missile( this, col, x, y, 0, 0, 0 ).draw( g );
+    }
+
+    @Override
+    public void shoot( GameObject parent, Color color, double angle )
+    {
+        if ( !canShoot() )
+            return;
+
+        units.add( new Missile( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+
+        if ( !isInfiniteAmmo() )
+            --ammo;
+
+        timeTillNextShot = intervalShoot;
+        Sound.playInternal( SoundLibrary.MISSILE_SHOOT );
     }
 
     /**
-     * Instructs each <code>Missile</code> to explode, without splitting.
-     * @author Andy Kooiman
-     * @since Classic
+     * Launches several clones of the given missile.
+     */
+    public void pop( Missile origin )
+    {
+        for ( int i = 0; i < popQuantity(); i++ )
+            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / popQuantity() + i * Math.PI ) );
+    }
+
+    @Override
+    public void berserk( GameObject parent, Color color )
+    {
+        int firedShots = 0;
+        for ( double angle = 0; angle <= 2 * Math.PI; angle += Math.PI / 10 )
+        {
+            if ( !canBerserk() )
+                break;
+
+            units.add( new Missile( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+
+            if ( !isInfiniteAmmo() )
+                --ammo;
+
+            ++firedShots;
+        }
+
+        if ( firedShots > 0 )
+        {
+            timeTillNextBerserk = firedShots * 10;
+            Sound.playInternal( SoundLibrary.BERSERK );
+        }
+    }
+
+    /**
+     * Explodes all missiles without popping any.
      */
     @Override
-    public void explodeAll()
+    public void explodeAllUnits()
     {
         int probPopTemp = probPop;
         probPop = Integer.MAX_VALUE;
-        for ( Unit w : weapons )
+        for ( Unit w : units )
             w.explode();
         probPop = probPopTemp;
-    }
-
-    /**
-     * Creates and prepares to add a <code>Missile</code> with the specified properties.
-     * @param x The x coordinate.
-     * @param y The y coordinate.
-     * @param angle The angle the <code>Missile</code> will be pointing (not necessarily the angle it will be traveling).
-     * @param dx The x component of velocity.
-     * @param dy The y component of velocity (up is negative).
-     * @param col The <code>Color</code> of the <code>Missile</code>..
-     * @return True if the <code>Missile</code> was successfully added, false otherwise.
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
-    {
-        return add( new Missile( this, x, y, angle, dx, dy, col ), playShootSound );
-    }
-
-    public boolean add( Unit a, boolean playShootSound )
-    {
-        if ( weapons.size() > maxShots )//|| timeTillNextShot > 0 )
-            return false;
-        timeTillNextShot = getIntervalShoot();
-
-        if ( playShootSound )
-            Sound.playInternal( getShootSound() );
-
-        return weapons.add( a );
     }
 
     /**
@@ -251,22 +264,17 @@ public class MissileManager extends Weapon
         return popQuantity;
     }
 
-    public int getIntervalShoot()
-    {
-        return intervalShoot;
-    }
-
     public void setIntervalShoot( int i )
     {
         intervalShoot = i;
     }
 
-    public int getMaxShots()
+    public int getMaxUnits()
     {
         return maxShots;
     }
 
-    public void restoreBonusValues()
+    public void undoBonuses()
     {
         setHugeBlastProb( 5 );
         setHugeBlastSize( 50 );
@@ -282,7 +290,7 @@ public class MissileManager extends Weapon
         maxShots = numShots;
     }
 
-    public String ApplyBonus( int key )
+    public String applyBonus( int key )
     {
         switch ( key )
         {
@@ -299,8 +307,8 @@ public class MissileManager extends Weapon
                 increasePopQuantity( 15 );
                 return "Split Quantity /\\ 15";
             case 6:
-                setMaxShots( 50 );
-                return "Max Shots=> 50";
+                setMaxShots( 150 );
+                return "Max Shots = 150";
             case 7:
                 setIntervalShoot( 3 );
                 return "Rapid Fire";
@@ -319,51 +327,14 @@ public class MissileManager extends Weapon
         this.life = life;
     }
 
-    public void draw( Graphics g )
-    {
-        for ( Unit w : weapons )
-            w.draw( g );
-    }
-
     public String getName()
     {
         return "Missile Launcher";
     }
 
-    public Unit getOrphanUnit( int x, int y, Color col )
-    {
-        return new Missile( this, x, y, 0, 0, 0, col );
-    }
-
-    public void berserk( Ship s )
-    {
-        if ( timeTillNextBerserk > 0 || weapons.size() > maxShots )
-            return;
-        Sound.playInternal( getBerserkSound() );
-        for ( double ang = 0; ang <= 2 * Math.PI; ang += Math.PI / 10 )
-            weapons.add( new Missile( this, (int) s.getX(), (int) s.getY(), ang, s.getDx(), s.getDy(), s.getColor() ) );
-        timeTillNextBerserk = 100;
-    }
-
-    @Override
-    public boolean canShoot()
-    {
-        return super.canShoot() && weapons.size() < 100;
-    }
-
-    public SoundClip getShootSound()
-    {
-        return SoundLibrary.MISSILE_SHOOT;
-    }
-
-    public SoundClip getBerserkSound()
-    {
-        return SoundLibrary.BERSERK;
-    }
-
     @Override
     public int getEntryAmmo()
     {
-        return -1;
+        return 0;
     }
 }

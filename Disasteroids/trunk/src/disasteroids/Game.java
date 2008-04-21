@@ -371,6 +371,7 @@ public class Game implements Serializable
         switch ( action )
         {
             case START_SHOOT: // 5 on numpad w/o numlock
+
                 actor.setShooting( true );
                 break;
             case STOP_SHOOT:
@@ -418,7 +419,7 @@ public class Game implements Serializable
                 actor.strafe( false );
                 break;
             case EXPLODE_ALL:
-                actor.getWeaponManager().explodeAll();
+                actor.getWeaponManager().explodeAllUnits();
                 break;
             case ROTATE_WEAPONS:
                 actor.rotateWeapons();
@@ -466,6 +467,9 @@ public class Game implements Serializable
                     Game.loadFromFile();
                 break;
 
+            case DEVKEY:
+                if ( !Client.is() )
+                    Game.getInstance().gameObjects.add( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
             default:
                 break;
         }

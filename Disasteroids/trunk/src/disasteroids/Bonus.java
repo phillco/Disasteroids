@@ -86,13 +86,13 @@ public class Bonus extends GameObject
         ay *= 0.98;
 
         if ( Math.abs( ax ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
-            ax = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
+            ax = Util.getRandomGenerator().nextDouble() * 0.08 - 0.04;
         if ( Math.abs( ay ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
-            ay = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
+            ay = Util.getRandomGenerator().nextDouble() * 0.08 - 0.04;
         if ( Util.getRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
         {
-            ax *= -1.8;
-            ay *= -1.8;
+            ax *= -1.2;
+            ay *= -1.2;
         }
 
         ++age;
@@ -178,30 +178,30 @@ public class Bonus extends GameObject
                 switch ( bonusType )
                 {
                     case 0:
-                        message = player.getWeaponManager().ApplyBonus( 0 );
+                        message = player.getWeaponManager().applyBonus( 0 );
                         break;
                     case 1:
-                        message = player.getWeaponManager().ApplyBonus( 1 );
+                        message = player.getWeaponManager().applyBonus( 1 );
                         break;
                     case 2:
-                        message = player.getWeaponManager().ApplyBonus( 2 );
+                        message = player.getWeaponManager().applyBonus( 2 );
                         break;
                     case 3:
                         message = "+1 Life";
                         player.addLife();
                         break;
                     case 4:
-                        message = player.getWeaponManager().ApplyBonus( 4 );
+                        message = player.getWeaponManager().applyBonus( 4 );
                         break;
                     case 5:
                         player.increaseScore( 10000 );
                         message = "+10,000 Points";
                         break;
                     case 6:
-                        message = player.getWeaponManager().ApplyBonus( 6 );
+                        message = player.getWeaponManager().applyBonus( 6 );
                         break;
                     case 7:
-                        message = player.getWeaponManager().ApplyBonus( 7 );
+                        message = player.getWeaponManager().applyBonus( 7 );
                         break;
                     case 8:
                         message = player.giveShield();

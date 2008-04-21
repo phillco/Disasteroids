@@ -9,36 +9,28 @@ import java.awt.Graphics;
 import java.awt.Color;
 
 /**
- * A fast but simple bullet that dies on impact.
+ * A very fast bullet fired by the sniper rifle.
  * @author Andy Kooiman
  */
 class SniperRound extends Weapon.Unit
 {
-    private SniperManager env;
-
-    private Color myColor;
-
-    private boolean needsRemoval = false;
-
-    private int age = 0;
+    private SniperManager parent;
 
     private double angle;
 
     private int damage;
 
-    public SniperRound( SniperManager env, int x, int y, double angle, double dx, double dy, Color col )
+    public SniperRound( SniperManager parent, Color color, double x, double y, double dx, double dy, double angle )
     {
-        setLocation( x, y );
+        super( color, x, y, dx + parent.getSpeed() * Math.cos( angle ), dy - parent.getSpeed() * Math.sin( angle ) );
         this.angle = angle;
-        setSpeed( dx + env.getSpeed() * Math.cos( angle ), dy - env.getSpeed() * Math.sin( angle ) );
-        this.myColor = col;
-        this.env = env;
-        damage = env.getDamage();
+        this.parent = parent;
+        damage = parent.getDamage();
     }
 
-    public int getRadius()
+    public double getRadius()
     {
-        return env.getRadius();
+        return parent.getRadius();
     }
 
     public void explode()
@@ -46,37 +38,21 @@ class SniperRound extends Weapon.Unit
         damage *= .8;
     }
 
-    public boolean needsRemoval()
-    {
-        if ( needsRemoval )
-            env.remove( this );
-        return needsRemoval;
-    }
-
+    @Override
     public void act()
     {
-        age++;
+        super.act();
         if ( age > 50 )
-        {
-            needsRemoval = true;
-            env.remove( this );
-        }
-        move();
+            parent.remove( this );
     }
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawLine( g, myColor, (int) getX(), (int) getY(), 10, Math.PI + angle );
+        AsteroidsFrame.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, Math.PI + angle );
     }
 
     public int getDamage()
     {
         return damage;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Sniper round";
     }
 }

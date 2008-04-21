@@ -4,12 +4,10 @@
  */
 package disasteroids;
 
-import disasteroids.sound.LayeredSound.SoundClip;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A weapon manager that fires long, straight Lasers
@@ -19,8 +17,6 @@ class LaserManager extends Weapon
 {
     private int speed = 20;
 
-    private int maxShots = 1000;
-
     private int intervalShoot = 4;
 
     private int damage = 5;
@@ -29,49 +25,92 @@ class LaserManager extends Weapon
 
     public LaserManager()
     {
-        weapons = new ConcurrentLinkedQueue<Unit>();
     }
 
-    public LaserManager( ConcurrentLinkedQueue<Unit> start )
+    @Override
+    public String getName()
     {
-        weapons = start;
+        return "Lasergun";
     }
 
-    public int getIntervalShoot()
+    @Override
+    public int getEntryAmmo()
     {
-        return intervalShoot;
+        return 260;
     }
 
-    public boolean add( int x, int y, double angle, double dx, double dy, Color col, boolean playShootSound )
+    @Override
+    public void shoot( GameObject parent, Color color, double angle )
     {
-        if ( weapons.size() > 2500 || !canShoot() )
-            return false;
-        
-        timeTillNextShot = getIntervalShoot();
-        ammo--;
-        
-        double X = x;
-        double Y = y;
+        if ( !canShoot() )
+            return;
+
+        // Create the laser beam.
+        createLinkedLaser( parent, color, angle );
+
+        timeTillNextShot = intervalShoot;
+        if ( !isInfiniteAmmo() )
+            ammo--;
+        Sound.playInternal( SoundLibrary.SNIPER_SHOOT );
+    }
+
+    /**
+     * Creates a laser beam by linking many individual <code>Laser</code>s.
+     */
+    private void createLinkedLaser( GameObject parent, Color color, double angle )
+    {
+        double X = parent.getX();
+        double Y = parent.getY();
         Laser l = null;
         for ( int i = 0; i < 150; i++ )
-        { 
-            Laser last = new Laser( this, (int) X, (int) Y, angle, dx, dy, col );
+        {
+            Laser last = new Laser( this, color, X, Y, parent.getDx(), parent.getDy(), angle );
             if ( l != null )
                 l.setNext( last );
-            weapons.add( last );
+            units.add( last );
             X += length * Math.cos( angle );
             Y -= length * Math.sin( angle );
             l = last;
         }
-        if ( playShootSound )
-            Sound.playInternal( getShootSound() );
-
-        return true;
     }
 
-    public void restoreBonusValues()
+    @Override
+    public void berserk( GameObject parent, Color color )
     {
+        int firedShots = 0;
+        for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 4 )
+        {
+            if ( !canBerserk() )
+                break;
 
+            createLinkedLaser( parent, color, angle );
+
+            if ( !isInfiniteAmmo() )
+                --ammo;
+
+            firedShots++;
+        }
+
+        if ( firedShots > 0 )
+        {
+            timeTillNextBerserk = firedShots * 10;
+            Sound.playInternal( SoundLibrary.BERSERK );
+        }
+    }
+
+    public int getMaxUnits()
+    {
+        return 8000;
+    }
+
+    @Override
+    public void drawOrphanUnit( Graphics g, double x, double y, Color col )
+    {
+        new Laser( this, col, x, y, 0, 0, 0 ).draw( g );
+    }
+
+    public void undoBonuses()
+    {
     }
 
     public int getDamage()
@@ -79,7 +118,7 @@ class LaserManager extends Weapon
         return damage;
     }
 
-    public String ApplyBonus( int key )
+    public String applyBonus( int key )
     {
         String ret = "";
 
@@ -96,78 +135,13 @@ class LaserManager extends Weapon
         return speed;
     }
 
-    public int getMaxShots()
-    {
-        return maxShots;
-    }
-
     public int getRadius()
     {
         return length / 2;
     }
 
-    public void draw( Graphics g )
-    {
-        for ( Unit w : weapons )
-            w.draw( g );
-    }
-
-    public String getWeaponName()
-    {
-        return "Laser";
-    }
-
-    public Unit getOrphanUnit( int x, int y, Color col )
-    {
-        return new Laser( this, x, y, 0, 0, 0, col );
-    }
-
-    public void berserk( Ship s )
-    {
-        if ( timeTillNextBerserk > 0 )
-            return;
-        int temp = timeTillNextShot;
-        Sound.playInternal( SoundLibrary.BERSERK );
-        timeTillNextShot = 0;
-        for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 5 )
-        {
-            add( (int) s.getX(), (int) s.getY(), angle, s.getDx(), s.getDy(), s.getColor(), false );
-            timeTillNextShot = 0;
-        }
-        timeTillNextShot = temp;
-        timeTillNextBerserk = 50;
-    }
-
     public int length()
     {
         return length;
-    }
-
-    @Override
-    public boolean canShoot()
-    {
-        return super.canShoot() && weapons.size() < 500;
-    }
-
-    public SoundClip getShootSound()
-    {
-        return SoundLibrary.SNIPER_SHOOT;
-    }
-
-    public SoundClip getBerserkSound()
-    {
-        return SoundLibrary.BERSERK;
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Lasergun";
-    }
-
-    @Override
-    public int getEntryAmmo()
-    {
-       return 260;
     }
 }

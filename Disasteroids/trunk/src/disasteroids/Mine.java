@@ -11,43 +11,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A weapon that sits without moving or exploding, until something strays too close.
- * At this point it explodes violently!
- * 
+ * A mine that moves towards nearby targets and explodes violently on impact.
  * @author Andy Kooiman
  */
 public class Mine extends Weapon.Unit
 {
     /**
-     * How long until this <code>Mine</code> is removed.  It will explode on its
-     * own if it has 5 or fewer timesteps to live.
-     * 
-     * If above 9900, the mine is still arming and is harmless.
+     * The size of the explosion. If 0, we're not exploding.
      */
-    private int life;
+    private int explosionSize = 0;
 
     /**
-     * Whether this <code>Mine</code> is currently exploding.
-     */
-    private boolean isExploding;
-
-    /**
-     * The color of the outside ring of this <code>Mine</code>
-     */
-    private Color color;
-
-    /**
-     * Whether this <code>Mine</code> needs removing.
-     */
-    private boolean needsRemoval;
-    
-    /**
-     * Stores whether or not this <code>Mine</code> is accelerating towards a 
-     * target
+     * Whether we've acquired a target.
      */
     private boolean shouldAccelerate = false;
 
-    private MineManager env;
+    private MineManager parent;
 
     /**
      * Creates a new <code>Minde</code>
@@ -55,122 +34,65 @@ public class Mine extends Weapon.Unit
      * @param x The x coordinate
      * @param y The y coordinate
      * @param col The <code>Color</code> of the outside ring.
-     * @author Andy Kooiman
      */
-    Mine( int x, int y, double dx, double dy, Color col, MineManager env )
+    public Mine( MineManager parent, Color color, double x, double y, double dx, double dy )
     {
-        setLocation( x, y );
-        setSpeed(dx, dy);
-        this.isExploding = false;
-        this.needsRemoval = false;
-        this.color = col;
-        life = 10000;
-        this.env = env;
+        super( color, x, y, dx, dy );
+        this.parent = parent;
     }
 
-    /**
-     * Returns the distance from the center of this mine that the mine is dangerous from.
-     * 
-     * @return The current radius.
-     */
-    public int getRadius()
-    {
-        return isExploding ? ( 5 - life ) * 20 : 10;
-    }
-
-    /**
-     * Detonates this <code>Mine</code>
-     * 
-     */
-    public void explode()
-    {
-        if ( !isExploding && life < 9900 )
-        {
-            life = 5;
-            isExploding = true;
-        }
-    }
-
-    /**
-     * Resets this <code>Mine</code>'s life counter
-     * 
-     * @param newLife The new amount of life, in timesteps
-     */
-    public void setLife( int newLife )
-    {
-        life = newLife;
-    }
-
-    /**
-     * Returns whether this <code>Mine</code> thinks it should be removed.
-     * 
-     * @return whether this <code>Mine</code> thinks it should be removed.
-     */
-    public boolean needsRemoval()
-    {
-        if ( needsRemoval )
-            env.remove( this );
-        return needsRemoval;
-    }
-
-    /**
-     * Allows this <code>Mine</code> to act, which just includes a check for if 
-     * it should be removed or not.
-     */
+    @Override
     public void act()
     {
-        life -= 2;
-        if ( life <= 0 )
+        super.act();
+        setSpeed( getDx() * .95, getDy() * .95 );
+
+        // Accelerate towards nearby targets.
+        if ( isArmed() )
         {
-            needsRemoval = true;
-            env.remove( this );
-        }
-        
-        move();
-        setSpeed(getDx()*.95, getDy()*.95);
-        
-        
-        shouldAccelerate=false;
-        if (life > 9900 )
-            return;
-        Set<GameObject> close=new HashSet<GameObject>();
-        for(Asteroid ast : Game.getInstance().getAsteroidManager().getAsteroids() )
-        {
-            if(Math.pow( ast.getX() - getX(), 2 ) + Math.pow( ast.getY() - getY(), 2 ) < env.sight() * env.sight() )
+            // First create a set of everything nearby.
+            Set<GameObject> closeObjects = new HashSet<GameObject>();
+            for ( Asteroid ast : Game.getInstance().getAsteroidManager().getAsteroids() )
             {
-                shouldAccelerate=true;
-                close.add( ast );
+                if ( Math.pow( ast.getX() - getX(), 2 ) + Math.pow( ast.getY() - getY(), 2 ) < parent.sight() * parent.sight() )
+                    closeObjects.add( ast );
+            }
+            for ( GameObject go : Game.getInstance().baddies )
+            {
+                if ( Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) < parent.sight() * parent.sight() )
+                    closeObjects.add( go );
+            }
+
+            // Next, accelerate.
+            shouldAccelerate = !closeObjects.isEmpty();
+            if ( shouldAccelerate )
+            {
+                for ( GameObject go : closeObjects )
+                {
+                    double angle = Math.atan( ( go.getY() - getY() ) / ( go.getX() - getX() ) );
+                    if ( go.getX() < getX() )
+                        angle += Math.PI;
+                    double magnitude = 10.0 / Math.sqrt( ( Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) ) );
+                    magnitude = Math.min( magnitude, 1 );//regulate the acceleration for (essentially) dividing by zero
+
+                    setSpeed( getDx() + magnitude * Math.cos( angle ), getDy() + magnitude * Math.sin( angle ) );
+                }
             }
         }
-        for(GameObject go : Game.getInstance().baddies)
-        {
-            if(Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) < env.sight() * env.sight() )
-            {
-                shouldAccelerate=true;
-                close.add( go );
-            }
-        }
-        if( !shouldAccelerate )
-            return;
-        for( GameObject go : close )
-        {
-            double angle = Math.atan((go.getY()-getY())/(go.getX()-getX()));
-            if(go.getX()<getX())
-                angle+=Math.PI;
-            double magnitude = 10.0 / Math.sqrt( ( Math.pow( go.getX() - getX() , 2 ) + Math.pow( go.getY() - getY() , 2 ) ) );
-            magnitude=Math.min(magnitude, 1);//regulate the acceleration for (essentially) dividing by zero
-            setSpeed(getDx()+magnitude*Math.cos(angle), getDy()+magnitude*Math.sin(angle));
-        }
+
+        if ( isExploding() )
+            ++explosionSize;
+
+        if ( age > 3000 || explosionSize == 3 )
+            parent.remove( this );
     }
 
     /**
-     * Returns the damage caused by this <code>Mine</code>.
-     * 
-     * @return the damage caused by this <code>Mine</code>.
+     * Returns the damage caused by this <code>Mine</code>. Will be zero if still arming.
      */
     public int getDamage()
     {
-        if ( life < 9900 )
+        if ( isArmed() )
             return 200;
         else
             return 0;
@@ -183,35 +105,47 @@ public class Mine extends Weapon.Unit
      */
     public void draw( Graphics g )
     {
-        if ( life > 9900 )
-        {
-            double multiplier = ( 10000 - life ) / 100.0;
-            Color outline = new Color( (int) ( color.getRed() * multiplier ), (int) ( color.getGreen() * multiplier ), (int) ( color.getBlue() * multiplier ) );
-            AsteroidsFrame.frame().fillCircle( g, outline, (int) getX(), (int) getY(), 10 );
-     //       AsteroidsFrame.frame().fillCircle( g, Color.black, (int) getX(), (int) getY(), 4 );
-        }
-        else if ( !isExploding )
+        if ( isExploding() )
+            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), explosionSize * 20 );
+        else if ( isArmed() )
         {
             AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), 10 );
             AsteroidsFrame.frame().fillCircle( g, shouldAccelerate ? Color.red : Color.black, (int) getX(), (int) getY(), 4 );
         }
         else
-            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), ( 5 - life ) * 20 );
-    }
-    
-    public boolean isExploding()
-    {
-        return isExploding;
-    }
-    
-    public boolean isArmed()
-    {
-        return life < 9900;
+        {
+            double multiplier = age / 100.0;
+            Color outline = new Color( (int) ( color.getRed() * multiplier ), (int) ( color.getGreen() * multiplier ), (int) ( color.getBlue() * multiplier ) );
+            AsteroidsFrame.frame().fillCircle( g, outline, (int) getX(), (int) getY(), 10 );
+        }
     }
 
-    @Override
-    public String getName()
+    /**
+     * Returns the distance (from the center) that we're dangerous from.
+     * 
+     * @return The current radius.
+     */
+    public double getRadius()
     {
-        return "Mine";
+        return isExploding() ? ( explosionSize ) * 20 : 10;
+    }
+
+    /**
+     * Detonates the mine, creating a large explosion.
+     */
+    public void explode()
+    {
+        if ( !isExploding() && isArmed() )
+            explosionSize = 1;
+    }
+
+    public boolean isExploding()
+    {
+        return explosionSize > 0;
+    }
+
+    public boolean isArmed()
+    {
+        return age > 100;
     }
 }

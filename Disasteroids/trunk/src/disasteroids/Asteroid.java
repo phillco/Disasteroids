@@ -217,7 +217,7 @@ public class Asteroid extends GameObject implements GameElement, Serializable
             for ( Weapon wm : s.getManagers() )
             {
                 // Loop through all this ship's Missiles.
-                for ( Weapon.Unit m : wm.getWeapons() )
+                for ( Weapon.Unit m : wm.getUnits() )
                 {
                     // Were we hit by a missile?
                     if ( Math.pow( getX() - m.getX(), 2 ) + Math.pow( getY() - m.getY(), 2 ) < Math.pow( radius + m.getRadius(), 2 ) )

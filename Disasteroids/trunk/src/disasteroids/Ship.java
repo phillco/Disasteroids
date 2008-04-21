@@ -5,7 +5,6 @@
 package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
-import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Local;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
@@ -113,7 +112,10 @@ public class Ship extends GameObject implements ShootingObject
      * Our cache of weapons.
      * @since December 16, 2007
      */
-    private Weapon[] allWeapons = { new MissileManager(), new BulletManager(), new MineManager(), new LaserManager(), new FlechetteManager() };
+    private Weapon[] allWeapons =
+    {
+        new MissileManager(), new BulletManager(), new MineManager(), new LaserManager(), new FlechetteManager()
+    };
 
     /**
      * The <code>SniperManager</code> for this <code>Ship</code>
@@ -204,17 +206,17 @@ public class Ship extends GameObject implements ShootingObject
         {
             if ( shooting )
             {
-                if( getWeaponManager().getAmmo() == 0 )
+                if ( getWeaponManager().getAmmo() == 0 )
                 {
                     Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
                     Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
                     rotateWeapons();
-                    shooting=false;
+                    shooting = false;
                 }
                 else
                 {
-                    if( canShoot() )
-                      shoot();
+                    if ( canShoot() )
+                        shoot();
                 }
             }
             invincibilityCount--;
@@ -247,13 +249,13 @@ public class Ship extends GameObject implements ShootingObject
         getWeaponManager().reload();
         sniperManager.reload();
 
-        // Out of ammo. :(
+    // Out of ammo. :(
 /*        if ( getWeaponManager().getAmmo() == 0 )
-        {
-            Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
-            Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
-            rotateWeapons();
-        }*/
+    {
+    Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
+    Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+    rotateWeapons();
+    }*/
     }
 
     public void draw( Graphics g )
@@ -265,7 +267,7 @@ public class Ship extends GameObject implements ShootingObject
         if ( livesLeft < 0 )
             return;
 
-        allWeapons[weaponIndex].drawTimer( g, myColor );
+        allWeapons[weaponIndex].draw( g );
 
         // Set our color.
         Color col = ( cannotDie() ? myInvicibleColor : myColor );
@@ -305,15 +307,19 @@ public class Ship extends GameObject implements ShootingObject
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
             AsteroidsFrame.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getName(), Color.gray );
-            allWeapons[weaponIndex].getOrphanUnit( (int) getX(), (int) getY() + 25, Color.gray ).draw( g );
+            allWeapons[weaponIndex].drawOrphanUnit( g, getX(), getY() + 25, Color.gray );
         }
 
         if ( sniping )
         {
+            sniperManager.drawHUD( g, this );
             snipeFlash = !snipeFlash;
             if ( snipeFlash )
             {
-                float dash[] = { 8.0f };
+                float dash[] =
+                {
+                    8.0f
+                };
                 Stroke old = ( (Graphics2D) g ).getStroke();
                 ( (Graphics2D) g ).setStroke( new BasicStroke( 3.0f, BasicStroke.CAP_ROUND,
                                                                BasicStroke.JOIN_ROUND, 5.0f, dash, 2.0f ) );
@@ -321,6 +327,8 @@ public class Ship extends GameObject implements ShootingObject
                 ( (Graphics2D) g ).setStroke( old );
             }
         }
+        else
+            getWeaponManager().drawHUD( g, this );
     }
 
     // ***************************************************** Key press & release **
@@ -370,8 +378,8 @@ public class Ship extends GameObject implements ShootingObject
     public void restoreBonusValues()
     {
         for ( Weapon wM : allWeapons )
-            wM.restoreBonusValues();
-        sniperManager.restoreBonusValues();
+            wM.undoBonuses();
+        sniperManager.undoBonuses();
     }
 
     /**
@@ -406,7 +414,7 @@ public class Ship extends GameObject implements ShootingObject
 
             for ( Weapon wm : other.getManagers() )
             {
-                for ( Weapon.Unit m : wm.getWeapons() )
+                for ( Weapon.Unit m : wm.getUnits() )
                 {
                     if ( Math.pow( (int) ( getX() - m.getX() ), 2 ) + Math.pow( (int) ( getY() - m.getY() ), 2 ) < Math.pow( RADIUS + m.getRadius(), 2 ) )
                     {
@@ -415,8 +423,8 @@ public class Ship extends GameObject implements ShootingObject
                             obit = getName() + " was blasted by " + ( (Ship) other ).getName() + ".";
                         else if ( other instanceof Station )
                             obit = getName() + " was shot down by a satellite.";
-                        else if( other instanceof Alien )
-                            obit = getName() + " was scanned unsuccessfully for inteligent lifeforms.";
+                        else if ( other instanceof Alien )
+                            obit = getName() + " was scanned unsuccessfully for intelligent lifeforms.";
 
                         if ( damage( m.getDamage(), obit ) )
                         {
@@ -515,7 +523,7 @@ public class Ship extends GameObject implements ShootingObject
     {
         if ( livesLeft < 0 )
             return;
-        getWeaponManager().add( (int) getX(), (int) getY(), angle, getDx(), getDy(), myColor, true );
+        getWeaponManager().shoot( this, myColor, angle );
     }
 
     public boolean canShoot()
@@ -674,7 +682,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public void berserk()
     {
-        if ( getWeaponManager().getAmmo() == 0)
+        if ( getWeaponManager().getAmmo() == 0 )
         {
             Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
             Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
@@ -682,7 +690,7 @@ public class Ship extends GameObject implements ShootingObject
         }
         if ( Server.is() )
             Server.getInstance().berserk( id );
-        getWeaponManager().berserk( this );
+        getWeaponManager().berserk( this, myColor );
     }
 
     /**

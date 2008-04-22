@@ -8,6 +8,9 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A bonus weapon that lays dangerous <code>Mine</code>s.
@@ -103,5 +106,31 @@ public class MineManager extends Weapon
     public int sight()
     {
         return sight;
+    }
+    
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+        stream.writeDouble( berserkAngleOffset);
+        stream.writeInt( sight );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public MineManager( DataInputStream stream ) throws IOException
+    {
+        for ( int i = 0; i < stream.readInt(); i++ )
+            units.add( new Mine( stream ) );
+        
+        berserkAngleOffset = stream.readDouble();
+        sight = stream.readInt();
     }
 }

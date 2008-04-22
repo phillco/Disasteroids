@@ -8,6 +8,9 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * The classic weapon that fires <code>Missiles</code>.
@@ -336,5 +339,44 @@ public class MissileManager extends Weapon
     public int getEntryAmmo()
     {
         return 0;
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+
+        stream.writeInt( hugeBlastProb );
+        stream.writeInt( hugeBlastSize );
+        stream.writeInt( intervalShoot );
+        stream.writeInt( life );
+        stream.writeInt( maxShots );
+        stream.writeInt( popQuantity );
+        stream.writeInt( probPop );
+        stream.writeDouble( speed );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public MissileManager( DataInputStream stream ) throws IOException
+    {
+        for ( int i = 0; i < stream.readInt(); i++ )
+            units.add( new Missile( stream ) );
+
+        hugeBlastProb = stream.readInt();
+        hugeBlastSize = stream.readInt();
+        intervalShoot = stream.readInt();
+        life = stream.readInt();
+        maxShots = stream.readInt();
+        popQuantity = stream.readInt();
+        probPop = stream.readInt();
+        speed = stream.readDouble();
     }
 }

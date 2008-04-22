@@ -7,6 +7,9 @@ package disasteroids;
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A weak particle fired in the dozens.
@@ -51,5 +54,25 @@ class Flechette extends Weapon.Unit
     public int getDamage()
     {
         return parent.getDamage();
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public Flechette( DataInputStream stream ) throws IOException
+    {
+        super( stream );
     }
 }

@@ -11,6 +11,7 @@ import disasteroids.Running;
 import disasteroids.Ship;
 import java.awt.Color;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -109,6 +110,10 @@ public class Server extends DatagramListener
         try
         {
             beginListening( Constants.DEFAULT_PORT );
+        }
+        catch ( BindException e )
+        {
+            Running.fatalError( "Couldn't bind to port " + Constants.DEFAULT_PORT + ". Perhaps a server is already running?\n\n" + e.getLocalizedMessage() );
         }
         catch ( SocketException ex )
         {
@@ -229,8 +234,9 @@ public class Server extends DatagramListener
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( false ); // Not a timeout.
+
                         out.writeInt( client.inGamePlayer.id );
-                        
+
                         sendPacketToAllButOnePlayer( out, client );
                 }
             }
@@ -348,9 +354,8 @@ public class Server extends DatagramListener
                         out.writeInt( cm.inGamePlayer.id );
                         sendPacketToAllButOnePlayer( out, cm );
                     }
-                    catch (  IOException ex )
+                    catch ( IOException ex )
                     {
-
                     }
                 }
                 i.remove();

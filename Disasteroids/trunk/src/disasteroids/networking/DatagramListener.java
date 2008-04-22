@@ -74,8 +74,11 @@ public abstract class DatagramListener
      */
     void stopListening()
     {
-        ear.disable();
-        heart.disable();
+        if ( ear != null )
+            ear.disable();
+
+        if ( heart != null )
+            heart.disable();
         ear = null;
         heart = null;
     }
@@ -95,7 +98,6 @@ public abstract class DatagramListener
      */
     void intervalLogic()
     {
-
     }
 
     /**
@@ -139,7 +141,7 @@ public abstract class DatagramListener
         if ( buffer.length > Constants.MAX_PACKET_SIZE )
         {
             int packetCount = (int) Math.ceil( (double) buffer.length / Constants.MULTIPACKET_DATA_SIZE );
-                 //System.out.println( "Original contiguous data: " + hashPacket( buffer ) + "\nWill need " + packetCount + " packets ( each containing " + Constants.MULTIPACKET_DATA_SIZE + " bytes)." );
+            //System.out.println( "Original contiguous data: " + hashPacket( buffer ) + "\nWill need " + packetCount + " packets ( each containing " + Constants.MULTIPACKET_DATA_SIZE + " bytes)." );
 
             // Create the series of packets.
             int seriesId = Machine.multPacketId++;
@@ -152,7 +154,7 @@ public abstract class DatagramListener
                 out.writeInt( i );
 
                 out.write( buffer, i * Constants.MULTIPACKET_DATA_SIZE, Math.min( buffer.length - i * Constants.MULTIPACKET_DATA_SIZE, Constants.MULTIPACKET_DATA_SIZE ) );
-                    //System.out.println( "Sending packet " + i + "/" + packetCount + " in series " + seriesId + " - " + hashPacket( out.toByteArray() ) );
+                //System.out.println( "Sending packet " + i + "/" + packetCount + " in series " + seriesId + " - " + hashPacket( out.toByteArray() ) );
                 sendPacket( client, out );
             }
             System.out.println();
@@ -214,7 +216,7 @@ public abstract class DatagramListener
      * Child thread for DatagtramListener that can call its methods and be disabled.
      * @since January 13, 2008
      */
-    class DatagramThread extends Thread
+    abstract class DatagramThread extends Thread
     {
         /**
          * Parent class that created this.
@@ -234,8 +236,9 @@ public abstract class DatagramListener
          * @param parent    parent class
          * @since December 28, 2007
          */
-        public DatagramThread( DatagramListener parent )
+        public DatagramThread( String name, DatagramListener parent )
         {
+            super( name );
             this.parent = parent;
         }
 
@@ -269,7 +272,7 @@ public abstract class DatagramListener
          */
         public ListenerThread( DatagramListener parent )
         {
-            super( parent );
+            super( "Network listening thread", parent );
             start();
         }
 
@@ -306,7 +309,7 @@ public abstract class DatagramListener
     {
         public IntervalThread( DatagramListener parent )
         {
-            super( parent );
+            super( "Network interval thread", parent );
             setPriority( MIN_PRIORITY );
             start();
         }

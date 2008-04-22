@@ -17,10 +17,10 @@ public class GameLoop extends Thread
      * @since December 30, 2007
      */
     private static int period = 10;
-    
+
     public GameLoop()
     {
-        super("Game Loop");
+        super( "Game loop thread" );
     }
 
     public static void increaseSpeed()
@@ -32,7 +32,7 @@ public class GameLoop extends Thread
     {
         period++;
     }
-    
+
     /**
      * Starts an infinite loop which acts the game, sleeps, and repeats.
      * 
@@ -47,15 +47,15 @@ public class GameLoop extends Thread
         while ( true )
         {
             try
-            {    
+            {
                 timeOfLast = System.currentTimeMillis();
-                
+
                 if ( shouldRun() )
                     Game.getInstance().act();
-                
+
                 while ( System.currentTimeMillis() - timeOfLast < period )
                     Thread.sleep( 1 );
-                
+
             }
             catch ( InterruptedException ex )
             {
@@ -63,7 +63,7 @@ public class GameLoop extends Thread
             }
         }
     }
-    
+
     /**
      * Returns whether the game should run.
      * 
@@ -73,15 +73,15 @@ public class GameLoop extends Thread
     public boolean shouldRun()
     {
         // Don't run if the game is paused.
-        if(Game.getInstance()==null)
+        if ( Game.getInstance() == null )
             return false;
-        if( Game.getInstance().isPaused() )
+        if ( Game.getInstance().isPaused() )
             return false;
-        
+
         // If we're the cliient and the server isn't responding, hold up.
-        if( Client.is() && Client.getInstance().serverTimeout() )
+        if ( Client.is() && Client.getInstance().serverTimeout() )
             return false;
-        
+
         return true;
     }
 }

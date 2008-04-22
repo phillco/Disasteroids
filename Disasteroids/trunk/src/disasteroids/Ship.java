@@ -112,16 +112,13 @@ public class Ship extends GameObject implements ShootingObject
      * Our cache of weapons.
      * @since December 16, 2007
      */
-    private Weapon[] allWeapons =
-    {
-        new MissileManager(), new BulletManager(), new MineManager(), new LaserManager(), new FlechetteManager()
-    };
+    private Weapon[] allWeapons = new Weapon[5];
 
     /**
      * The <code>SniperManager</code> for this <code>Ship</code>
      * @since March 26, 2008
      */
-    private SniperManager sniperManager = new SniperManager();
+    private SniperManager sniperManager;
 
     /**
      * How long to draw the name of the current weapon.
@@ -175,6 +172,14 @@ public class Ship extends GameObject implements ShootingObject
         this.myColor = c;
         this.livesLeft = lives;
         this.name = name;
+
+        allWeapons[0] = new MissileManager();
+        allWeapons[1] = new BulletManager();
+        allWeapons[2] = new MineManager();
+        allWeapons[3] = new LaserManager();
+        allWeapons[4] = new FlechetteManager();
+
+        sniperManager = new SniperManager();
 
         // Colors.        
         double fadePct = 0.6;
@@ -271,6 +276,10 @@ public class Ship extends GameObject implements ShootingObject
 
         // Set our color.
         Color col = ( cannotDie() ? myInvicibleColor : myColor );
+
+
+
+
 
         double centerX, centerY;
 
@@ -809,6 +818,17 @@ public class Ship extends GameObject implements ShootingObject
         stream.writeInt( weaponIndex );
         stream.writeInt( numAsteroidsKilled );
         stream.writeInt( numShipsKilled );
+
+        int i = 0;
+        for ( Weapon w : allWeapons )
+        {
+            w.flatten( stream );
+            System.out.println( "Writing " + i + "...." );
+            stream.writeInt( i++ );
+        }
+
+        sniperManager.flatten( stream );
+
     }
 
     /**
@@ -831,6 +851,19 @@ public class Ship extends GameObject implements ShootingObject
         numAsteroidsKilled = stream.readInt();
         numShipsKilled = stream.readInt();
 
+        allWeapons[0] = new MissileManager( stream );
+        System.out.println( "Received " + stream.readInt() + "...");
+        allWeapons[1] = new BulletManager( stream );
+        System.out.println( "Received " + stream.readInt() + "...");
+        allWeapons[2] = new MineManager( stream );
+        System.out.println( "Received " + stream.readInt() + "...");
+        allWeapons[3] = new LaserManager( stream );
+        System.out.println( "Received " + stream.readInt() + "...");
+        allWeapons[4] = new FlechetteManager( stream );
+        System.out.println( "Received " + stream.readInt() + "...");
+        
+        sniperManager = new SniperManager( stream );
+         
         // Apply basic construction.        
         double fadePct = 0.6;
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );

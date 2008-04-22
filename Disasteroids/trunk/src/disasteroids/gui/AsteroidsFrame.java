@@ -85,9 +85,11 @@ public class AsteroidsFrame extends Frame
             setTitle( "Disasteroids" );
 
         panel = new AsteroidsPanel( this );
-        AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( "Press any key to begin.",
-                                                                                 (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
-                                                                                 AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
+
+        if ( !Client.is() )
+            AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( "Press any key to begin.",
+                                                                                     (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
+                                                                                     AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
         add( panel );
         setResizable( true );
 
@@ -457,17 +459,14 @@ public class AsteroidsFrame extends Frame
 
         public void componentMoved( ComponentEvent e )
         {
-
         }
 
         public void componentShown( ComponentEvent e )
         {
-
         }
 
         public void componentHidden( ComponentEvent e )
         {
-
         }
     }
 

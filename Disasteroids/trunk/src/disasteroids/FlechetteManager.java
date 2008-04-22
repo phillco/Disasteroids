@@ -8,6 +8,9 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A weapon manager that rapidly fires weak bullets.
@@ -134,5 +137,33 @@ public class FlechetteManager extends Weapon
     public int getEntryAmmo()
     {
         return 1500;
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+        stream.writeInt( intervalShoot );
+        stream.writeInt( radius );
+        stream.writeInt( damage );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public FlechetteManager( DataInputStream stream ) throws IOException
+    {
+        for ( int i = 0; i < stream.readInt(); i++ )
+            units.add( new Flechette( stream ) );
+
+        intervalShoot = stream.readInt();
+        radius = stream.readInt();
+        damage = stream.readInt();
     }
 }

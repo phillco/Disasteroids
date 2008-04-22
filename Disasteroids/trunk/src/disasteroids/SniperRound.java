@@ -7,6 +7,9 @@ package disasteroids;
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A very fast bullet fired by the sniper rifle.
@@ -54,5 +57,31 @@ class SniperRound extends Weapon.Unit
     public int getDamage()
     {
         return damage;
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+
+        stream.writeDouble( angle );
+        stream.writeInt( damage );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public SniperRound( DataInputStream stream ) throws IOException
+    {
+        super( stream );
+
+        angle = stream.readDouble();
+        damage = stream.readInt();
     }
 }

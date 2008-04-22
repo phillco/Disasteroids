@@ -8,6 +8,9 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A weapon manager that rapidly fires weak bullets.
@@ -127,5 +130,36 @@ class SniperManager extends Weapon
     public int getEntryAmmo()
     {
         return 20;
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+
+        stream.writeInt( damage );
+        stream.writeInt( intervalShoot );
+        stream.writeInt( radius );
+        stream.writeInt( speed );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public SniperManager( DataInputStream stream ) throws IOException
+    {
+        for ( int i = 0; i < stream.readInt(); i++ )
+            units.add( new SniperRound( stream ) );
+
+        damage = stream.readInt();
+        intervalShoot = stream.readInt();
+        radius = stream.readInt();
+        speed = stream.readInt();
     }
 }

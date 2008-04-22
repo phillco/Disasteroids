@@ -158,9 +158,7 @@ class BulletManager extends Weapon
     @Override
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt( units.size() );
-        for ( Unit u : units )
-            u.flatten( stream );
+        super.flatten( stream );
     }
 
     /**

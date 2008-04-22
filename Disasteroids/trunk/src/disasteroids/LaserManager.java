@@ -8,6 +8,9 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * A weapon manager that fires long, straight Lasers
@@ -143,5 +146,36 @@ class LaserManager extends Weapon
     public int length()
     {
         return length;
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+
+        stream.writeInt( damage );
+        stream.writeInt( intervalShoot );
+        stream.writeInt( length );
+        stream.writeInt( speed );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public LaserManager( DataInputStream stream ) throws IOException
+    {
+        for ( int i = 0; i < stream.readInt(); i++ )
+            units.add( new Laser( stream ) );
+
+        damage = stream.readInt();
+        intervalShoot = stream.readInt();
+        length = stream.readInt();
+        speed = stream.readInt();
     }
 }

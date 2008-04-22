@@ -491,10 +491,6 @@ public class Game implements Serializable
         gameMode.flatten( stream );
         stream.writeLong( timeStep );
 
-        stream.writeInt( players.size() );
-        for ( Ship s : players )
-            s.flatten( stream );
-
         stream.writeInt( gameObjects.size() );
         for ( GameObject o : gameObjects )
         {
@@ -522,14 +518,11 @@ public class Game implements Serializable
         this.timeStep = stream.readLong();
 
         players = new ConcurrentLinkedQueue<Ship>();
-        int size = stream.readInt();
-        for ( int i = 0; i < size; i++ )
-            players.add( new Ship( stream ) );
-
         shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
         baddies = new ConcurrentLinkedQueue<GameObject>();
+
         gameObjects = new ConcurrentLinkedQueue<GameObject>();
-        size = stream.readInt();
+        int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
         {
             switch ( Constants.GameObjectTIDs.values()[stream.readInt()] )
@@ -539,10 +532,18 @@ public class Game implements Serializable
                     gameObjects.add( a );
                     shootingObjects.add( a );
                     baddies.add( a );
+                    System.out.println( "Alien..." );
                     break;
                 case BONUS:
                     Bonus b = new Bonus( stream );
                     gameObjects.add( b );
+                    System.out.println( "" );
+                    break;
+                case SHIP:
+                    Ship s = new Ship( stream );
+                    gameObjects.add( s );
+                    shootingObjects.add( s );
+                    players.add( s );
                     break;
                 case STATION:
                     Station t = new Station( stream );
@@ -550,7 +551,6 @@ public class Game implements Serializable
                     shootingObjects.add( t );
                     baddies.add( t );
                     break;
-
             }
         }
         asteroidManager = new AsteroidManager( stream );

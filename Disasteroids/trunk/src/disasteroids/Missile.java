@@ -9,6 +9,9 @@ import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -227,5 +230,35 @@ public class Missile extends Weapon.Unit
     public boolean isExploding()
     {
         return explosionStage > 0;
+    }
+    
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+
+        stream.writeDouble( angle );
+        stream.writeInt( explosionStage );
+        stream.writeBoolean( hugeBlast );
+        stream.writeDouble( radius );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public Missile( DataInputStream stream ) throws IOException
+    {
+        super( stream );
+
+        angle = stream.readDouble();
+        explosionStage = stream.readInt();
+        hugeBlast = stream.readBoolean();
+        radius = stream.readDouble();
     }
 }

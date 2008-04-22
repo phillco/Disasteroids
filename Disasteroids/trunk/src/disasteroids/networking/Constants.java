@@ -9,6 +9,7 @@ import disasteroids.Bonus;
 import disasteroids.GameMode;
 import disasteroids.GameObject;
 import disasteroids.LinearGameplay;
+import disasteroids.Ship;
 import disasteroids.Station;
 import disasteroids.WaveGameplay;
 import java.io.DataInputStream;
@@ -25,7 +26,7 @@ public class Constants
      * The version of our net code protocol. Bump to ensure older clients don't connect and cause havoc.
      * @since April 11, 2008
      */
-    public static final int NETCODE_VERSION = -1;
+    public static final int NETCODE_VERSION = 2;
 
     /**
      * The default port that the server runs on.
@@ -77,7 +78,7 @@ public class Constants
 
     public static enum GameObjectTIDs
     {
-        ALIEN, BONUS, STATION;
+        ALIEN, BONUS, SHIP, STATION;
 
     }
 
@@ -112,6 +113,8 @@ public class Constants
             return GameObjectTIDs.BONUS.ordinal();
         else if ( o instanceof Station )
             return GameObjectTIDs.STATION.ordinal();
+        else if ( o instanceof Ship )
+            return GameObjectTIDs.SHIP.ordinal();
         else
             throw new IllegalArgumentException( "Unknown game object: " + o + "." );
     }

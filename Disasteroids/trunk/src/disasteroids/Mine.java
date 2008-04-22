@@ -7,6 +7,9 @@ package disasteroids;
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -147,5 +150,27 @@ public class Mine extends Weapon.Unit
     public boolean isArmed()
     {
         return age > 100;
+    }
+
+    //                                                                            \\
+    // ------------------------------ NETWORKING -------------------------------- \\
+    //                                                                            \\
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+        stream.writeInt( explosionSize );
+    }
+
+    /**
+     * Reads <code>this</code> from a stream for client/server transmission.
+     */
+    public Mine( DataInputStream stream ) throws IOException
+    {
+        super( stream );
+        explosionSize = stream.readInt();
     }
 }

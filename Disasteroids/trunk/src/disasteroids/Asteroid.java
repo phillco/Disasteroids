@@ -197,7 +197,7 @@ public class Asteroid extends GameObject implements GameElement
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Util.getDistance( this, s ) < Math.pow( radius + s.getRadius(), 2 ) )
+                if ( Util.getDistance( this, s ) <  radius + s.getRadius() )
                 {
                     if ( s.damage( radius / 2.0 + 8, s.getName() + ( Math.abs( getSpeed() ) > Math.abs( s.getSpeed() ) ? " was hit by" : " slammed into" ) + " an asteroid." ) )
                     {

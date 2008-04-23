@@ -14,6 +14,7 @@ import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Polygon;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -237,23 +238,21 @@ public class Bonus extends GameObject
 
                 int cX = RelativeGraphics.translateX( getX() );
                 int cY = RelativeGraphics.translateY( getY() );
-                int deviance = Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 );
-
+                int deviance = 5 + Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 );
+                int x1=(int)(cX+deviance*Math.cos(Math.toRadians(0)+angle));
+                int x2=(int)(cX+deviance*Math.cos(Math.toRadians(-120)+angle));
+                int x3=(int)(cX+deviance*Math.cos(Math.toRadians(120)+angle));
+                int y1=(int)(cY-deviance*Math.sin(Math.toRadians(0)+angle));
+                int y2=(int)(cY-deviance*Math.sin(Math.toRadians(-120)+angle));
+                int y3=(int)(cY-deviance*Math.sin(Math.toRadians(120)+angle));
+                Polygon p=new Polygon();
+                p.addPoint(x1,y1);
+                p.addPoint(x2,y2);
+                p.addPoint(x3,y3);
                 g.setColor( Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ) );
-                g.fillRect( cX - deviance, cY - deviance, deviance * 2, deviance * 2 );
+                g.fillPolygon(p);
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
-                g.drawRect( cX - deviance, cY - deviance, deviance * 2, deviance * 2 );
-
-                /* [PC] Triangle version - couldn't get the angles right.
-                Polygon outline = new Polygon();
-                outline.addPoint( RelativeGraphics.translateX( ( getX() + 4 + RADIUS * 1.5 * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX() ),
-                RelativeGraphics.translateY( ( getY() + 4 - RADIUS * 1.5 * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY() ) );
-                outline.addPoint( RelativeGraphics.translateX( ( getX() + 4 + RADIUS * 1.5 * Math.cos( angle + Math.PI * .5 ) ) + AsteroidsFrame.frame().getRumbleX() ),
-                RelativeGraphics.translateY( ( getY() + 4 - RADIUS * 1.9 * Math.sin( angle + Math.PI * .5 ) ) + AsteroidsFrame.frame().getRumbleY() ) );
-                outline.addPoint( RelativeGraphics.translateX( ( getX() + 4 + RADIUS * 1.5 * Math.cos( angle - Math.PI * .5 ) )+ AsteroidsFrame.frame().getRumbleX() ),
-                RelativeGraphics.translateY( getY() + 4 - RADIUS * 1.5 * Math.sin( angle - Math.PI * .5 ) ) + AsteroidsFrame.frame().getRumbleY() );
-                AsteroidsFrame.frame().drawPolygon( g, Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), outline );
-                 * */
+                g.drawPolygon(p);
                 break;
         }
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );

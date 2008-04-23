@@ -50,7 +50,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_CLEAR, ActionType.START_SHOOT );//numpad 5 w/o numlock
 
         keyboardLayout.put( -KeyEvent.VK_SPACE, ActionType.STOP_SHOOT );
-        keyboardLayout.put( -KeyEvent.VK_NUMPAD5, ActionType.STOP_SHOOT );
+        keyboardLayout.put( -KeyEvent.VK_CLEAR, ActionType.STOP_SHOOT );
         keyboardLayout.put( KeyEvent.VK_LEFT, ActionType.LEFT );
         keyboardLayout.put( -KeyEvent.VK_LEFT, ActionType.UN_LEFT );
         keyboardLayout.put( KeyEvent.VK_RIGHT, ActionType.RIGHT );

@@ -2,10 +2,7 @@
  * DISASTEROIDS
  * PredatorAlien.java
  */
-
 package disasteroids;
-
-
 
 import java.io.IOException;
 import java.io.DataInputStream;
@@ -17,70 +14,71 @@ import java.io.DataInputStream;
 public class PredatorAlien extends Alien
 {
     protected Ship prey;
-    
-    public PredatorAlien(double x, double y, double dx, double dy) 
+
+    public PredatorAlien( double x, double y, double dx, double dy )
     {
-        super(x,y,dx,dy);
+        super( x, y, dx, dy );
     }
-    
+
     public PredatorAlien( DataInputStream stream ) throws IOException
     {
-        super(stream);
+        super( stream );
     }
-    
-     /**
-     * If this does not have prey, it will default to Alien's act() method.
-      * Otherwise, this will go through normal Predator behavior.
+
+    /**
+     * If this does not have prey, it will default to <code>Alien</code>'s <code>act()</code> method.
+     * Otherwise, this will go through normal Predator behavior.
      */
+    @Override
     public void act()
     {
-        if(!getPrey())
+        if ( !getPrey() )
         {
             super.act();
             return;
         }
-        accelerateAnalyze(prey);
+        accelerateAnalyze( prey );
         generalActBehavior();
-        
+
     }
-    
+
     /**
      * Adjusts acceleration of PredatorAlien to chase prey.
      * This will be fun to write.
      */
-    protected void accelerateAnalyze(Ship s)
+    protected void accelerateAnalyze( Ship s )
     {
         int radius = 200; //min distance from ship
         double leniance = 125;
-        double proximity = getProximity(s);
-        
-        if(proximity<radius-(leniance/2.0))
-            accelerateAway(s);
-        if(proximity>radius+(leniance/2.0))
-            accelerateToward(s);
+        double proximity = getProximity( s );
+
+        if ( proximity < radius - ( leniance / 2.0 ) )
+            accelerateAway( s );
+        if ( proximity > radius + ( leniance / 2.0 ) )
+            accelerateToward( s );
         else
             deccelerate();
-        
+
     }
-    
+
     protected void deccelerate()
     {
-    
+
     }
-    
-    protected void accelerateAway(Ship s)
+
+    protected void accelerateAway( Ship s )
     {
-        
+
     }
-    
-    protected void accelerateToward(Ship s)
+
+    protected void accelerateToward( Ship s )
     {
-        
+
     }
-     
-     /**
+
+    /**
      * Finds a player to hunt within range; If no player is found, getPrey()
-      * returns false.
+     * returns false.
      */
     public boolean getPrey()
     {

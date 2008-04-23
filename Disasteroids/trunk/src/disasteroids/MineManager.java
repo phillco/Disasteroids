@@ -47,7 +47,7 @@ public class MineManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new Mine( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy() ) );
+        units.add( new Mine( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy() ) );
         if ( !isInfiniteAmmo() )
             --ammo;
 

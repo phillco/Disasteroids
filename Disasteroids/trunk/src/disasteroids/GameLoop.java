@@ -13,24 +13,52 @@ import disasteroids.networking.Client;
 public class GameLoop extends Thread
 {
     /**
-     * The time in milliseconds between each action loop
-     * @since December 30, 2007
+     * Instance of the thread. There should only be one!
      */
-    private static int period = 10;
+    private static GameLoop instance;
+
+    /**
+     * The time in milliseconds between each action loop.
+     */
+    private final static int PERIOD = 10;
+
+    /**
+     * Whether the thread is enabled. Always true unless the thread is being destroyed.
+     */
+    private boolean enabled = true;
 
     public GameLoop()
     {
         super( "Game loop thread" );
+        setPriority( Thread.MAX_PRIORITY );
+        start();
     }
 
-    public static void increaseSpeed()
+    /**
+     * Starts/resumes the game loop.
+     */
+    public static void startLoop()
     {
-        period--;
+        System.out.println( "Start loop!" );
+        if ( instance == null )
+            instance = new GameLoop();
+        else
+            instance.enabled = true;
     }
 
-    public static void decreaseSpeed()
+    /**
+     * Stops the game loop and thread nicely. Note: the current timestep will be completed first.
+     */
+    public static void stopLoop()
     {
-        period++;
+        if ( instance == null ) // We're too late!
+            return;
+        else
+        {
+            instance.enabled = false;
+            instance = null;
+        }
+        
     }
 
     /**
@@ -44,7 +72,7 @@ public class GameLoop extends Thread
     {
         long timeOfLast = System.currentTimeMillis();
         System.out.println( "Game loop started." );
-        while ( true )
+        while ( enabled )
         {
             try
             {
@@ -53,7 +81,7 @@ public class GameLoop extends Thread
                 if ( shouldRun() )
                     Game.getInstance().act();
 
-                while ( System.currentTimeMillis() - timeOfLast < period )
+                while ( System.currentTimeMillis() - timeOfLast < PERIOD )
                     Thread.sleep( 1 );
 
             }
@@ -65,10 +93,7 @@ public class GameLoop extends Thread
     }
 
     /**
-     * Returns whether the game should run.
-     * 
-     * @return  whether we should run the next timestep
-     * @since January 13, 2007
+     * Returns whether the game should run in the next step or not.
      */
     public boolean shouldRun()
     {

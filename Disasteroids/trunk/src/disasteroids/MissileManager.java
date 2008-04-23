@@ -79,13 +79,18 @@ public class MissileManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new Missile( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+        units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         if ( !isInfiniteAmmo() )
             --ammo;
 
         timeTillNextShot = intervalShoot;
         Sound.playInternal( SoundLibrary.MISSILE_SHOOT );
+    }
+    
+    public void shoot( Color color, double x,  double y,  double dx,  double dy,  double angle)
+    {
+        
     }
 
     /**
@@ -106,7 +111,7 @@ public class MissileManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new Missile( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+            units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;

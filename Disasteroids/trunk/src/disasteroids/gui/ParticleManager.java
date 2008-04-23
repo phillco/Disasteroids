@@ -7,7 +7,6 @@ package disasteroids.gui;
 import disasteroids.*;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Game-wide manager of <code>Particle</code>s.
  * @author Phillip Cohen, Andy Kooiman
  */
-public class ParticleManager implements Serializable
+public class ParticleManager
 {
     /**
      * A list of all current <code>Particle</code>s.

@@ -44,7 +44,7 @@ public class Running
         // Check for resources.
         if ( !new File( "res\\Music2.mid" ).exists() )
         {
-            Running.fatalError( "Couldn't load resources.\nPlease make sure that your running directory is empty." );
+            Running.fatalError( "Couldn't load resources.\nPlease make sure that your running directory is empty or set to the project's main directory." );
             return;
         }
 
@@ -55,7 +55,6 @@ public class Running
         }
         catch ( Exception ex )
         {
-
         }
 
         // Do we have command-line arguments?
@@ -68,11 +67,12 @@ public class Running
                     preselectedOption = option;
         }
 
-
         // Read in our stored settings.
         Settings.loadFromStorage();
-        // Load Images
+
+        // Load images.
         ImageLibrary.init();
+
         // If the user has provided a selection, skip the menu.
         if ( preselectedOption != null )
             startGame( preselectedOption );
@@ -94,6 +94,7 @@ public class Running
     {
         try
         {
+            GameLoop.stopLoop();
             System.out.println( "\nShutting down nicely..." );
 
             // Tell the server we're quitting.
@@ -102,6 +103,7 @@ public class Running
                 Client.getInstance().quit();
             } // And I told Bill, that if they move my desk one more time, then, then....
             // Tell clients we're quitting.
+
             else if ( Server.is() )
             {
                 Server.getInstance().quit();
@@ -144,17 +146,17 @@ public class Running
         catch ( Throwable throwable )
         {
             System.out.println( "\nShut Down Failed! Killing now." );
-            
+
             //this should help if we ran out of memory
-            if( throwable instanceof java.lang.OutOfMemoryError )
+            if ( throwable instanceof java.lang.OutOfMemoryError )
             {
                 System.gc();
-                Game.getInstance().gameObjects=null;
-                Game.getInstance().shootingObjects=null;
+                Game.getInstance().gameObjects = null;
+                Game.getInstance().shootingObjects = null;
                 disasteroids.gui.ParticleManager.clear();
                 System.gc();
             }
-            
+
             // Write our settings.
             Settings.saveToStorage(); //we really hope that this survived
 
@@ -165,6 +167,7 @@ public class Running
         {
             //shouldn't get here... but if we do, just in case
             System.exit( 255 ); //It failed <i>real</i> bad
+
         }
 
     }
@@ -188,6 +191,9 @@ public class Running
                 new Game( Settings.getLastGameMode() );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 Sound.updateMusic();
+                break;
+            case LOAD:
+                new AsteroidsFrame( Game.loadFromFile() );
                 break;
 
             case TUTORIAL:
@@ -218,10 +224,10 @@ public class Running
                 }
                 break;
             default:
-                Running.warning( "Unexpected menu selection." );
+                Running.fatalError( "Unexpected menu selection." );
             case EXIT:
                 Running.quit();
-            }
+        }
     }
 
     /**

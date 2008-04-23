@@ -18,11 +18,6 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -30,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @since December 17, 2007
  * @author Phillip Cohen
  */
-public class Game implements Serializable
+public class Game
 {
     /**
      * Dimensions of the game, regardless of the graphical depiction.
@@ -93,13 +88,7 @@ public class Game implements Serializable
     private GameMode gameMode;
 
     /**
-     * The thread that executes the game loop.
-     * @since December 29, 2007
-     */
-    private transient GameLoop thread;
-
-    /**
-     * Reference to the Game instance. Game itself can't be static because of saving/restoring.
+     * Reference to the currently running Game instance.
      * @since December 29, 2007
      */
     private static Game instance;
@@ -136,9 +125,7 @@ public class Game implements Serializable
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().resetGame();
 
-        thread = new GameLoop();
-        thread.setPriority( Thread.MAX_PRIORITY );
-        thread.start();
+        GameLoop.startLoop();
     }
 
     /**
@@ -157,55 +144,56 @@ public class Game implements Serializable
     }
 
     /**
-     * Saves the game to <code>Game.ser</code>.
-     * 
-     * @since December 29, 2007
+     * Saves the game to <code>res\Game.save</code>.
      */
     public static void saveToFile()
     {
-        FileOutputStream fos = null;
-        ObjectOutputStream out = null;
         try
         {
-            fos = new FileOutputStream( "Game.ser" );
-            out = new ObjectOutputStream( fos );
-            out.writeObject( instance );
-            out.close();
+            FileOutputStream fos = new FileOutputStream( "res\\Game.save" );
+            DataOutputStream stream = new DataOutputStream( fos );
+
+            instance.flatten( stream );
+
+            stream.writeInt( Local.getLocalPlayer().id );
+            stream.flush();
+            fos.close();
         }
         catch ( IOException ex )
         {
             ex.printStackTrace();
         }
 
-        Running.log( "Game saved." );
+        Running.log( "Game saved!" );
     }
 
     /**
-     * Loads the game from <code>Game.ser</code>.
-     * 
-     * @since December 29, 2007
+     * Loads the game from <code>res\Game.save</code> and returns the local player ID.
      */
-    public static void loadFromFile()
+    public static int loadFromFile()
     {
+        int id = -1;
         FileInputStream fis = null;
+        try
         {
-            try
-            {
-                fis = new FileInputStream( "Game.ser" );
-                ObjectInputStream in = new ObjectInputStream( fis );
-                instance = (Game) in.readObject();
-                in.close();
-                Running.log( "Game restored." );
-            }
-            catch ( IOException ex )
-            {
-                ex.printStackTrace();
-            }
-            catch ( ClassNotFoundException ex )
-            {
-                ex.printStackTrace();
-            }
+            fis = new FileInputStream( "res\\Game.save" );
+            DataInputStream stream = new DataInputStream( fis );
+
+            instance = new Game( stream );
+            id = stream.readInt();
+
+            fis.close();
+            GameLoop.startLoop();
+            Running.log( "Game restored!" );
         }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
+        }
+
+        // [PC] This is required, possibly because we have to go back and do the timestep that was done after saving.
+        //instance.timeStep -= 1;
+        return id;
     }
 
     /**
@@ -343,7 +331,7 @@ public class Game implements Serializable
         {
             // Return to the menu.
             AsteroidsFrame.frame().setVisible( false );
-            paused = true;
+            GameLoop.stopLoop();
             new MainMenu();
             return;
         }

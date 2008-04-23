@@ -43,7 +43,7 @@ class SniperManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new SniperRound( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+        units.add( new SniperRound( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         if ( !isInfiniteAmmo() )
             --ammo;
@@ -61,7 +61,7 @@ class SniperManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new SniperRound( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+            units.add( new SniperRound( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
             if ( !isInfiniteAmmo() )
                 --ammo;
 

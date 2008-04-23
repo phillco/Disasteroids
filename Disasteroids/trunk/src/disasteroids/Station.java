@@ -97,6 +97,7 @@ public class Station extends GameObject implements ShootingObject
         move();
         checkCollision();
         manager.act();
+        manager.reload();
 
         angle %= 2 * Math.PI; //Make sure the angle does not grow without bound
 
@@ -154,7 +155,7 @@ public class Station extends GameObject implements ShootingObject
             {
                 if ( manager.canShoot() )
                 {
-                    manager.shoot( this, Color.white, angle );
+                    manager.shoot( this, Color.white, 0 - angle );
                     Sound.playInternal( SoundLibrary.STATION_SHOOT );  // Play a custom sound.
 
                 }
@@ -348,6 +349,18 @@ public class Station extends GameObject implements ShootingObject
     int centerY()
     {
         return (int) ( getY() + size / 2 );
+    }
+
+    @Override
+    public double getFiringOriginX()
+    {
+        return centerX() + 25 * Math.cos( 0 - angle );
+    }
+
+    @Override
+    public double getFiringOriginY()
+    {
+        return centerY() - 25 * Math.sin( 0 - angle );
     }
 
     /**

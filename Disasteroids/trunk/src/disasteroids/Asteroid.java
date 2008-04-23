@@ -14,13 +14,12 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * A game object which the players remove to score.
  * @author Andy Kooiman, Phillip Cohen
  */
-public class Asteroid extends GameObject implements GameElement, Serializable
+public class Asteroid extends GameObject implements GameElement
 {
     /**
      * The number of children we've spawned.

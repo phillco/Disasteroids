@@ -96,7 +96,7 @@ public class AsteroidsFrame extends Frame
         // Close when the exit key is pressed.
         AsteroidsFrameAdapter a = new AsteroidsFrameAdapter();
         addWindowListener( a );
-        addComponentListener( a );
+     //   addComponentListener( a );
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();

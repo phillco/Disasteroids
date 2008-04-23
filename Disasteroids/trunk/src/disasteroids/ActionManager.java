@@ -7,7 +7,6 @@ package disasteroids;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -16,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Andy Kooiman
  * @since Classic
  */
-public class ActionManager implements Serializable
+public class ActionManager
 {
     /**
      * The list of <code>Action</code> to be performed

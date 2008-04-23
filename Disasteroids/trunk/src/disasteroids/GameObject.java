@@ -67,6 +67,24 @@ public abstract class GameObject implements GameElement
     {
         return dx;
     }
+    
+    /**
+     * Returns the x-coordinate of the point where this object "shoots" - that is, where its bullets are launched.
+     * If not overridden, it just returns getX().
+     */
+    public double getFiringOriginX()
+    {
+        return getX();
+    }
+    
+     /**
+     * Returns the y-coordinate of the point where this object "shoots" - that is, where its bullets are launched.
+     * If not overridden, it just returns getY().
+     */
+    public double getFiringOriginY()
+    {
+        return getY();
+    }
 
     public void setDx( double dx )
     {

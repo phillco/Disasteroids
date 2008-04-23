@@ -8,7 +8,6 @@ import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Properties;
 
 /**
@@ -16,7 +15,7 @@ import java.util.Properties;
  * @since November 16, 2007
  * @author Phillip Cohen
  */
-public class Settings implements Serializable
+public class Settings
 {
     /**
      * First time startup?

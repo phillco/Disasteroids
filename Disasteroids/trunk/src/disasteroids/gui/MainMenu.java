@@ -16,6 +16,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
 
@@ -218,11 +219,17 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                     {
                         if ( MenuOption.values()[choice] == MenuOption.OPTIONS )
                         {
+                            // Go to the setup menu.
                             choice = 0;
                             Settings.setInSetup( true );
                         }
                         else
                         {
+                            if ( MenuOption.values()[choice] == MenuOption.LOAD && !new File("res\\Game.save").exists())
+                            {
+                                JOptionPane.showMessageDialog( this, "No saved games found.", "Couldn't load...", JOptionPane.INFORMATION_MESSAGE );
+                                return;
+                            }
                             setVisible( false );
                             dispose();
                             Running.startGame( MenuOption.values()[choice] );

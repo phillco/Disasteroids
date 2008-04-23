@@ -38,13 +38,13 @@ class BulletManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+        units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         // This bonus fires two extra bullets at an angle.
         if ( threeWayShot )
         {
-            units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle + Math.PI / 8 ) );
-            units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle - Math.PI / 8 ) );
+            units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle + Math.PI / 8 ) );
+            units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle - Math.PI / 8 ) );
         }
 
         if ( !isInfiniteAmmo() )
@@ -63,7 +63,7 @@ class BulletManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new Bullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+            units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;

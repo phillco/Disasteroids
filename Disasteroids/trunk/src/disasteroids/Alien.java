@@ -136,6 +136,7 @@ public class Alien extends GameObject implements ShootingObject
         
         checkCollision();
         manager.act();
+        manager.reload();
 
         // Prepare to flash.
         if ( life <= 0 )
@@ -369,22 +370,39 @@ public class Alien extends GameObject implements ShootingObject
                 return;
 
             // Shoot a missile, and, randomly, an alien bullet. 
-            units.add( new Missile( this, color, parent.getX(), parent.getY(), parent.getDx() / 8, parent.getDy() / 8, angle ) );
+            units.add( new AlienMissile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx() / 8, parent.getDy() / 8, angle ) );
             if ( Util.getRandomGenerator().nextBoolean() )
-                units.add( new AlienBullet( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+                units.add( new AlienBomb( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;
 
             timeTillNextShot = 12;
         }
+        
+        /**
+         * Just a normal missile that does little damage.
+         */
+        private class AlienMissile extends Missile
+        {
+            public AlienMissile( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
+            {
+                super( manager, color, x, y, dx, dy, angle );
+            }
+
+            @Override
+            public int getDamage()
+            {
+                return 2;
+            }            
+        }
 
         /**
-         * The circular, spinning unit that does constant damage to whoever touches it.
+         * A circular, spinning unit that does constant damage to whoever touches it.
          */
-        private class AlienBullet extends Missile
+        private class AlienBomb extends Missile
         {
-            public AlienBullet( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
+            public AlienBomb( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
                 super( manager, color, x, y, dx, dy, angle );
                 radius = 1;

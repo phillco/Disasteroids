@@ -7,14 +7,13 @@ package disasteroids;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * A ship's action (keystroke). Used for synchronization between computers.
  * @author Andy Kooiman
  * @since Classic
  */
-public class Action implements Serializable
+public class Action
 {
     /**
      * The <code>Ship</code> that executed this action.

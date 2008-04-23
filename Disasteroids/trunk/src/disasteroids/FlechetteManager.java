@@ -41,7 +41,7 @@ public class FlechetteManager extends Weapon
             if ( !canShoot() )
                 break;
 
-            units.add( new Flechette( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(),
+            units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
                                       angle + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
             if ( !isInfiniteAmmo() )
                 --ammo;
@@ -62,7 +62,7 @@ public class FlechetteManager extends Weapon
                 if ( !canBerserk() )
                     break;
 
-                units.add( new Flechette( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(),
+                units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
                                           Util.getRandomGenerator().nextDouble() * 2 * Math.PI + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
                 ++firedShots;
                 if ( !isInfiniteAmmo() )

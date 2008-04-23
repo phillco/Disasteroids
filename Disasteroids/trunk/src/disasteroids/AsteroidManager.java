@@ -10,7 +10,6 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -19,7 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Manger of the level's asteroids.
  * @author Andy Kooiman
  */
-public class AsteroidManager implements Serializable
+public class AsteroidManager
 {
     /**
      * A thread-ready list of all <code>Asteroid</code>s.

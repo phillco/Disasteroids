@@ -13,6 +13,7 @@ public enum MenuOption
 {
     SINGLEPLAYER( "Singleplayer", "-single" ),
     TUTORIAL( "Tutorial (unfinished)", "-tutorial" ),
+    LOAD( "Load game", "-load" ),
     START_SERVER( "Start server", "-host" ),
     CONNECT( "Join server", "-join" ),
     OPTIONS( "Options", "-options" ),

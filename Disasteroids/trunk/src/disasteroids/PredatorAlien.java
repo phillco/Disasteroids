@@ -50,7 +50,7 @@ public class PredatorAlien extends Alien
     {
         int radius = 200; //min distance from ship
         double leniance = 125;
-        double proximity = getProximity( s );
+        double proximity = Util.getDistance( this, s );
 
         if ( proximity < radius - ( leniance / 2.0 ) )
             accelerateAway( s );
@@ -88,11 +88,11 @@ public class PredatorAlien extends Alien
         {
             Ship closestInvincible = null;
             for ( Ship s : Game.getInstance().players )
-                if ( getProximity( s ) < range )
+                if ( Util.getDistance( this, s ) < range )
                 {
-                    if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
+                    if ( closestShip == null || Util.getDistance( this, s ) > Util.getDistance( this, closestShip ) )
                         closestShip = s;
-                    if ( closestInvincible == null || getProximity( s ) > getProximity( closestInvincible ) )
+                    if ( closestInvincible == null || Util.getDistance( this, s ) > Util.getDistance( this, closestInvincible ) )
                         closestInvincible = s;
                 }
             if ( closestShip == null && closestInvincible != null )

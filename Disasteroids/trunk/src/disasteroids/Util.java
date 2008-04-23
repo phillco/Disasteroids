@@ -40,12 +40,14 @@ public class Util
         double deltaY = ( one.getY() - two.getY() + Game.getInstance().GAME_HEIGHT * 2 ) % Game.getInstance().GAME_HEIGHT;
         return Math.sqrt( deltaX * deltaX + deltaY * deltaY );
     }
+    
     private static Random[] instances = { new Random(), new Random(), new Random() };
 
     private static int nextRandomGenerator = 0;
 
     /**
-     * Returns the global random generator.
+     * Returns a global random generator.
+     * Multiple instances may be used for speed
      * 
      * @return  a static instance of <code>Random</code>
      * @since January 18, 2008

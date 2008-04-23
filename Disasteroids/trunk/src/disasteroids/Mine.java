@@ -57,12 +57,12 @@ public class Mine extends Weapon.Unit
             Set<GameObject> closeObjects = new HashSet<GameObject>();
             for ( Asteroid ast : Game.getInstance().getAsteroidManager().getAsteroids() )
             {
-                if ( Math.pow( ast.getX() - getX(), 2 ) + Math.pow( ast.getY() - getY(), 2 ) < parent.sight() * parent.sight() )
+                if ( Util.getDistance( this, ast ) < parent.sight() )
                     closeObjects.add( ast );
             }
             for ( GameObject go : Game.getInstance().baddies )
             {
-                if ( Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) < parent.sight() * parent.sight() )
+                if ( Util.getDistance( this, go ) < parent.sight() )
                     closeObjects.add( go );
             }
 

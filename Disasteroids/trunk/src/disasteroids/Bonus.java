@@ -137,8 +137,7 @@ public class Bonus extends GameObject
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Math.pow( getX() - s.getX(), 2 ) + ( Math.pow( getY() - s.getY(), 2 ) ) <
-                        ( RADIUS + s.getRadius() ) * ( RADIUS + s.getRadius() ) )
+                if ( Util.getDistance( this, s ) < RADIUS + s.getRadius() )
                 {
                     if ( applyBonus( s ) )
                     {
@@ -239,20 +238,20 @@ public class Bonus extends GameObject
                 int cX = RelativeGraphics.translateX( getX() );
                 int cY = RelativeGraphics.translateY( getY() );
                 int deviance = 5 + Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 );
-                int x1=(int)(cX+deviance*Math.cos(Math.toRadians(0)+angle));
-                int x2=(int)(cX+deviance*Math.cos(Math.toRadians(-120)+angle));
-                int x3=(int)(cX+deviance*Math.cos(Math.toRadians(120)+angle));
-                int y1=(int)(cY-deviance*Math.sin(Math.toRadians(0)+angle));
-                int y2=(int)(cY-deviance*Math.sin(Math.toRadians(-120)+angle));
-                int y3=(int)(cY-deviance*Math.sin(Math.toRadians(120)+angle));
-                Polygon p=new Polygon();
-                p.addPoint(x1,y1);
-                p.addPoint(x2,y2);
-                p.addPoint(x3,y3);
+                int x1 = (int) ( cX + deviance * Math.cos( Math.toRadians( 0 ) + angle ) );
+                int x2 = (int) ( cX + deviance * Math.cos( Math.toRadians( -120 ) + angle ) );
+                int x3 = (int) ( cX + deviance * Math.cos( Math.toRadians( 120 ) + angle ) );
+                int y1 = (int) ( cY - deviance * Math.sin( Math.toRadians( 0 ) + angle ) );
+                int y2 = (int) ( cY - deviance * Math.sin( Math.toRadians( -120 ) + angle ) );
+                int y3 = (int) ( cY - deviance * Math.sin( Math.toRadians( 120 ) + angle ) );
+                Polygon p = new Polygon();
+                p.addPoint( x1, y1 );
+                p.addPoint( x2, y2 );
+                p.addPoint( x3, y3 );
                 g.setColor( Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ) );
-                g.fillPolygon(p);
+                g.fillPolygon( p );
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
-                g.drawPolygon(p);
+                g.drawPolygon( p );
                 break;
         }
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );

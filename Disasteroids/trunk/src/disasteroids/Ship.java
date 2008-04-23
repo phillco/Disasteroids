@@ -326,7 +326,7 @@ public class Ship extends GameObject implements ShootingObject
             if ( snipeFlash )
             {
                 float dash[] =
-                {
+                        {
                     8.0f
                 };
                 Stroke old = ( (Graphics2D) g ).getStroke();
@@ -425,7 +425,7 @@ public class Ship extends GameObject implements ShootingObject
             {
                 for ( Weapon.Unit m : wm.getUnits() )
                 {
-                    if ( Math.pow( (int) ( getX() - m.getX() ), 2 ) + Math.pow( (int) ( getY() - m.getY() ), 2 ) < Math.pow( RADIUS + m.getRadius(), 2 ) )
+                    if ( Util.getDistance( this, m ) < RADIUS + m.getRadius() )
                     {
                         String obit = "";
                         if ( other instanceof Ship )
@@ -852,18 +852,18 @@ public class Ship extends GameObject implements ShootingObject
         numShipsKilled = stream.readInt();
 
         allWeapons[0] = new MissileManager( stream );
-        System.out.println( "Received " + stream.readInt() + "...");
+        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[1] = new BulletManager( stream );
-        System.out.println( "Received " + stream.readInt() + "...");
+        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[2] = new MineManager( stream );
-        System.out.println( "Received " + stream.readInt() + "...");
+        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[3] = new LaserManager( stream );
-        System.out.println( "Received " + stream.readInt() + "...");
+        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[4] = new FlechetteManager( stream );
-        System.out.println( "Received " + stream.readInt() + "...");
-        
+        System.out.println( "Received " + stream.readInt() + "..." );
+
         sniperManager = new SniperManager( stream );
-         
+
         // Apply basic construction.        
         double fadePct = 0.6;
         myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );

@@ -98,18 +98,18 @@ public class Alien extends GameObject implements ShootingObject
             ax *= -1.8;
             ay *= -1.8;
         }
-        
+
         // Find players within our range.        
         int range = 300;
         Ship closestShip = null;
         {
             Ship closestInvincible = null;
             for ( Ship s : Game.getInstance().players )
-                if ( getProximity( s ) < range )
+                if ( Util.getDistance( this, s ) < range )
                 {
-                    if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
+                    if ( closestShip == null || Util.getDistance( this, s ) > Util.getDistance( this, s ) )
                         closestShip = s;
-                    if ( closestInvincible == null || getProximity( s ) > getProximity( closestInvincible ) )
+                    if ( closestInvincible == null || Util.getDistance( this, s ) > Util.getDistance( this, s ) )
                         closestInvincible = s;
                 }
             if ( closestShip == null && closestInvincible != null )
@@ -125,6 +125,7 @@ public class Alien extends GameObject implements ShootingObject
 
         angle += size / 560.0 + 0.015;
     }
+
     /**
      * Executes generic behavior for the Alien class 
      * (workaround for the subclasses)
@@ -133,7 +134,7 @@ public class Alien extends GameObject implements ShootingObject
     {
         move();
         setSpeed( Math.min( 3, getDx() + ax ), Math.min( 3, getDy() + ay ) );
-        
+
         checkCollision();
         manager.act();
         manager.reload();
@@ -224,7 +225,7 @@ public class Alien extends GameObject implements ShootingObject
     protected double calculateAngle( Ship target )
     {
         double desiredAngle = 0.0;
-        double distance = getProximity( target );
+        double distance = Util.getDistance( this, target );
         double time = Math.log( distance ) * ( 5 + Util.getRandomGenerator().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
@@ -252,18 +253,6 @@ public class Alien extends GameObject implements ShootingObject
     double centerY()
     {
         return getY() + 3;
-    }
-
-    /**
-     * Returns the distance to a given ship using Pythagoras.
-     * 
-     * @param s     the ship
-     * @return      the distance to it
-     * @since January 6, 2008
-     */
-    protected double getProximity( Ship s )
-    {
-        return Math.sqrt( Math.pow( getX() - s.getX(), 2 ) + Math.pow( getY() - s.getY(), 2 ) );
     }
 
     /**
@@ -379,7 +368,7 @@ public class Alien extends GameObject implements ShootingObject
 
             timeTillNextShot = 12;
         }
-        
+
         /**
          * Just a normal missile that does little damage.
          */
@@ -394,7 +383,7 @@ public class Alien extends GameObject implements ShootingObject
             public int getDamage()
             {
                 return 2;
-            }            
+            }
         }
 
         /**

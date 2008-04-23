@@ -133,11 +133,11 @@ public class Station extends GameObject implements ShootingObject
             Ship closestInvincible = null;
             for ( Ship s : Game.getInstance().players )
             {
-                if ( getProximity( s ) < range )
+                if ( Util.getDistance( this, s ) < range )
                 {
-                    if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
+                    if ( closestShip == null || Util.getDistance( this, s ) > Util.getDistance( this, closestShip ) )
                         closestShip = s;
-                    if ( closestInvincible == null || getProximity( s ) > getProximity( closestInvincible ) )
+                    if ( closestInvincible == null || Util.getDistance( this, s ) > Util.getDistance( this, closestInvincible ) )
                         closestInvincible = s;
                 }
             }
@@ -200,7 +200,7 @@ public class Station extends GameObject implements ShootingObject
                         }
                         if ( m instanceof Mine && disableCounter > 0 && !( (Mine) m ).isExploding() && ( (Mine) m ).isArmed() )
                         {
-                            hitsWhileDisabled+=2;
+                            hitsWhileDisabled += 2;
                             if ( hitsWhileDisabled > 3 )
                             {
                                 m.explode();
@@ -233,18 +233,6 @@ public class Station extends GameObject implements ShootingObject
                 }
             }
         }
-    }
-
-    /**
-     * Returns the distance to a given ship using pythagoras.
-     * 
-     * @param s     the ship
-     * @return      the distance to it
-     * @since January 6, 2008
-     */
-    private double getProximity( Ship s )
-    {
-        return Math.sqrt( Math.pow( getX() - s.getX(), 2 ) + Math.pow( getY() - s.getY(), 2 ) );
     }
 
     /**
@@ -423,7 +411,7 @@ public class Station extends GameObject implements ShootingObject
      */
     private void calculateAngle( Ship target )
     {
-        double distance = getProximity( target );
+        double distance = Util.getDistance( this, target );
         double time = Math.log( distance ) * ( 5 + Util.getRandomGenerator().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
@@ -441,7 +429,6 @@ public class Station extends GameObject implements ShootingObject
                 angle += SWEEP_SPEED;
         }
         else //if it shouldn't move counterclockwise, moveclockwise
-
         {
             if ( Math.abs( angle - desiredAngle ) < SWEEP_SPEED )
                 angle = desiredAngle;

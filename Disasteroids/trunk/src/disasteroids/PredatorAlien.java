@@ -52,11 +52,11 @@ public class PredatorAlien extends Alien
     {
         int radius = 200; //min distance from ship
         double leniance = 125;
-        int proximity = getProximity(s);
+        double proximity = getProximity(s);
         
-        if(proximity<radius-(int)(leniance/2.0))
+        if(proximity<radius-(leniance/2.0))
             accelerateAway(s);
-        if(proximity>radius+(int)(leniance/2.0))
+        if(proximity>radius+(leniance/2.0))
             accelerateToward(s);
         else
             deccelerate();
@@ -68,12 +68,12 @@ public class PredatorAlien extends Alien
     
     }
     
-    protected void accelerateAway()
+    protected void accelerateAway(Ship s)
     {
         
     }
     
-    protected void accelerateToward()
+    protected void accelerateToward(Ship s)
     {
         
     }
@@ -107,6 +107,7 @@ public class PredatorAlien extends Alien
             double mAngle = calculateAngle( closestShip );
             manager.shoot( this, color, mAngle );
             angle = mAngle; //orients toward player
+            prey = closestShip;
             return true;
         }
         else

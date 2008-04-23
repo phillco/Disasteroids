@@ -98,7 +98,7 @@ public class Alien extends GameObject implements ShootingObject
             ax *= -1.8;
             ay *= -1.8;
         }
-        generalActBehavior();
+        
         // Find players within our range.        
         int range = 300;
         Ship closestShip = null;

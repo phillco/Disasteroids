@@ -27,12 +27,12 @@ public class Alien extends GameObject implements ShootingObject
      * Our firing manager.
      * @since January 6, 2008
      */
-    private MissileManager manager;
+    protected MissileManager manager;
 
     /**
      * The color of this <code>Alien</code>
      */
-    private Color color;
+    protected Color color;
 
     /**
      * The diameter(?!?) of this <code>Alien</code>
@@ -84,9 +84,7 @@ public class Alien extends GameObject implements ShootingObject
      */
     public void act()
     {
-        move();
-
-        setSpeed( Math.min( 3, getDx() + ax ), Math.min( 3, getDy() + ay ) );
+        generalActBehavior();
 
         ax *= 0.94;
         ay *= 0.94;
@@ -100,8 +98,42 @@ public class Alien extends GameObject implements ShootingObject
             ax *= -1.8;
             ay *= -1.8;
         }
+        generalActBehavior();
+        // Find players within our range.        
+        int range = 300;
+        Ship closestShip = null;
+        {
+            Ship closestInvincible = null;
+            for ( Ship s : Game.getInstance().players )
+                if ( getProximity( s ) < range )
+                {
+                    if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
+                        closestShip = s;
+                    if ( closestInvincible == null || getProximity( s ) > getProximity( closestInvincible ) )
+                        closestInvincible = s;
+                }
+            if ( closestShip == null && closestInvincible != null )
+                closestShip = closestInvincible;
+        }
 
+        // Aim towards closest ship.
+        if ( closestShip != null )
+        {
+            double mAngle = calculateAngle( closestShip );
+            manager.shoot( this, color, mAngle );
+        }
 
+        angle += size / 560.0 + 0.015;
+    }
+    /**
+     * Executes generic behavior for the Alien class 
+     * (workaround for the subclasses)
+     */
+    protected void generalActBehavior()
+    {
+        move();
+        setSpeed( Math.min( 3, getDx() + ax ), Math.min( 3, getDy() + ay ) );
+        
         checkCollision();
         manager.act();
 
@@ -133,31 +165,6 @@ public class Alien extends GameObject implements ShootingObject
         if ( life < 40 )
             ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), ( 50 - life ) / 10 );
 
-        // Find players within our range.        
-        int range = 300;
-        Ship closestShip = null;
-        {
-            Ship closestInvincible = null;
-            for ( Ship s : Game.getInstance().players )
-                if ( getProximity( s ) < range )
-                {
-                    if ( closestShip == null || getProximity( s ) > getProximity( closestShip ) )
-                        closestShip = s;
-                    if ( closestInvincible == null || getProximity( s ) > getProximity( closestInvincible ) )
-                        closestInvincible = s;
-                }
-            if ( closestShip == null && closestInvincible != null )
-                closestShip = closestInvincible;
-        }
-
-        // Aim towards closest ship.
-        if ( closestShip != null )
-        {
-            double mAngle = calculateAngle( closestShip );
-            manager.shoot( this, color, mAngle );
-        }
-
-        angle += size / 560.0 + 0.015;
     }
 
     /**
@@ -213,7 +220,7 @@ public class Alien extends GameObject implements ShootingObject
      * @param target The <code>Ship</code> to aim at
      * @return The angle to aim at to hit.
      */
-    private double calculateAngle( Ship target )
+    protected double calculateAngle( Ship target )
     {
         double desiredAngle = 0.0;
         double distance = getProximity( target );
@@ -253,7 +260,7 @@ public class Alien extends GameObject implements ShootingObject
      * @return      the distance to it
      * @since January 6, 2008
      */
-    private double getProximity( Ship s )
+    protected double getProximity( Ship s )
     {
         return Math.sqrt( Math.pow( getX() - s.getX(), 2 ) + Math.pow( getY() - s.getY(), 2 ) );
     }

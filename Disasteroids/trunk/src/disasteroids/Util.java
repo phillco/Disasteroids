@@ -36,9 +36,11 @@ public class Util
      */
     public static double getDistance( GameObject one, GameObject two )
     {
-        double deltaX = ( one.getX() - two.getX() + Game.getInstance().GAME_WIDTH * 2 ) % Game.getInstance().GAME_WIDTH;
-        double deltaY = ( one.getY() - two.getY() + Game.getInstance().GAME_HEIGHT * 2 ) % Game.getInstance().GAME_HEIGHT;
-        return Math.sqrt( deltaX * deltaX + deltaY * deltaY );
+//        double deltaX = ( one.getX() - two.getX() + Game.getInstance().GAME_WIDTH * 1 ) % Game.getInstance().GAME_WIDTH;
+//        double deltaY = ( one.getY() - two.getY() + Game.getInstance().GAME_HEIGHT * 1 ) % Game.getInstance().GAME_HEIGHT;
+//        return Math.sqrt( deltaX * deltaX + deltaY * deltaY );
+        return Math.sqrt(Math.pow((one.getX()-two.getX())%Game.getInstance().GAME_WIDTH,2) 
+                + Math.pow((one.getY()-two.getY())%Game.getInstance().GAME_HEIGHT,2));
     }
     
     private static Random[] instances = { new Random(), new Random(), new Random() };

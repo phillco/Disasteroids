@@ -153,29 +153,38 @@ class LaserManager extends Weapon
     //                                                                            \\
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
+     * Note: works very poorly!
      */
     @Override
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-
         stream.writeInt( damage );
         stream.writeInt( intervalShoot );
         stream.writeInt( length );
         stream.writeInt( speed );
+
+        // Flatten all of the units.
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            ( (Laser) u ).flatten( stream );
     }
 
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
+     * Note: works very poorly!
      */
     public LaserManager( DataInputStream stream ) throws IOException
     {
-        for ( int i = 0; i < stream.readInt(); i++ )
-            units.add( new Laser( stream ) );
-
+        super( stream );
         damage = stream.readInt();
         intervalShoot = stream.readInt();
         length = stream.readInt();
         speed = stream.readInt();
+
+        // Restore all of the units.
+        int size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
+            units.add( new Laser( stream, this ) );
     }
 }

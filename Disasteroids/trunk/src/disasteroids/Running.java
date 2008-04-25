@@ -190,10 +190,12 @@ public class Running
             case SINGLEPLAYER:
                 new Game( Settings.getLastGameMode() );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
+                AsteroidsFrame.frame().showStartMessage( "Press any key to begin." );
                 Sound.updateMusic();
                 break;
             case LOAD:
                 new AsteroidsFrame( Game.loadFromFile() );
+                Game.getInstance().setPaused( false, false );
                 break;
 
             case TUTORIAL:

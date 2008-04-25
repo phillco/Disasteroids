@@ -326,7 +326,7 @@ public class Ship extends GameObject implements ShootingObject
             if ( snipeFlash )
             {
                 float dash[] =
-                        {
+                {
                     8.0f
                 };
                 Stroke old = ( (Graphics2D) g ).getStroke();
@@ -819,16 +819,11 @@ public class Ship extends GameObject implements ShootingObject
         stream.writeInt( numAsteroidsKilled );
         stream.writeInt( numShipsKilled );
 
-        int i = 0;
         for ( Weapon w : allWeapons )
-        {
             w.flatten( stream );
-            System.out.println( "Writing " + i + "...." );
-            stream.writeInt( i++ );
-        }
 
         sniperManager.flatten( stream );
-
+        stream.writeInt( 666 );
     }
 
     /**
@@ -852,17 +847,15 @@ public class Ship extends GameObject implements ShootingObject
         numShipsKilled = stream.readInt();
 
         allWeapons[0] = new MissileManager( stream );
-        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[1] = new BulletManager( stream );
-        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[2] = new MineManager( stream );
-        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[3] = new LaserManager( stream );
-        System.out.println( "Received " + stream.readInt() + "..." );
         allWeapons[4] = new FlechetteManager( stream );
-        System.out.println( "Received " + stream.readInt() + "..." );
-
         sniperManager = new SniperManager( stream );
+
+        int check = stream.readInt();
+        if ( check != 666 )
+            Running.fatalError( "Failed checksum test.\n\nReceived " + check + "..." + allWeapons[0].getAmmo() );
 
         // Apply basic construction.        
         double fadePct = 0.6;

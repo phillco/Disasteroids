@@ -159,6 +159,16 @@ class BulletManager extends Weapon
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
+        stream.writeInt( damage);
+        stream.writeInt( intervalShoot);
+        stream.writeInt( radius);
+        stream.writeInt( speed );
+        stream.writeBoolean( threeWayShot );        
+
+        // Flatten all of the units.
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            ( (Bullet) u ).flatten( stream );        
     }
 
     /**
@@ -166,7 +176,16 @@ class BulletManager extends Weapon
      */
     public BulletManager( DataInputStream stream ) throws IOException
     {
-        for ( int i = 0; i < stream.readInt(); i++ )
-            units.add( new Bullet( stream ) );
+        super( stream );
+        damage = stream.readInt();
+        intervalShoot = stream.readInt();
+        radius = stream.readInt();
+        speed = stream.readInt();
+        threeWayShot = stream.readBoolean();
+        
+        // Restore all of the units.
+        int size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
+            units.add( new Bullet( stream, this ));
     }
 }

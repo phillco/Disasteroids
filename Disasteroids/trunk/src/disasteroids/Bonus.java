@@ -137,7 +137,7 @@ public class Bonus extends GameObject
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Util.getDistance( this, s ) < RADIUS + s.getRadius() )
+                if ( Util.getDistance( this, s ) < RADIUS + ( myClass == Class.WEAPON ? 3 : 0 ) + s.getRadius() )
                 {
                     if ( applyBonus( s ) )
                     {
@@ -230,9 +230,7 @@ public class Bonus extends GameObject
 
         switch ( myClass )
         {
-            case POWERUP:
-                AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( ( (float) bonusType ) / myClass.types, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
-                break;
+
             case WEAPON:
 
                 int cX = RelativeGraphics.translateX( getX() );
@@ -252,6 +250,9 @@ public class Bonus extends GameObject
                 g.fillPolygon( p );
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
                 g.drawPolygon( p );
+            //    break; 
+            case POWERUP:
+                AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( ( (float) bonusType ) / myClass.types, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
                 break;
         }
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );

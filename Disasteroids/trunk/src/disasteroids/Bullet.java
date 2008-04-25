@@ -71,8 +71,10 @@ class Bullet extends Weapon.Unit
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public Bullet( DataInputStream stream ) throws IOException
+    public Bullet( DataInputStream stream, BulletManager parent ) throws IOException
     {
         super( stream );
+        
+        this.parent = parent;
     }
 }

@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The classic weapon that fires <code>Missiles</code>.
@@ -87,10 +88,9 @@ public class MissileManager extends Weapon
         timeTillNextShot = intervalShoot;
         Sound.playInternal( SoundLibrary.MISSILE_SHOOT );
     }
-    
-    public void shoot( Color color, double x,  double y,  double dx,  double dy,  double angle)
+
+    public void shoot( Color color, double x, double y, double dx, double dy, double angle )
     {
-        
     }
 
     /**
@@ -356,7 +356,6 @@ public class MissileManager extends Weapon
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-
         stream.writeInt( hugeBlastProb );
         stream.writeInt( hugeBlastSize );
         stream.writeInt( intervalShoot );
@@ -364,7 +363,12 @@ public class MissileManager extends Weapon
         stream.writeInt( maxShots );
         stream.writeInt( popQuantity );
         stream.writeInt( probPop );
-        stream.writeDouble( speed );
+        stream.writeDouble( speed );               
+
+        // Flatten all of the units.
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            ( (Missile) u ).flatten( stream );
     }
 
     /**
@@ -372,9 +376,7 @@ public class MissileManager extends Weapon
      */
     public MissileManager( DataInputStream stream ) throws IOException
     {
-        for ( int i = 0; i < stream.readInt(); i++ )
-            units.add( new Missile( stream ) );
-
+        super( stream );       
         hugeBlastProb = stream.readInt();
         hugeBlastSize = stream.readInt();
         intervalShoot = stream.readInt();
@@ -383,5 +385,10 @@ public class MissileManager extends Weapon
         popQuantity = stream.readInt();
         probPop = stream.readInt();
         speed = stream.readDouble();
+        
+        // Restore all of the units.
+        int size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
+            units.add( new Missile( stream, this ));
     }
 }

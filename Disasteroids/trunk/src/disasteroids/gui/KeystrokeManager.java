@@ -6,6 +6,7 @@ package disasteroids.gui;
 
 import disasteroids.Action;
 import disasteroids.Game;
+import disasteroids.GameLoop;
 import disasteroids.GameObject;
 import disasteroids.Running;
 import disasteroids.Station;
@@ -40,7 +41,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_ESCAPE, ActionType.QUIT );
         keyboardLayout.put( KeyEvent.VK_M, ActionType.TOGGLE_MUSIC );
         keyboardLayout.put( KeyEvent.VK_S, ActionType.TOGGLE_SOUND );
-        keyboardLayout.put( KeyEvent.VK_F4, ActionType.TOGGLE_FULL_SCREEN );
+        keyboardLayout.put( KeyEvent.VK_F, ActionType.TOGGLE_FULL_SCREEN );
         keyboardLayout.put( KeyEvent.VK_SCROLL_LOCK, ActionType.SET_EASTER_EGG );
         keyboardLayout.put( KeyEvent.VK_W, ActionType.WARP );
         keyboardLayout.put( KeyEvent.VK_A, ActionType.TOGGLE_ANTIALIASING );
@@ -102,6 +103,9 @@ public class KeystrokeManager implements KeyListener
      */
     public synchronized void keyReleased( KeyEvent e )
     {
+        if ( !GameLoop.isRunning() )
+            return;
+
         Game.getInstance().getActionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
         if ( e.isShiftDown() )
             AsteroidsFrame.frame().localPlayer().setSnipeMode( true );
@@ -119,9 +123,11 @@ public class KeystrokeManager implements KeyListener
      */
     public synchronized void keyPressed( KeyEvent e )
     {
+        if ( !GameLoop.isRunning() )
+            return;
         if ( Game.getInstance().isPaused() )
         {
-            Game.getInstance().setPaused( false );
+            Game.getInstance().setPaused( false, true );
             return;
         }
 

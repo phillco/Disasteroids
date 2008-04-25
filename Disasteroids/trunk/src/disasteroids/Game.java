@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Central gameplay class that's separate from graphics.
@@ -148,6 +150,16 @@ public class Game
      */
     public static void saveToFile()
     {
+        GameLoop.stopLoop();
+        while ( GameLoop.isRunning() )
+            try
+            {
+                Thread.sleep( 10 );
+            }
+            catch ( InterruptedException ex )
+            {
+            }
+
         try
         {
             FileOutputStream fos = new FileOutputStream( "res\\Game.save" );
@@ -165,6 +177,7 @@ public class Game
         }
 
         Running.log( "Game saved!" );
+        GameLoop.startLoop();
     }
 
     /**
@@ -172,18 +185,32 @@ public class Game
      */
     public static int loadFromFile()
     {
+        GameLoop.stopLoop();
+
+        // Wait for the frame to stop drawing so we don't get null pointers.
+        if ( AsteroidsFrame.frame() != null )
+        {
+            while ( AsteroidsFrame.frame().getPanel().isDrawing() )
+                try
+                {
+                    Thread.sleep( 3 );
+                }
+                catch ( InterruptedException ex )
+                {
+                    Running.fatalError( "Rudely awaken in Game.loadFromFile().", ex );
+                }
+        }
+
         int id = -1;
-        FileInputStream fis = null;
         try
         {
-            fis = new FileInputStream( "res\\Game.save" );
+            FileInputStream fis = new FileInputStream( "res\\Game.save" );
             DataInputStream stream = new DataInputStream( fis );
 
             instance = new Game( stream );
             id = stream.readInt();
 
             fis.close();
-            GameLoop.startLoop();
             Running.log( "Game restored!" );
         }
         catch ( IOException ex )
@@ -192,7 +219,8 @@ public class Game
         }
 
         // [PC] This is required, possibly because we have to go back and do the timestep that was done after saving.
-        //instance.timeStep -= 1;
+        instance.timeStep -= 1;
+        GameLoop.startLoop();
         return id;
     }
 
@@ -442,17 +470,24 @@ public class Game
             case PAUSE:
 
                 if ( !Client.is() )
-                    Game.getInstance().setPaused( !Game.getInstance().isPaused() );
+                    Game.getInstance().setPaused( !Game.getInstance().isPaused(), true );
                 break;
             // Saving & loading
             case SAVE:
                 if ( !Client.is() )
+                {
+                    instance.getActionManager().removeAll( KeystrokeManager.ActionType.SAVE );
                     Game.saveToFile();
+
+                }
                 break;
 
             case LOAD:
                 if ( !Client.is() )
-                    Game.loadFromFile();
+                {
+                    AsteroidsFrame.frame().localId = Game.loadFromFile();
+                    Game.getInstance().setPaused( false, false );
+                }
                 break;
 
             case DEVKEY:
@@ -520,7 +555,6 @@ public class Game
                     gameObjects.add( a );
                     shootingObjects.add( a );
                     baddies.add( a );
-                    System.out.println( "Alien..." );
                     break;
                 case BONUS:
                     Bonus b = new Bonus( stream );
@@ -560,14 +594,15 @@ public class Game
      * Pauses or unpauses the game.
      * 
      * @param paused    whether the game should be paused
-     * @since December 31, 2007
+     * @param announce  whether to print the change
      */
-    public void setPaused( boolean paused )
+    public void setPaused( boolean paused, boolean announce )
     {
         try
         {
             this.paused = paused;
-            Running.log( "Game " + ( paused ? "paused" : "unpaused" ) + "." );
+            if ( announce )
+                Running.log( "Game " + ( paused ? "paused" : "unpaused" ) + "." );
             if ( Server.is() )
                 Server.getInstance().updatePause( paused );
         }

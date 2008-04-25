@@ -71,8 +71,10 @@ class Flechette extends Weapon.Unit
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public Flechette( DataInputStream stream ) throws IOException
+    public Flechette( DataInputStream stream, FlechetteManager parent ) throws IOException
     {
         super( stream );
+        
+        this.parent = parent;
     }
 }

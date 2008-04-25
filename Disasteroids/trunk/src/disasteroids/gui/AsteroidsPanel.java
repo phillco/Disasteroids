@@ -5,6 +5,7 @@
 package disasteroids.gui;
 
 import disasteroids.Game;
+import disasteroids.GameLoop;
 import disasteroids.GameObject;
 import disasteroids.Running;
 import disasteroids.Settings;
@@ -106,6 +107,11 @@ public class AsteroidsPanel extends Panel
      */
     AsteroidsFrame parent;
 
+    /**
+     * Whether we're in the draw() loop.
+     */
+    private boolean isDrawing = false;
+
     public AsteroidsPanel( AsteroidsFrame parent )
     {
         this.parent = parent;
@@ -122,12 +128,18 @@ public class AsteroidsPanel extends Panel
         if ( parent.localPlayer() == null )
             return;
 
+        if ( !GameLoop.isRunning() )
+        {
+            isDrawing = false;
+            return;
+        }
+        isDrawing = true;
+
         // Adjust the thread's priority if it's in the foreground/background.
         if ( parent.isActive() && Thread.currentThread().getPriority() != Thread.NORM_PRIORITY )
             Thread.currentThread().setPriority( Thread.NORM_PRIORITY );
         else if ( Thread.currentThread().getPriority() != Thread.MIN_PRIORITY )
             Thread.currentThread().setPriority( Thread.MIN_PRIORITY );
-
 
         // Anti-alias, if the user wants it.
         updateQualityRendering( g, Settings.isQualityRendering() );
@@ -158,14 +170,23 @@ public class AsteroidsPanel extends Panel
         Game.getInstance().getAsteroidManager().draw( g );
 
         for ( GameObject go : Game.getInstance().gameObjects )
+        {
             go.draw( g );
-        
+            if ( !GameLoop.isRunning() )
+            {
+                isDrawing = false;
+                return;
+            }
+        }
+
         // Draw the on-screen HUD.
         drawHud( g );
 
         // Draw the entire scoreboard.
         if ( drawScoreboard )
             drawScoreboard( g );
+
+        isDrawing = false;
     }
 
     /**
@@ -344,6 +365,19 @@ public class AsteroidsPanel extends Panel
             text = "Waiting for server...";
             x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
             y = getHeight() / 2 - 50;
+
+            g2d.drawString( text, x, y );
+        }
+
+        // Draw "pauses"...
+        if ( Game.getInstance().isPaused() )
+        {
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 24 ) );
+            g2d.setColor( Local.getLocalPlayer().getColor() );
+
+            text = "Paused.";
+            x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
+            y = getHeight() / 3 - 50;
 
             g2d.drawString( text, x, y );
         }
@@ -598,5 +632,16 @@ public class AsteroidsPanel extends Panel
             this.message = message;
             this.life = life;
         }
+    }
+
+    /**
+     * Returns whether the panel is drawing game elements.
+     * 
+     * Should be used with <code>GameLoop.stopLoop()</code> to change the game's structure without the panel trying to draw it and getting NullPointers.
+     * @see GameLoop#stopLoop()
+     */
+    public boolean isDrawing()
+    {
+        return isDrawing;
     }
 }

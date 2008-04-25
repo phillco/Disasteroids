@@ -87,7 +87,6 @@ class Laser extends Weapon.Unit
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-
         stream.writeDouble( angle );
         stream.writeInt( length );
 
@@ -103,14 +102,14 @@ class Laser extends Weapon.Unit
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public Laser( DataInputStream stream ) throws IOException
+    public Laser( DataInputStream stream, LaserManager parent ) throws IOException
     {
         super( stream );
-
         angle = stream.readDouble();
         length = stream.readInt();
-
+        
+        this.parent = parent;
         if ( stream.readBoolean() )
-            next = new Laser( stream );
+            next = new Laser( stream, parent );
     }
 }

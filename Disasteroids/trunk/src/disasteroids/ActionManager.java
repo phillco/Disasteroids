@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.gui.KeystrokeManager;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -80,6 +81,18 @@ public class ActionManager
         theActions.clear();
     }
 
+    public void removeAll(KeystrokeManager.ActionType action)
+    {
+        Iterator<Action> itr = theActions.iterator();
+        while ( itr.hasNext() )
+        {
+            Action a = itr.next();
+
+            if ( KeystrokeManager.getInstance().translate(a.getKeyCode()) == action )
+                itr.remove();
+        }
+    }
+    
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 

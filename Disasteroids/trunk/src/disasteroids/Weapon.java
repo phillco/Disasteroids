@@ -222,9 +222,10 @@ public abstract class Weapon implements GameElement
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt( units.size() );
-        for ( Unit u : units )
-            u.flatten( stream );
+        stream.writeInt( ammo );
+        stream.writeInt( timeTillNextBerserk );
+        stream.writeInt( timeTillNextShot );
+
     }
 
     /**
@@ -232,6 +233,9 @@ public abstract class Weapon implements GameElement
      */
     public Weapon( DataInputStream stream ) throws IOException
     {
+        ammo = stream.readInt();
+        timeTillNextBerserk = stream.readInt();
+        timeTillNextShot = stream.readInt();
     }
 
     /**

@@ -39,7 +39,6 @@ public class GameLoop extends Thread
      */
     public static void startLoop()
     {
-        System.out.println( "Start loop!" );
         if ( instance == null )
             instance = new GameLoop();
         else
@@ -71,7 +70,6 @@ public class GameLoop extends Thread
     public void run()
     {
         long timeOfLast = System.currentTimeMillis();
-        System.out.println( "Game loop started." );
         while ( enabled )
         {
             try
@@ -81,8 +79,8 @@ public class GameLoop extends Thread
                 if ( shouldRun() )
                     Game.getInstance().act();
 
-                while ( System.currentTimeMillis() - timeOfLast < PERIOD )
-                    Thread.sleep( 1 );
+                while ( enabled && System.currentTimeMillis() - timeOfLast < PERIOD )
+                    Thread.sleep( 2 );
 
             }
             catch ( InterruptedException ex )
@@ -107,6 +105,11 @@ public class GameLoop extends Thread
         if ( Client.is() && Client.getInstance().serverTimeout() )
             return false;
 
-        return true;
+        return enabled;
+    }
+    
+    public static boolean isRunning()
+    {
+        return (instance != null ) && (instance.isAlive());
     }
 }

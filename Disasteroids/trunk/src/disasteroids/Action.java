@@ -104,4 +104,10 @@ public class Action
         keyCode = stream.readInt();
         timestep = stream.readLong();
     }
+
+    public int getKeyCode() {
+        return keyCode;
+    }
+    
+    
 }

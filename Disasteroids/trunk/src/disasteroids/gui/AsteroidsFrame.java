@@ -25,7 +25,6 @@ import java.awt.Polygon;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
@@ -56,7 +55,7 @@ public class AsteroidsFrame extends Frame
      * @see <code>players</code>
      * @since December 14 2007
      */
-    private int localId;
+    public int localId;
 
     private static AsteroidsFrame frame;
 
@@ -86,10 +85,6 @@ public class AsteroidsFrame extends Frame
 
         panel = new AsteroidsPanel( this );
 
-        if ( !Client.is() )
-            AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( "Press any key to begin.",
-                                                                                     (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
-                                                                                     AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
         add( panel );
         setResizable( true );
 
@@ -109,6 +104,14 @@ public class AsteroidsFrame extends Frame
     {
         panel.background.init();
         ParticleManager.clear();
+    }
+    
+    public void showStartMessage(String message)
+    {
+        if ( !Client.is() )
+            AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( message,
+                                                                                     (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
+                                                                                     AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
     }
 
     /**

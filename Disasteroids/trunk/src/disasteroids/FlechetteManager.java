@@ -152,6 +152,11 @@ public class FlechetteManager extends Weapon
         stream.writeInt( intervalShoot );
         stream.writeInt( radius );
         stream.writeInt( damage );
+
+        // Flatten all of the units.
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            ( (Flechette) u ).flatten( stream );
     }
 
     /**
@@ -159,11 +164,14 @@ public class FlechetteManager extends Weapon
      */
     public FlechetteManager( DataInputStream stream ) throws IOException
     {
-        for ( int i = 0; i < stream.readInt(); i++ )
-            units.add( new Flechette( stream ) );
-
+        super( stream );
         intervalShoot = stream.readInt();
         radius = stream.readInt();
         damage = stream.readInt();
+
+        // Restore all of the units.
+        int size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
+            units.add( new Flechette( stream, this ) );
     }
 }

@@ -242,7 +242,6 @@ public class Missile extends Weapon.Unit
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-
         stream.writeDouble( angle );
         stream.writeInt( explosionStage );
         stream.writeBoolean( hugeBlast );
@@ -252,13 +251,14 @@ public class Missile extends Weapon.Unit
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public Missile( DataInputStream stream ) throws IOException
+    public Missile( DataInputStream stream, MissileManager parent ) throws IOException
     {
         super( stream );
-
         angle = stream.readDouble();
         explosionStage = stream.readInt();
         hugeBlast = stream.readBoolean();
         radius = stream.readDouble();
+        
+        this.parent = parent;
     }
 }

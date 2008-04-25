@@ -7,6 +7,7 @@ package disasteroids.networking;
 import disasteroids.Asteroid;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.Game;
+import disasteroids.GameLoop;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
@@ -209,10 +210,10 @@ public class Client extends DatagramListener
                         Game.getInstance().removePlayer( Game.getInstance().getPlayerFromId( in.readInt() ), quitReason );
                         break;
                     case PAUSE:
-                        Game.getInstance().setPaused( in.readBoolean() );
+                        Game.getInstance().setPaused( in.readBoolean(), true );
                         break;
                     case SERVER_QUITTING:
-                        Game.getInstance().setPaused( true );
+                        GameLoop.stopLoop();
                         if ( AsteroidsFrame.frame() != null )
                             AsteroidsFrame.frame().dispose();
                         JOptionPane.showMessageDialog( null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE );

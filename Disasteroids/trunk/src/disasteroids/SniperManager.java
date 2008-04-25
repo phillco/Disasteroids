@@ -147,6 +147,11 @@ class SniperManager extends Weapon
         stream.writeInt( intervalShoot );
         stream.writeInt( radius );
         stream.writeInt( speed );
+
+        // Flatten all of the units.
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            ( (SniperRound) u ).flatten( stream );
     }
 
     /**
@@ -154,12 +159,16 @@ class SniperManager extends Weapon
      */
     public SniperManager( DataInputStream stream ) throws IOException
     {
-        for ( int i = 0; i < stream.readInt(); i++ )
-            units.add( new SniperRound( stream ) );
+        super( stream );
 
         damage = stream.readInt();
         intervalShoot = stream.readInt();
         radius = stream.readInt();
         speed = stream.readInt();
+        
+        // Restore all of the units.
+        int size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
+            units.add( new SniperRound( stream, this ) );
     }
 }

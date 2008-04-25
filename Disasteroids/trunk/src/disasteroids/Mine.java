@@ -168,9 +168,11 @@ public class Mine extends Weapon.Unit
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public Mine( DataInputStream stream ) throws IOException
+    public Mine( DataInputStream stream, MineManager parent ) throws IOException
     {
         super( stream );
         explosionSize = stream.readInt();
+        
+        this.parent = parent;
     }
 }

@@ -107,7 +107,7 @@ public class MineManager extends Weapon
     {
         return sight;
     }
-    
+
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
     //                                                                            \\
@@ -118,8 +118,13 @@ public class MineManager extends Weapon
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-        stream.writeDouble( berserkAngleOffset);
+        stream.writeDouble( berserkAngleOffset );
         stream.writeInt( sight );
+
+        // Flatten all of the units.
+        stream.writeInt( units.size() );
+        for ( Unit u : units )
+            ( (Mine) u ).flatten( stream );
     }
 
     /**
@@ -127,10 +132,13 @@ public class MineManager extends Weapon
      */
     public MineManager( DataInputStream stream ) throws IOException
     {
-        for ( int i = 0; i < stream.readInt(); i++ )
-            units.add( new Mine( stream ) );
-        
+        super( stream );
         berserkAngleOffset = stream.readDouble();
         sight = stream.readInt();
+
+        // Restore all of the units.
+        int size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
+            units.add( new Mine( stream, this ) );
     }
 }

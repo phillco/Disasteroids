@@ -69,7 +69,6 @@ class SniperRound extends Weapon.Unit
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-
         stream.writeDouble( angle );
         stream.writeInt( damage );
     }
@@ -77,11 +76,12 @@ class SniperRound extends Weapon.Unit
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public SniperRound( DataInputStream stream ) throws IOException
+    public SniperRound( DataInputStream stream, SniperManager parent ) throws IOException
     {
         super( stream );
-
         angle = stream.readDouble();
         damage = stream.readInt();
+
+        this.parent = parent;
     }
 }

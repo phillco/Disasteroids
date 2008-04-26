@@ -82,7 +82,7 @@ public class Bonus extends GameObject
     {
         move();
         setSpeed( Math.min( 6, getDx() + ax ), Math.min( 6, getDy() + ay ) );
-
+        setSpeed(getDx()*.999, getDy()*.999);
         ax *= 0.98;
         ay *= 0.98;
 
@@ -250,7 +250,7 @@ public class Bonus extends GameObject
                 g.fillPolygon( p );
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
                 g.drawPolygon( p );
-            //    break; 
+                break; 
             case POWERUP:
                 AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( ( (float) bonusType ) / myClass.types, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
                 break;

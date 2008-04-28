@@ -11,6 +11,8 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A weapon manager that fires long, straight Lasers
@@ -67,7 +69,7 @@ class LaserManager extends Weapon
         Laser l = null;
         for ( int i = 0; i < 150; i++ )
         {
-            Laser last = new Laser( this, color, X, Y, parent.getDx(), parent.getDy(), angle );
+            Laser last = new Laser( this, color, X, Y, parent.getDx(), parent.getDy(), angle, ( i == 0 ) );
             if ( l != null )
                 l.setNext( last );
             units.add( last );
@@ -109,7 +111,7 @@ class LaserManager extends Weapon
     @Override
     public void drawOrphanUnit( Graphics g, double x, double y, Color col )
     {
-        new Laser( this, col, x, y, 0, 0, 0 ).draw( g );
+        new Laser( this, col, x, y, 0, 0, 0, false ).draw( g );
     }
 
     public void undoBonuses()
@@ -153,7 +155,6 @@ class LaserManager extends Weapon
     //                                                                            \\
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
-     * Note: works very poorly!
      */
     @Override
     public void flatten( DataOutputStream stream ) throws IOException
@@ -165,14 +166,22 @@ class LaserManager extends Weapon
         stream.writeInt( speed );
 
         // Flatten all of the units.
-        stream.writeInt( units.size() );
+        // To save space, we flatten only the head of each beam.
+        Set<Laser> heads = new HashSet<Laser>();                
         for ( Unit u : units )
-            ( (Laser) u ).flatten( stream );
+        {
+            Laser l = (Laser) u;
+            if ( l.isHead() )
+                heads.add( l );
+        }
+        
+        stream.writeInt( heads.size() );
+        for ( Laser l : heads )
+                l.flatten( stream );
     }
 
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
-     * Note: works very poorly!
      */
     public LaserManager( DataInputStream stream ) throws IOException
     {

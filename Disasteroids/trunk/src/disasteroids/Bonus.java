@@ -28,7 +28,7 @@ public class Bonus extends GameObject
 {
     static enum Class
     {
-        WEAPON( 3 ), POWERUP( 9 );
+        WEAPON( 4 ), POWERUP( 9 );
 
         final int types;
 

@@ -18,22 +18,25 @@ import java.io.IOException;
 class Laser extends Weapon.Unit
 {
     private LaserManager parent;
-
+    
     private int length;
 
     private double angle;
+    
+    private boolean isHead;
 
     /**
      * The next laser in this line.
      */
     private Laser next;
 
-    public Laser( LaserManager parent, Color color, double x, double y, double dx, double dy, double angle )
+    public Laser( LaserManager parent, Color color, double x, double y, double dx, double dy, double angle, boolean isRoot )
     {
         super( color, x, y, dx, dy );
         this.angle = angle;
         this.parent = parent;
         this.length = parent.length();
+        this.isHead = isRoot;
     }
 
     @Override
@@ -76,6 +79,19 @@ class Laser extends Weapon.Unit
     {
         return parent.getDamage();
     }
+    
+    public int getNumChildren()
+    {
+        if ( next == null)
+            return 0;
+        else
+            return 1 + next.getNumChildren();
+    }
+
+    public boolean isHead()
+    {
+        return isHead;
+    }        
 
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
@@ -89,14 +105,7 @@ class Laser extends Weapon.Unit
         super.flatten( stream );
         stream.writeDouble( angle );
         stream.writeInt( length );
-
-        if ( next == null )
-            stream.writeBoolean( false );
-        else
-        {
-            stream.writeBoolean( true );
-            next.flatten( stream );
-        }
+        stream.writeInt( getNumChildren());
     }
 
     /**
@@ -109,7 +118,19 @@ class Laser extends Weapon.Unit
         length = stream.readInt();
         
         this.parent = parent;
-        if ( stream.readBoolean() )
-            next = new Laser( stream, parent );
+        int children = stream.readInt();
+        double X = getX() + length * Math.cos( angle );
+        double Y = getY() - length * Math.sin( angle );
+        Laser l = this;
+        for ( int i = 0; i < children; i++ )
+        {          
+            // System.out.println( X +" , " + Y );
+            Laser last = new Laser( parent, color, X, Y, getDx(), getDy(), angle, false );
+            l.setNext( last );
+            parent.units.add( last );
+            X += length * Math.cos( angle );
+            Y -= length * Math.sin( angle );
+            l = last;            
+        }
     }
 }

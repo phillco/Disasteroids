@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * SniperRound.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Graphics;
@@ -15,7 +15,7 @@ import java.io.IOException;
  * A very fast bullet fired by the sniper rifle.
  * @author Andy Kooiman
  */
-class SniperRound extends Weapon.Unit
+class SniperRound extends Unit
 {
     private SniperManager parent;
 

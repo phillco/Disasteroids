@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * LaserManager.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -18,7 +19,7 @@ import java.util.Set;
  * A weapon manager that fires long, straight Lasers
  * @author Andy Kooiman
  */
-class LaserManager extends Weapon
+public class LaserManager extends Weapon
 {
     private int speed = 20;
 

@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * Laser.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Graphics;
@@ -15,7 +15,7 @@ import java.io.IOException;
  * A weak beam of light. Lasers are joined together to create a continuous beam.
  * @author Andy Kooiman
  */
-class Laser extends Weapon.Unit
+class Laser extends Unit
 {
     private LaserManager parent;
     

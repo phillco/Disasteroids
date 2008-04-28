@@ -1,0 +1,1 @@
+These are the source files to the graphics in \res and can be edited in Fireworks CS and on.

@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * MissileManager.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;

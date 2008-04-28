@@ -4,11 +4,16 @@
  */
 package disasteroids;
 
+import disasteroids.weapons.Missile;
+import disasteroids.weapons.Mine;
+import disasteroids.weapons.Weapon;
+import disasteroids.weapons.MissileManager;
 import disasteroids.gui.Local;
 import disasteroids.gui.RelativeGraphics;
 import disasteroids.sound.Sound;
 import disasteroids.gui.ParticleManager;
 import disasteroids.sound.SoundLibrary;
+import disasteroids.weapons.Unit;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -182,7 +187,7 @@ public class Station extends GameObject implements ShootingObject
             for ( Weapon wm : s.getManagers() )
             {
                 // Loop through the bullets.
-                for ( Weapon.Unit m : wm.getUnits() )
+                for ( Unit m : wm.getUnits() )
                 {
                     // Were we hit by a bullet?
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
@@ -381,7 +386,7 @@ public class Station extends GameObject implements ShootingObject
         else
             disableCounter = 290;
 
-        for ( Weapon.Unit w : manager.getUnits() )
+        for ( Unit w : manager.getUnits() )
             w.explode();
 
         Sound.playInternal( SoundLibrary.STATION_DISABLED );

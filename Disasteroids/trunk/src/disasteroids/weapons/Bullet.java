@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * Bullet.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Graphics;
@@ -15,7 +15,7 @@ import java.io.IOException;
  * A fast and simple bullet that dies on impact.
  * @author Andy Kooiman
  */
-class Bullet extends Weapon.Unit
+class Bullet extends Unit
 {
     private BulletManager parent;
 

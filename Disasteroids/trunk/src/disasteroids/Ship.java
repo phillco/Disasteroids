@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.weapons.FlechetteManager;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Local;
 import disasteroids.gui.ParticleManager;
@@ -11,6 +12,14 @@ import disasteroids.gui.Particle;
 import disasteroids.networking.Server;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
+import disasteroids.weapons.BigNukeLauncher;
+import disasteroids.weapons.BulletManager;
+import disasteroids.weapons.LaserManager;
+import disasteroids.weapons.MineManager;
+import disasteroids.weapons.MissileManager;
+import disasteroids.weapons.SniperManager;
+import disasteroids.weapons.Unit;
+import disasteroids.weapons.Weapon;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -420,7 +429,7 @@ public class Ship extends GameObject implements ShootingObject
 
             for ( Weapon wm : other.getManagers() )
             {
-                for ( Weapon.Unit m : wm.getUnits() )
+                for ( Unit m : wm.getUnits() )
                 {
                     if ( Util.getDistance( this, m ) < RADIUS + m.getRadius() )
                     {

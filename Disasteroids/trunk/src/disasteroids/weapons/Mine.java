@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Mine.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -17,7 +18,7 @@ import java.util.Set;
  * A mine that moves towards nearby targets and explodes violently on impact.
  * @author Andy Kooiman
  */
-public class Mine extends Weapon.Unit
+public class Mine extends Unit
 {
     /**
      * The size of the explosion. If 0, we're not exploding.

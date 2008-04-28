@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Missile.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
@@ -19,7 +20,7 @@ import java.util.Random;
  * @author Andy Kooiman
  * @since Classic
  */
-public class Missile extends Weapon.Unit
+public class Missile extends Unit
 {
     /**
      * The angle that we're pointing. Not necessarily the angle that we're moving at.

@@ -4,11 +4,15 @@
  */
 package disasteroids;
 
+import disasteroids.weapons.Missile;
+import disasteroids.weapons.Weapon;
+import disasteroids.weapons.MissileManager;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.ParticleManager;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
+import disasteroids.weapons.Unit;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
@@ -188,7 +192,7 @@ public class Alien extends GameObject implements ShootingObject
             for ( Weapon wm : s.getManagers() )
             {
                 // Loop through the bullets.
-                for ( Weapon.Unit m : wm.getUnits() )
+                for ( Unit m : wm.getUnits() )
                 {
                     // Were we hit by a bullet?
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&

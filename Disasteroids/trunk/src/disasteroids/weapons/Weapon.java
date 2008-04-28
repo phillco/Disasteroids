@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Weapon.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Local;
 import java.awt.Color;
@@ -14,8 +15,8 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * A ship's weapon, which fires <code>Unit</code>s.
- * @author Andy Kooiman
+ * A ship's weapon which fires <code>Unit</code>s.
+ * @author Andy Kooiman, Phillip Cohen
  */
 public abstract class Weapon implements GameElement
 {
@@ -236,55 +237,5 @@ public abstract class Weapon implements GameElement
         ammo = stream.readInt();
         timeTillNextBerserk = stream.readInt();
         timeTillNextShot = stream.readInt();
-    }
-
-    /**
-     * An individual bullet.
-     * @author Andy Kooiman
-     */
-    public static abstract class Unit extends GameObject
-    {
-        protected Color color;
-
-        protected int age = 0;
-
-        public Unit( Color color, double x, double y, double dx, double dy )
-        {
-            super( x, y, dx, dy );
-            this.color = color;
-        }
-
-        public void act()
-        {
-            ++age;
-            move();
-        }
-
-        /**
-         * Writes <code>this</code> to a stream for client/server transmission.
-         */
-        @Override
-        public void flatten( DataOutputStream stream ) throws IOException
-        {
-            super.flatten( stream );
-            stream.writeInt( color.getRGB() );
-            stream.writeInt( age );
-        }
-
-        /**
-         * Reads <code>this</code> from a stream for client/server transmission.
-         */
-        public Unit( DataInputStream stream ) throws IOException
-        {
-            super( stream );
-            color = new Color( stream.readInt() );
-            age = stream.readInt();
-        }
-
-        public abstract double getRadius();
-
-        public abstract void explode();
-
-        public abstract int getDamage();
     }
 }

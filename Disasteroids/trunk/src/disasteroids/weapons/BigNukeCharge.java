@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * BigNukeCharge.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
@@ -17,7 +18,7 @@ import java.io.IOException;
  * An explosive particle spewed from a <code>BigNuke</code>.
  * @author Phillip Cohen
  */
-public class BigNukeCharge extends Weapon.Unit
+public class BigNukeCharge extends Unit
 {
     protected BigNukeLauncher parent;
 
@@ -88,7 +89,7 @@ public class BigNukeCharge extends Weapon.Unit
     }
 
     @Override
-    void move()
+    public void move()
     {
         super.move();
         setSpeed( getDx() + ax, getDy() + ay );

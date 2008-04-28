@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * BulletManager.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -16,7 +17,7 @@ import java.io.IOException;
  * A default weapon that rapidly fires weak bullets.
  * @author Andy Kooiman
  */
-class BulletManager extends Weapon
+public class BulletManager extends Weapon
 {
     private int speed = 20;
 

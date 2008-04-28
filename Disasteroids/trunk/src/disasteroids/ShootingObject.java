@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.weapons.Weapon;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**

@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * SniperManager.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -16,7 +17,7 @@ import java.io.IOException;
  * A weapon manager that rapidly fires weak bullets.
  * @author Andy Kooiman
  */
-class SniperManager extends Weapon
+public class SniperManager extends Weapon
 {
     private int speed = 30;
 

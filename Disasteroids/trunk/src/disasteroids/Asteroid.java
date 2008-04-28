@@ -4,11 +4,13 @@
  */
 package disasteroids;
 
+import disasteroids.weapons.Weapon;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.Local;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
+import disasteroids.weapons.Unit;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
@@ -216,7 +218,7 @@ public class Asteroid extends GameObject implements GameElement
             for ( Weapon wm : s.getManagers() )
             {
                 // Loop through all this ship's Missiles.
-                for ( Weapon.Unit m : wm.getUnits() )
+                for ( Unit m : wm.getUnits() )
                 {
                     // Were we hit by a missile?
                     if ( Util.getDistance( this, m ) < radius + m.getRadius() )

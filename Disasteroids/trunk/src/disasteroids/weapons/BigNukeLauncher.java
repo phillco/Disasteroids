@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * BigNukeLauncher.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;

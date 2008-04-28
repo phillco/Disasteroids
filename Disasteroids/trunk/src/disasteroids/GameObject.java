@@ -57,7 +57,7 @@ public abstract class GameObject implements GameElement
      * 
      * @since January 5, 2008
      */
-    void move()
+    public void move()
     {
         addToX( getDx() );
         addToY( getDy() );

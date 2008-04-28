@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * BigNuke.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
+import disasteroids.*;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
@@ -18,7 +19,7 @@ import java.io.IOException;
  * After a short time it releases dozens of not-so-harmless <code>BigNukeCharge</code>s, which then explode.
  * @author Phillip Cohen
  */
-public class BigNuke extends Weapon.Unit
+public class BigNuke extends Unit
 {
     protected BigNukeLauncher parent;
 

@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * Flechette.java
  */
-package disasteroids;
+package disasteroids.weapons;
 
 import disasteroids.gui.AsteroidsFrame;
 import java.awt.Graphics;
@@ -15,7 +15,7 @@ import java.io.IOException;
  * A weak particle fired in the dozens.
  * @author Andy Kooiman
  */
-class Flechette extends Weapon.Unit
+class Flechette extends Unit
 {
     private FlechetteManager parent;
 

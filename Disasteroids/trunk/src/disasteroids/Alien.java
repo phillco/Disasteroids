@@ -58,7 +58,7 @@ public class Alien extends GameObject implements ShootingObject
     /**
      * The direction this <code>Alien</code> is "pointing."
      */
-    double angle = Util.getRandomGenerator().nextDouble() * 2 * Math.PI;
+    double angle = Util.getRandomGenerator().nextAngle();
 
     /**
      * Creates a new <code>Alien</code>

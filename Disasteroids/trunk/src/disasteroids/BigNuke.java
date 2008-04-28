@@ -55,7 +55,7 @@ public class BigNuke extends Weapon.Unit
                                          Util.getRandomGenerator().nextInt( 4 ),
                                          color,
                                          Util.getRandomGenerator().nextDouble(),
-                                         Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
+                                         Util.getRandomGenerator().nextAngle(),
                                          20, 1 ) );
 
         if ( age > 140 )

@@ -63,7 +63,7 @@ public class FlechetteManager extends Weapon
                     break;
 
                 units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
-                                          Util.getRandomGenerator().nextDouble() * 2 * Math.PI + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
+                                          Util.getRandomGenerator().nextAngle() + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
                 ++firedShots;
                 if ( !isInfiniteAmmo() )
                     --ammo;

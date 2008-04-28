@@ -242,7 +242,7 @@ public class Ship extends GameObject implements ShootingObject
                                              Util.getRandomGenerator().nextInt( 4 ) + 3,
                                              Util.getRandomGenerator().nextBoolean() ? myColor : myInvicibleColor,
                                              Util.getRandomGenerator().nextDouble() * 6,
-                                             Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
+                                             Util.getRandomGenerator().nextAngle(),
                                              25 + explosionTime / 10, 10 ) );
             }
         }
@@ -615,7 +615,7 @@ public class Ship extends GameObject implements ShootingObject
                                              Util.getRandomGenerator().nextInt( 4 ) + 3,
                                              myColor,
                                              Util.getRandomGenerator().nextDouble() * 6,
-                                             Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
+                                             Util.getRandomGenerator().nextAngle(),
                                              30, 10 ) );
             }
         }
@@ -638,7 +638,7 @@ public class Ship extends GameObject implements ShootingObject
                                              Util.getRandomGenerator().nextInt( 4 ) + 3,
                                              myColor,
                                              Util.getRandomGenerator().nextDouble() * 4,
-                                             Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
+                                             Util.getRandomGenerator().nextAngle(),
                                              60, 5 ) );
             }
         }

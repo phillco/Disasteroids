@@ -107,7 +107,7 @@ public class Bonus extends GameObject
                                              Util.getRandomGenerator().nextInt( 8 ),
                                              Color.getHSBColor( bonusType / 9.0f, 1f, .7f ),
                                              Util.getRandomGenerator().nextDouble() * 5,
-                                             Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
+                                             Util.getRandomGenerator().nextAngle(),
                                              40, 2 ) );
             Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
         }
@@ -119,7 +119,7 @@ public class Bonus extends GameObject
                                          Util.getRandomGenerator().nextInt( 4 ),
                                          Color.getHSBColor( lastHue, lastHB, 1 - lastHB ),
                                          Util.getRandomGenerator().nextDouble() * 3,
-                                         Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
+                                         Util.getRandomGenerator().nextAngle(),
                                          50, 1 ) );
         angle = ( angle + 0.03 ) % ( 2 * Math.PI );
     }

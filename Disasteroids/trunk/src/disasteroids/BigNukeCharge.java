@@ -62,7 +62,7 @@ public class BigNukeCharge extends Weapon.Unit
                                          Util.getRandomGenerator().nextInt( 4 ),
                                          color,
                                          Util.getRandomGenerator().nextDouble(),
-                                         Util.getRandomGenerator().nextDouble() * 2 * Math.PI,
+                                         Util.getRandomGenerator().nextAngle(),
                                          20, 1 ) );
 
         // Waning.
@@ -72,7 +72,7 @@ public class BigNukeCharge extends Weapon.Unit
 
             // Chain reaction.
             if ( Util.getRandomGenerator().nextInt( 50 ) == 0 )
-                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getRandomGenerator().nextDouble() * 2 * Math.PI ) );
+                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getRandomGenerator().nextAngle() ) );
         }
         // Waxing.
         else if ( age > explosionAge )

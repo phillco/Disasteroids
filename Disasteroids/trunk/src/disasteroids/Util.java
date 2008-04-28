@@ -131,7 +131,7 @@ public class Util
          */
         public double nextAngle()
         {
-            return nextAngle();
+            return nextDouble() * 2 * Math.PI;            
         }
 
         /**

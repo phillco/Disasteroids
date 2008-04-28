@@ -112,7 +112,7 @@ public class Ship extends GameObject implements ShootingObject
      * Our cache of weapons.
      * @since December 16, 2007
      */
-    private Weapon[] allWeapons = new Weapon[5];
+    private Weapon[] allWeapons = new Weapon[6];
 
     /**
      * The <code>SniperManager</code> for this <code>Ship</code>
@@ -178,7 +178,7 @@ public class Ship extends GameObject implements ShootingObject
         allWeapons[2] = new MineManager();
         allWeapons[3] = new LaserManager();
         allWeapons[4] = new FlechetteManager();
-
+        allWeapons[5] = new BigNukeLauncher();
         sniperManager = new SniperManager();
 
         // Colors.        
@@ -276,9 +276,6 @@ public class Ship extends GameObject implements ShootingObject
 
         // Set our color.
         Color col = ( cannotDie() ? myInvicibleColor : myColor );
-
-
-
 
 
         double centerX, centerY;
@@ -814,10 +811,14 @@ public class Ship extends GameObject implements ShootingObject
         stream.writeInt( myColor.getRGB() );
 
         stream.writeUTF( name );
-        stream.writeInt( livesLeft );
         stream.writeInt( weaponIndex );
         stream.writeInt( numAsteroidsKilled );
         stream.writeInt( numShipsKilled );
+
+        stream.writeInt( livesLeft );
+        stream.writeDouble( health );
+        stream.writeDouble( healthMax );
+        stream.writeInt( shielded );
 
         for ( Weapon w : allWeapons )
             w.flatten( stream );
@@ -841,16 +842,21 @@ public class Ship extends GameObject implements ShootingObject
         myColor = new Color( stream.readInt() );
 
         name = stream.readUTF();
-        livesLeft = stream.readInt();
         weaponIndex = stream.readInt();
         numAsteroidsKilled = stream.readInt();
         numShipsKilled = stream.readInt();
+
+        livesLeft = stream.readInt();
+        health = stream.readDouble();
+        healthMax = stream.readDouble();
+        shielded = stream.readInt();
 
         allWeapons[0] = new MissileManager( stream );
         allWeapons[1] = new BulletManager( stream );
         allWeapons[2] = new MineManager( stream );
         allWeapons[3] = new LaserManager( stream );
         allWeapons[4] = new FlechetteManager( stream );
+        allWeapons[5] = new BigNukeLauncher( stream );
         sniperManager = new SniperManager( stream );
 
         int check = stream.readInt();

@@ -64,6 +64,8 @@ public class Server extends DatagramListener
          * An existing player is quitting.
          */
         PLAYER_QUIT,
+        STATION_SHOOT,
+        STATION_REMOVE,
         /**
          * Server is pausing or unpausing the game.
          */
@@ -361,23 +363,6 @@ public class Server extends DatagramListener
                 i.remove();
             }
         }
-    }
-
-    /**
-     * Notifies all players about the <code>paused</code> state.
-     * 
-     * @param paused    whether the game is paused
-     * @throws java.io.IOException 
-     * @since December 31, 2007
-     */
-    public void updatePause( boolean paused ) throws IOException
-    {
-        ByteOutputStream out = new ByteOutputStream();
-
-        out.writeInt( Message.PAUSE.ordinal() );
-        out.writeBoolean( paused );
-
-        sendPacketToAllPlayers( out );
     }
 
     /**

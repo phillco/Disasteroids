@@ -12,6 +12,7 @@ import disasteroids.gui.ParticleManager;
 import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
 import disasteroids.networking.Server;
+import disasteroids.networking.ServerCommands;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -19,8 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Central gameplay class that's separate from graphics.
@@ -598,18 +597,11 @@ public class Game
      */
     public void setPaused( boolean paused, boolean announce )
     {
-        try
-        {
-            this.paused = paused;
-            if ( announce )
-                Running.log( "Game " + ( paused ? "paused" : "unpaused" ) + "." );
-            if ( Server.is() )
-                Server.getInstance().updatePause( paused );
-        }
-        catch ( IOException ex )
-        {
-            Running.fatalError( "Couldn't set pause status in server.", ex );
-        }
+        this.paused = paused;
+        if ( announce )
+            Running.log( "Game " + ( paused ? "paused" : "unpaused" ) + "." );
+        if ( Server.is() )
+            ServerCommands.updatePause( paused );
     }
 
     public GameMode getGameMode()

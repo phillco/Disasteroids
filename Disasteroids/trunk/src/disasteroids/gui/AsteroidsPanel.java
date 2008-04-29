@@ -21,6 +21,7 @@ import java.awt.Image;
 import java.awt.Panel;
 import java.awt.RenderingHints;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -64,7 +65,11 @@ public class AsteroidsPanel extends Panel
      * The current amount of FPS. Updated in <code>paint</code>.
      * @since December 18, 2007
      */
-    int lastFPS;
+    int lastFPS = 0;
+
+    LinkedList<Integer> benchmarkFPS;
+
+    int averageFPS = 0;
 
     /**
      * Stores whether a high score has been achieved by this player.
@@ -149,7 +154,18 @@ public class AsteroidsPanel extends Panel
         {
             long timeSinceLast = -timeOfLastRepaint + ( timeOfLastRepaint = System.currentTimeMillis() );
             if ( timeSinceLast > 0 )
+            {
                 lastFPS = (int) ( 10000.0 / timeSinceLast );
+
+                if ( benchmarkFPS != null )
+                {
+                    benchmarkFPS.add( lastFPS );
+                    int total = 0;
+                    for ( int i : benchmarkFPS )
+                        total += i;
+                    averageFPS = total / benchmarkFPS.size();
+                }
+            }
         }
 
         if ( !highScoreAchieved && parent.localPlayer().getScore() > Settings.getHighScore() )
@@ -190,11 +206,7 @@ public class AsteroidsPanel extends Panel
     }
 
     /**
-     * Steps the game and paints all components onto the screen.
-     * Uses hardware acceleration, if desired.
-     * 
-     * @param g the <code>Graphics</code> context of the screen
-     * @since Classic
+     * Does all of the gamer's rendering.
      */
     @Override
     public void paint( Graphics g )
@@ -233,8 +245,6 @@ public class AsteroidsPanel extends Panel
 
     /**
      * Shows a dialog to warps to a particular level.
-     * 
-     * @since November 15 2007
      */
     public void warpDialog()
     {
@@ -248,9 +258,6 @@ public class AsteroidsPanel extends Panel
 
     /**
      * Draws the on-screen information for the local player.
-     * 
-     * @param g <code>Graphics</code> to draw on
-     * @since December 15, 2007
      */
     private void drawHud( Graphics g )
     {
@@ -321,6 +328,16 @@ public class AsteroidsPanel extends Panel
         g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
         text = "fps";
         g2d.drawString( text, x, y );
+
+        if ( benchmarkFPS != null )
+        {
+            g2d.setColor( benchmarkFPS.size() == 1 ? Color.lightGray : Color.darkGray );
+            g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
+            x -= 10;
+            y += 15;
+            text = "[avg: " + averageFPS + " ]";
+            g2d.drawString( text, x, y );
+        }
 
         // Draw energy.
         x = getWidth() / 2 - 50;
@@ -571,15 +588,17 @@ public class AsteroidsPanel extends Panel
     }
 
     /**
-     * Included to prevent the clearing of the screen between repaints
-     * 
-     * @param g the <code>Graphics</code> context of the screen
-     * @since Classic
+     * Included to prevent the clearing of the screen between repaints.
      */
     @Override
     public void update( Graphics g )
     {
         paint( g );
+    }
+
+    public void startBenchmarkingFPS()
+    {
+        benchmarkFPS = new LinkedList<Integer>();
     }
 
     public Background getStarBackground()

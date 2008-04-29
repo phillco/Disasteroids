@@ -497,7 +497,7 @@ public class Game
         }
 
         if ( Server.is() )
-            Server.getInstance().updatePlayerPosition( actor );
+            ServerCommands.updatePlayerPosition( actor );
     }
 
     /**

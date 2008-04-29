@@ -10,6 +10,7 @@ import disasteroids.gui.Local;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
 import disasteroids.networking.Server;
+import disasteroids.networking.ServerCommands;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import disasteroids.weapons.BigNukeLauncher;
@@ -704,7 +705,7 @@ public class Ship extends GameObject implements ShootingObject
             rotateWeapons();
         }
         if ( Server.is() )
-            Server.getInstance().berserk( id );
+            ServerCommands.berserk( id );
         getWeaponManager().berserk( this, myColor );
     }
 

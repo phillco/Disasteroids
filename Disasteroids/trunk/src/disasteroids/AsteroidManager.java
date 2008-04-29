@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
+import disasteroids.networking.ServerCommands;
 import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -118,14 +119,10 @@ public class AsteroidManager
     public void add( Asteroid a, boolean fromGame )
     {
         if ( Server.is() )
-        {
-            Server.getInstance().newAsteroid( a );
-        }
+            ServerCommands.newAsteroid( a );
 
         if ( fromGame && Client.is() )
-        {
             return;
-        }
 
         theAsteroids.add( a );
     }
@@ -140,14 +137,10 @@ public class AsteroidManager
     public void remove( int id, Ship killer, boolean fromGame )
     {
         if ( Server.is() )
-        {
-            Server.getInstance().removeAsteroid( id, killer );
-        }
+            ServerCommands.removeAsteroid( id, killer );
 
         if ( fromGame && Client.is() )
-        {
             return;
-        }
 
         Iterator<Asteroid> itr = theAsteroids.iterator();
         while ( itr.hasNext() )

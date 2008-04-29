@@ -221,7 +221,7 @@ public class Asteroid extends GameObject implements GameElement
                 for ( Unit m : wm.getUnits() )
                 {
                     // Were we hit by a missile?
-                    if ( Util.getDistance( this, m ) < radius + m.getRadius() )
+                    if ( m.getDamage() > 0 && Util.getDistance( this, m ) < radius + m.getRadius() )
                     {
                         Sound.playInternal( SoundLibrary.ASTEROID_DIE );
 

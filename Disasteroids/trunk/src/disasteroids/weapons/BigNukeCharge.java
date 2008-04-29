@@ -15,7 +15,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * An explosive particle spewed from a <code>BigNuke</code>.
+ * An explosive particle speewed from a <code>BigNuke</code>.
  * @author Phillip Cohen
  */
 public class BigNukeCharge extends Unit
@@ -72,7 +72,7 @@ public class BigNukeCharge extends Unit
             explosionSize -= 8;
 
             // Chain reaction.
-            if ( Util.getRandomGenerator().nextInt( 50 ) == 0 )
+            if ( Util.getRandomGenerator().nextInt( 3 ) == 0 )
                 parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getRandomGenerator().nextAngle() ) );
         }
         // Waxing.

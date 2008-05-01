@@ -137,9 +137,9 @@ public class Util
         /**
          * Returns a random double from -n/2 to n/2.
          */
-        public static double nextMidpointDouble( int n )
+        public double nextMidpointDouble( int n )
         {
-            return getRandomGenerator().nextDouble() * n - n / 2;
+            return nextDouble() * n - n / 2;
         }
     }
 }

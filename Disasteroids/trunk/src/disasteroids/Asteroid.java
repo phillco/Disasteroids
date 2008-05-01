@@ -99,10 +99,8 @@ public class Asteroid extends GameObject implements GameElement
         super( parent.getX(), parent.getY(), Util.getRandomGenerator().nextDouble() * 2 - 1, Util.getRandomGenerator().nextDouble() * 2 - 1 );
         parent.children++;
         angle = 0;
-        if ( parent.children > 2 )
-            this.radius = 5;
-        else
-            this.radius = parent.radius / 2;
+        this.radius = parent.radius * 3/5;        
+
         // Live half as long as parents.
         this.life = this.lifeMax = parent.lifeMax / 2 + 1;
 
@@ -169,7 +167,7 @@ public class Asteroid extends GameObject implements GameElement
                 Local.getStarBackground().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) getX(), (int) getY(), killer.getColor().darker() );
         }
 
-        if ( radius >= 12 )
+        if ( radius >= 20 )
         {
             Game.getInstance().asteroidManager.add( new Asteroid( this ), true );
             Game.getInstance().asteroidManager.add( new Asteroid( this ), true );

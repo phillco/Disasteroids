@@ -360,7 +360,11 @@ is divided into following sections:
         <!-- You can override this target in the ../build.xml file. -->
     </target>
     <target depends="init,compile,-pre-pre-jar,-pre-jar" name="-do-jar-without-manifest" unless="manifest.available">
-        <j2seproject1:jar/>
+        <j2seproject1:jar>
+            <j2seproject1:manifest>
+                <j2seproject1:attribute name="Main-Class" value="${main.class}"/>
+            </j2seproject1:manifest>
+        </j2seproject1:jar>
     </target>
     <target depends="init,compile,-pre-pre-jar,-pre-jar" if="manifest.available" name="-do-jar-with-manifest" unless="manifest.available+main.class">
         <j2seproject1:jar manifest="${manifest.file}"/>

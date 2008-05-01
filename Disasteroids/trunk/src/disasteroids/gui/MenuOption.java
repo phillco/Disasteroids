@@ -12,7 +12,7 @@ package disasteroids.gui;
 public enum MenuOption
 {
     SINGLEPLAYER( "Singleplayer", "-single" ),
-    TUTORIAL( "Tutorial (unfinished)", "-tutorial" ),
+    TUTORIAL( "Tutorial", "-tutorial" ),
     LOAD( "Load game", "-load" ),
     START_SERVER( "Start server", "-host" ),
     CONNECT( "Join server", "-join" ),

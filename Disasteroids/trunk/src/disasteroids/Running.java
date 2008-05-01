@@ -94,7 +94,7 @@ public class Running
     {
         try
         {
-            GameLoop.stopLoop();
+            GameLoop.stopLoop();           
             System.out.println( "\nShutting down nicely..." );
 
             // Tell the server we're quitting.
@@ -201,6 +201,7 @@ public class Running
             case TUTORIAL:
                 new Game( TutorialMode.class );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
+                AsteroidsFrame.frame().showStartMessage( "Press any key to start the tutorial." );
                 Sound.updateMusic();
                 break;
 

@@ -55,7 +55,7 @@ public class Settings
             defaultSettings.put( "musicOn", String.valueOf( true ) );
             defaultSettings.put( "soundOn", String.valueOf( true ) );
             defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
-            defaultSettings.put( "qualityRendering", String.valueOf( false ) );
+            defaultSettings.put( "qualityRendering", String.valueOf( true ) );
             defaultSettings.put( "lastConnectionIP", "localhost" );
             defaultSettings.put( "lastGameMode", "wave" );
             defaultSettings.put( "highScore", String.valueOf( 2000 ) );
@@ -188,19 +188,18 @@ public class Settings
         else
             settingsFile.put( "lastGameMode", "linear" );
     }
-    
+
     /**
      * Gets the last used game mode.
      * @since April 17, 2008
      */
-    public static Class getLastGameMode( )
+    public static Class getLastGameMode()
     {
-        if ( settingsFile.getProperty("lastGameMode").equalsIgnoreCase("wave"))
+        if ( settingsFile.getProperty( "lastGameMode" ).equalsIgnoreCase( "wave" ) )
             return WaveGameplay.class;
         else
             return LinearGameplay.class;
     }
-    
 
     /**
      * Returns whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.
@@ -292,7 +291,8 @@ public class Settings
      */
     public static void setPlayerColor( Color aPlayerColor )
     {
-        settingsFile.put( "playerColor", String.valueOf( aPlayerColor.getRGB() ) );
+        if ( aPlayerColor != null )
+            settingsFile.put( "playerColor", String.valueOf( aPlayerColor.getRGB() ) );
     }
 
     /**

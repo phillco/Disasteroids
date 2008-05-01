@@ -3,12 +3,16 @@
  */
 package disasteroids.gui;
 
+import disasteroids.JarResources;
 import disasteroids.Running;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import javax.swing.JOptionPane;
 
 public class ImageLibrary
 {
@@ -34,6 +38,13 @@ public class ImageLibrary
         asteroid = Toolkit.getDefaultToolkit().createImage( "res\\asteroid.gif" );
         bonusAsteroid = Toolkit.getDefaultToolkit().createImage( "res\\bonusAsteroid.png" );
         alien = Toolkit.getDefaultToolkit().createImage( "res\\alien.png" );
+
+        if ( new File( "Disasteroids.jar" ).exists() )
+        {
+            JarResources jar = new JarResources( "Disasteroids.jar" );
+            asteroid = Toolkit.getDefaultToolkit().createImage( jar.getResource( "asteroid.gif" ) );
+            Running.isRunningFromJar = true;
+        }
     }
 
     /**
@@ -86,7 +97,7 @@ public class ImageLibrary
 
                 //convert to HSB
                 float[] hsb =
-                {
+                        {
                     0f, 0f, 0f
                 };
                 Color.RGBtoHSB( red, green, blue, hsb );

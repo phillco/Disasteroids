@@ -492,6 +492,7 @@ public class Game
             case DEVKEY:
                 if ( !Client.is() )
                     Game.getInstance().gameObjects.add( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
+                break;
             default:
                 break;
         }

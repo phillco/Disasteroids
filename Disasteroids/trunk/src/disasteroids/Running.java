@@ -29,6 +29,8 @@ public class Running
      * @since January 18, 2008
      */
     private static int errorCount = 0,  warningCount = 0;
+    
+    public static boolean isRunningFromJar = false;
 
     /**
      * The application entry point. Loads user settings and runs the menu.
@@ -40,6 +42,7 @@ public class Running
     public static void main( String[] args )
     {
         System.out.println( "DISASTEROIDS started!" );
+/*
 
         // Check for resources.
         if ( !new File( "res\\Music2.mid" ).exists() )
@@ -47,7 +50,7 @@ public class Running
             Running.fatalError( "Couldn't load resources.\nPlease make sure that your running directory is empty or set to the project's main directory." );
             return;
         }
-
+*/
         // Make swing dialogs like the local operating system.
         try
         {
@@ -94,7 +97,7 @@ public class Running
     {
         try
         {
-            GameLoop.stopLoop();           
+            GameLoop.stopLoop();
             System.out.println( "\nShutting down nicely..." );
 
             // Tell the server we're quitting.
@@ -103,7 +106,6 @@ public class Running
                 Client.getInstance().quit();
             } // And I told Bill, that if they move my desk one more time, then, then....
             // Tell clients we're quitting.
-
             else if ( Server.is() )
             {
                 Server.getInstance().quit();

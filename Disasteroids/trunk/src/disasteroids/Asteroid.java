@@ -99,7 +99,7 @@ public class Asteroid extends GameObject implements GameElement
         super( parent.getX(), parent.getY(), Util.getRandomGenerator().nextDouble() * 2 - 1, Util.getRandomGenerator().nextDouble() * 2 - 1 );
         parent.children++;
         angle = 0;
-        this.radius = parent.radius * 3/5;        
+        this.radius = parent.radius * 3 / 5;
 
         // Live half as long as parents.
         this.life = this.lifeMax = parent.lifeMax / 2 + 1;
@@ -184,6 +184,14 @@ public class Asteroid extends GameObject implements GameElement
         Game.getInstance().asteroidManager.remove( this.id, killer, true );
     }
 
+    @Override
+    public void inBlackHole()
+    {
+        remove();
+    }
+    
+    
+
     /**
      * Checks, and acts, if we were hit by a missile or ship.
      * 
@@ -208,6 +216,13 @@ public class Asteroid extends GameObject implements GameElement
                     }
                 }
             }
+        }
+
+        // Remove immediately if we were sucked into a black hole.
+        for ( BlackHole b : Game.getInstance().blackHoles )
+        {
+            if ( Util.getDistance( b, this ) < 10 )
+                remove();
         }
 
         // Go through ships, stations, etc.

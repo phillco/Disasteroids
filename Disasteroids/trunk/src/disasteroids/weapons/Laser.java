@@ -18,11 +18,11 @@ import java.io.IOException;
 class Laser extends Unit
 {
     private LaserManager parent;
-    
+
     private int length;
 
     private double angle;
-    
+
     private boolean isHead;
 
     /**
@@ -79,10 +79,10 @@ class Laser extends Unit
     {
         return parent.getDamage();
     }
-    
+
     public int getNumChildren()
     {
-        if ( next == null)
+        if ( next == null )
             return 0;
         else
             return 1 + next.getNumChildren();
@@ -91,7 +91,13 @@ class Laser extends Unit
     public boolean isHead()
     {
         return isHead;
-    }        
+    }
+
+    @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
 
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
@@ -105,7 +111,7 @@ class Laser extends Unit
         super.flatten( stream );
         stream.writeDouble( angle );
         stream.writeInt( length );
-        stream.writeInt( getNumChildren());
+        stream.writeInt( getNumChildren() );
     }
 
     /**
@@ -116,21 +122,21 @@ class Laser extends Unit
         super( stream );
         angle = stream.readDouble();
         length = stream.readInt();
-        
+
         this.parent = parent;
         int children = stream.readInt();
         double X = getX() + length * Math.cos( angle );
         double Y = getY() - length * Math.sin( angle );
         Laser l = this;
         for ( int i = 0; i < children; i++ )
-        {          
+        {
             // System.out.println( X +" , " + Y );
             Laser last = new Laser( parent, color, X, Y, getDx(), getDy(), angle, false );
             l.setNext( last );
             parent.units.add( last );
             X += length * Math.cos( angle );
             Y -= length * Math.sin( angle );
-            l = last;            
+            l = last;
         }
     }
 }

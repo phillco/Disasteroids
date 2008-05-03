@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
  */
 public class WaveGameplay implements GameMode
 {
-
     private int currentWave;
 
     private int wavePoints;
@@ -46,8 +45,8 @@ public class WaveGameplay implements GameMode
         }
 
         // Spawn asteroids directly opposite from player 1.
-        double x =RelativeGraphics.oppositeX()+ Util.getRandomGenerator().nextInt( 100 ) - 50; 
-        double y =RelativeGraphics.oppositeY()+ Util.getRandomGenerator().nextInt( 100 ) - 50; 
+        double x = RelativeGraphics.oppositeX() + Util.getRandomGenerator().nextInt( 100 ) - 50;
+        double y = RelativeGraphics.oppositeY() + Util.getRandomGenerator().nextInt( 100 ) - 50;
 
         double spawnRate = Math.min( 9, Math.max( 1, ( Game.getInstance().baddies.size() + Game.getInstance().getAsteroidManager().size() ) / 20.0 ) );
         // System.out.println(spawnRate + " " + wavePoints);
@@ -93,6 +92,11 @@ public class WaveGameplay implements GameMode
             Game.getInstance().baddies.add( s );
         }
 
+        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 11 * Math.pow( Game.getInstance().blackHoles.size() + 1, 3 ) * spawnRate <= 0.3 )
+        {
+            wavePoints -= 100;
+            Game.getInstance().gameObjects.add( new BlackHole( Util.getRandomGenerator().nextInt(Game.getInstance().GAME_WIDTH), Util.getRandomGenerator().nextInt(Game.getInstance().GAME_HEIGHT) ) );
+        }
     }
 
     public void draw( Graphics g )
@@ -149,6 +153,7 @@ public class WaveGameplay implements GameMode
             int newWave = Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the wave to start.", currentWave ) );
             Game.getInstance().getAsteroidManager().clear();
             Game.getInstance().baddies.clear();
+            Game.getInstance().blackHoles.clear();
             Game.getInstance().shootingObjects = new ConcurrentLinkedQueue<ShootingObject>( Game.getInstance().players );
             Game.getInstance().gameObjects = new ConcurrentLinkedQueue<GameObject>( Game.getInstance().players );
             currentWave = newWave;

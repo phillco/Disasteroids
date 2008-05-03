@@ -91,6 +91,12 @@ public class BigNuke extends Unit
         return 0;
     }
 
+    @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
+
     public void draw( Graphics g )
     {
         AsteroidsFrame.frame().drawOutlinedCircle( g, color, color.darker(), (int) getX(), (int) getY(), 8 );

@@ -89,6 +89,12 @@ public class BigNukeCharge extends Unit
     }
 
     @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
+
+    @Override
     public void move()
     {
         super.move();

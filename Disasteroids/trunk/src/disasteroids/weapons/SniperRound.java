@@ -59,6 +59,12 @@ class SniperRound extends Unit
         return damage;
     }
 
+    @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
+
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
     //                                                                            \\

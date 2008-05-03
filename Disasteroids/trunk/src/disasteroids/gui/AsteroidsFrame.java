@@ -15,6 +15,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
@@ -41,7 +42,7 @@ public class AsteroidsFrame extends Frame
      * Dimensions of the window when not in fullscreen mode.
      * @since November 15 2007
      */
-    private static final int WINDOW_WIDTH = 500,  WINDOW_HEIGHT = 750;
+    private static final int WINDOW_WIDTH = 900,  WINDOW_HEIGHT = 750;
 
     private AsteroidsPanel panel;
 

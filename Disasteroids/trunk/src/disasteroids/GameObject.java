@@ -21,7 +21,7 @@ public abstract class GameObject implements GameElement
      * @since April 11, 2008
      */
     public static final int TYPE_ID = -1;
-    
+
     /**
      * Our location and speed data.
      * 
@@ -63,11 +63,22 @@ public abstract class GameObject implements GameElement
         addToY( getDy() );
     }
 
+    /**
+     * Called whenever we get sucked into in a black hole.
+     * By default, it just removes the object. You should override this whenever Game.removeObject() will not work.
+     * 
+     * @see BlackHole
+     */
+    public void inBlackHole()
+    {
+        Game.getInstance().removeObject( this );
+    }
+
     public double getDx()
     {
         return dx;
     }
-    
+
     /**
      * Returns the x-coordinate of the point where this object "shoots" - that is, where its bullets are launched.
      * If not overridden, it just returns getX().
@@ -76,8 +87,8 @@ public abstract class GameObject implements GameElement
     {
         return getX();
     }
-    
-     /**
+
+    /**
      * Returns the y-coordinate of the point where this object "shoots" - that is, where its bullets are launched.
      * If not overridden, it just returns getY().
      */
@@ -187,7 +198,7 @@ public abstract class GameObject implements GameElement
     {
         restore( stream );
     }
-    
+
     public int getTypeId()
     {
         return TYPE_ID;

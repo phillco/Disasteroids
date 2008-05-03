@@ -86,8 +86,8 @@ public class Settings
     public static boolean saveToStorage()
     {
         try
-        {
-            // Write the settings file.            
+            {
+                // Write the settings file.            
             settingsFile.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "Disasteroids settings file (v2)." );
         }
         catch ( IOException e )

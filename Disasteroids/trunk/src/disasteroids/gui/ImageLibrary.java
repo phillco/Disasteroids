@@ -27,6 +27,8 @@ public class ImageLibrary
     private static Image bonusAsteroid;
 
     private static Image alien;
+    
+    private static Image blackHole;
 
     /**
      * Starts to load all of the <code>Image</code>s
@@ -38,6 +40,8 @@ public class ImageLibrary
         asteroid = Toolkit.getDefaultToolkit().createImage( "res\\asteroid.gif" );
         bonusAsteroid = Toolkit.getDefaultToolkit().createImage( "res\\bonusAsteroid.png" );
         alien = Toolkit.getDefaultToolkit().createImage( "res\\alien.png" );
+        blackHole = Toolkit.getDefaultToolkit().createImage( "res\\blackHole.png" );
+        
 
         if ( new File( "Disasteroids.jar" ).exists() )
         {
@@ -66,6 +70,13 @@ public class ImageLibrary
     {
         return alien;
     }
+
+    public static Image getBlackHole()
+    {
+        return blackHole;
+    }
+    
+    
 
     public static Image hueShift( BufferedImage img, Color target )
     {

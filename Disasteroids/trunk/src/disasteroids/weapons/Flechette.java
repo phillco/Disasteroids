@@ -56,6 +56,12 @@ class Flechette extends Unit
         return parent.getDamage();
     }
 
+    @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
+
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
     //                                                                            \\
@@ -74,7 +80,7 @@ class Flechette extends Unit
     public Flechette( DataInputStream stream, FlechetteManager parent ) throws IOException
     {
         super( stream );
-        
+
         this.parent = parent;
     }
 }

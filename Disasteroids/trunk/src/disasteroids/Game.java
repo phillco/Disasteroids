@@ -65,6 +65,11 @@ public class Game
     public ConcurrentLinkedQueue<GameObject> gameObjects;
 
     /**
+     * Reference list of all black holes.
+     */
+    public ConcurrentLinkedQueue<BlackHole> blackHoles = new ConcurrentLinkedQueue<BlackHole>();
+
+    /**
      * Reference list of players.
      * @since December 14, 2007
      */
@@ -77,7 +82,7 @@ public class Game
     public ConcurrentLinkedQueue<ShootingObject> shootingObjects;
 
     /**
-     * Reference list all of living objects on the level that the player must destroy (asteroids, aliens, stations, and so on).
+     * Reference list all of living objects on the level that the player must destroy (aliens, stations, and so on).
      * @since March 31, 2008
      */
     public ConcurrentLinkedQueue<GameObject> baddies;
@@ -297,8 +302,15 @@ public class Game
     public void removeObject( GameObject o )
     {
         gameObjects.remove( o );
-        shootingObjects.remove( o );
-        baddies.remove( o );
+
+        if ( o instanceof ShootingObject )
+            shootingObjects.remove( o );
+
+        if ( o instanceof Alien || o instanceof Station )
+            baddies.remove( o );
+
+        if ( o instanceof BlackHole )
+            blackHoles.remove( o );
     }
 
     /**

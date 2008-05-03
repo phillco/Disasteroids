@@ -205,6 +205,8 @@ public class Alien extends GameObject implements ShootingObject
             }
         }
 
+
+
         // Check for ship collision.  
         for ( Ship s : Game.getInstance().players )
         {

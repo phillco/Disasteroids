@@ -77,4 +77,10 @@ class Bullet extends Unit
         
         this.parent = parent;
     }
+
+    @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
 }

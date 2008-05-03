@@ -232,7 +232,13 @@ public class Missile extends Unit
     {
         return explosionStage > 0;
     }
-    
+
+    @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
+
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
     //                                                                            \\
@@ -259,7 +265,7 @@ public class Missile extends Unit
         explosionStage = stream.readInt();
         hugeBlast = stream.readBoolean();
         radius = stream.readDouble();
-        
+
         this.parent = parent;
     }
 }

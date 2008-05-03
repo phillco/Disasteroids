@@ -983,4 +983,11 @@ public class Ship extends GameObject implements ShootingObject
             setDy( 0 );
         }
     }
+
+    @Override
+    public void inBlackHole()
+    {
+        damage( Double.MAX_VALUE, getName() + " was sucked into a black hole." );
+        strafeSpeed = 16;
+    }
 }

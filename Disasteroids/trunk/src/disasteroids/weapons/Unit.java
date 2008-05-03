@@ -2,7 +2,6 @@
  * DISASTEROIDS
  * Unit.java
  */
-
 package disasteroids.weapons;
 
 import disasteroids.GameObject;
@@ -59,6 +58,14 @@ public abstract class Unit extends GameObject
         color = new Color( stream.readInt() );
         age = stream.readInt();
     }
+
+    @Override
+    public void inBlackHole()
+    {
+        remove();
+    }
+
+    public abstract void remove();
 
     public abstract double getRadius();
 

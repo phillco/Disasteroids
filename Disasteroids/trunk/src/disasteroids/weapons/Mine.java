@@ -102,6 +102,12 @@ public class Mine extends Unit
             return 0;
     }
 
+    @Override
+    public void remove()
+    {
+        parent.remove( this );
+    }
+
     /**
      * Draws this <code>Mine</code> in the given context.
      * 
@@ -173,7 +179,7 @@ public class Mine extends Unit
     {
         super( stream );
         explosionSize = stream.readInt();
-        
+
         this.parent = parent;
     }
 }

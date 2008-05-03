@@ -4,6 +4,7 @@
  */
 package disasteroids.gui;
 
+import disasteroids.BlackHole;
 import disasteroids.Game;
 import disasteroids.GameLoop;
 import disasteroids.GameObject;
@@ -20,6 +21,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Panel;
 import java.awt.RenderingHints;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -124,9 +126,7 @@ public class AsteroidsPanel extends Panel
     }
 
     /**
-     * Draws game elements
-     * @param g     buffered <code>Graphics</code> context to draw on
-     * @since December 21, 2007
+     * Draws all of the game elements.
      */
     private void draw( Graphics g )
     {
@@ -184,16 +184,19 @@ public class AsteroidsPanel extends Panel
         ParticleManager.draw( g );
 
         Game.getInstance().getAsteroidManager().draw( g );
-
         for ( GameObject go : Game.getInstance().gameObjects )
         {
-            go.draw( g );
+            if ( go instanceof BlackHole == false)
+                go.draw( g );
             if ( !GameLoop.isRunning() )
             {
                 isDrawing = false;
                 return;
             }
         }
+        
+        for ( BlackHole b : Game.getInstance().blackHoles )
+            b.draw( g );
 
         // Draw the on-screen HUD.
         drawHud( g );
@@ -263,7 +266,7 @@ public class AsteroidsPanel extends Panel
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";
-        int x = 0, y = 0;
+        int x = 0,  y = 0;
 
         // Draw game mode status.
         Game.getInstance().getGameMode().draw( g );
@@ -410,7 +413,7 @@ public class AsteroidsPanel extends Panel
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";
-        int x = 0, y = 0;
+        int x = 0,  y = 0;
 
         // Draw the "scoreboard" string.
         g2d.setColor( Color.white );

@@ -374,6 +374,10 @@ public class AsteroidsFrame extends Frame
      */
     public void drawImage( Graphics g, Image img, int x, int y, double angle, double scale )
     {
+        // [PC] Prevent a bug caused by the game drawing asteroids and aliens (anything that scales, really) before they're fully constructed.
+        if ( scale < 0 )
+            return;
+        
         AffineTransform af = new AffineTransform();
         af.translate( RelativeGraphics.translateX( x ), RelativeGraphics.translateY( y ) );
         af.scale( scale, scale );

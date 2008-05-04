@@ -45,7 +45,8 @@ public class BigNuke extends Unit
     public void act()
     {
         super.act();
-        setSpeed( Math.min( 2, getDx() + ax ) * 0.98, Math.min( 2, getDy() + ay ) * 0.98 );
+        setSpeed( Math.min( 8,  Math.abs( getDx() + ax ) ) , Math.min( 8, Math.abs( getDy() + ay ) ) );
+        decelerate(.98);
         ax *= 0.98;
         ay *= 0.98;
 

@@ -49,7 +49,7 @@ public class Mine extends Unit
     public void act()
     {
         super.act();
-        setSpeed( getDx() * .95, getDy() * .95 );
+        decelerate(.95);
 
         // Accelerate towards nearby targets.
         if ( isArmed() )
@@ -79,7 +79,7 @@ public class Mine extends Unit
                     double magnitude = 10.0 / Math.sqrt( ( Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) ) );
                     magnitude = Math.min( magnitude, 1 );//regulate the acceleration for (essentially) dividing by zero
 
-                    setSpeed( getDx() + magnitude * Math.cos( angle ), getDy() + magnitude * Math.sin( angle ) );
+                    setVelocity( getDx() + magnitude * Math.cos( angle ), getDy() + magnitude * Math.sin( angle ) );
                 }
             }
         }

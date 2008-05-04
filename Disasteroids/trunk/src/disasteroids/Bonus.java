@@ -82,7 +82,7 @@ public class Bonus extends GameObject
     {
         move();
         setSpeed( Math.min( 6, getDx() + ax ), Math.min( 6, getDy() + ay ) );
-        setSpeed(getDx()*.999, getDy()*.999);
+        decelerate(.999);
         ax *= 0.98;
         ay *= 0.98;
 

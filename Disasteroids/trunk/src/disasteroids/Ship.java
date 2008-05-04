@@ -510,9 +510,9 @@ public class Ship extends GameObject implements ShootingObject
         super.move();
 
         if ( forward )
-            setSpeed( getDx() + Math.cos( angle ) / SENSITIVITY * 2, getDy() - Math.sin( angle ) / SENSITIVITY * 2 );
+            setVelocity( getDx() + Math.cos( angle ) / SENSITIVITY * 2, getDy() - Math.sin( angle ) / SENSITIVITY * 2 );
         if ( backwards )
-            setSpeed( getDx() - Math.cos( angle ) / SENSITIVITY * 2, getDy() + Math.sin( angle ) / SENSITIVITY * 2 );
+            setVelocity( getDx() - Math.cos( angle ) / SENSITIVITY * 2, getDy() + Math.sin( angle ) / SENSITIVITY * 2 );
 
         if ( left )
             angle += Math.PI / SENSITIVITY / ( sniping ? 12 : 2 );
@@ -529,8 +529,7 @@ public class Ship extends GameObject implements ShootingObject
         }
 
         // Attrition of speed.
-        setSpeed( getDx() * .995, getDy() * .995 );
-
+        decelerate(.995);
         if ( stopping == true )
             slowStop();
     }
@@ -595,7 +594,7 @@ public class Ship extends GameObject implements ShootingObject
         healthMax -= amount / 3.0;
 
         // Bounce.
-        setSpeed( getDx() * -.3, getDy() * -.3 );
+        setVelocity( getDx() * -.3, getDy() * -.3 );
 
         // If just a wound, play the sound and leave.
         if ( health > 0 )

@@ -98,10 +98,10 @@ public class BigNukeCharge extends Unit
     public void move()
     {
         super.move();
-        setSpeed( getDx() + ax, getDy() + ay );
+        setVelocity( getDx() + ax, getDy() + ay );
         ax *= 0.99;
         ay *= 0.99;
-        setSpeed( getDx() * 0.94, getDy() * 0.94 );
+        decelerate(.94);
     }
 
     @Override

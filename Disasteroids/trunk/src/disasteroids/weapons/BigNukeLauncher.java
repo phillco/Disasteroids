@@ -44,7 +44,7 @@ public class BigNukeLauncher extends Weapon
         if ( !canBerserk() )
             return;
 
-        int shotsToFire = Math.min( 8, ammo );
+        int shotsToFire = ammo == -1 ? 8 : Math.min( 8, ammo );
         for ( int i = 0; i < shotsToFire; i++ )
             units.add( new BigNuke( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), Math.PI * 2 * i / shotsToFire ) );
 

@@ -198,7 +198,11 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                     if ( Settings.isInSetup() )
                     {
                         if ( choice == 0 )
-                            Settings.setPlayerName( JOptionPane.showInputDialog( this, "Enter your name.", Settings.getPlayerName() ) );
+                        {
+                            String n = JOptionPane.showInputDialog( this, "Enter your name.", Settings.getPlayerName() );
+                            if(! n.equals(""))
+                                Settings.setPlayerName( n );
+                        }
                         else if ( choice == 1 )
                         {
                             Color oldColor = Settings.getPlayerColor();

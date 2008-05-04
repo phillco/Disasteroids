@@ -4,7 +4,6 @@
  */
 package disasteroids;
 
-import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -148,10 +147,45 @@ public abstract class GameObject implements GameElement
         setY( y );
     }
 
-    public void setSpeed( double dx, double dy )
+    /**
+     * Gives <code>this</code> a new velocity, disregarding the old velocity.
+     * 
+     * @param dx The new x velocity
+     * @param dy The new y velocity
+     */
+    public void setVelocity( double dx, double dy )
     {
         setDx( dx );
         setDy( dy );
+    }
+    
+    /**
+     * Gives <code>this</code> a new speed, but preserves the sign of dx and dy.
+     * If dx or dy is zero, their sign is treated as positive.
+     * 
+     * @param dx The new magnitude of the x velocity
+     * @param dy The new magnitude of the y velocity
+     */
+    public void setSpeed(double dx, double dy)
+    {
+        int signX=1, signY=1;
+        if(getDx()<0)
+            signX=-1;
+        if(getDy()<0)
+            signY=-1;
+        setVelocity(signX*Math.abs(dx), signY*Math.abs(dy));
+    }
+    
+    /**
+     * Multiplies this <code>GameObject</code>'s dx and dy by the given factor.
+     * A parameter of 0 will stop <code>this</code> immediately; a parameter of 1.0
+     * will have no effect, and any number above 1 will be an increase in speed.
+     * 
+     * @param factor a number between 0.0 and 1.0 representing the amount to slow down.
+     */
+    public void decelerate(double factor)
+    {
+        setVelocity(getDx()*factor, getDy()*factor);
     }
 
     public double getSpeed()
@@ -184,7 +218,7 @@ public abstract class GameObject implements GameElement
     public void restore( DataInputStream stream ) throws IOException
     {
         setLocation( stream.readDouble(), stream.readDouble() );
-        setSpeed( stream.readDouble(), stream.readDouble() );
+        setVelocity( stream.readDouble(), stream.readDouble() );
     }
 
     /**

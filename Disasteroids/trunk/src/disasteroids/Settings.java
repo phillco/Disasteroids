@@ -35,7 +35,7 @@ public class Settings
     /**
      * The user's settings.
      */
-    private static Properties settingsFile;
+    private static Properties userSettings;
 
     /**
      * Loads settings from <code>SETTINGS_FILE_PATH</code>, if it exists.
@@ -44,30 +44,38 @@ public class Settings
      */
     public static boolean loadFromStorage()
     {
-        // No settings file.
-        if ( !new File( SETTINGS_FILE_PATH ).exists() )
-        {
-            setInSetup( true );
-            return false;
-        }
-
         try
         {
-            defaultSettings = new Properties();
-            defaultSettings.put( "musicOn", String.valueOf( true ) );
-            defaultSettings.put( "soundOn", String.valueOf( true ) );
-            defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
-            defaultSettings.put( "qualityRendering", String.valueOf( true ) );
-            defaultSettings.put( "lastConnectionIP", "localhost" );
-            defaultSettings.put( "lastGameMode", "wave" );
-            defaultSettings.put( "highScore", String.valueOf( 2000 ) );
-            defaultSettings.put( "highScorer", "Phillip & Andy" );
-            defaultSettings.put( "playerName", "Player" );
-            defaultSettings.put( "playerColor", String.valueOf( Color.red.getRGB() ) );
+            // Create the default settings.
+            if ( defaultSettings == null )
+            {
+                defaultSettings = new Properties();
+                defaultSettings.put( "musicOn", String.valueOf( true ) );
+                defaultSettings.put( "soundOn", String.valueOf( true ) );
+                defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
+                defaultSettings.put( "qualityRendering", String.valueOf( true ) );
+                defaultSettings.put( "lastConnectionIP", "localhost" );
+                defaultSettings.put( "lastGameMode", "wave" );
+                defaultSettings.put( "highScore", String.valueOf( 2000 ) );
+                defaultSettings.put( "highScorer", "Phillip & Andy" );
+                defaultSettings.put( "playerName", "Player" );
+                defaultSettings.put( "playerColor", String.valueOf( Color.red.getRGB() ) );
+            }
+
+            // Create the user's settings with the defaults as a base.
+            userSettings = new Properties( defaultSettings );
 
             // Load the settings file.
-            settingsFile = new Properties( defaultSettings );
-            settingsFile.load( new FileInputStream( SETTINGS_FILE_PATH ) );
+            File settingsFile = new File( SETTINGS_FILE_PATH );
+
+            if ( settingsFile.exists() )
+                userSettings.load( new FileInputStream( settingsFile ) );
+            else
+            {
+                setInSetup( true );
+                return false;
+            }
+
         }
         catch ( IOException ex )
         {
@@ -103,7 +111,7 @@ public class Settings
             }
 
             // Write the settings file.            
-            settingsFile.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "You're reading the Disasteroids settings file! (v3)." );
+            userSettings.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "You're reading the Disasteroids settings file! (v3)." );
         }
         catch ( IOException e )
         {
@@ -126,7 +134,7 @@ public class Settings
      */
     public static boolean isMusicOn()
     {
-        return Boolean.parseBoolean( settingsFile.getProperty( "musicOn" ) );
+        return Boolean.parseBoolean( userSettings.getProperty( "musicOn" ) );
     }
 
     /**
@@ -135,7 +143,7 @@ public class Settings
      */
     public static void setMusicOn( boolean aMusicOn )
     {
-        settingsFile.put( "musicOn", String.valueOf( aMusicOn ) );
+        userSettings.put( "musicOn", String.valueOf( aMusicOn ) );
     }
 
     /**
@@ -144,7 +152,7 @@ public class Settings
      */
     public static boolean isSoundOn()
     {
-        return Boolean.parseBoolean( settingsFile.getProperty( "soundOn" ) );
+        return Boolean.parseBoolean( userSettings.getProperty( "soundOn" ) );
     }
 
     /**
@@ -153,7 +161,7 @@ public class Settings
      */
     public static void setSoundOn( boolean aSoundOn )
     {
-        settingsFile.put( "soundOn", String.valueOf( aSoundOn ) );
+        userSettings.put( "soundOn", String.valueOf( aSoundOn ) );
     }
 
     /**
@@ -162,7 +170,7 @@ public class Settings
      */
     public static boolean isUseFullscreen()
     {
-        return Boolean.parseBoolean( settingsFile.getProperty( "fullscreenMode" ) );
+        return Boolean.parseBoolean( userSettings.getProperty( "fullscreenMode" ) );
     }
 
     /**
@@ -171,7 +179,7 @@ public class Settings
      */
     public static void setUseFullscreen( boolean aUseFullscreen )
     {
-        settingsFile.put( "fullscreenMode", String.valueOf( aUseFullscreen ) );
+        userSettings.put( "fullscreenMode", String.valueOf( aUseFullscreen ) );
     }
 
     /**
@@ -180,7 +188,7 @@ public class Settings
      */
     public static String getLastConnectionIP()
     {
-        return settingsFile.getProperty( "lastConnectionIP" );
+        return userSettings.getProperty( "lastConnectionIP" );
     }
 
     /**
@@ -189,7 +197,7 @@ public class Settings
      */
     public static void setLastConnectionIP( String aLastConnectionIP )
     {
-        settingsFile.put( "lastConnectionIP", aLastConnectionIP );
+        userSettings.put( "lastConnectionIP", aLastConnectionIP );
     }
 
     /**
@@ -199,9 +207,9 @@ public class Settings
     public static void setLastGameMode( Class aMode )
     {
         if ( aMode == WaveGameplay.class )
-            settingsFile.put( "lastGameMode", "wave" );
+            userSettings.put( "lastGameMode", "wave" );
         else
-            settingsFile.put( "lastGameMode", "linear" );
+            userSettings.put( "lastGameMode", "linear" );
     }
 
     /**
@@ -210,7 +218,7 @@ public class Settings
      */
     public static Class getLastGameMode()
     {
-        if ( settingsFile.getProperty( "lastGameMode" ).equalsIgnoreCase( "wave" ) )
+        if ( userSettings.getProperty( "lastGameMode" ).equalsIgnoreCase( "wave" ) )
             return WaveGameplay.class;
         else
             return LinearGameplay.class;
@@ -222,7 +230,7 @@ public class Settings
      */
     public static boolean isQualityRendering()
     {
-        return Boolean.parseBoolean( settingsFile.getProperty( "qualityRendering" ) );
+        return Boolean.parseBoolean( userSettings.getProperty( "qualityRendering" ) );
     }
 
     /**
@@ -231,7 +239,7 @@ public class Settings
      */
     public static void setQualityRendering( boolean aQualityRendering )
     {
-        settingsFile.put( "qualityRendering", String.valueOf( aQualityRendering ) );
+        userSettings.put( "qualityRendering", String.valueOf( aQualityRendering ) );
     }
 
     /**
@@ -240,7 +248,7 @@ public class Settings
      */
     public static double getHighScore()
     {
-        return Double.parseDouble( settingsFile.getProperty( "highScore" ) );
+        return Double.parseDouble( userSettings.getProperty( "highScore" ) );
     }
 
     /**
@@ -249,7 +257,7 @@ public class Settings
      */
     public static void setHighScore( double aHighScore )
     {
-        settingsFile.put( "highScore", String.valueOf( aHighScore ) );
+        userSettings.put( "highScore", String.valueOf( aHighScore ) );
     }
 
     /**
@@ -258,7 +266,7 @@ public class Settings
      */
     public static String getHighScoreName()
     {
-        return settingsFile.getProperty( "highScorer" );
+        return userSettings.getProperty( "highScorer" );
     }
 
     /**
@@ -267,7 +275,7 @@ public class Settings
      */
     public static void setHighScoreName( String aHighScoreName )
     {
-        settingsFile.put( "highScorer", aHighScoreName );
+        userSettings.put( "highScorer", aHighScoreName );
     }
 
     /**
@@ -276,10 +284,10 @@ public class Settings
      */
     public static String getPlayerName()
     {
-        if ( settingsFile.getProperty( "playerName" ).length() == 0 )
+        if ( userSettings.getProperty( "playerName" ).length() == 0 )
             return "Player";
         else
-            return settingsFile.getProperty( "playerName" );
+            return userSettings.getProperty( "playerName" );
     }
 
     /**
@@ -288,7 +296,7 @@ public class Settings
      */
     public static void setPlayerName( String aPlayerName )
     {
-        settingsFile.put( "playerName", aPlayerName );
+        userSettings.put( "playerName", aPlayerName );
     }
 
     /**
@@ -297,7 +305,7 @@ public class Settings
      */
     public static Color getPlayerColor()
     {
-        return new Color( Integer.parseInt( settingsFile.getProperty( "playerColor" ) ) );
+        return new Color( Integer.parseInt( userSettings.getProperty( "playerColor" ) ) );
     }
 
     /**
@@ -307,7 +315,7 @@ public class Settings
     public static void setPlayerColor( Color aPlayerColor )
     {
         if ( aPlayerColor != null )
-            settingsFile.put( "playerColor", String.valueOf( aPlayerColor.getRGB() ) );
+            userSettings.put( "playerColor", String.valueOf( aPlayerColor.getRGB() ) );
     }
 
     /**

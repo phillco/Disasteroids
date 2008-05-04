@@ -11,10 +11,8 @@ import disasteroids.gui.MainMenu;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
 import disasteroids.sound.Sound;
-import java.io.File;
 import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 /**
  * Main utility code for startup, exit, logs, and errors.
@@ -29,7 +27,7 @@ public class Running
      * @since January 18, 2008
      */
     private static int errorCount = 0,  warningCount = 0;
-    
+
     public static boolean isRunningFromJar = false;
 
     /**
@@ -42,48 +40,29 @@ public class Running
     public static void main( String[] args )
     {
         System.out.println( "DISASTEROIDS started!" );
-/*
 
-        // Check for resources.
-        if ( !new File( "res\\Music2.mid" ).exists() )
-        {
-            Running.fatalError( "Couldn't load resources.\nPlease make sure that your running directory is empty or set to the project's main directory." );
-            return;
-        }
-*/
-        // Make swing dialogs like the local operating system.
-        try
-        {
-            UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-        }
-        catch ( Exception ex )
-        {
-        }
-
-        // Do we have command-line arguments?
-        MenuOption preselectedOption = null;
-        for ( String arg : args )
-        {
-            // Check if any match a supported parameter.
-            for ( MenuOption option : MenuOption.values() )
-                if ( arg.equals( option.getParameter() ) )
-                    preselectedOption = option;
-        }
-
-        // Read in our stored settings.
-        Settings.loadFromStorage();
-
-        // Load images.
+        // Load external images.
         ImageLibrary.init();
 
-        // If the user has provided a selection, skip the menu.
-        if ( preselectedOption != null )
-            startGame( preselectedOption );
-        else
+        // Load stored settings.
+        Settings.loadFromStorage();
+
+        // The user can skip the menu with a command-line argument.
+        for ( String arg : args )
         {
-            // Start the menu.
-            new MainMenu();
+            for ( MenuOption option : MenuOption.values() )
+            {
+                // Matches a menu option. Use that.
+                if ( arg.equals( option.getParameter() ) )
+                {
+                    startGame( option );
+                    return;
+                }
+            }
         }
+
+        // Otherwise, just start the menu.
+        new MainMenu();
     }
 
     /**
@@ -100,46 +79,23 @@ public class Running
             GameLoop.stopLoop();
             System.out.println( "\nShutting down nicely..." );
 
-            // Tell the server we're quitting.
+            // Tell server or clients that we're quitting.
             if ( Client.is() )
-            {
                 Client.getInstance().quit();
-            } // And I told Bill, that if they move my desk one more time, then, then....
-            // Tell clients we're quitting.
             else if ( Server.is() )
-            {
                 Server.getInstance().quit();
-            }
 
-            // Find the player with the highest score.
-            if ( AsteroidsFrame.frame() != null )
-            {
-                Ship highestScorer = Game.getInstance().players.peek();
-                for ( Ship s : Game.getInstance().players )
-                {
-                    if ( s.getScore() > Settings.getHighScore() )
-                    {
-                        Settings.setHighScoreName( highestScorer.getName() );
-                        Settings.setHighScore( highestScorer.getScore() );
-                    }
-                }
-            }
-
-            // Write our settings.
+            // Save local settings.
             Settings.saveToStorage();
 
             // Show warning / error count.
             System.out.print( "Disasteroids concluded." );
 
             if ( errorCount > 0 )
-            {
                 System.out.print( " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." ) );
-            }
 
             if ( warningCount > 0 )
-            {
                 System.out.print( " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." ) );
-            }
 
             // Daisy.....daisy....
             System.exit( 0 );
@@ -147,9 +103,9 @@ public class Running
         }
         catch ( Throwable throwable )
         {
-            System.out.println( "\nShut Down Failed! Killing now." );
+            System.out.println( "\nError shutting down!\nShutting down not-so-nicely..." );
 
-            //this should help if we ran out of memory
+            // [AK] This should help if we ran out of memory.
             if ( throwable instanceof java.lang.OutOfMemoryError )
             {
                 System.gc();
@@ -159,19 +115,17 @@ public class Running
                 System.gc();
             }
 
-            // Write our settings.
-            Settings.saveToStorage(); //we really hope that this survived
+            // Again, try to write our settings.
+            Settings.saveToStorage();
 
             throwable.printStackTrace();
-            System.exit( 1 );
+            System.exit( 66 );
         }
         finally
         {
             //shouldn't get here... but if we do, just in case
-            System.exit( 255 ); //It failed <i>real</i> bad
-
+            System.exit( 66 ); //It failed <i>real</i> bad
         }
-
     }
 
     /**

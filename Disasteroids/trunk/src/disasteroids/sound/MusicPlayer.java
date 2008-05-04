@@ -1,9 +1,12 @@
+/*
+ * DISASTEROIDS
+ * MusicPlayer.java
+ */
 package disasteroids.sound;
 
 import disasteroids.Running;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
@@ -13,13 +16,6 @@ import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Synthesizer;
 
-/*
- * DISASTEROIDS
- * MusicPlayer.java
- */
-
-
-
 /**
  * MIDI player.
  * @author Andy Kooiman, others.
@@ -27,16 +23,21 @@ import javax.sound.midi.Synthesizer;
 public class MusicPlayer implements MetaEventListener
 {
     public Sequencer sequencer = null;
+
     public Synthesizer synthesizer = null;
+
     public Sequence sequence = null;
-    private String filepath;
+
+    private String resourcePath;
+
     public int loopcount = 0;
+
     long start = 0;
 
-    public MusicPlayer( String filepath )
+    public MusicPlayer( String resourcePath )
     {
-        this.filepath = filepath;
-        load( filepath );
+        this.resourcePath = resourcePath;
+        load( resourcePath );
         loop();
     }
 
@@ -44,7 +45,7 @@ public class MusicPlayer implements MetaEventListener
     {
         try
         {
-            FileInputStream fis = new FileInputStream( filepath );
+            InputStream fis = getClass().getResourceAsStream( resourcePath );
             sequence = MidiSystem.getSequence( fis );
             sequencer = MidiSystem.getSequencer();
             sequencer.open();
@@ -52,15 +53,15 @@ public class MusicPlayer implements MetaEventListener
         }
         catch ( IOException ioe )
         {
-            System.out.println( "Error Reading: " + new File( filepath ).getName() + " (" + ioe + ")" );
+            System.out.println( "Error Reading: (" + ioe + ")" );
         }
         catch ( InvalidMidiDataException imde )
         {
-            Running.warning("|         Not a MIDI File         |" , imde);
+            Running.warning( "|         Not a MIDI File         |", imde );
         }
         catch ( MidiUnavailableException mue )
         {
-            Running.warning("| MIDI Device is currently in use |", mue);
+            Running.warning( "| MIDI Device is currently in use |", mue );
         }
     }
 
@@ -81,11 +82,12 @@ public class MusicPlayer implements MetaEventListener
 
         sequencer = null;
         synthesizer = null;//gets rid of the sequencer,sequence,and synthesizer
+
         sequence = null;
         start = 0;
         loopcount = 0;
     }
-    
+
     /**
      * Returns whether the music is playing.
      */
@@ -99,6 +101,7 @@ public class MusicPlayer implements MetaEventListener
         try
         {
             sequencer.start();//plays midi
+
         }
         catch ( NullPointerException npe )
         {
@@ -114,6 +117,7 @@ public class MusicPlayer implements MetaEventListener
         {
             sequencer.stop();
             sequencer.setMicrosecondPosition( 0 );//resets the sequencer
+
             sequencer.removeMetaEventListener( this );
             start = 0;
             loopcount = 0;
@@ -131,6 +135,7 @@ public class MusicPlayer implements MetaEventListener
         try
         {
             sequencer.stop();//paused if you play again it will start from the point it left off
+
         }
         catch ( NullPointerException npe )
         {
@@ -146,6 +151,7 @@ public class MusicPlayer implements MetaEventListener
         {
             sequencer.start();
             sequencer.addMetaEventListener( this );//sends a message when midi is done playing
+
         }
         catch ( NullPointerException npe )
         {
@@ -156,7 +162,7 @@ public class MusicPlayer implements MetaEventListener
     {
         if ( e.getType() == 47 )
         {
-            load( filepath );
+            load( resourcePath );
             loop();
         }
     }

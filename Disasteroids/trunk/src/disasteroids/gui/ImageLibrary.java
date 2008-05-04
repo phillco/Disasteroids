@@ -1,61 +1,38 @@
 /*
- * Simple class to store Image objects for easy access
+ * DISASTEROIDS
+ * ImageLibrary.java
  */
 package disasteroids.gui;
 
-import disasteroids.JarResources;
 import disasteroids.Running;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import javax.swing.JOptionPane;
 
+/**
+ * Loads and stores the game's external graphics resources.
+ * @author Andy Kooiman, Phillip Cohen
+ */
 public class ImageLibrary
 {
     /**
-     * The <code>Image</code> for an Asteroid
+     * External images that game objects use.
      */
-    private static Image asteroid;
+    private static Image asteroid,  bonusAsteroid,  alien,  blackHole;
 
     /**
-     * The <code>Image</code> for a bonusAsteroid
-     */
-    private static Image bonusAsteroid;
-
-    private static Image alien;
-    
-    private static Image blackHole;
-
-    /**
-     * Starts to load all of the <code>Image</code>s
-     * 
-     * @since March 24, 2008
+     * Imports all of the resources.
      */
     public static void init()
     {
-        asteroid = Toolkit.getDefaultToolkit().createImage( "res\\asteroid.gif" );
-        bonusAsteroid = Toolkit.getDefaultToolkit().createImage( "res\\bonusAsteroid.png" );
-        alien = Toolkit.getDefaultToolkit().createImage( "res\\alien.png" );
-        blackHole = Toolkit.getDefaultToolkit().createImage( "res\\blackHole.png" );
-        
-
-        if ( new File( "Disasteroids.jar" ).exists() )
-        {
-            JarResources jar = new JarResources( "Disasteroids.jar" );
-            asteroid = Toolkit.getDefaultToolkit().createImage( jar.getResource( "asteroid.gif" ) );
-            Running.isRunningFromJar = true;
-        }
+        asteroid = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/asteroid.gif" ) );
+        bonusAsteroid = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/bonusAsteroid.png" ) );
+        alien = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/alien.png" ) );
+        blackHole = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/blackHole.png" ) );
     }
 
-    /**
-     * @return The basic <code>Image</code> for an Asteroid
-     * 
-     * @since March 24, 2008
-     */
     public static Image getAsteroid()
     {
         return asteroid;
@@ -75,8 +52,6 @@ public class ImageLibrary
     {
         return blackHole;
     }
-    
-    
 
     public static Image hueShift( BufferedImage img, Color target )
     {
@@ -108,7 +83,7 @@ public class ImageLibrary
 
                 //convert to HSB
                 float[] hsb =
-                        {
+                {
                     0f, 0f, 0f
                 };
                 Color.RGBtoHSB( red, green, blue, hsb );

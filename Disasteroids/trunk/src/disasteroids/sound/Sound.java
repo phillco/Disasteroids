@@ -5,6 +5,7 @@
 package disasteroids.sound;
 
 import disasteroids.Settings;
+import disasteroids.gui.ImageLibrary;
 
 /**
  * The central sound and music class.
@@ -71,7 +72,7 @@ public class Sound
     public static void startMusic()
     {
         if ( musicPlayer == null )
-            musicPlayer = new MusicPlayer( "res\\Music2.mid" );
+            musicPlayer = new MusicPlayer( "/Music2.mid" );
         else
             musicPlayer.play();
     }
@@ -82,9 +83,9 @@ public class Sound
     public static void stopMusic()
     {
         if ( musicPlayer == null )
-            musicPlayer = new MusicPlayer( "res\\Music2.mid" );
+            return;
         else
-            musicPlayer.pause();
+            musicPlayer.stop();
     }
 
     /**

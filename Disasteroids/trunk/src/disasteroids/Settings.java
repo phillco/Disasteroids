@@ -5,50 +5,52 @@
 package disasteroids;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Stores user settings and writes/retrieves them from <code>Disasteroids.props</code>.
- * @since November 16, 2007
+ * Writes and retrieves the user's settings from a file.
  * @author Phillip Cohen
  */
 public class Settings
 {
     /**
      * First time startup?
-     * @since April 9, 2008
      */
     private static boolean inSetup = false;
 
     /**
      * The path to the settings file.
-     * @since April 15, 2008
      */
-    public static final String SETTINGS_FILE_PATH = "res\\UserSettings2.props";
+    public static final String SETTINGS_FILE_PATH = "DisasteroidsSettings.props";
 
     /**
      * The default settings.
-     * @since April 15, 2008
      */
     private static Properties defaultSettings;
 
     /**
      * The user's settings.
-     * @since April 15, 2008
      */
     private static Properties settingsFile;
 
     /**
-     * Loads settings from <code>Disasteroids.props</code>, if it exists.
+     * Loads settings from <code>SETTINGS_FILE_PATH</code>, if it exists.
      * 
      * @return  whether settings were loaded
-     * @since December 7, 2007
      */
     public static boolean loadFromStorage()
     {
+        // No settings file.
+        if ( !new File( SETTINGS_FILE_PATH ).exists() )
+        {
+            setInSetup( true );
+            return false;
+        }
+
         try
         {
             defaultSettings = new Properties();
@@ -78,17 +80,30 @@ public class Settings
     }
 
     /**
-     * Writes settings to <code>Disasteroids.props</code>.
+     * Writes settings to <code>SETTINGS_FILE_PATH</code>.
      * 
      * @return  whether settings were saved
-     * @since December 7, 2007
      */
     public static boolean saveToStorage()
     {
         try
+        {
+            // Update the high score.
+            if ( Game.getInstance() != null )
             {
-                // Write the settings file.            
-            settingsFile.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "Disasteroids settings file (v2)." );
+                Ship highestScorer = Game.getInstance().players.peek();
+                for ( Ship s : Game.getInstance().players )
+                {
+                    if ( s.getScore() > Settings.getHighScore() )
+                    {
+                        Settings.setHighScoreName( highestScorer.getName() );
+                        Settings.setHighScore( highestScorer.getScore() );
+                    }
+                }
+            }
+
+            // Write the settings file.            
+            settingsFile.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "You're reading the Disasteroids settings file! (v3)." );
         }
         catch ( IOException e )
         {

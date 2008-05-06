@@ -32,7 +32,7 @@ public class Constants
      * The default port that the server runs on.
      * @since December 29, 2007
      */
-    public static final int DEFAULT_PORT = 53;
+    public static final int DEFAULT_PORT = 1024;
 
     /**
      * Time (in seconds) that must elapse before a machine is considered to have timed out.

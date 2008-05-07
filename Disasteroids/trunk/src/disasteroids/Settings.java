@@ -36,6 +36,10 @@ public class Settings
      * The user's settings.
      */
     private static Properties userSettings;
+    
+    private static String oldHighScorer;
+    
+    private static double oldHighScore;
 
     /**
      * Loads settings from <code>SETTINGS_FILE_PATH</code>, if it exists.
@@ -58,6 +62,8 @@ public class Settings
                 defaultSettings.put( "lastGameMode", "wave" );
                 defaultSettings.put( "highScore", String.valueOf( 2000 ) );
                 defaultSettings.put( "highScorer", "Phillip & Andy" );
+//                defaultSettings.put( "lowScore", String.valueOf( -2000 ) );
+//                defaultSettings.put( "lowScorer", "Matt" );
                 defaultSettings.put( "playerName", "Player" );
                 defaultSettings.put( "playerColor", String.valueOf( Color.red.getRGB() ) );
             }
@@ -69,7 +75,11 @@ public class Settings
             File settingsFile = new File( SETTINGS_FILE_PATH );
 
             if ( settingsFile.exists() )
+            {
                 userSettings.load( new FileInputStream( settingsFile ) );
+                oldHighScore = getHighScore();
+                oldHighScorer = getHighScoreName();
+            }
             else
             {
                 setInSetup( true );
@@ -259,6 +269,22 @@ public class Settings
     {
         userSettings.put( "highScore", String.valueOf( aHighScore ) );
     }
+//
+//    /**
+//     * Returns the lowest score we've seen on this computer.
+//     */
+//    public static double getLowScore()
+//    {
+//        return Double.parseDouble( userSettings.getProperty( "lowScore" ) );
+//    }
+//
+//    /**
+//     * Updates the lowest score we've seen on this computer.
+//     */
+//    public static void setLowScore( double aLowScore )
+//    {
+//        userSettings.put( "lowScore", String.valueOf( aLowScore ) );
+//    }
 
     /**
      * Returns the name of the high scorer.
@@ -335,4 +361,16 @@ public class Settings
     {
         inSetup = aInSetup;
     }
+
+    public static double getOldHighScore()
+    {
+        return oldHighScore;
+    }
+
+    public static String getOldHighScorer()
+    {
+        return oldHighScorer;
+    }
+    
+    
 }

@@ -194,26 +194,19 @@ public class Station extends GameObject implements ShootingObject
                             ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
                     {
                         if ( m instanceof Missile && disableCounter > 0 && !( (Missile) m ).isExploding() )
-                        {
                             hitsWhileDisabled++;
-                            if ( hitsWhileDisabled > 3 )
-                            {
-                                m.explode();
-                                destroy();
-                                return;
-                            }
-                        }
-                        if ( m instanceof Mine && disableCounter > 0 && !( (Mine) m ).isExploding() && ( (Mine) m ).isArmed() )
-                        {
-                            hitsWhileDisabled += 2;
-                            if ( hitsWhileDisabled > 3 )
-                            {
-                                m.explode();
-                                destroy();
-                                return;
-                            }
-                        }
 
+                        if ( m instanceof Mine && disableCounter > 0 && !( (Mine) m ).isExploding() && ( (Mine) m ).isArmed() )
+                            hitsWhileDisabled += 2;
+
+                        if ( hitsWhileDisabled > 3 )
+                        {
+                            m.explode();
+                            destroy();
+                            if ( s instanceof Ship )
+                                ( (Ship) s ).increaseScore( 2500 );
+                            return;
+                        }
                         m.explode();
                         disable();
                     }
@@ -434,6 +427,7 @@ public class Station extends GameObject implements ShootingObject
                 angle += SWEEP_SPEED;
         }
         else //if it shouldn't move counterclockwise, moveclockwise
+
         {
             if ( Math.abs( angle - desiredAngle ) < SWEEP_SPEED )
                 angle = desiredAngle;

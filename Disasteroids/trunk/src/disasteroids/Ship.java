@@ -445,7 +445,6 @@ public class Ship extends GameObject implements ShootingObject
                         if ( damage( m.getDamage(), obit ) )
                         {
                             m.explode();
-                            score -= 500;
                             if ( other.getClass().isInstance( this ) )
                             {
                                 Ship s = (Ship) other;
@@ -592,6 +591,7 @@ public class Ship extends GameObject implements ShootingObject
         // Lose health, and some max health as well.
         health -= amount;
         healthMax -= amount / 3.0;
+        score -= amount * 5;
 
         // Bounce.
         setVelocity( getDx() * -.3, getDy() * -.3 );
@@ -986,7 +986,7 @@ public class Ship extends GameObject implements ShootingObject
     @Override
     public void inBlackHole()
     {
-        damage( Double.MAX_VALUE, getName() + " was sucked into a black hole." );
+        damage( 150, getName() + " was sucked into a black hole." );
         strafeSpeed = 16;
     }
 }

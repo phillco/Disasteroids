@@ -74,12 +74,6 @@ public class AsteroidsPanel extends Panel
     int averageFPS = 0;
 
     /**
-     * Stores whether a high score has been achieved by this player.
-     * @since December 20, 2007
-     */
-    boolean highScoreAchieved;
-
-    /**
      * @since December 29, 2007
      */
     boolean showWarpDialog;
@@ -166,12 +160,36 @@ public class AsteroidsPanel extends Panel
                     averageFPS = total / benchmarkFPS.size();
                 }
             }
-        }
 
-        if ( !highScoreAchieved && parent.localPlayer().getScore() > Settings.getHighScore() )
-        {
-            Running.log( "New high score of " + Util.insertThousandCommas( parent.localPlayer().getScore() ) + "!", 800 );
-            highScoreAchieved = true;
+
+            // Update high and low scores.
+            Ship highestScorer = Game.getInstance().players.peek();
+            Ship lowestScorer = Game.getInstance().players.peek();
+            for ( Ship s : Game.getInstance().players )
+            {
+                if ( s.getScore() > highestScorer.score() )
+                    highestScorer = s;
+                else if ( s.getScore() < highestScorer.score() )
+                    lowestScorer = s;
+            }
+
+            // Regression!
+            if ( highestScorer.getScore() < Settings.getOldHighScore() && Settings.getHighScore() != Settings.getOldHighScore() )
+            {
+                Running.log( "The high score record has been returned to " + Settings.getOldHighScorer() + ".", 800 );
+                Settings.setHighScore( Settings.getOldHighScore() );
+                Settings.setHighScoreName( Settings.getOldHighScorer() );
+            }
+            else if ( highestScorer.getScore() > Settings.getHighScore() )
+            {
+                Settings.setHighScore( highestScorer.getScore() );
+                if ( !highestScorer.getName().equals( Settings.getHighScoreName() ) )
+                {
+                    Settings.setHighScoreName( highestScorer.getName() );
+                    Running.log( highestScorer.getName() + " just broke the high score record of " + Util.insertThousandCommas( highestScorer.getScore() ) + "!", 800 );
+                }
+            }
+
         }
 
         // Draw the star background.
@@ -186,7 +204,7 @@ public class AsteroidsPanel extends Panel
         Game.getInstance().getAsteroidManager().draw( g );
         for ( GameObject go : Game.getInstance().gameObjects )
         {
-            if ( go instanceof BlackHole == false)
+            if ( go instanceof BlackHole == false )
                 go.draw( g );
             if ( !GameLoop.isRunning() )
             {
@@ -194,7 +212,7 @@ public class AsteroidsPanel extends Panel
                 return;
             }
         }
-        
+
         for ( BlackHole b : Game.getInstance().blackHoles )
             b.draw( g );
 
@@ -485,20 +503,20 @@ public class AsteroidsPanel extends Panel
 
         // Draw the high scorer.
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
-        text = "All-time high scorer " + ( highScoreAchieved ? "was " : "is " ) + Settings.getHighScoreName() + " with " + Util.insertThousandCommas( (int) Settings.getHighScore() ) + " points.";
+        text = "All-time high scorer " + ( Settings.getOldHighScore() >= Settings.getHighScore() ? "is " : "was " ) + Settings.getOldHighScorer() + " with " + Util.insertThousandCommas( (int) Settings.getOldHighScore() ) + " points.";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         y += 40;
         g2d.setColor( Color.white );
         g2d.drawString( text, x, y );
 
         // Boost player egos.
-        if ( highScoreAchieved )
+        if ( Settings.getOldHighScore() < Settings.getHighScore() )
         {
             y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 3;
-            if ( parent.localPlayer().getName().equals( Settings.getHighScoreName() ) )
+            if ( Settings.getHighScoreName().equals( Settings.getOldHighScorer() ) )
                 text = "But hey, everyone likes to beat their own score.";
             else
-                text = "But you're much better with your shiny " + Util.insertThousandCommas( parent.localPlayer().getScore() ) + "!";
+                text = "But you're much better with your shiny " + Util.insertThousandCommas( (int) Settings.getHighScore() ) + "!";
             x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
             g2d.drawString( text, x, y );
         }

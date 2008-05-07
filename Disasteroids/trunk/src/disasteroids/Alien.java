@@ -200,6 +200,8 @@ public class Alien extends GameObject implements ShootingObject
                     {
                         m.explode();
                         life -= m.getDamage();
+                        if ( life < 0 && s instanceof Ship )
+                            ( (Ship) s ).increaseScore( 1000 );
                     }
                 }
             }

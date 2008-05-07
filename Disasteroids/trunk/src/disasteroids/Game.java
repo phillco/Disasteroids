@@ -569,9 +569,10 @@ public class Game
                     baddies.add( a );
                     break;
                 case BONUS:
-                    Bonus b = new Bonus( stream );
-                    gameObjects.add( b );
-                    System.out.println( "" );
+                    gameObjects.add( new Bonus( stream ) );
+                    break;
+                case BLACK_HOLE:
+                    gameObjects.add( new BlackHole( stream ) );
                     break;
                 case SHIP:
                     Ship s = new Ship( stream );

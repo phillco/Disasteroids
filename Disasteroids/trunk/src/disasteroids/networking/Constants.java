@@ -5,6 +5,7 @@
 package disasteroids.networking;
 
 import disasteroids.Alien;
+import disasteroids.BlackHole;
 import disasteroids.Bonus;
 import disasteroids.GameMode;
 import disasteroids.GameObject;
@@ -78,7 +79,7 @@ public class Constants
 
     public static enum GameObjectTIDs
     {
-        ALIEN, BONUS, SHIP, STATION;
+        ALIEN, BLACK_HOLE, BONUS, SHIP, STATION;
 
     }
 
@@ -115,6 +116,8 @@ public class Constants
             return GameObjectTIDs.STATION.ordinal();
         else if ( o instanceof Ship )
             return GameObjectTIDs.SHIP.ordinal();
+        else if ( o instanceof BlackHole )
+            return GameObjectTIDs.BLACK_HOLE.ordinal();
         else
             throw new IllegalArgumentException( "Unknown game object: " + o + "." );
     }

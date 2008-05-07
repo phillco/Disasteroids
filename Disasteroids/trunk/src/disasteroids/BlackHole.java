@@ -8,7 +8,11 @@ import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.weapons.Unit;
 import disasteroids.weapons.Weapon;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -119,7 +123,30 @@ public class BlackHole extends GameObject
     }
 
     public void draw( Graphics g )
-    {        
+    {
         AsteroidsFrame.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY() );
+    }
+
+    /**
+     * Writes <code>this</code> to a stream for client/server transmission.
+     */
+    @Override
+    public void flatten( DataOutputStream stream ) throws IOException
+    {
+        super.flatten( stream );
+        stream.writeInt( numEaten );
+        stream.writeInt( power );
+    }
+
+    /**
+     * Creates <code>this</code> from a stream for client/server transmission.
+     */
+    public BlackHole( DataInputStream stream ) throws IOException
+    {
+        super( stream );
+        numEaten = stream.readInt();
+        power = stream.readInt();
+        Game.getInstance().blackHoles.add( this );
+
     }
 }

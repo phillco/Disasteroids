@@ -92,7 +92,7 @@ public class WaveGameplay implements GameMode
             Game.getInstance().baddies.add( s );
         }
 
-        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 11 * Math.pow( Game.getInstance().blackHoles.size() + 1, 3 ) * spawnRate <= 0.3 )
+        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 11 * Math.pow( Game.getInstance().blackHoles.size() + 1, 4 ) * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
             Game.getInstance().gameObjects.add( new BlackHole( Util.getRandomGenerator().nextInt(Game.getInstance().GAME_WIDTH), Util.getRandomGenerator().nextInt(Game.getInstance().GAME_HEIGHT) ) );

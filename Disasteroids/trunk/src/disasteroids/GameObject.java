@@ -16,15 +16,18 @@ import java.io.IOException;
 public abstract class GameObject implements GameElement
 {
     /**
-     * Unique ID for this class. Used for C/S.
-     * @since April 11, 2008
+     * The next ID to give to a new object.
+     * As IDs are ints, 2,147,483,647 unique objects are supported before it overflows. (TODO: Add support for graceful overflow)
      */
-    public static final int TYPE_ID = -1;
+    private static int nextId = 1;
+
+    /**
+     * This object's ID.
+     */
+    private int id = nextId++;
 
     /**
      * Our location and speed data.
-     * 
-     * @since January 5, 2008
      */
     private double x,  y,  dx,  dy;
 
@@ -70,7 +73,7 @@ public abstract class GameObject implements GameElement
      */
     public void inBlackHole()
     {
-        Game.getInstance().removeObject( this );
+        Game.getInstance().getObjectManager().removeObject( this );
     }
 
     public double getDx()
@@ -158,7 +161,7 @@ public abstract class GameObject implements GameElement
         setDx( dx );
         setDy( dy );
     }
-    
+
     /**
      * Gives <code>this</code> a new speed, but preserves the sign of dx and dy.
      * If dx or dy is zero, their sign is treated as positive.
@@ -166,16 +169,16 @@ public abstract class GameObject implements GameElement
      * @param dx The new magnitude of the x velocity
      * @param dy The new magnitude of the y velocity
      */
-    public void setSpeed(double dx, double dy)
+    public void setSpeed( double dx, double dy )
     {
-        int signX=1, signY=1;
-        if(getDx()<0)
-            signX=-1;
-        if(getDy()<0)
-            signY=-1;
-        setVelocity(signX*Math.abs(dx), signY*Math.abs(dy));
+        int signX = 1, signY = 1;
+        if ( getDx() < 0 )
+            signX = -1;
+        if ( getDy() < 0 )
+            signY = -1;
+        setVelocity( signX * Math.abs( dx ), signY * Math.abs( dy ) );
     }
-    
+
     /**
      * Multiplies this <code>GameObject</code>'s dx and dy by the given factor.
      * A parameter of 0 will stop <code>this</code> immediately; a parameter of 1.0
@@ -183,9 +186,9 @@ public abstract class GameObject implements GameElement
      * 
      * @param factor a number between 0.0 and 1.0 representing the amount to slow down.
      */
-    public void decelerate(double factor)
+    public void decelerate( double factor )
     {
-        setVelocity(getDx()*factor, getDy()*factor);
+        setVelocity( getDx() * factor, getDy() * factor );
     }
 
     public double getSpeed()
@@ -233,8 +236,10 @@ public abstract class GameObject implements GameElement
         restore( stream );
     }
 
-    public int getTypeId()
+    public int getId()
     {
-        return TYPE_ID;
+        return id;
     }
+
+    
 }

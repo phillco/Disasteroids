@@ -7,7 +7,6 @@ package disasteroids;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.Local;
 import disasteroids.weapons.BulletManager;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -44,11 +43,11 @@ public class TutorialMode implements GameMode
         if ( stage == 2 && counter > 200 )
         {
             nextStage();
-            Game.getInstance().getAsteroidManager().add( new Asteroid( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 150, 0, -0.5, 150, 5 ), true );
+            Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 150, 0, -0.5, 150, 5 ) );
         }
 
         // Ram it!
-        if ( stage == 3 && counter > 50 && Game.getInstance().getAsteroidManager().size() != 1 )
+        if ( stage == 3 && counter > 50 && Game.getInstance().getObjectManager().getAsteroids().size() != 1 )
             nextStage();
 
         // Good!
@@ -56,7 +55,7 @@ public class TutorialMode implements GameMode
             nextStage();
 
         // Shoot!
-        if ( stage == 5 && counter > 250 && Game.getInstance().getAsteroidManager().size() == 0 )
+        if ( stage == 5 && counter > 250 && Game.getInstance().getObjectManager().getAsteroids().size() == 0 )
             nextStage();
 
         // You have two cows - ah, weapons.
@@ -68,13 +67,13 @@ public class TutorialMode implements GameMode
         {
             nextStage();
             for ( int i = 0; i < 8; i++ )
-                Game.getInstance().getAsteroidManager().add( new Asteroid( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
-                                                                           Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
-                                                                           Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2, Util.getRandomGenerator().nextInt( 50 ) + 60, 50 ), true );
+                Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
+                                                                               Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
+                                                                               Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2, Util.getRandomGenerator().nextInt( 50 ) + 60, 50 ) );
         }
 
         // Take it out!
-        if ( stage == 9 && counter > 250 && Game.getInstance().getAsteroidManager().size() == 0 )
+        if ( stage == 9 && counter > 250 && Game.getInstance().getObjectManager().getAsteroids().size() == 0 )
             nextStage();
 
         // Boring.
@@ -94,18 +93,13 @@ public class TutorialMode implements GameMode
         {
             nextStage();
             for ( int i = 0; i < 4; i++ )
-            {
-                Alien a = new Alien( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
-                                     Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
-                                     Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2 );
-                Game.getInstance().gameObjects.add( a );
-                Game.getInstance().baddies.add( a );
-                Game.getInstance().shootingObjects.add( a );
-            }
+                Game.getInstance().getObjectManager().addObject( new Alien( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
+                                                                            Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
+                                                                            Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2 ) );
         }
 
         // Here they come!
-        if ( stage == 15 && Game.getInstance().baddies.size() == 0 )
+        if ( stage == 15 && Game.getInstance().getObjectManager().getBaddies().size() == 0 )
             nextStage();
 
         // Berserk.
@@ -118,8 +112,6 @@ public class TutorialMode implements GameMode
 
         if ( stage == 19 && counter > 250 )
             nextStage();
-
-
     }
 
     private void nextStage()
@@ -134,7 +126,7 @@ public class TutorialMode implements GameMode
         Font title = new Font( "Tahoma", Font.BOLD, 24 );
         Font textFont = new Font( "Tahoma", Font.BOLD, 12 );
         g.setFont( textFont );
-        int x = 0, y = AsteroidsFrame.frame().getPanel().getHeight() / 4;
+        int x = 0,  y = AsteroidsFrame.frame().getPanel().getHeight() / 4;
         String text = "";
         g.setColor( Local.getLocalPlayer().getColor() );
         switch ( stage )

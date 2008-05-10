@@ -185,29 +185,26 @@ public class Client extends DatagramListener
                         new AsteroidsFrame( id );
                         break;
                     case PLAYER_UPDATE_POSITION:
-                        Game.getInstance().getPlayerFromId( in.readInt() ).restorePosition( in );
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
                         break;
                     case NEW_ASTEROID:
-                        Game.getInstance().getAsteroidManager().add( new Asteroid( in ), false );
+                        Game.getInstance().getObjectManager().addObject( new Asteroid( in ) );
                         break;
                     case REMOVE_ASTEROID:
-                    {
-                        int aId = in.readInt();
-                        Ship s = null;
-                        if ( in.readBoolean() )
-                            s = Game.getInstance().getPlayerFromId( in.readInt() );
-                        Game.getInstance().getAsteroidManager().remove( aId, s, false );
+                        // Splits an asteroid, possibly because of a a Ship.
+                        ( (Asteroid) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).split(
+                                ( in.readBoolean() ? (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) : null ) );
                         break;
-                    }
                     case BERSERK:
-                        Game.getInstance().getPlayerFromId( in.readInt() ).berserk();
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
                         break;
                     case PLAYER_JOINED:
                         Game.getInstance().addPlayer( new Ship( in ) );
+
                         break;
                     case PLAYER_QUIT:
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( Game.getInstance().getPlayerFromId( in.readInt() ), quitReason );
+                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );

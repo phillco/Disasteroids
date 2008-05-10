@@ -19,7 +19,6 @@ import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Central gameplay class that's separate from graphics.
@@ -30,88 +29,46 @@ public class Game
 {
     /**
      * Dimensions of the game, regardless of the graphical depiction.
-     * @since December 17, 2007
      */
     public final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
 
     /**
      * Stores whether the game is currently paused or not.
-     * @since Classic
      */
     private boolean paused = true;
 
     /**
      * The current game time.
-     * @since Classic
      */
     public long timeStep = 0;
 
     /**
-     * Stores the current <code>Asteroid</code> field.
-     * @since Classic
-     */
-    AsteroidManager asteroidManager = new AsteroidManager();
-
-    /**
      * Stores the current pending <code>Action</code>s.
-     * @since Classic
      */
     ActionManager actionManager = new ActionManager();
 
-    /**
-     * The mother list of all game objects, excluding asteroids.
-     * @since January 7, 2008
-     */
-    public ConcurrentLinkedQueue<GameObject> gameObjects;
-
-    /**
-     * Reference list of all black holes.
-     */
-    public ConcurrentLinkedQueue<BlackHole> blackHoles = new ConcurrentLinkedQueue<BlackHole>();
-
-    /**
-     * Reference list of players.
-     * @since December 14, 2007
-     */
-    public ConcurrentLinkedQueue<Ship> players = new ConcurrentLinkedQueue<Ship>();
-
-    /**
-     * Reference list of all objects that shoot.
-     * @since January 7, 2008
-     */
-    public ConcurrentLinkedQueue<ShootingObject> shootingObjects;
-
-    /**
-     * Reference list all of living objects on the level that the player must destroy (aliens, stations, and so on).
-     * @since March 31, 2008
-     */
-    public ConcurrentLinkedQueue<GameObject> baddies;
+    ObjectManager objectManager;
 
     /**
      * The game mode that we're playing.
-     * @since February 28, 2008
      */
     private GameMode gameMode;
 
     /**
      * Reference to the currently running Game instance.
-     * @since December 29, 2007
      */
     private static Game instance;
 
     /**
      * Creates the game.
-     * @since December 29, 2007
      */
     public Game( Class gameMode )
     {
         Game.instance = this;
         timeStep = 0;
-        asteroidManager = new AsteroidManager();
+
         actionManager = new ActionManager();
-        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
-        gameObjects = new ConcurrentLinkedQueue<GameObject>();
-        baddies = new ConcurrentLinkedQueue<GameObject>();
+        objectManager = new ObjectManager();
 
         try
         {
@@ -132,21 +89,6 @@ public class Game
             AsteroidsFrame.frame().resetGame();
 
         GameLoop.startLoop();
-    }
-
-    /**
-     * Returns the <code>Ship</code> with the specified <code>id</code>.
-     * 
-     * @param id    the <code>id</code> to search for
-     * @return      the <code>Ship</code> with that <code>id</code>, or <code>null</code>
-     * @since December 30, 207
-     */
-    public Ship getPlayerFromId( int id )
-    {
-        for ( Ship s : players )
-            if ( s.id == id )
-                return s;
-        return null;
     }
 
     /**
@@ -171,7 +113,7 @@ public class Game
 
             instance.flatten( stream );
 
-            stream.writeInt( Local.getLocalPlayer().id );
+            stream.writeInt( Local.getLocalPlayer().getId() );
             stream.flush();
             fos.close();
         }
@@ -243,28 +185,23 @@ public class Game
      * Creates and adds a new player into the game.
      * 
      * @param name  the player's name
+     * @param c     the player's color
      * @return      the new player's id
-     * @since December 29, 2007
      */
     public int addPlayer( String name, Color c )
     {
-        Ship s = new Ship( GAME_WIDTH / 2 - ( players.size() * 100 ), GAME_HEIGHT / 2, c, Ship.START_LIVES, name );
+        Ship s = new Ship( GAME_WIDTH / 2 - ( objectManager.getPlayers().size() * 100 ), GAME_HEIGHT / 2, c, Ship.START_LIVES, name );
         addPlayer( s );
-        return s.id;
+        return s.getId();
     }
 
     /**
      * Adds a player into the game.
-     * 
-     * @param newPlayer     the player
-     * @since December 31, 2007
      */
     public void addPlayer( Ship newPlayer )
     {
-        players.add( newPlayer );
-        gameObjects.add( newPlayer );
-        shootingObjects.add( newPlayer );
-        Running.log( newPlayer.getName() + " entered the game (id " + newPlayer.id + ").", 800 );
+        objectManager.addObject( newPlayer );
+        Running.log( newPlayer.getName() + " entered the game.", 800 );
     }
 
     /**
@@ -288,47 +225,13 @@ public class Game
      */
     public void removePlayer( Ship leavingPlayer, String quitReason )
     {
-        removeObject( leavingPlayer );
+        objectManager.removeObject( leavingPlayer );
         if ( quitReason.length() > 0 )
             Running.log( leavingPlayer.getName() + quitReason, 800 );
     }
 
     /**
-     * Removes an object from the game.
-     * 
-     * @param o the object
-     * @since March 2, 2008
-     */
-    public void removeObject( GameObject o )
-    {
-        gameObjects.remove( o );
-
-        if ( o instanceof ShootingObject )
-            shootingObjects.remove( o );
-
-        if ( o instanceof Alien || o instanceof Station )
-            baddies.remove( o );
-
-        if ( o instanceof BlackHole )
-            blackHoles.remove( o );
-    }
-
-    /**
-     * Undoes all changes that <code>BonusAsteroid</code>s may have caused.
-     * 
-     * @since Classic
-     */
-    void restoreBonusValues()
-    {
-        for ( Ship ship : players )
-            ship.restoreBonusValues();
-    }
-
-    /**
      * Returns the game's <code>ActionManager</code>.
-     * 
-     * @return  the <code>ActionManager</code>
-     * @since Classic
      */
     public ActionManager getActionManager()
     {
@@ -336,20 +239,7 @@ public class Game
     }
 
     /**
-     * Returns the game's <code>AsteroidManager</code>
-     * 
-     * @return  the <code>AsteroidManager</code>
-     * @since January 11, 2008
-     */
-    public AsteroidManager getAsteroidManager()
-    {
-        return asteroidManager;
-    }
-
-    /**
      * Steps the game through one timestep.
-     * 
-     * @since December 21, 2007
      */
     void act()
     {
@@ -363,7 +253,6 @@ public class Game
         timeStep++;
         actionManager.act( timeStep );
         ParticleManager.act();
-        asteroidManager.act();
 
         // Check if we've lost in singleplayer.
         if ( Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 && !Client.is() )
@@ -375,8 +264,7 @@ public class Game
             return;
         }
 
-        for ( GameObject g : gameObjects )
-            g.act();
+        objectManager.act();
     }
 
     /**
@@ -384,12 +272,11 @@ public class Game
      * 
      * @param keystroke    the key code for the action
      * @param actor     the <code>Ship</code> to execute the action
-     * @since Classic
      */
-    public static void performAction( int keystroke, Ship actor )
+    public void performAction( int keystroke, Ship actor )
     {
         // Ignore actions about players that have left the game.
-        if ( actor == null || !getInstance().players.contains( actor ) )
+        if ( actor == null || !getObjectManager().contains( actor.getId() ) )
             return;
 
         KeystrokeManager.ActionType action = KeystrokeManager.getInstance().translate( keystroke );
@@ -502,8 +389,6 @@ public class Game
                 break;
 
             case DEVKEY:
-                if ( !Client.is() )
-                    Game.getInstance().gameObjects.add( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
                 break;
             default:
                 break;
@@ -515,88 +400,31 @@ public class Game
 
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
-     * 
-     * @param stream the stream to write to
-     * @throws java.io.IOException 
-     * @since December 30, 2007
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
         stream.writeInt( Constants.parseGameMode( gameMode ) );
         gameMode.flatten( stream );
         stream.writeLong( timeStep );
-
-        stream.writeInt( gameObjects.size() );
-        for ( GameObject o : gameObjects )
-        {
-            stream.writeInt( Constants.parseGameObject( o ) );
-            o.flatten( stream );
-        }
-
-        asteroidManager.flatten( stream );
+        objectManager.flatten( stream );
         actionManager.flatten( stream );
     }
 
     /**
      * Creates <code>this</code> from a stream for client/server transmission.
-     * 
-     * @param stream    the stream to read from (sent by the server)
-     * @throws java.io.IOException 
-     * @since December 30, 2007
      */
     public Game( DataInputStream stream ) throws IOException
     {
         instance = this;
-
-        // Create the game mode.
+        
         gameMode = Constants.parseGameMode( stream.readInt(), stream );
         this.timeStep = stream.readLong();
-
-        players = new ConcurrentLinkedQueue<Ship>();
-        shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
-        baddies = new ConcurrentLinkedQueue<GameObject>();
-
-        gameObjects = new ConcurrentLinkedQueue<GameObject>();
-        int size = stream.readInt();
-        for ( int i = 0; i < size; i++ )
-        {
-            switch ( Constants.GameObjectTIDs.values()[stream.readInt()] )
-            {
-                case ALIEN:
-                    Alien a = new Alien( stream );
-                    gameObjects.add( a );
-                    shootingObjects.add( a );
-                    baddies.add( a );
-                    break;
-                case BONUS:
-                    gameObjects.add( new Bonus( stream ) );
-                    break;
-                case BLACK_HOLE:
-                    gameObjects.add( new BlackHole( stream ) );
-                    break;
-                case SHIP:
-                    Ship s = new Ship( stream );
-                    gameObjects.add( s );
-                    shootingObjects.add( s );
-                    players.add( s );
-                    break;
-                case STATION:
-                    Station t = new Station( stream );
-                    gameObjects.add( t );
-                    shootingObjects.add( t );
-                    baddies.add( t );
-                    break;
-            }
-        }
-        asteroidManager = new AsteroidManager( stream );
+        objectManager = new ObjectManager( stream );
         actionManager = new ActionManager( stream );
     }
 
     /**
-     * Whether the game is currently paused.
-     * 
-     * @return  whether the game is paused
-     * @since December 31, 2007
+     * Returns whether the game is currently paused.
      */
     public boolean isPaused()
     {
@@ -625,11 +453,11 @@ public class Game
 
     public void createBonus( GameObject parent )
     {
-        gameObjects.add( new Bonus( parent.getX(), parent.getY() ) );
+        objectManager.addObject( new Bonus( parent.getX(), parent.getY() ) );
     }
 
-    public ConcurrentLinkedQueue<GameObject> getBaddies()
+    public ObjectManager getObjectManager()
     {
-        return baddies;
+        return objectManager;
     }
 }

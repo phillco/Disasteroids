@@ -163,14 +163,11 @@ public class AsteroidsPanel extends Panel
 
 
             // Update high and low scores.
-            Ship highestScorer = Game.getInstance().players.peek();
-            Ship lowestScorer = Game.getInstance().players.peek();
-            for ( Ship s : Game.getInstance().players )
+            Ship highestScorer = Game.getInstance().getObjectManager().getPlayers().peek();
+            for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
             {
                 if ( s.getScore() > highestScorer.score() )
                     highestScorer = s;
-                else if ( s.getScore() < highestScorer.score() )
-                    lowestScorer = s;
             }
 
             // Regression!
@@ -201,20 +198,7 @@ public class AsteroidsPanel extends Panel
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );
 
-        Game.getInstance().getAsteroidManager().draw( g );
-        for ( GameObject go : Game.getInstance().gameObjects )
-        {
-            if ( go instanceof BlackHole == false )
-                go.draw( g );
-            if ( !GameLoop.isRunning() )
-            {
-                isDrawing = false;
-                return;
-            }
-        }
-
-        for ( BlackHole b : Game.getInstance().blackHoles )
-            b.draw( g );
+        Game.getInstance().getObjectManager().draw( g );
 
         // Draw the on-screen HUD.
         drawHud( g );
@@ -284,7 +268,7 @@ public class AsteroidsPanel extends Panel
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";
-        int x = 0,  y = 0;
+        int x = 0, y = 0;
 
         // Draw game mode status.
         Game.getInstance().getGameMode().draw( g );
@@ -431,7 +415,7 @@ public class AsteroidsPanel extends Panel
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";
-        int x = 0,  y = 0;
+        int x = 0, y = 0;
 
         // Draw the "scoreboard" string.
         g2d.setColor( Color.white );
@@ -445,8 +429,8 @@ public class AsteroidsPanel extends Panel
         // Draw the asteroid count.
         g2d.setColor( Color.lightGray );
         g2d.setFont( new Font( "Tahoma", Font.PLAIN, 16 ) );
-        text = Util.insertThousandCommas( Game.getInstance().getAsteroidManager().size() ) + " asteroid" + ( Game.getInstance().getAsteroidManager().size() == 1 ? ", " : "s, " );
-        text += Util.insertThousandCommas( Game.getInstance().baddies.size() ) + " baddie" + ( Game.getInstance().baddies.size() == 1 ? "" : "s" );
+        text = Util.insertThousandCommas( Game.getInstance().getObjectManager().getAsteroids().size() ) + " asteroid" + ( Game.getInstance().getObjectManager().getAsteroids().size() == 1 ? ", " : "s, " );
+        text += Util.insertThousandCommas( Game.getInstance().getObjectManager().getBaddies().size() ) + " baddie" + ( Game.getInstance().getObjectManager().getBaddies().size() == 1 ? "" : "s" );
         text += " remain";
         x = getWidth() / 2 - (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2;
         g2d.drawString( text, x, y );
@@ -470,7 +454,7 @@ public class AsteroidsPanel extends Panel
         y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
 
         // Draw the entries.
-        for ( Ship s : Game.getInstance().players )
+        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
         {
             g2d.setColor( s.getColor() );
             if ( s == parent.localPlayer() )

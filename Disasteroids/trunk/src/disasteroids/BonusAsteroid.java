@@ -6,7 +6,6 @@ package disasteroids;
 
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ImageLibrary;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -31,9 +30,6 @@ public class BonusAsteroid extends Asteroid
     public BonusAsteroid( double x, double y, double dx, double dy, int size, int lifeMax )
     {
         super( x, y, dx, dy, size, lifeMax );
-
-        fill = Color.green;
-        outline = Color.white;
     }
 
     /**
@@ -41,7 +37,6 @@ public class BonusAsteroid extends Asteroid
      * This is used when a missile splits an <code>Asteroid</code>.
      * 
      * @param parent	the parent <code>Asteroid</code> to kill from
-     * @since Classic
      */
     public BonusAsteroid( Asteroid parent )
     {
@@ -61,16 +56,16 @@ public class BonusAsteroid extends Asteroid
     }
 
     @Override
-    protected void kill()
+    public void split( Ship killer )
     {
+        super.split( killer );
         Game.getInstance().createBonus( this );
-        super.kill();
     }
-    
+
     @Override
-    public void draw(Graphics g)
+    public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawImage(g, ImageLibrary.getBonusAsteroid(),
-                (int) getX(), (int)getY(), angle, radius*2.0/ImageLibrary.getBonusAsteroid().getWidth(null) );
+        AsteroidsFrame.frame().drawImage( g, ImageLibrary.getBonusAsteroid(),
+                                          (int) getX(), (int) getY(), angle, radius * 2.0 / ImageLibrary.getBonusAsteroid().getWidth( null ) );
     }
 }

@@ -48,7 +48,6 @@ public class BlackHole extends GameObject
     public BlackHole( double x, double y )
     {
         super( x, y, 0, 0 );
-        Game.getInstance().blackHoles.add( this );
     }
 
     /**
@@ -76,7 +75,7 @@ public class BlackHole extends GameObject
 
         // Remove after we've eaten enough, for gameplay reasons.
         if ( numEaten > NUM_TO_EAT )
-            Game.getInstance().removeObject( this );
+            Game.getInstance().getObjectManager().removeObject( this );
     }
 
     /**
@@ -88,17 +87,12 @@ public class BlackHole extends GameObject
         Set<GameObject> closeObjects = new HashSet<GameObject>();
 
         // Add asteroids.
-        for ( Asteroid ast : Game.getInstance().getAsteroidManager().getAsteroids() )
-            if ( Util.getDistance( this, ast ) < ATTRACTION_RADIUS )
-                closeObjects.add( ast );
-
-        // Add players, aliens, stations, etc.
-        for ( GameObject go : Game.getInstance().gameObjects )
-            if ( Util.getDistance( this, go ) < ( go instanceof Ship ? ATTRACTION_RADIUS * 2 : ATTRACTION_RADIUS ) )
-                closeObjects.add( go );
+        for ( int id : Game.getInstance().getObjectManager().getAllIds() )
+            if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id ) ) < ATTRACTION_RADIUS )
+                closeObjects.add( Game.getInstance().getObjectManager().getObject( id ) );
 
         // Add the units of weapons.
-        for ( ShootingObject s : Game.getInstance().shootingObjects )
+        for ( ShootingObject s : Game.getInstance().getObjectManager().getShootingObjects() )
             for ( Weapon w : s.getManagers() )
                 for ( Unit u : w.getUnits() )
                     if ( Util.getDistance( this, u ) < ATTRACTION_RADIUS )
@@ -146,7 +140,5 @@ public class BlackHole extends GameObject
         super( stream );
         numEaten = stream.readInt();
         power = stream.readInt();
-        Game.getInstance().blackHoles.add( this );
-
     }
 }

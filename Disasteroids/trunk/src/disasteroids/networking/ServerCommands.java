@@ -47,7 +47,7 @@ public class ServerCommands
         {
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Server.Message.PLAYER_UPDATE_POSITION.ordinal() );
-            out.writeInt( s.id );
+            out.writeInt( s.getId() );
             s.flattenPosition( out );
             out.writeInt( s.getWeaponIndex() );
             Server.getInstance().sendPacketToAllPlayers( out );
@@ -94,7 +94,7 @@ public class ServerCommands
             else
             {
                 out.writeBoolean( true );
-                out.writeInt( killer.id );
+                out.writeInt( killer.getId() );
             }
 
             Server.getInstance().sendPacketToAllPlayers( out );

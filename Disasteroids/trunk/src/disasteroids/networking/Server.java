@@ -199,7 +199,7 @@ public class Server extends DatagramListener
                         out.writeInt( id );
 
                         // Associate this client with the ship.
-                        client.inGamePlayer = Game.getInstance().getPlayerFromId( id );
+                        client.inGamePlayer = (Ship) Game.getInstance().getObjectManager().getObject( id );
 
                         // Waddle this fat packet out the door!
                         sendPacket( client, out );
@@ -237,7 +237,7 @@ public class Server extends DatagramListener
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( false ); // Not a timeout.
 
-                        out.writeInt( client.inGamePlayer.id );
+                        out.writeInt( client.inGamePlayer.getId() );
 
                         sendPacketToAllButOnePlayer( out, client );
                 }
@@ -353,7 +353,7 @@ public class Server extends DatagramListener
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( true );
-                        out.writeInt( cm.inGamePlayer.id );
+                        out.writeInt( cm.inGamePlayer.getId() );
                         sendPacketToAllButOnePlayer( out, cm );
                     }
                     catch ( IOException ex )
@@ -388,7 +388,6 @@ public class Server extends DatagramListener
         socket = null;
     }
 
-    
     /**
      * An extension of <code>Machine</code> that represents anyone who has pinged us.
      * If that person is in the game, he's bound to his <code>Ship</code> here.

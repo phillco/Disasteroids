@@ -99,7 +99,7 @@ public class Bonus extends GameObject
         ++age;
         if ( age > MAX_LIFE )
         {
-            Game.getInstance().removeObject( this );
+            Game.getInstance().getObjectManager().removeObject( this );
             for ( int i = 0; i < 500; i++ )
                 ParticleManager.addParticle( new Particle(
                                              getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
@@ -132,7 +132,7 @@ public class Bonus extends GameObject
     private void checkCollision()
     {
         // Go through all of the ships.        
-        for ( Ship s : Game.getInstance().players )
+        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
         {
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
@@ -142,7 +142,7 @@ public class Bonus extends GameObject
                     if ( applyBonus( s ) )
                     {
                         Sound.playInternal( SoundLibrary.GET_BONUS );
-                        Game.getInstance().removeObject( this );
+                        Game.getInstance().getObjectManager().removeObject( this );
                     }
                 }
             }

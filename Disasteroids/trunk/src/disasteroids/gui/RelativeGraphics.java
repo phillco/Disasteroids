@@ -51,7 +51,7 @@ public abstract class RelativeGraphics
     {
         try
         {
-            return (int) ( ( Game.getInstance().players.peek().getX() + Game.getInstance().GAME_WIDTH / 2 ) ) % Game.getInstance().GAME_WIDTH;
+            return (int) ( ( Game.getInstance().getObjectManager().getPlayers().peek().getX() + Game.getInstance().GAME_WIDTH / 2 ) ) % Game.getInstance().GAME_WIDTH;
 
         }
         catch ( Exception exception )
@@ -70,7 +70,7 @@ public abstract class RelativeGraphics
     {
         try
         {
-            return (int) ( Game.getInstance().players.peek().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT;
+            return (int) ( Game.getInstance().getObjectManager().getPlayers().peek().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT;
         }
         catch ( Exception exception )
         {

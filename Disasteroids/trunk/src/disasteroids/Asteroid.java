@@ -24,67 +24,32 @@ import java.io.IOException;
 public class Asteroid extends GameObject implements GameElement
 {
     /**
-     * The number of children we've spawned.
-     * @since Classic
-     */
-    protected int children;
-
-    /**
-     * Our diameter.
-     * @since Classic
+     * Our radius.
      */
     protected int radius;
 
     /**
-     * Our border and fill colors.
-     * @since December 15 2007
-     */
-    protected Color fill = Color.white,  outline = Color.gray;
-
-    /**
      * Our life and its scale. Life is deducted when we're shot.
-     * @since December 21, 2007
      */
     protected int lifeMax,  life;
 
     /**
-     * Our unique id. Used in the manager.
-     * @since January 8, 2007
+     * The angle that the image is drawn at. Does not affect gameplay.
      */
-    int id;
+    protected double angle = 0;
 
-    /**
-     * The angle offset, for Graphics only
-     */
-    protected double angle;
-
-    Ship killer;
-
-    /**
-     * Constructs a new Asteroid from scratch.
-     * 
-     * @param x				the x coordinate
-     * @param y				the y coordinate
-     * @param dx			the x velocity
-     * @param dy			the y velocity (up is negative)
-     * @param size			the diameter
-     * @param lifeMax                   total amount of life
-     * @since Classic
-     */
-    public Asteroid( double x, double y, double dx, double dy, int size, int lifeMax )
+    public Asteroid( double x, double y, double dx, double dy, int diameter, int lifeMax )
     {
         super( x, y, dx, dy );
-        this.radius = size / 2;
+        this.radius = diameter / 2;
         this.life = this.lifeMax = Math.max( 1, lifeMax );
-        angle = 0;
+
         // Enforce a minimum size.
-        if ( size < 25 )
-            size = 25 + Util.getRandomGenerator().nextInt( 25 );
+        if ( diameter < 25 )
+            diameter = 25 + Util.getRandomGenerator().nextInt( 25 );
 
         // Enforce a mininum speed.
         checkMovement();
-
-        id = Game.getInstance().asteroidManager.getId();
     }
 
     /**
@@ -92,13 +57,10 @@ public class Asteroid extends GameObject implements GameElement
      * This is used when a missile splits an <code>Asteroid</code>.
      * 
      * @param parent	the parent <code>Asteroid</code> to kill from
-     * @since Classic
      */
     public Asteroid( Asteroid parent )
     {
         super( parent.getX(), parent.getY(), Util.getRandomGenerator().nextDouble() * 2 - 1, Util.getRandomGenerator().nextDouble() * 2 - 1 );
-        parent.children++;
-        angle = 0;
         this.radius = parent.radius * 3 / 5;
 
         // Live half as long as parents.
@@ -106,39 +68,15 @@ public class Asteroid extends GameObject implements GameElement
 
         // Enforce a mininum speed.
         checkMovement();
-
-        id = Game.getInstance().asteroidManager.getId();
     }
 
-    /**
-     * Draws <code>this</code>.
-     * 
-     * @param g 
-     * @since Classic
-     */
     public void draw( Graphics g )
     {
         AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAsteroid(), (int) getX(), (int) getY(), angle, radius * 2.0 / ImageLibrary.getAsteroid().getWidth( null ) );
     }
 
-    /**
-     * Steps <code>this</code> through one timestep.
-     * 
-     * @since Classic
-     */
     public void act()
     {
-        // Asteroids are removed when kill.
-        if ( children > 1 || radius == 5 )
-        {
-            remove();
-        }
-
-        if ( life <= 0 )
-        {
-            remove();
-        }
-
         move();
         checkCollision();
         if ( !Game.getInstance().isPaused() )
@@ -146,17 +84,10 @@ public class Asteroid extends GameObject implements GameElement
     }
 
     /**
-     * Kills us: splits and awards points.
-     * 
-     * @since Classic
+     * Splits and removes the asteroid.
      */
-    protected void kill()
+    public void split( Ship killer )
     {
-        if ( children > 2 )
-        {
-            return;
-        }
-
         if ( killer != null )
         {
             killer.increaseScore( radius * 2 );
@@ -169,28 +100,12 @@ public class Asteroid extends GameObject implements GameElement
 
         if ( radius >= 20 )
         {
-            Game.getInstance().asteroidManager.add( new Asteroid( this ), true );
-            Game.getInstance().asteroidManager.add( new Asteroid( this ), true );
+            Game.getInstance().getObjectManager().addObject( new Asteroid( this ) );
+            Game.getInstance().getObjectManager().addObject( new Asteroid( this ) );
         }
+        
+        Game.getInstance().getObjectManager().removeObject( this );
     }
-
-    /**
-     * Removes us from the manager and hence the game.
-     * 
-     * @since January 8, 2007
-     */
-    void remove()
-    {
-        Game.getInstance().asteroidManager.remove( this.id, killer, true );
-    }
-
-    @Override
-    public void inBlackHole()
-    {
-        remove();
-    }
-    
-    
 
     /**
      * Checks, and acts, if we were hit by a missile or ship.
@@ -200,7 +115,7 @@ public class Asteroid extends GameObject implements GameElement
     private void checkCollision()
     {
         // Go through all of the ships.        
-        for ( Ship s : Game.getInstance().players )
+        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
         {
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
@@ -209,24 +124,15 @@ public class Asteroid extends GameObject implements GameElement
                 {
                     if ( s.damage( radius / 2.0 + 8, s.getName() + ( Math.abs( getSpeed() ) > Math.abs( s.getSpeed() ) ? " was hit by" : " slammed into" ) + " an asteroid." ) )
                     {
-                        killer = s;
-                        kill();
-                        remove();
+                        split( s );
                         return;
                     }
                 }
             }
         }
 
-        // Remove immediately if we were sucked into a black hole.
-        for ( BlackHole b : Game.getInstance().blackHoles )
-        {
-            if ( Util.getDistance( b, this ) < 10 )
-                remove();
-        }
-
         // Go through ships, stations, etc.
-        for ( ShootingObject s : Game.getInstance().shootingObjects )
+        for ( ShootingObject s : Game.getInstance().getObjectManager().getShootingObjects() )
         {
             for ( Weapon wm : s.getManagers() )
             {
@@ -242,13 +148,7 @@ public class Asteroid extends GameObject implements GameElement
                         life = Math.max( 0, life - m.getDamage() );
                         if ( life <= 0 )
                         {
-                            killer = null;
-                            if ( s instanceof Ship )
-                            {
-                                killer = ( (Ship) s );
-                            }
-                            kill();
-                            remove();
+                            split( s instanceof Ship ? (Ship) s : null );
                             return;
                         }
                     }
@@ -259,8 +159,6 @@ public class Asteroid extends GameObject implements GameElement
 
     /**
      * Makes sure that we're moving fast enough.
-     * 
-     * @since Classic
      */
     private void checkMovement()
     {
@@ -303,36 +201,24 @@ public class Asteroid extends GameObject implements GameElement
 
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
-     * 
-     * @param stream the stream to write to
-     * @throws java.io.IOException 
-     * @since December 29, 2007
      */
     @Override
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-        stream.writeInt( id );
         stream.writeInt( radius );
         stream.writeInt( life );
         stream.writeInt( lifeMax );
-        stream.writeInt( children );
     }
 
     /**
      * Creates <code>this</code> from a stream for client/server transmission.
-     * 
-     * @param stream    the stream to read from (sent by the server)
-     * @throws java.io.IOException 
-     * @since December 29, 2007
      */
     public Asteroid( DataInputStream stream ) throws IOException
     {
         super( stream );
-        id = stream.readInt();
         radius = stream.readInt();
         life = stream.readInt();
         lifeMax = Math.max( 1, stream.readInt() );
-        children = stream.readInt();
     }
 }

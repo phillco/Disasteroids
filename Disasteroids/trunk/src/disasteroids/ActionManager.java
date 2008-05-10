@@ -47,17 +47,17 @@ public class ActionManager
             Action a = itr.next();
 
             // Apply action if necessary
-            if ( a.timestep() == timestep )
+            if ( a.getTimestep() == timestep )
             {
                 a.applyAction();
                 itr.remove();
             }
 
             // Check if it's too late.
-            else if ( a.timestep() < timestep )
+            else if ( a.getTimestep() < timestep )
             {
                 // Not critical, but notable.
-                Running.warning("Unsyncronized action at timestep " + timestep + " for actor " + a.actor() + ".");
+                Running.warning("Unsyncronized action at timestep " + timestep + " for actor " + a.getActor() + ".");
             }
         }
     }

@@ -51,9 +51,6 @@ public class AsteroidsFrame extends Frame
     }
     /**
      * ID of the player that's at this computer.
-     * IDs are used instead of indexes for better reliability.
-     * @see <code>players</code>
-     * @since December 14 2007
      */
     public int localId;
 
@@ -91,7 +88,7 @@ public class AsteroidsFrame extends Frame
         // Close when the exit key is pressed.
         AsteroidsFrameAdapter a = new AsteroidsFrameAdapter();
         addWindowListener( a );
-     //   addComponentListener( a );
+        //   addComponentListener( a );
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
@@ -106,7 +103,7 @@ public class AsteroidsFrame extends Frame
         ParticleManager.clear();
     }
     
-    public void showStartMessage(String message)
+    public void showStartMessage( String message )
     {
         if ( !Client.is() )
             AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( message,
@@ -144,9 +141,9 @@ public class AsteroidsFrame extends Frame
     {
         Settings.setUseFullscreen( !Settings.isUseFullscreen() );
         Running.log( "The game will run " + ( Settings.isUseFullscreen() ? "in fullscreen" : "as a window" ) + " after you restart." );
-    /* [PC] This is rather problematic.
-    updateFullscreen();
-     */
+        /* [PC] This is rather problematic.
+        updateFullscreen();
+         */
     }
 
     @Override
@@ -423,14 +420,7 @@ public class AsteroidsFrame extends Frame
      */
     public Ship localPlayer()
     {
-        if ( Game.getInstance() == null || Game.getInstance().players == null || Game.getInstance().players.size() < 1 )
-            return null;
-
-        for ( Ship s : Game.getInstance().players )
-            if ( s.id == localId )
-                return s;
-
-        return null;
+        return (Ship) Game.getInstance().getObjectManager().getObject( localId );
     }
 
     /**

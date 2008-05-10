@@ -12,6 +12,7 @@ import java.awt.Graphics2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**
@@ -21,7 +22,6 @@ import javax.swing.JOptionPane;
  */
 public class LinearGameplay implements GameMode
 {
-
     /**
      * The current level of the game.
      * @since Classic
@@ -31,7 +31,40 @@ public class LinearGameplay implements GameMode
     public LinearGameplay()
     {
         level = 1;
-        Game.getInstance().getAsteroidManager().setUpAsteroidField( level );
+        setUpAsteroidField( level );
+    }
+
+    void setUpAsteroidField( int level )
+    {
+        Random rand = Util.getRandomGenerator();
+        int numBonuses = 0;
+
+        // Create regular asteroids.
+        for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
+        {
+            Game.getInstance().getObjectManager().addObject( new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
+                                                                           rand.nextInt( Game.getInstance().GAME_HEIGHT ),
+                                                                           rand.nextDouble() * 6 - 3,
+                                                                           rand.nextDouble() * 6 - 3,
+                                                                           rand.nextInt( 150 ) + 25,
+                                                                           rand.nextInt( level * 10 + 10 ) - 9 ) );
+            if ( rand.nextInt( 10 ) == 1 )
+            {
+                numBonuses++;
+            }
+        }
+
+        // Create bonus asteroids.
+        for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
+        {
+            Game.getInstance().getObjectManager().addObject( new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
+                                                                                rand.nextInt( Game.getInstance().GAME_HEIGHT ),
+                                                                                rand.nextDouble() * 6 - 3,
+                                                                                rand.nextDouble() * 6 - 3,
+                                                                                rand.nextInt( 150 ) + 25,
+                                                                                rand.nextInt( level * 10 + 10 ) - 9 ) );
+
+        }
     }
 
     public void act()
@@ -66,23 +99,10 @@ public class LinearGameplay implements GameMode
 
     /**
      * Advances to the next level.
-     * @author Phillip Cohen
-     * @since November 15 2007
      */
     void nextLevel()
     {
         warp( level + 1 );
-    }
-
-    /**
-     * Returns the current level.
-     * 
-     * @return  the current level
-     * @since Classic
-     */
-    public int getLevel()
-    {
-        return level;
     }
 
     /**
@@ -94,7 +114,7 @@ public class LinearGameplay implements GameMode
     public boolean shouldExitLevel()
     {
         // Have the asteroids been cleared?
-        if ( Game.getInstance().asteroidManager.size() > 0 )
+        if ( Game.getInstance().getObjectManager().getAsteroids().size() > 0 )
             return false;
 
         // Level -999 is a sandbox and never exits.
@@ -115,24 +135,20 @@ public class LinearGameplay implements GameMode
     {
         level = newLevel;
 
-        // All players get bonuses.
-        for ( Ship s : Game.getInstance().players )
+        // All players get invincibility.
+        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
         {
-            s.addLife();
             s.setInvincibilityCount( 100 );
             s.increaseScore( 2500 );
-            s.clearWeapons();
-            s.setNumAsteroidsKilled( 0 );
-            s.setNumShipsKilled( 0 );
         }
 
-        Game.getInstance().asteroidManager.clear();
+        Game.getInstance().getObjectManager().clearObstacles();
         Game.getInstance().actionManager.clear();
 
         if ( AsteroidsFrame.frame() != null )
             AsteroidsFrame.frame().nextLevel();
-        Game.getInstance().restoreBonusValues();
-        Game.getInstance().asteroidManager.setUpAsteroidField( level );
+
+        setUpAsteroidField( level );
         AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
     }
 

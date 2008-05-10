@@ -56,12 +56,12 @@ public class Mine extends Unit
         {
             // First create a set of everything nearby.
             Set<GameObject> closeObjects = new HashSet<GameObject>();
-            for ( Asteroid ast : Game.getInstance().getAsteroidManager().getAsteroids() )
+            for ( Asteroid ast : Game.getInstance().getObjectManager().getAsteroids() )
             {
                 if ( Util.getDistance( this, ast ) < parent.sight() )
                     closeObjects.add( ast );
             }
-            for ( GameObject go : Game.getInstance().baddies )
+            for ( GameObject go : Game.getInstance().getObjectManager().getBaddies() )
             {
                 if ( Util.getDistance( this, go ) < parent.sight() )
                     closeObjects.add( go );

@@ -40,8 +40,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Ship extends GameObject implements ShootingObject
 {
-    public int id;
-
     public final static double SENSITIVITY = 20;
 
     /**
@@ -197,22 +195,6 @@ public class Ship extends GameObject implements ShootingObject
 
         // Start invincible.
         invincibilityCount = 200;
-
-        // Assign an unique ID.
-        boolean uniqueId = false;
-        while ( !uniqueId )
-        {
-            uniqueId = true;
-            id = Util.getRandomGenerator().nextInt( 5432 ) + Game.getInstance().players.size() + 4;
-            for ( Ship s : Game.getInstance().players )
-            {
-                if ( s == this )
-                    continue;
-                if ( s.id == this.id )
-                    uniqueId = false;
-            }
-        }
-
     }
 
     public void act()
@@ -381,7 +363,7 @@ public class Ship extends GameObject implements ShootingObject
     @Override
     public String toString()
     {
-        return "Ship #" + id + " ~ [" + (int) getX() + "," + (int) getY() + "]";
+        return "Ship #" + getId() + " ~ [" + (int) getX() + "," + (int) getY() + "]";
     }
 
     public void clearWeapons()
@@ -423,7 +405,7 @@ public class Ship extends GameObject implements ShootingObject
 
     private void checkCollision()
     {
-        for ( ShootingObject other : Game.getInstance().shootingObjects )
+        for ( ShootingObject other : Game.getInstance().getObjectManager().getShootingObjects() )
         {
             if ( other == this )
                 continue;
@@ -528,7 +510,7 @@ public class Ship extends GameObject implements ShootingObject
         }
 
         // Attrition of speed.
-        decelerate(.995);
+        decelerate( .995 );
         if ( stopping == true )
             slowStop();
     }
@@ -704,16 +686,12 @@ public class Ship extends GameObject implements ShootingObject
             rotateWeapons();
         }
         if ( Server.is() )
-            ServerCommands.berserk( id );
+            ServerCommands.berserk( getId() );
         getWeaponManager().berserk( this, myColor );
     }
 
     /**
      * Returns <code>this</code> player's in-game name.
-     * Names are assigned by <code>AsteroidsFrame</code>; "Player 1", "Player2", and so on.
-     * 
-     * @return the player's name
-     * @since December 15, 2007
      */
     public String getName()
     {
@@ -734,9 +712,6 @@ public class Ship extends GameObject implements ShootingObject
 
     /**
      * Sets the number of <code>Asteroid</code>s killed on this level.
-     * 
-     * @param numAsteroidsKilled    the new number of <code>Asteroid</code>s <code>this</code> has killed on this level
-     * @since December 16, 2007
      */
     public void setNumAsteroidsKilled( int numAsteroidsKilled )
     {
@@ -745,9 +720,6 @@ public class Ship extends GameObject implements ShootingObject
 
     /**
      * Returns the statistic of <code>Ship</code>s killed this level.
-     * 
-     * @return  the number of <code>Ship</code>s <code>this</code> has killed on this level.
-     * @since December 16, 2007
      */
     public int getNumShipsKilled()
     {
@@ -756,9 +728,6 @@ public class Ship extends GameObject implements ShootingObject
 
     /**
      * Sets the number of <code>Ship</code>s killed on this level.
-     * 
-     * @param numShipsKilled    the new number of <code>Ship</code>s <code>this</code> has killed on this level
-     * @since December 16, 2007
      */
     public void setNumShipsKilled( int numShipsKilled )
     {
@@ -768,10 +737,6 @@ public class Ship extends GameObject implements ShootingObject
     // ***************************************************** Networking **
     /**
      * Writes our position, angle, key presses, and speed.
-     * 
-     * @param stream    the stream to write to
-     * @throws java.io.IOException
-     * @since January 2, 2008
      */
     public void flattenPosition( DataOutputStream stream ) throws IOException
     {
@@ -787,10 +752,6 @@ public class Ship extends GameObject implements ShootingObject
 
     /**
      * Reads our position, angle, key presses, and speed.
-     * 
-     * @param stream    the stream to read from
-     * @throws java.io.IOException
-     * @since January 2, 2008
      */
     public void restorePosition( DataInputStream stream ) throws IOException
     {
@@ -806,15 +767,10 @@ public class Ship extends GameObject implements ShootingObject
 
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
-     * 
-     * @param stream the stream to write to
-     * @throws java.io.IOException 
-     * @since December 30, 2007
      */
     @Override
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt( id );
         flattenPosition( stream );
         stream.writeInt( invincibilityCount );
         stream.writeInt( myColor.getRGB() );
@@ -838,14 +794,9 @@ public class Ship extends GameObject implements ShootingObject
 
     /**
      * Creates <code>this</code> from a stream for client/server transmission.
-     * 
-     * @param stream    the stream to read from (sent by the server)
-     * @throws java.io.IOException 
-     * @since December 30, 2007
      */
     public Ship( DataInputStream stream ) throws IOException
     {
-        id = stream.readInt();
         restorePosition( stream );
         invincibilityCount = stream.readInt();
         myColor = new Color( stream.readInt() );

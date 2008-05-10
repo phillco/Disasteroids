@@ -108,7 +108,7 @@ public class Alien extends GameObject implements ShootingObject
         Ship closestShip = null;
         {
             Ship closestInvincible = null;
-            for ( Ship s : Game.getInstance().players )
+            for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
                 if ( Util.getDistance( this, s ) < range )
                 {
                     if ( closestShip == null || Util.getDistance( this, s ) > Util.getDistance( this, s ) )
@@ -156,7 +156,7 @@ public class Alien extends GameObject implements ShootingObject
 
             if ( explosionTime == 1 )
             {
-                Game.getInstance().removeObject( this );
+                Game.getInstance().getObjectManager().removeObject( this );
                 Sound.playInternal( SoundLibrary.ALIEN_DIE );
             }
 
@@ -183,7 +183,7 @@ public class Alien extends GameObject implements ShootingObject
             return;
 
         // Check for missile collision.
-        for ( ShootingObject s : Game.getInstance().shootingObjects )
+        for ( ShootingObject s : Game.getInstance().getObjectManager().getShootingObjects() )
         {
             if ( s == this )
                 continue;
@@ -207,10 +207,8 @@ public class Alien extends GameObject implements ShootingObject
             }
         }
 
-
-
         // Check for ship collision.  
-        for ( Ship s : Game.getInstance().players )
+        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
         {
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
@@ -319,12 +317,6 @@ public class Alien extends GameObject implements ShootingObject
 
         // TODO [PC]: Sync!
         manager = new AlienMissileManager( size );
-    }
-
-    @Override
-    public int getTypeId()
-    {
-        return TYPE_ID;
     }
 
     /**

@@ -109,8 +109,8 @@ public class Settings
             // Update the high score.
             if ( Game.getInstance() != null )
             {
-                Ship highestScorer = Game.getInstance().players.peek();
-                for ( Ship s : Game.getInstance().players )
+                Ship highestScorer = Game.getInstance().getObjectManager().getPlayers().peek();
+                for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
                 {
                     if ( s.getScore() > Settings.getHighScore() )
                     {

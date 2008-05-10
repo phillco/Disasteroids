@@ -26,43 +26,36 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * A satellite that shoots missiles at passing ships.
  * @author Phillip Cohen, Andy Kooiman
- * @since January 6, 2008
  */
 public class Station extends GameObject implements ShootingObject
 {
     /**
      * The angle we're facing.
-     * @since January 6, 2008
      */
     private double angle;
 
     /**
      * Our firing manager.
-     * @since January 6, 2008
      */
     private MissileManager manager;
 
     /**
      * Width/height of the station.
-     * @since January 6, 2008
      */
     int size = 35;
 
     /**
      * Timer to show the clock easter egg. If 0, the egg should be hidden.
-     * @since January 9, 2008 
      */
     private int easterEggCounter = 0;
 
     /**
      * If above 0, we've been disabled by a Ship and can't fire.
-     * @since January 16, 2008
      */
     private int disableCounter = 0;
 
     /**
      * The angle we're turning towards.
-     * @since January 16, 2008
      */
     private double desiredAngle = 0.0;
 
@@ -72,7 +65,6 @@ public class Station extends GameObject implements ShootingObject
 
     /**
      * How many missile hits we've taken. Reset after the disableCounter runs out.
-     * @since March 9, 2008
      */
     private int hitsWhileDisabled = 0;
 
@@ -81,7 +73,6 @@ public class Station extends GameObject implements ShootingObject
      * 
      * @param x     x coordinate in game
      * @param y     y coordinate in game
-     * @since January 6, 2008
      */
     public Station( double x, double y, double dx, double dy )
     {
@@ -136,7 +127,7 @@ public class Station extends GameObject implements ShootingObject
         Ship closestShip = null;
         {
             Ship closestInvincible = null;
-            for ( Ship s : Game.getInstance().players )
+            for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
             {
                 if ( Util.getDistance( this, s ) < range )
                 {
@@ -178,7 +169,7 @@ public class Station extends GameObject implements ShootingObject
     private void checkCollision()
     {
         // Check for missile collision.
-        for ( ShootingObject s : Game.getInstance().shootingObjects )
+        for ( ShootingObject s : Game.getInstance().getObjectManager().getShootingObjects() )
         {
             if ( s == this )
                 continue;
@@ -218,7 +209,7 @@ public class Station extends GameObject implements ShootingObject
             return;
 
         // Check for ship collision.  
-        for ( Ship s : Game.getInstance().players )
+        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
         {
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
@@ -387,7 +378,7 @@ public class Station extends GameObject implements ShootingObject
 
     public void destroy()
     {
-        Game.getInstance().removeObject( this );
+        Game.getInstance().getObjectManager().removeObject( this );
 
         ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 100 );
         ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 250 );

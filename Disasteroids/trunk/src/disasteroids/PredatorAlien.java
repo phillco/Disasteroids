@@ -87,7 +87,7 @@ public class PredatorAlien extends Alien
         Ship closestShip = null;
         {
             Ship closestInvincible = null;
-            for ( Ship s : Game.getInstance().players )
+            for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
                 if ( Util.getDistance( this, s ) < range )
                 {
                     if ( closestShip == null || Util.getDistance( this, s ) > Util.getDistance( this, closestShip ) )

@@ -81,7 +81,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_T, ActionType.SAVE );
         keyboardLayout.put( KeyEvent.VK_Y, ActionType.LOAD );
         keyboardLayout.put( KeyEvent.VK_F9, ActionType.BENCHMARK_FPS );
-        keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY );        
+        keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY );
         keyboardLayout.put( KeyEvent.VK_F12, ActionType.TOGGLE_TRACKER );
 
     }
@@ -154,7 +154,7 @@ public class KeystrokeManager implements KeyListener
                 AsteroidsFrame.frame().toggleFullscreen();
                 break;
             case SET_EASTER_EGG:
-                for ( GameObject go : Game.getInstance().gameObjects )
+                for ( GameObject go : Game.getInstance().getObjectManager().getBaddies() )
                     if ( go instanceof Station )
                         ( (Station) go ).setEasterEgg();
                 break;

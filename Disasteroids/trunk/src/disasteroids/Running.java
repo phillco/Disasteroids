@@ -109,8 +109,6 @@ public class Running
             if ( throwable instanceof java.lang.OutOfMemoryError )
             {
                 System.gc();
-                Game.getInstance().gameObjects = null;
-                Game.getInstance().shootingObjects = null;
                 disasteroids.gui.ParticleManager.clear();
                 System.gc();
             }

@@ -51,7 +51,7 @@ public class Settings
         try
         {
             // Create the default settings.
-            if ( defaultSettings == null )
+            //if ( defaultSettings == null )
             {
                 defaultSettings = new Properties();
                 defaultSettings.put( "musicOn", String.valueOf( true ) );
@@ -74,18 +74,17 @@ public class Settings
             // Load the settings file.
             File settingsFile = new File( SETTINGS_FILE_PATH );
 
+            boolean bSuccess = true;
             if ( settingsFile.exists() )
-            {
                 userSettings.load( new FileInputStream( settingsFile ) );
-                oldHighScore = getHighScore();
-                oldHighScorer = getHighScoreName();
-            }
             else
             {
                 setInSetup( true );
-                return false;
+                bSuccess = false;
             }
-
+            
+            oldHighScore = getHighScore();
+            oldHighScorer = getHighScoreName();
         }
         catch ( IOException ex )
         {

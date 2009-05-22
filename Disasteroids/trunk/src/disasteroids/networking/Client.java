@@ -180,7 +180,7 @@ public class Client extends DatagramListener
                         new Game( in );
 
                         // Find which player is ours (ID).
-                        int id = in.readInt();
+                        int id = in.readInt();                        
                         System.out.println( "...done. Our ID is: " + id + "." );
 
                         // Start the game.

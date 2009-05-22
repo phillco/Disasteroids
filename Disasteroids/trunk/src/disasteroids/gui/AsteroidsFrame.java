@@ -5,6 +5,7 @@
 package disasteroids.gui;
 
 import disasteroids.Game;
+import disasteroids.GameLoop;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
@@ -95,6 +96,8 @@ public class AsteroidsFrame extends Frame
 
         // Receive key events.
         addKeyListener( new KeystrokeManager() );
+
+        GameLoop.startLoop();
     }
 
     public void nextLevel()

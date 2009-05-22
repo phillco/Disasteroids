@@ -246,7 +246,7 @@ public class Game
         // Update the game mode.
         gameMode.act();
 
-        if ( AsteroidsFrame.frame().getPanel().getStarBackground() != null )
+        if ( !Local.isStuffNull() && AsteroidsFrame.frame().getPanel().getStarBackground() != null )
             AsteroidsFrame.frame().getPanel().getStarBackground().act();
 
         // Execute game actions.
@@ -255,7 +255,7 @@ public class Game
         ParticleManager.act();
 
         // Check if we've lost in singleplayer.
-        if ( Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 && !Client.is() )
+        if ( !Client.is() && !Local.isStuffNull() && Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 )
         {
             // Return to the menu.
             AsteroidsFrame.frame().setVisible( false );
@@ -408,6 +408,7 @@ public class Game
         stream.writeLong( timeStep );
         objectManager.flatten( stream );
         actionManager.flatten( stream );
+        stream.writeBoolean( paused );
     }
 
     /**
@@ -421,7 +422,8 @@ public class Game
         this.timeStep = stream.readLong();
         objectManager = new ObjectManager( stream );
         actionManager = new ActionManager( stream );
-        GameLoop.startLoop();
+        paused = stream.readBoolean();
+        
     }
 
     /**

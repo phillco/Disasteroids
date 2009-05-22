@@ -21,8 +21,10 @@ import java.util.HashMap;
  */
 public class KeystrokeManager implements KeyListener
 {
+
     public enum ActionType
     {
+
         UNKNOWN, QUIT, TOGGLE_MUSIC, TOGGLE_SOUND, TOGGLE_FULL_SCREEN,
         SET_EASTER_EGG, WARP, TOGGLE_ANTIALIASING, TOGGLE_SCOREBOARD, TOGGLE_TRACKER,
         START_SHOOT, STOP_SHOOT, LEFT, RIGHT, FORWARDS, BACKWARDS, UN_LEFT, UN_RIGHT,
@@ -77,7 +79,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_7, ActionType.SET_WEAPON_7 );
         keyboardLayout.put( KeyEvent.VK_8, ActionType.SET_WEAPON_8 );
         keyboardLayout.put( KeyEvent.VK_9, ActionType.SET_WEAPON_9 );
-        keyboardLayout.put( KeyEvent.VK_P, ActionType.PAUSE );
+        keyboardLayout.put( KeyEvent.VK_PAUSE, ActionType.PAUSE );
         keyboardLayout.put( KeyEvent.VK_T, ActionType.SAVE );
         keyboardLayout.put( KeyEvent.VK_Y, ActionType.LOAD );
         keyboardLayout.put( KeyEvent.VK_F9, ActionType.BENCHMARK_FPS );
@@ -127,16 +129,14 @@ public class KeystrokeManager implements KeyListener
     {
         if ( !GameLoop.isRunning() )
             return;
-        if ( Game.getInstance().isPaused() )
-        {
-            Game.getInstance().setPaused( false, true );
-            return;
-        }
 
-        if ( e.isShiftDown() )
-            AsteroidsFrame.frame().localPlayer().setSnipeMode( true );
-        else
-            AsteroidsFrame.frame().localPlayer().setSnipeMode( false );
+        if ( !Game.getInstance().isPaused() )
+        {
+            if ( e.isShiftDown() )
+                AsteroidsFrame.frame().localPlayer().setSnipeMode( true );
+            else
+                AsteroidsFrame.frame().localPlayer().setSnipeMode( false );
+        }
 
         // Is it a local action?
         switch ( translate( e.getKeyCode() ) )
@@ -156,7 +156,7 @@ public class KeystrokeManager implements KeyListener
             case SET_EASTER_EGG:
                 for ( GameObject go : Game.getInstance().getObjectManager().getBaddies() )
                     if ( go instanceof Station )
-                        ( (Station) go ).setEasterEgg();
+                        ( ( Station ) go ).setEasterEgg();
                 break;
             case WARP:
                 if ( !Client.is() )
@@ -175,10 +175,18 @@ public class KeystrokeManager implements KeyListener
                 AsteroidsFrame.frame().getPanel().startBenchmarkingFPS();
                 break;
             default:
-                Game.getInstance().getActionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+                if ( Game.getInstance().isPaused() )
+                {
+                    if ( !Client.is() )
+                        Game.getInstance().setPaused( false, true );
+                }
+                else
+                {
+                    Game.getInstance().getActionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
 
-                if ( Client.is() )
-                    Client.getInstance().keyStroke( e.getKeyCode() );
+                    if ( Client.is() )
+                        Client.getInstance().keyStroke( e.getKeyCode() );
+                }
         }
     }
 

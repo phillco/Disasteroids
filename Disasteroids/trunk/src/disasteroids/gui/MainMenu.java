@@ -7,8 +7,8 @@ package disasteroids.gui;
 import disasteroids.LinearGameplay;
 import disasteroids.Running;
 import disasteroids.Settings;
-
 import disasteroids.WaveGameplay;
+import disasteroids.Deathmatch;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -137,7 +137,12 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             drawSetting( ( (Graphics2D) g ), "Sound " + ( Settings.isSoundOn() ? "on" : "off" ), 'S', 14, ( WINDOW_HEIGHT - 2 * height ), normal, false );
             drawSetting( ( (Graphics2D) g ), ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" ), 'F', getWidth(), ( WINDOW_HEIGHT - height ), normal, false );
             drawSetting( ( (Graphics2D) g ), ( Settings.isQualityRendering() ? "Quality" : "Speed" ), 'A', getWidth(), ( WINDOW_HEIGHT - height * 2 ), normal, false );
-            drawSetting( ( (Graphics2D) g ), ( Settings.getLastGameMode() == WaveGameplay.class ? "Wave" : "Linear" ) + " gameplay", 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
+            String mode = "Wave";
+            if ( Settings.getLastGameMode() == Deathmatch.class)
+                mode = "Deathmatch";
+            else if ( Settings.getLastGameMode() == LinearGameplay.class)
+                mode = "Linear";
+            drawSetting( ( (Graphics2D) g ), "Game mode: " + mode, 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
 
         }
     }
@@ -257,6 +262,8 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                 break;
             case KeyEvent.VK_G:
                 if ( Settings.getLastGameMode() == WaveGameplay.class )
+                    Settings.setLastGameMode( Deathmatch.class );
+                else if ( Settings.getLastGameMode() == Deathmatch.class )
                     Settings.setLastGameMode( LinearGameplay.class );
                 else
                     Settings.setLastGameMode( WaveGameplay.class );

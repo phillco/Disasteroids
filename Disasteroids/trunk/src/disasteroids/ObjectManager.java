@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class ObjectManager implements GameElement
 {
+
     /**
      * The mother map of all game objects. Objects are mapped to their IDs.
      */
@@ -54,7 +55,7 @@ public class ObjectManager implements GameElement
     {
         for ( int id : gameObjects.keySet() )
             if ( gameObjects.get( id ) != null )
-            gameObjects.get( id ).act();
+                gameObjects.get( id ).act();
     }
 
     public void draw( Graphics g )
@@ -76,26 +77,26 @@ public class ObjectManager implements GameElement
     {
         gameObjects.put( go.getId(), go );
         if ( go instanceof Asteroid )
-            asteroids.add( (Asteroid) go );
+            asteroids.add( ( Asteroid ) go );
         if ( go instanceof BlackHole )
-            blackHoles.add( (BlackHole) go );
+            blackHoles.add( ( BlackHole ) go );
         if ( go instanceof ShootingObject )
-            shootingObjects.add( (ShootingObject) go );
+            shootingObjects.add( ( ShootingObject ) go );
         if ( go instanceof Ship )
-            players.add( (Ship) go );
+            players.add( ( Ship ) go );
     }
 
     public void removeObject( GameObject go )
     {
         gameObjects.remove( go.getId() );
         if ( go instanceof Asteroid )
-            asteroids.remove( (Asteroid) go );
+            asteroids.remove( ( Asteroid ) go );
         if ( go instanceof BlackHole )
-            blackHoles.remove( (BlackHole) go );
+            blackHoles.remove( ( BlackHole ) go );
         if ( go instanceof ShootingObject )
-            shootingObjects.remove( (ShootingObject) go );
+            shootingObjects.remove( ( ShootingObject ) go );
         if ( go instanceof Ship )
-            players.remove( (Ship) go );
+            players.remove( ( Ship ) go );
     }
 
     public void clear()
@@ -115,7 +116,6 @@ public class ObjectManager implements GameElement
         stream.writeInt( gameObjects.size() );
         for ( int id : gameObjects.keySet() )
         {
-            stream.writeInt( id );
             stream.writeInt( Constants.parseGameObject( gameObjects.get( id ) ) );
             gameObjects.get( id ).flatten( stream );
         }
@@ -126,6 +126,7 @@ public class ObjectManager implements GameElement
      */
     public ObjectManager( DataInputStream stream ) throws IOException
     {
+        System.out.println( "" );
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
         {
@@ -135,7 +136,8 @@ public class ObjectManager implements GameElement
                     addObject( new Alien( stream ) );
                     break;
                 case BLACK_HOLE:
-                    addObject( new BlackHole( stream ));
+                    addObject( new BlackHole( stream ) );
+                    break;
                 case BONUS:
                     addObject( new Bonus( stream ) );
                     break;

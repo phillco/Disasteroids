@@ -5,10 +5,10 @@
 package disasteroids.networking;
 
 import disasteroids.Action;
-import disasteroids.Asteroid;
 import disasteroids.Game;
 import disasteroids.Running;
 import disasteroids.Ship;
+import disasteroids.gui.Local;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.BindException;
@@ -197,6 +197,8 @@ public class Server extends DatagramListener
 
                         // Send him his player ID.
                         out.writeInt( id );
+
+                        System.out.println( "Note: our ID is: " + Local.getLocalPlayer().getId() + "." );
 
                         // Associate this client with the ship.
                         client.inGamePlayer = (Ship) Game.getInstance().getObjectManager().getObject( id );

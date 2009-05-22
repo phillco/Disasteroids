@@ -7,6 +7,7 @@ package disasteroids.networking;
 import disasteroids.Alien;
 import disasteroids.BlackHole;
 import disasteroids.Bonus;
+import disasteroids.Deathmatch;
 import disasteroids.GameMode;
 import disasteroids.GameObject;
 import disasteroids.LinearGameplay;
@@ -23,6 +24,7 @@ import java.io.IOException;
  */
 public class Constants
 {
+
     /**
      * The version of our net code protocol. Bump to ensure older clients don't connect and cause havoc.
      * @since April 11, 2008
@@ -67,7 +69,8 @@ public class Constants
 
     public static enum GameModeTIDs
     {
-        LINEAR( LinearGameplay.class ), WAVE( WaveGameplay.class );
+
+        LINEAR( LinearGameplay.class ), WAVE( WaveGameplay.class ), DEATHMATCH( Deathmatch.class );
 
         final Class myClass;
 
@@ -79,6 +82,7 @@ public class Constants
 
     public static enum GameObjectTIDs
     {
+
         ALIEN, BLACK_HOLE, BONUS, SHIP, STATION;
 
     }
@@ -89,6 +93,8 @@ public class Constants
             return GameModeTIDs.LINEAR.ordinal();
         else if ( m instanceof WaveGameplay )
             return GameModeTIDs.WAVE.ordinal();
+        else if ( m instanceof Deathmatch )
+            return GameModeTIDs.DEATHMATCH.ordinal();
         else
             throw new IllegalArgumentException( "Unknown game mode: " + m + "." );
     }
@@ -101,6 +107,8 @@ public class Constants
                 return new LinearGameplay( stream );
             case WAVE:
                 return new WaveGameplay( stream );
+            case DEATHMATCH:
+                return new Deathmatch( stream );
             default:
                 throw new IllegalArgumentException( "Unknown game mode: " + type + "." );
         }

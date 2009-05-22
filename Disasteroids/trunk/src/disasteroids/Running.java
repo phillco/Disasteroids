@@ -135,14 +135,16 @@ public class Running
     @SuppressWarnings ( "fallthrough" )
     public static void startGame( MenuOption option )
     {
+        Class gameMode = Settings.getLastGameMode();
         switch ( option )
         {
             case START_SERVER:
+                gameMode = Deathmatch.class;
                 new Server();
             // Fall-through
 
             case SINGLEPLAYER:
-                new Game( Settings.getLastGameMode() );
+                new Game( gameMode );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 AsteroidsFrame.frame().showStartMessage( "Press any key to begin." );
                 Sound.updateMusic();

@@ -15,6 +15,7 @@ import java.io.IOException;
  */
 public abstract class GameObject implements GameElement
 {
+
     /**
      * The next ID to give to a new object.
      * As IDs are ints, 2,147,483,647 unique objects are supported before it overflows. (TODO: Add support for graceful overflow)
@@ -24,19 +25,21 @@ public abstract class GameObject implements GameElement
     /**
      * This object's ID.
      */
-    private int id = nextId++;
+    private int id;
 
     /**
      * Our location and speed data.
      */
-    private double x,  y,  dx,  dy;
+    private double x, y, dx, dy;
 
     public GameObject()
     {
+        id = nextId++;
     }
 
     public GameObject( double x, double y, double dx, double dy )
     {
+        this();
         this.x = x;
         this.y = y;
         this.dx = dx;
@@ -205,6 +208,7 @@ public abstract class GameObject implements GameElement
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
+        stream.writeInt( getId() );
         stream.writeDouble( getX() );
         stream.writeDouble( getY() );
         stream.writeDouble( getDx() );
@@ -220,6 +224,7 @@ public abstract class GameObject implements GameElement
      */
     public void restore( DataInputStream stream ) throws IOException
     {
+        id = stream.readInt();
         setLocation( stream.readDouble(), stream.readDouble() );
         setVelocity( stream.readDouble(), stream.readDouble() );
     }
@@ -240,6 +245,4 @@ public abstract class GameObject implements GameElement
     {
         return id;
     }
-
-    
 }

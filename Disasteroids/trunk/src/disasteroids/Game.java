@@ -421,6 +421,7 @@ public class Game
         this.timeStep = stream.readLong();
         objectManager = new ObjectManager( stream );
         actionManager = new ActionManager( stream );
+        GameLoop.startLoop();
     }
 
     /**

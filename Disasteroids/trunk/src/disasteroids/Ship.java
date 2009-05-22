@@ -871,6 +871,9 @@ public class Ship extends GameObject implements ShootingObject
                     Util.getRandomGenerator().nextDouble() * 4,
                     angle + Util.getRandomGenerator().nextDouble() * .8 - .2 + Math.PI,
                     35, 35 ) );
+
+        if ( Server.is() )
+            ServerCommands.strafe( getId(), toRight );
     }
 
     /**

@@ -107,7 +107,7 @@ public class ServerCommands
 
     /**
      * Notifies clients that the <code>Ship</code> with given id has just berserked.
-     * 
+     *
      * @param id The id of the <code>Ship</code>
      */
     public static void berserk( int id )
@@ -124,4 +124,27 @@ public class ServerCommands
             Running.warning( "Network stream failure, berkserk", ex );
         }
     }
+
+
+    /**
+     * Notifies clients that the <code>Ship</code> with given id has just STRAFED.
+     *
+     * @param id The id of the <code>Ship</code>
+     */
+    public static void strafe( int id, boolean toRight )
+    {
+        try
+        {
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt( Server.Message.PLAYER_STRAFE.ordinal() );
+            out.writeInt( id );
+            out.writeBoolean( toRight );
+            Server.getInstance().sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
+            Running.warning( "Network stream failure, strafe", ex );
+        }
+    }
+
 }

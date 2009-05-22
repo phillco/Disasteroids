@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
  */
 public class Client extends DatagramListener
 {
+
     /**
      * Location of the server.
      * @since December 29, 2007
@@ -37,6 +38,7 @@ public class Client extends DatagramListener
      */
     public enum Message
     {
+
         /**
          * We want to connect to the server and join the game.
          */
@@ -185,18 +187,21 @@ public class Client extends DatagramListener
                         new AsteroidsFrame( id );
                         break;
                     case PLAYER_UPDATE_POSITION:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
+                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
                         break;
                     case NEW_ASTEROID:
                         Game.getInstance().getObjectManager().addObject( new Asteroid( in ) );
                         break;
                     case REMOVE_ASTEROID:
                         // Splits an asteroid, possibly because of a a Ship.
-                        ( (Asteroid) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).split(
-                                ( in.readBoolean() ? (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) : null ) );
+                        ( ( Asteroid ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).split(
+                                ( in.readBoolean() ? ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) : null ) );
                         break;
                     case BERSERK:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
+                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
+                        break;
+                    case PLAYER_STRAFE:
+                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).strafe( in.readBoolean());
                         break;
                     case PLAYER_JOINED:
                         Game.getInstance().addPlayer( new Ship( in ) );
@@ -204,7 +209,7 @@ public class Client extends DatagramListener
                         break;
                     case PLAYER_QUIT:
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
+                        Game.getInstance().removePlayer( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );

@@ -48,6 +48,7 @@ public class Server extends DatagramListener
          * Updating a player's position and speed.
          */
         PLAYER_UPDATE_POSITION,
+        PLAYER_STRAFE,
         /**
          * Asteroid has kill from a parent.
          */

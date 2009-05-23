@@ -8,7 +8,6 @@ import disasteroids.gui.AsteroidsFrame;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.weapons.Unit;
 import disasteroids.weapons.Weapon;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -28,26 +27,28 @@ public class BlackHole extends GameObject
      * The radius of our attraction circle, in pixels.
      * Ships are attracted from a radius of twice this.
      */
-    final static int ATTRACTION_RADIUS = 400;
-
-    /**
-     * The number of objects to 'eat' before removing ourselves.
-     */
-    final static int NUM_TO_EAT = 30;
+    final static int ATTRACTION_RADIUS = 500;
 
     /**
      * The pulling power this black hole exerts, in pixels/second^2.
      */
-    private int power = Util.getRandomGenerator().nextInt( 9 ) + 8;
+    private int power;
 
     /**
-     * How many objects we've destroyed.
+     * How many objects we have left to destroy. Can be -1 for infinite.
      */
-    private int numEaten = 0;
+    private int numLeftToEat;
 
     public BlackHole( double x, double y )
     {
+        super( x, y, Util.getRandomGenerator().nextInt( 9 ) + 8, 30 );
+    }
+
+    public BlackHole( double x, double y, int power, int numToEat )
+    {
         super( x, y, 0, 0 );
+        this.power = power;
+        this.numLeftToEat = numToEat;
     }
 
     /**
@@ -69,13 +70,17 @@ public class BlackHole extends GameObject
             if ( isPrey( go ) && Util.getDistance( this, go ) < 35 )
             {
                 go.inBlackHole();
-                ++numEaten;
+                if ( numLeftToEat > 0 )
+                {
+                    // Remove after we've eaten enough, for gameplay reasons.
+                    if ( --numLeftToEat == 0 )
+                    {
+                        Game.getInstance().getObjectManager().removeObject( this );
+                        return;
+                    }
+                }
             }
         }
-
-        // Remove after we've eaten enough, for gameplay reasons.
-        if ( numEaten > NUM_TO_EAT )
-            Game.getInstance().getObjectManager().removeObject( this );
     }
 
     /**
@@ -99,7 +104,7 @@ public class BlackHole extends GameObject
                         closeObjects.add( u );
 
         // Remove anything that we shouldn't eat.
-        for ( Iterator<GameObject> i = closeObjects.iterator(); i.hasNext();)
+        for ( Iterator<GameObject> i = closeObjects.iterator(); i.hasNext(); )
             if ( !isPrey( i.next() ) )
                 i.remove();
 
@@ -128,7 +133,7 @@ public class BlackHole extends GameObject
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-        stream.writeInt( numEaten );
+        stream.writeInt( numLeftToEat );
         stream.writeInt( power );
     }
 
@@ -138,7 +143,7 @@ public class BlackHole extends GameObject
     public BlackHole( DataInputStream stream ) throws IOException
     {
         super( stream );
-        numEaten = stream.readInt();
+        numLeftToEat = stream.readInt();
         power = stream.readInt();
     }
 }

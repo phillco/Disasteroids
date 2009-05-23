@@ -25,9 +25,8 @@ public class BlackHole extends GameObject
 {
     /**
      * The radius of our attraction circle, in pixels.
-     * Ships are attracted from a radius of twice this.
      */
-    final static int ATTRACTION_RADIUS = 500;
+    final static int ATTRACTION_RADIUS = 400;
 
     /**
      * The pulling power this black hole exerts, in pixels/second^2.
@@ -63,7 +62,7 @@ public class BlackHole extends GameObject
         for ( GameObject go : victims )
         {
             double angle = Util.getAngle( this, go );
-            double magnitude = Math.min( power / Util.getDistance( this, go ), 1 );
+            double magnitude = Math.min( Math.pow( power, 1.7 ) / Math.pow( Util.getDistance( this, go ), 1.7 ), 1 );
             go.setVelocity( go.getDx() + magnitude * Math.cos( angle ), go.getDy() + magnitude * Math.sin( angle ) );
 
             // Too close to the center! Destroy him!

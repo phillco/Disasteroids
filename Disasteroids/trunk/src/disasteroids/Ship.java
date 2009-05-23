@@ -40,7 +40,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Ship extends GameObject implements ShootingObject
 {
-
     public final static double SENSITIVITY = 20;
 
     /**
@@ -192,7 +191,7 @@ public class Ship extends GameObject implements ShootingObject
 
         // Colors.        
         double fadePct = 0.6;
-        myInvicibleColor = new Color( ( int ) ( myColor.getRed() * fadePct ), ( int ) ( myColor.getGreen() * fadePct ), ( int ) ( myColor.getBlue() * fadePct ) );
+        myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
 
         // Start invincible.
         invincibilityCount = 200;
@@ -206,11 +205,12 @@ public class Ship extends GameObject implements ShootingObject
             {
                 if ( getWeaponManager().getAmmo() == 0 )
                 {
-                    Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", ( int ) getX(), ( int ) getY() - 5, myColor );
+                    Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
                     Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
                     rotateWeapons();
                     shooting = false;
-                } else
+                }
+                else
                 {
                     if ( canShoot() )
                         shoot();
@@ -220,7 +220,8 @@ public class Ship extends GameObject implements ShootingObject
             checkCollision();
             generateParticles();
             move();
-        } else
+        }
+        else
         {
             explosionTime--;
 
@@ -275,7 +276,8 @@ public class Ship extends GameObject implements ShootingObject
         {
             centerX = AsteroidsFrame.frame().getWidth() / 2;
             centerY = AsteroidsFrame.frame().getHeight() / 2;
-        } else
+        }
+        else
         {
             centerX = ( getX() - AsteroidsFrame.frame().localPlayer().getX() + AsteroidsFrame.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
             centerY = ( getY() - AsteroidsFrame.frame().localPlayer().getY() + AsteroidsFrame.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
@@ -286,9 +288,9 @@ public class Ship extends GameObject implements ShootingObject
 
         // TODO: Create RelativeGraphics.transformPolygon()
         Polygon outline = new Polygon();
-        outline.addPoint( ( int ) ( centerX + RADIUS * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX(), ( int ) ( centerY - RADIUS * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY() );
-        outline.addPoint( ( int ) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + AsteroidsFrame.frame().getRumbleX(), ( int ) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) - AsteroidsFrame.frame().getRumbleY() );
-        outline.addPoint( ( int ) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), ( int ) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY() );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) - AsteroidsFrame.frame().getRumbleY() );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
 
         // Flash when invincible.
         if ( !cannotDie() || ( cannotDie() && Local.getGlobalFlash() ) )
@@ -296,13 +298,13 @@ public class Ship extends GameObject implements ShootingObject
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
         if ( shielded > 0 )
-            AsteroidsFrame.frame().drawCircle( g, Color.CYAN, ( int ) getX(), ( int ) getY(), RADIUS + 5 );
+            AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) getX(), (int) getY(), RADIUS + 5 );
 
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
         {
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
-            AsteroidsFrame.frame().drawString( g, ( int ) getX(), ( int ) getY() - 15, getWeaponManager().getName(), Color.gray );
+            AsteroidsFrame.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getName(), Color.gray );
             allWeapons[weaponIndex].drawOrphanUnit( g, getX(), getY() + 25, Color.gray );
         }
 
@@ -316,13 +318,14 @@ public class Ship extends GameObject implements ShootingObject
                 {
                     8.0f
                 };
-                Stroke old = ( ( Graphics2D ) g ).getStroke();
-                ( ( Graphics2D ) g ).setStroke( new BasicStroke( 3.0f, BasicStroke.CAP_ROUND,
+                Stroke old = ( (Graphics2D) g ).getStroke();
+                ( (Graphics2D) g ).setStroke( new BasicStroke( 3.0f, BasicStroke.CAP_ROUND,
                         BasicStroke.JOIN_ROUND, 5.0f, dash, 2.0f ) );
-                AsteroidsFrame.frame().drawLine( g, myInvicibleColor, ( int ) getX(), ( int ) getY(), 1500, 15, angle );
-                ( ( Graphics2D ) g ).setStroke( old );
+                AsteroidsFrame.frame().drawLine( g, myInvicibleColor, (int) getX(), (int) getY(), 1500, 15, angle );
+                ( (Graphics2D) g ).setStroke( old );
             }
-        } else
+        }
+        else
             getWeaponManager().drawHUD( g, this );
     }
 
@@ -360,7 +363,7 @@ public class Ship extends GameObject implements ShootingObject
     @Override
     public String toString()
     {
-        return "Ship #" + getId() + " ~ [" + ( int ) getX() + "," + ( int ) getY() + "]";
+        return "Ship #" + getId() + " ~ [" + (int) getX() + "," + (int) getY() + "]";
     }
 
     public void clearWeapons()
@@ -387,7 +390,8 @@ public class Ship extends GameObject implements ShootingObject
         {
             weaponIndex++;
             weaponIndex %= allWeapons.length;
-        } while ( allWeapons[weaponIndex].getAmmo() == 0 && weaponIndex != startIndex );
+        }
+        while ( allWeapons[weaponIndex].getAmmo() == 0 && weaponIndex != startIndex );
         drawWeaponNameTimer = 50;
     }
 
@@ -414,7 +418,7 @@ public class Ship extends GameObject implements ShootingObject
                     {
                         String obit = "";
                         if ( other instanceof Ship )
-                            obit = getName() + " was blasted by " + ( ( Ship ) other ).getName() + ".";
+                            obit = getName() + " was blasted by " + ( (Ship) other ).getName() + ".";
                         else if ( other instanceof Station )
                             obit = getName() + " was shot down by a satellite.";
                         else if ( other instanceof Alien )
@@ -425,7 +429,7 @@ public class Ship extends GameObject implements ShootingObject
                             m.explode();
                             if ( other.getClass().isInstance( this ) )
                             {
-                                Ship s = ( Ship ) other;
+                                Ship s = (Ship) other;
                                 s.score += 500;
                                 s.numShipsKilled++;
                                 s.livesLeft++;
@@ -457,7 +461,7 @@ public class Ship extends GameObject implements ShootingObject
             particleRateBackward = Math.max( 0, particleRateBackward - 0.03 );
 
 
-        for ( int i = 0; i < ( int ) ( particleRateForward * 3 ); i++ )
+        for ( int i = 0; i < (int) ( particleRateForward * 3 ); i++ )
             ParticleManager.addParticle( new Particle(
                     -15 * Math.cos( angle ) + getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
                     15 * Math.sin( angle ) + getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
@@ -467,7 +471,7 @@ public class Ship extends GameObject implements ShootingObject
                     angle + Util.getRandomGenerator().nextDouble() * .4 - .2 + Math.PI,
                     30, 10 ) );
 
-        for ( int i = 0; i < ( int ) ( particleRateBackward * 3 ); i++ )
+        for ( int i = 0; i < (int) ( particleRateBackward * 3 ); i++ )
             ParticleManager.addParticle( new Particle(
                     15 * Math.cos( angle ) + getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
                     -15 * Math.sin( angle ) + getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
@@ -506,7 +510,7 @@ public class Ship extends GameObject implements ShootingObject
         }
 
         // Attrition of speed.
-        decelerate( .995 );
+        decelerate( .99 );
         if ( stopping == true )
             slowStop();
     }
@@ -557,7 +561,8 @@ public class Ship extends GameObject implements ShootingObject
             {
                 shielded -= amount * 2;
                 return true;
-            } else
+            }
+            else
             {
                 setInvincibilityCount( 50 );
                 shielded = 0;
@@ -675,7 +680,7 @@ public class Ship extends GameObject implements ShootingObject
     {
         if ( getWeaponManager().getAmmo() == 0 )
         {
-            Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", ( int ) getX(), ( int ) getY() - 5, myColor );
+            Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
             Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
             rotateWeapons();
         }
@@ -819,7 +824,7 @@ public class Ship extends GameObject implements ShootingObject
 
         // Apply basic construction.        
         double fadePct = 0.6;
-        myInvicibleColor = new Color( ( int ) ( myColor.getRed() * fadePct ), ( int ) ( myColor.getGreen() * fadePct ), ( int ) ( myColor.getBlue() * fadePct ) );
+        myInvicibleColor = new Color( (int) ( myColor.getRed() * fadePct ), (int) ( myColor.getGreen() * fadePct ), (int) ( myColor.getBlue() * fadePct ) );
     }
 
     public int getWeaponIndex()

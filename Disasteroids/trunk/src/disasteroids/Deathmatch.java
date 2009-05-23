@@ -22,7 +22,7 @@ public class Deathmatch implements GameMode
     public Deathmatch()
     {
         // Create some random black holes.
-        for ( int i = 0, numHoles = Util.getRandomGenerator().nextInt( 2 ) + 2; i < numHoles; i++ )
+        for ( int i = 0, numHoles = Util.getRandomGenerator().nextInt( 2 ) + 1; i < numHoles; i++ )
             Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ), 13, -1 ) );
     }
 

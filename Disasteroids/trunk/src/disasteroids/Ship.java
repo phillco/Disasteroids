@@ -298,7 +298,10 @@ public class Ship extends GameObject implements ShootingObject
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
         if ( shielded > 0 )
-            AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) getX(), (int) getY(), RADIUS + 5 );
+        {
+            for ( int i = 0; i < shielded / 100; i++ )
+                AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * i );
+        }
 
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
         {
@@ -397,9 +400,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public String giveShield()
     {
-        if ( shielded >= 100 )
-            return "";
-        shielded = 100;
+        shielded += 100;
         return "Shield";
     }
 
@@ -557,9 +558,9 @@ public class Ship extends GameObject implements ShootingObject
         if ( shielded > 0 )
         {
             //setInvincibilityCount( 50 );
-            if ( shielded > amount * 2 )
+            if ( shielded > amount / 2.0 )
             {
-                shielded -= amount * 2;
+                shielded -= amount / 2.0;
                 return true;
             }
             else

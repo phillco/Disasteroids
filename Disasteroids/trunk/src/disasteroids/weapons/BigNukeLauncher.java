@@ -17,6 +17,9 @@ import java.io.IOException;
  */
 public class BigNukeLauncher extends Weapon
 {
+    private int chainReactionChance = 30;
+
+
     public BigNukeLauncher()
     {
     }
@@ -88,6 +91,13 @@ public class BigNukeLauncher extends Weapon
     public void undoBonuses()
     {
     }
+
+    public int getChainReactionChance()
+    {
+        return chainReactionChance;
+    }
+
+
     
      //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\

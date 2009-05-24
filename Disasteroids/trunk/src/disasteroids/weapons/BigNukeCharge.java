@@ -35,19 +35,20 @@ public class BigNukeCharge extends Unit
     /**
      * The age at which we'll explode.
      */
-    private int explosionAge = 70 + Util.getRandomGenerator().nextInt( 20 );
+    private int explosionAge;
 
     /**
      * Whether we've begun to shrink.
      */
     private boolean isReducing = false;
 
-    public BigNukeCharge( BigNukeLauncher parent, Color color, double x, double y, double dx, double dy, double angle )
+    public BigNukeCharge( BigNukeLauncher parent, Color color, double x, double y, double dx, double dy, double angle, int explosionAge )
     {
         super( color, x, y, dx + Util.getRandomGenerator().nextDouble() * 14 * Math.cos( angle ), dy - Util.getRandomGenerator().nextDouble() * 14 * Math.sin( angle ) );
         this.parent = parent;
         ax = Util.getRandomGenerator().nextDouble() * 0.1 - 0.05;
         ay = Util.getRandomGenerator().nextDouble() * 0.1 - 0.05;
+        this.explosionAge = explosionAge;
     }
 
     @Override
@@ -72,8 +73,8 @@ public class BigNukeCharge extends Unit
             explosionSize -= 8;
 
             // Chain reaction.
-            if ( Util.getRandomGenerator().nextInt( 30 ) == 0 )
-                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getRandomGenerator().nextAngle() ) );
+            if ( Util.getRandomGenerator().nextInt( parent.getChainReactionChance( ) ) == 0 )
+                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getRandomGenerator().nextAngle(), (int)(explosionAge * 1.5 )));
         }
         // Waxing.
         else if ( age > explosionAge )
@@ -120,7 +121,7 @@ public class BigNukeCharge extends Unit
     @Override
     public int getDamage()
     {
-        return explosionSize > 0 ? 25 : 0;
+        return explosionSize > 0 ? 10 : 0;
     }
 
     public void draw( Graphics g )

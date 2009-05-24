@@ -29,7 +29,7 @@ public class BigNuke extends Unit
     private double ax,  ay;
 
     /**
-     * How many charge's we've spewed so far.
+     * How many charge we've spewed so far.
      */
     private int chargesDeployed = 0;
 
@@ -60,11 +60,11 @@ public class BigNuke extends Unit
                                          Util.getRandomGenerator().nextAngle(),
                                          20, 1 ) );
 
-        if ( age > 140 )
+        if ( age > 30 )
         {
             for ( int i = 0; i < 9; i++ )
             {
-                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Math.PI * 2 * Util.getRandomGenerator().nextDouble() ) );
+                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Math.PI * 2 * Util.getRandomGenerator().nextDouble(), 30 + Util.getRandomGenerator().nextInt( 15 ) ) );
                 ++chargesDeployed;
             }
 

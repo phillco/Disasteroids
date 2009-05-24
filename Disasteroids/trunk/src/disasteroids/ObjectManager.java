@@ -5,6 +5,8 @@
 package disasteroids;
 
 import disasteroids.networking.Constants;
+import disasteroids.networking.Server;
+import disasteroids.networking.ServerCommands;
 import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -19,7 +21,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class ObjectManager implements GameElement
 {
-
     /**
      * The mother map of all game objects. Objects are mapped to their IDs.
      */
@@ -77,26 +78,32 @@ public class ObjectManager implements GameElement
     {
         gameObjects.put( go.getId(), go );
         if ( go instanceof Asteroid )
-            asteroids.add( ( Asteroid ) go );
+            asteroids.add( (Asteroid) go );
         if ( go instanceof BlackHole )
-            blackHoles.add( ( BlackHole ) go );
+            blackHoles.add( (BlackHole) go );
         if ( go instanceof ShootingObject )
-            shootingObjects.add( ( ShootingObject ) go );
+            shootingObjects.add( (ShootingObject) go );
         if ( go instanceof Ship )
-            players.add( ( Ship ) go );
+            players.add( (Ship) go );
+
+        if ( Server.is() )
+            ServerCommands.objectCreatedOrDestroyed( go, true );
     }
 
     public void removeObject( GameObject go )
     {
         gameObjects.remove( go.getId() );
         if ( go instanceof Asteroid )
-            asteroids.remove( ( Asteroid ) go );
+            asteroids.remove( (Asteroid) go );
         if ( go instanceof BlackHole )
-            blackHoles.remove( ( BlackHole ) go );
+            blackHoles.remove( (BlackHole) go );
         if ( go instanceof ShootingObject )
-            shootingObjects.remove( ( ShootingObject ) go );
+            shootingObjects.remove( (ShootingObject) go );
         if ( go instanceof Ship )
-            players.remove( ( Ship ) go );
+            players.remove( (Ship) go );
+
+        if ( Server.is() )
+            ServerCommands.objectCreatedOrDestroyed( go, false );
     }
 
     public void clear()
@@ -121,6 +128,28 @@ public class ObjectManager implements GameElement
         }
     }
 
+    public void addObjectFromStream( DataInputStream stream ) throws IOException
+    {
+        switch ( Constants.GameObjectTIDs.values()[stream.readInt()] )
+        {
+            case ALIEN:
+                addObject( new Alien( stream ) );
+                break;
+            case BLACK_HOLE:
+                addObject( new BlackHole( stream ) );
+                break;
+            case BONUS:
+                addObject( new Bonus( stream ) );
+                break;
+            case SHIP:
+                addObject( new Ship( stream ) );
+                break;
+            case STATION:
+                addObject( new Station( stream ) );
+                break;
+        }
+    }
+
     /**
      * Creates <code>this</code> from a stream for client/server transmission.
      */
@@ -129,26 +158,7 @@ public class ObjectManager implements GameElement
         System.out.println( "" );
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-        {
-            switch ( Constants.GameObjectTIDs.values()[stream.readInt()] )
-            {
-                case ALIEN:
-                    addObject( new Alien( stream ) );
-                    break;
-                case BLACK_HOLE:
-                    addObject( new BlackHole( stream ) );
-                    break;
-                case BONUS:
-                    addObject( new Bonus( stream ) );
-                    break;
-                case SHIP:
-                    addObject( new Ship( stream ) );
-                    break;
-                case STATION:
-                    addObject( new Station( stream ) );
-                    break;
-            }
-        }
+            addObjectFromStream( stream );
     }
 
     public void clearObstacles()

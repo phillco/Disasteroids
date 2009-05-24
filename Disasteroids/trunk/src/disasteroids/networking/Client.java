@@ -121,7 +121,7 @@ public class Client extends DatagramListener
                 return;
 
             ByteInputStream in = new ByteInputStream( p.getData() );
-            
+
             // Determine the type of message.
             int command = in.readInt();
             if ( ( command >= 0 ) && ( command < Server.Message.values().length ) )
@@ -145,22 +145,6 @@ public class Client extends DatagramListener
                         // Start the game.
                         new AsteroidsFrame( id );
                         break;
-                    case PLAYER_UPDATE_POSITION:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
-                        break;
-                    case PLAYER_BERSERK:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
-                        break;
-                    case PLAYER_STRAFE:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).strafe( in.readBoolean() );
-                        break;
-                    case PLAYER_JOINED:
-                        Game.getInstance().addPlayer( new Ship( in ) );
-                        break;
-                    case PLAYER_QUIT:
-                        String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
-                        break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );
                         break;
@@ -170,6 +154,28 @@ public class Client extends DatagramListener
                             AsteroidsFrame.frame().dispose();
                         JOptionPane.showMessageDialog( null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE );
                         Running.quit();
+                        break;
+                    case PLAYER_JOINED:
+                        Game.getInstance().addPlayer( new Ship( in ) );
+                        break;
+                    case PLAYER_QUIT:
+                        String quitReason = in.readBoolean() ? " timed out." : " quit.";
+                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
+                        break;
+                    case PLAYER_UPDATE_POSITION:
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
+                        break;
+                    case PLAYER_BERSERK:
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
+                        break;
+                    case PLAYER_STRAFE:
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).strafe( in.readBoolean() );
+                        break;
+                    case OBJECT_CREATED:
+                        Game.getInstance().getObjectManager().addObjectFromStream( in );
+                        break;
+                    case OBJECT_REMOVED:
+                        Game.getInstance().getObjectManager().removeObject( Game.getInstance().getObjectManager().getObject( in.readInt() ) );
                         break;
                     default:
                         System.out.println( "Weird packet - " + command + "." );

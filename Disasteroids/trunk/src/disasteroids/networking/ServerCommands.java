@@ -4,6 +4,7 @@
  */
 package disasteroids.networking;
 
+import disasteroids.GameObject;
 import disasteroids.Running;
 import disasteroids.Ship;
 import disasteroids.networking.DatagramListener.ByteOutputStream;
@@ -16,7 +17,7 @@ import java.io.IOException;
 public class ServerCommands
 {
     /**
-     * Notifies all players as to whether the game is paused.
+     * Notifies all players as to whether the game is paused.     
      */
     public static void updatePause( boolean paused )
     {
@@ -87,6 +88,33 @@ public class ServerCommands
         catch ( IOException ex )
         {
             Running.warning( "Network stream failure, strafe", ex );
+        }
+    }
+
+    /**
+     * Notifies clients that an object was created.
+     */
+    public static void objectCreatedOrDestroyed( GameObject go, boolean created )
+    {
+        try
+        {
+            ByteOutputStream out = new ByteOutputStream();
+            if ( created )
+            {
+                out.writeInt( Server.Message.OBJECT_CREATED.ordinal() );
+                out.writeInt( Constants.parseGameObject( go ) );
+                go.flatten( out );
+            }
+            else
+            {
+                out.writeInt( Server.Message.OBJECT_REMOVED.ordinal() );
+                out.writeInt( go.getId() );
+            }
+            Server.getInstance().sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
+            Running.warning( "Network stream failure, objectCreatedOrDestroyed", ex );
         }
     }
 }

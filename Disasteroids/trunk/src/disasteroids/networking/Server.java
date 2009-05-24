@@ -8,7 +8,6 @@ import disasteroids.Action;
 import disasteroids.Game;
 import disasteroids.Running;
 import disasteroids.Ship;
-import disasteroids.gui.Local;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.BindException;
@@ -16,8 +15,10 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * Server side of the C/S networking.
@@ -61,22 +62,13 @@ public class Server extends DatagramListener
      */
     private LinkedList<ClientMachine> clients;
 
+    /**
+     * The one server instance.
+     */
     private static Server instance;
 
-    public static Server getInstance()
-    {
-        return instance;
-    }
-
-    public static boolean is()
-    {
-        return ( instance != null );
-    }
-
     /**
-     * Starts the server and waits for clients.
-     * 
-     * @since December 28, 2007
+     * Starts the server, and waits for clients.
      */
     public Server()
     {
@@ -99,31 +91,24 @@ public class Server extends DatagramListener
     }
 
     /**
-     * Returns our IP address and port.
-     * 
-     * @return  the IP string ("xxx.xxx.xxx.xxx:1234")
-     * @since Classic
+     * Returns the running server instance.
      */
-    public static String getLocalIP()
+    public static Server getInstance()
     {
-        try
-        {
-            InetAddress localHost = InetAddress.getLocalHost();
-            InetAddress[] all_IPs = InetAddress.getAllByName( localHost.getHostName() );
-            return ( all_IPs[0].toString().split( "/" ) )[1] + ":" + Constants.DEFAULT_PORT;
-        }
-        catch ( UnknownHostException e )
-        {
-            return "Unknown";
-        }
+        return instance;
+    }
+
+    /**
+     * Is Disasteroids running as a server?
+     */
+    public static boolean is()
+    {
+        return ( instance != null );
     }
 
     /**
      * Called when we receive a packet from a client.
      * Deciphers what the client is telling us, and responds.
-     * 
-     * @param p the packet
-     * @since December 28, 2007
      */
     void parseReceived( DatagramPacket p )
     {
@@ -132,7 +117,6 @@ public class Server extends DatagramListener
             // Ensure this client is on our register.
             ClientMachine client = registerClient( new Machine( p.getAddress(), p.getPort() ) );
 
-            // Create streams.
             ByteInputStream in = new ByteInputStream( p.getData() );
 
             // Determine the type of message.
@@ -141,7 +125,6 @@ public class Server extends DatagramListener
             {
                 switch ( Client.Message.values()[command] )
                 {
-
                     // Client wants to join the game.
                     case CONNECT:
 
@@ -151,14 +134,12 @@ public class Server extends DatagramListener
                         int version = in.readInt();
                         if ( version < Constants.NETCODE_VERSION )
                         {
-                            Iterator i;
                             out.writeInt( Message.CONNECT_ERROR_OLDNETCODE.ordinal() );
                             out.writeInt( Constants.NETCODE_VERSION );
                             sendPacket( client, out );
                             Running.log( "Connection from " + client.toString() + " refused, using old version: " + version + ".", 800 );
                             return;
                         }
-
                         Running.log( "Connection from " + client.toString() + " accepted." );
 
                         // Spawn him in (so he'll be included in the update).
@@ -166,14 +147,8 @@ public class Server extends DatagramListener
 
                         // Send him a full update.
                         out.writeInt( Message.FULL_UPDATE.ordinal() );
-
-                        // Send the status of the entire game.
                         Game.getInstance().flatten( out );
-
-                        // Send him his player ID.
                         out.writeInt( id );
-
-                        System.out.println( "Note: our ID is: " + Local.getLocalPlayer().getId() + "." );
 
                         // Associate this client with the ship.
                         client.inGamePlayer = (Ship) Game.getInstance().getObjectManager().getObject( id );
@@ -183,11 +158,9 @@ public class Server extends DatagramListener
 
                         // Tell everyone else about the player joining.
                         out = new ByteOutputStream();
-
                         out.writeInt( Message.PLAYER_JOINED.ordinal() );
                         client.inGamePlayer.flatten( out );
                         sendPacketToAllButOnePlayer( out, client );
-
                         break;
 
                     // Client is sending us a keystroke.
@@ -213,7 +186,6 @@ public class Server extends DatagramListener
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( false ); // Not a timeout.
-
                         out.writeInt( client.inGamePlayer.getId() );
 
                         sendPacketToAllButOnePlayer( out, client );
@@ -228,10 +200,6 @@ public class Server extends DatagramListener
 
     /**
      * Sends a packet to all <code>clients</code> who are playing.
-     * 
-     * @param stream    the bytestream of data to be sent
-     * @throws java.io.IOException
-     * @since December 31, 2007
      */
     void sendPacketToAllPlayers( ByteOutputStream stream ) throws IOException
     {
@@ -246,49 +214,49 @@ public class Server extends DatagramListener
 
     /**
      * Sends a packet to all <code>clients</code> who are playing, except <code>excluded</code>.
-     * 
-     * @param stream        the bytestream of data to be sent
-     * @param excluded      <code>ClientMachine</code>s to skip
-     * @throws java.io.IOException
-     * @since December 31, 2007
      */
     void sendPacketToAllButOnePlayer( ByteOutputStream stream, ClientMachine excluded ) throws IOException
     {
-        ClientMachine[] excludeList = new ClientMachine[ 1 ];
-        excludeList[0] = excluded;
+        Set<ClientMachine> excludeList = new HashSet<ClientMachine>();
+        excludeList.add( excluded );
         sendPacketToMostPlayers( stream, excludeList );
     }
 
     /**
      * Sends a packet to all <code>clients</code> who are playing, except those on the <code>excludeList</code>.
-     * 
-     * @param stream        the bytestream of data to be sent
-     * @param exludeList    array of <code>ClientMachine</code>s to exclude
-     * @throws java.io.IOException
-     * @since December 31, 2007
      */
-    void sendPacketToMostPlayers( ByteOutputStream stream, ClientMachine[] exludeList ) throws IOException
+    void sendPacketToMostPlayers( ByteOutputStream stream, Set<ClientMachine> excludeList ) throws IOException
     {
         byte[] message = stream.toByteArray();
         for ( ClientMachine c : clients )
         {
-            for ( ClientMachine ex : exludeList )
+            if ( !excludeList.contains( c ) )
             {
-                if ( c != ex )
-                {
-                    if ( c.isInGame() )
-                        sendPacket( c, message );
-                }
+                if ( c.isInGame() )
+                    sendPacket( c, message );
             }
         }
     }
 
     /**
+     * Returns our IP address and port. ("xxx.xxx.xxx.xxx:1234")
+     */
+    public static String getLocalIP()
+    {
+        try
+        {
+            InetAddress localHost = InetAddress.getLocalHost();
+            InetAddress[] all_IPs = InetAddress.getAllByName( localHost.getHostName() );
+            return ( all_IPs[0].toString().split( "/" ) )[1] + ":" + Constants.DEFAULT_PORT;
+        }
+        catch ( UnknownHostException e )
+        {
+            return "Unknown";
+        }
+    }
+
+    /**
      * Takes the unknown IP and matches him to a <code>ClientMachine</code> on our <code>clients</code> list.
-     * 
-     * @param unknownMachine    the unknown <code>Machine</code>
-     * @return  the client on the <code>clients</code> list
-     * @since December 29, 2007
      */
     ClientMachine registerClient( Machine unknownMachine )
     {
@@ -311,6 +279,7 @@ public class Server extends DatagramListener
     @Override
     void intervalLogic()
     {
+        // Check for timeouts.
         Iterator<ClientMachine> i = clients.iterator();
         while ( i.hasNext() )
         {
@@ -345,8 +314,6 @@ public class Server extends DatagramListener
     /**
      * Shuts down the server and tells all clients to quit.
      * The local game can continue to run after this is called.
-     * 
-     * @since January 1, 2007
      */
     public void quit()
     {

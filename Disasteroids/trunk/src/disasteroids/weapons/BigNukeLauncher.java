@@ -79,7 +79,7 @@ public class BigNukeLauncher extends Weapon
     }
 
     @Override
-    public String applyBonus( int key )
+    public String applyBonus( )
     {
         return "";
     }

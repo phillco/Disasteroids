@@ -299,9 +299,9 @@ public class MissileManager extends Weapon
         maxShots = numShots;
     }
 
-    public String applyBonus( int key )
+    public String applyBonus( )
     {
-        switch ( key )
+        switch ( Util.getRandomGenerator().nextInt( 8 ) )
         {
             case 0:
                 setHugeBlastProb( 2 );

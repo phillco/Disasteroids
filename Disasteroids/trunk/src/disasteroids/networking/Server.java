@@ -53,9 +53,7 @@ public class Server extends DatagramListener
         // MISC
         //======
         OBJECT_CREATED,
-        OBJECT_REMOVED,
-        STATION_SHOOT,
-        STATION_REMOVE;
+        OBJECT_REMOVED;
 
     }
     /**

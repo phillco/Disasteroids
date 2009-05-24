@@ -99,7 +99,7 @@ public class MineManager extends Weapon
     {
     }
 
-    public String applyBonus( int key )
+    public String applyBonus( )
     {
         return "";
     }

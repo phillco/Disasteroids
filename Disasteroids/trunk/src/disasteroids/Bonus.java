@@ -14,7 +14,10 @@ import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -28,7 +31,7 @@ public class Bonus extends GameObject
 {
     static enum Class
     {
-        WEAPON( 4 ), POWERUP( 9 );
+        WEAPON( 4 ), WEAPON_POWERUP( 9 ), SHIP_POWERUP( 2 );
 
         final int types;
 
@@ -65,7 +68,7 @@ public class Bonus extends GameObject
      * Acceleration vectors.
      * @since March 30, 2008
      */
-    private double ax = 0,  ay = 0;
+    private double ax = 0, ay = 0;
 
     public Bonus( double x, double y, double dx, double dy )
     {
@@ -82,7 +85,7 @@ public class Bonus extends GameObject
     {
         move();
         setSpeed( Math.min( 6, getDx() + ax ), Math.min( 6, getDy() + ay ) );
-        decelerate(.999);
+        decelerate( .999 );
         ax *= 0.98;
         ay *= 0.98;
 
@@ -102,25 +105,25 @@ public class Bonus extends GameObject
             Game.getInstance().getObjectManager().removeObject( this );
             for ( int i = 0; i < 500; i++ )
                 ParticleManager.addParticle( new Particle(
-                                             getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                             getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                             Util.getRandomGenerator().nextInt( 8 ),
-                                             Color.getHSBColor( bonusType / 9.0f, 1f, .7f ),
-                                             Util.getRandomGenerator().nextDouble() * 5,
-                                             Util.getRandomGenerator().nextAngle(),
-                                             40, 2 ) );
+                        getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                        getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                        Util.getRandomGenerator().nextInt( 8 ),
+                        Color.getHSBColor( bonusType / 9.0f, 1f, .7f ),
+                        Util.getRandomGenerator().nextDouble() * 5,
+                        Util.getRandomGenerator().nextAngle(),
+                        40, 2 ) );
             Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
         }
         checkCollision();
         for ( int i = 0; i < 3; i++ )
             ParticleManager.addParticle( new Particle(
-                                         getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                         getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                         Util.getRandomGenerator().nextInt( 4 ),
-                                         Color.getHSBColor( lastHue, lastHB, 1 - lastHB ),
-                                         Util.getRandomGenerator().nextDouble() * 3,
-                                         Util.getRandomGenerator().nextAngle(),
-                                         50, 1 ) );
+                    getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                    getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
+                    Util.getRandomGenerator().nextInt( 4 ),
+                    Color.getHSBColor( lastHue, lastHB, 1 - lastHB ),
+                    Util.getRandomGenerator().nextDouble() * 3,
+                    Util.getRandomGenerator().nextAngle(),
+                    50, 1 ) );
         angle = ( angle + 0.03 ) % ( 2 * Math.PI );
     }
 
@@ -165,6 +168,7 @@ public class Bonus extends GameObject
         switch ( myClass )
         {
             case WEAPON:
+
                 // "Give" the weapon.
                 if ( player.getWeapons()[bonusType + 2].getAmmo() == 0 )
                     message = "Picked up a " + player.getWeapons()[bonusType + 2].getName() + "!";
@@ -174,36 +178,24 @@ public class Bonus extends GameObject
                 player.getWeapons()[bonusType + 2].giveAmmo();
                 player.setWeapon( bonusType + 2 );
                 break;
-            case POWERUP:
+            case WEAPON_POWERUP:
+                message = player.getWeaponManager().applyBonus();
+
+                // No bonus for this weapon? Just give ammo instead.
+                if ( message.equals( "" ) && ( !player.getWeaponManager().isInfiniteAmmo() ))
+                {
+                    message = "Got ammo for " + player.getWeaponManager().getName() + ".";
+                    player.getWeaponManager().giveAmmo();
+                }
+                break;
+            case SHIP_POWERUP:
                 switch ( bonusType )
                 {
                     case 0:
-                        message = player.getWeaponManager().applyBonus( 0 );
-                        break;
-                    case 1:
-                        message = player.getWeaponManager().applyBonus( 1 );
-                        break;
-                    case 2:
-                        message = player.getWeaponManager().applyBonus( 2 );
-                        break;
-                    case 3:
                         message = "+1 Life";
                         player.addLife();
                         break;
-                    case 4:
-                        message = player.getWeaponManager().applyBonus( 4 );
-                        break;
-                    case 5:
-                        player.increaseScore( 10000 );
-                        message = "+10,000 Points";
-                        break;
-                    case 6:
-                        message = player.getWeaponManager().applyBonus( 6 );
-                        break;
-                    case 7:
-                        message = player.getWeaponManager().applyBonus( 7 );
-                        break;
-                    case 8:
+                    case 1:
                         message = player.giveShield();
                         break;
                 }
@@ -230,9 +222,9 @@ public class Bonus extends GameObject
 
         switch ( myClass )
         {
-
             case WEAPON:
-
+            {
+                // Draws a triangle.
                 int cX = RelativeGraphics.translateX( getX() );
                 int cY = RelativeGraphics.translateY( getY() );
                 int deviance = 5 + Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 );
@@ -250,10 +242,30 @@ public class Bonus extends GameObject
                 g.fillPolygon( p );
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
                 g.drawPolygon( p );
-                break; 
-            case POWERUP:
-                AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( ( (float) bonusType ) / myClass.types, ( (float) age ) / MAX_LIFE, .9f ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
+            }
+            break;
+            case WEAPON_POWERUP:
+                AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( 0, 0, ( (float) age ) / MAX_LIFE ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
                 break;
+            case SHIP_POWERUP:
+            {
+                // Draws a square.
+                int cX = RelativeGraphics.translateX( getX() );
+                int cY = RelativeGraphics.translateY( getY() );
+                int deviance = 3 + Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 );
+
+                Graphics2D g2 = (Graphics2D) g;
+                AffineTransform previousTransform = g2.getTransform();
+
+                Rectangle2D rect = new Rectangle2D.Float( cX - deviance, cY - deviance, deviance * 2, deviance * 2 );
+                g2.transform( AffineTransform.getRotateInstance( angle, cX, cY ) );
+                g.setColor( Color.getHSBColor( bonusType / 9.0f, ( (float) age ) / MAX_LIFE, .9f ) );
+                g2.fill( rect );
+                g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
+                g2.draw( rect );
+                g2.setTransform( previousTransform );
+            }
+            break;
         }
         g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );
         AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 4, (int) getCenterY() - 1, "B", Color.darkGray );

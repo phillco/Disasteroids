@@ -30,7 +30,7 @@ public class Game
     /**
      * Dimensions of the game, regardless of the graphical depiction.
      */
-    public final int GAME_WIDTH = 2000,  GAME_HEIGHT = 2000;
+    public final int GAME_WIDTH = 2000, GAME_HEIGHT = 2000;
 
     /**
      * Stores whether the game is currently paused or not.
@@ -389,6 +389,10 @@ public class Game
                 break;
 
             case DEVKEY:
+                if ( !Client.is() )
+                {
+                    objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
+                }
                 break;
             default:
                 break;
@@ -417,13 +421,13 @@ public class Game
     public Game( DataInputStream stream ) throws IOException
     {
         instance = this;
-        
+
         gameMode = Constants.parseGameMode( stream.readInt(), stream );
         this.timeStep = stream.readLong();
         objectManager = new ObjectManager( stream );
         actionManager = new ActionManager( stream );
         paused = stream.readBoolean();
-        
+
     }
 
     /**

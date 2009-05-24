@@ -943,4 +943,11 @@ public class Ship extends GameObject implements ShootingObject
         damage( 150, getName() + " was sucked into a black hole." );
         strafeSpeed = 16;
     }
+
+    public void setHealth( double health )
+    {
+        this.health = health;
+    }
+
+    
 }

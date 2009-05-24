@@ -356,7 +356,7 @@ public class AsteroidsPanel extends Panel
         if ( parent.localPlayer().getShield() > 0 )
         {
             g2d.setColor( new Color( 5, 100, 100 ) );
-            g2d.fillRect( x, y, (int) ( parent.localPlayer().getShield() ), 20 );
+            g2d.fillRect( x, y, (int) ( Math.min( 100, parent.localPlayer().getShield() )), 20 );
             g2d.setColor( new Color( 5, 150, 150 ) );
             g2d.drawRect( x, y, 100, 20 );
         }

@@ -101,16 +101,9 @@ public class FlechetteManager extends Weapon
         return damage;
     }
 
-    public String applyBonus( int key )
+    public String applyBonus( )
     {
-        String ret = "";
-
-        switch ( key )
-        {
-            default:
-                ret = "";
-        }
-        return ret;
+        return "";
     }
 
     public double getSpeed()

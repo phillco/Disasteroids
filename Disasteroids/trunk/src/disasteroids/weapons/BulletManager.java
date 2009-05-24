@@ -119,9 +119,9 @@ public class BulletManager extends Weapon
         return damage;
     }
 
-    public String applyBonus( int key )
+    public String applyBonus( )
     {
-        switch ( key )
+        switch ( Util.getRandomGenerator().nextInt( 4 ) )
         {
             case 0:
                 damage += 50;
@@ -129,10 +129,10 @@ public class BulletManager extends Weapon
             case 1:
                 intervalShoot = 1;
                 return "Rapid Fire";
-            case 4:
+            case 2:
                 threeWayShot = true;
                 return "Three Way Shoot";
-            case 7:
+            case 3:
                 radius = 6;
                 return "Huge Bullets";
             default:

@@ -205,10 +205,9 @@ public abstract class Weapon implements GameElement
     /**
      * Applies a bonus to this weapon. 
      * 
-     * @param key   the index of the bonus.
      * @return      the name of the applied bonus, e.g. "Rapid fire!", or "" if none.
      */
-    public abstract String applyBonus( int key );
+    public abstract String applyBonus( );
 
     /**
      * Restores all atrributes to normal levels.

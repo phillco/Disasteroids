@@ -32,53 +32,27 @@ public class Server extends DatagramListener
      */
     public enum Message
     {
-        /**
-         * Multipacket coming in.
-         */
+        //====================
+        // GENERAL NETWORKING
+        //====================
         MULTI_PACKET,
-        /**
-         * Client was using an old version.
-         */
         CONNECT_ERROR_OLDNETCODE,
-        /**
-         * We send the client all of the game's data to allow him to join.
-         */
         FULL_UPDATE,
-        /**
-         * Updating a player's position and speed.
-         */
+        PAUSE,
+        SERVER_QUITTING,
+        //=================
+        // PLAYER COMMANDS
+        //=================
+        PLAYER_JOINED,
+        PLAYER_QUIT,
         PLAYER_UPDATE_POSITION,
         PLAYER_STRAFE,
-        /**
-         * Asteroid has kill from a parent.
-         */
-        NEW_ASTEROID,
-        /**
-         * Existing asteroid being removed.
-         */
-        REMOVE_ASTEROID,
-        /**
-         * A new player has entered the game.
-         */
-        PLAYER_JOINED,
-        /**
-         * An existing player is quitting.
-         */
-        PLAYER_QUIT,
+        PLAYER_BERSERK,
+        //======
+        // MISC
+        //======
         STATION_SHOOT,
-        STATION_REMOVE,
-        /**
-         * Server is pausing or unpausing the game.
-         */
-        PAUSE,
-        /**
-         * A ship has berserked.
-         */
-        BERSERK,
-        /**
-         * Server's going down!
-         */
-        SERVER_QUITTING;
+        STATION_REMOVE;
 
     }
     /**
@@ -280,7 +254,7 @@ public class Server extends DatagramListener
      */
     void sendPacketToAllButOnePlayer( ByteOutputStream stream, ClientMachine excluded ) throws IOException
     {
-        ClientMachine[] excludeList = new ClientMachine[1];
+        ClientMachine[] excludeList = new ClientMachine[ 1 ];
         excludeList[0] = excluded;
         sendPacketToMostPlayers( stream, excludeList );
     }

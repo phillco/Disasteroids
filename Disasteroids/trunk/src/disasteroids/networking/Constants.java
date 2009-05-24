@@ -29,7 +29,7 @@ public class Constants
      * The version of our net code protocol. Bump to ensure older clients don't connect and cause havoc.
      * @since April 11, 2008
      */
-    public static final int NETCODE_VERSION = 3;
+    public static final int NETCODE_VERSION = 4;
 
     /**
      * The default port that the server runs on.

@@ -25,7 +25,6 @@ import javax.swing.JOptionPane;
  */
 public class Client extends DatagramListener
 {
-
     /**
      * Location of the server.
      * @since December 29, 2007
@@ -38,7 +37,6 @@ public class Client extends DatagramListener
      */
     public enum Message
     {
-
         /**
          * We want to connect to the server and join the game.
          */
@@ -116,18 +114,14 @@ public class Client extends DatagramListener
     {
         try
         {
-            if ( server == null )
-                return;
-
             // Ignore anything that isn't from the server.
-            if ( new Machine( p.getAddress(), p.getPort() ).equals( server ) )
+            if ( server != null && new Machine( p.getAddress(), p.getPort() ).equals( server ) )
                 server.see();
             else
                 return;
 
-            // Create stream.
             ByteInputStream in = new ByteInputStream( p.getData() );
-
+            
             // Determine the type of message.
             int command = in.readInt();
             if ( ( command >= 0 ) && ( command < Server.Message.values().length ) )
@@ -135,40 +129,7 @@ public class Client extends DatagramListener
                 switch ( Server.Message.values()[command] )
                 {
                     case MULTI_PACKET:
-
-                        int seriesId = in.readInt();
-                        int count = in.readInt();
-                        int index = in.readInt();
-
-                        // Are we continuing an existing series?
-                        PacketSeries series = null;
-                        for ( PacketSeries s : packetSeries )
-                        {
-                            if ( s.getSeriesId() == seriesId )
-                            {
-                                series = s;
-                                break;
-                            }
-                        }
-
-                        if ( series == null )
-                        {
-                            // No, so start a new one.
-                            series = new PacketSeries( seriesId, count );
-                            packetSeries.add( series );
-                        }
-
-                        // Plug in this packet.
-                        series.addPacket( index, p );
-                        // System.out.println("Received packet " + index + "/" + count + " in series " + seriesId + " - " + hashPacket(p.getData()));
-
-                        // Does this complete the series? Rejoice!
-                        if ( series.isComplete() )
-                        {
-                            // System.out.println( "Series complete!\nContigous data: " + hashPacket(series.contiguousData));
-                            parseReceived( new DatagramPacket( series.getContiguousData(), 0, series.getContiguousData().length, server.address, server.port ) );
-                            packetSeries.remove( series );
-                        }
+                        processMultiPacket( p, in );
                         break;
                     case CONNECT_ERROR_OLDNETCODE:
                         Running.fatalError( "Couldn't connect because the server is using a newer version.\nTheirs: " + in.readInt() + "\nOurs: " + Constants.NETCODE_VERSION + "\n\nYou'll have to update." );
@@ -178,38 +139,27 @@ public class Client extends DatagramListener
 
                         // Receive status of the entire game.
                         new Game( in );
-
-                        // Find which player is ours (ID).
-                        int id = in.readInt();                        
+                        int id = in.readInt();
                         System.out.println( "...done. Our ID is: " + id + "." );
 
                         // Start the game.
                         new AsteroidsFrame( id );
                         break;
                     case PLAYER_UPDATE_POSITION:
-                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
                         break;
-                    case NEW_ASTEROID:
-                        Game.getInstance().getObjectManager().addObject( new Asteroid( in ) );
-                        break;
-                    case REMOVE_ASTEROID:
-                        // Splits an asteroid, possibly because of a a Ship.
-                        ( ( Asteroid ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).split(
-                                ( in.readBoolean() ? ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) : null ) );
-                        break;
-                    case BERSERK:
-                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
+                    case PLAYER_BERSERK:
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
                         break;
                     case PLAYER_STRAFE:
-                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).strafe( in.readBoolean());
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).strafe( in.readBoolean() );
                         break;
                     case PLAYER_JOINED:
                         Game.getInstance().addPlayer( new Ship( in ) );
-
                         break;
                     case PLAYER_QUIT:
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
+                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );
@@ -223,7 +173,6 @@ public class Client extends DatagramListener
                         break;
                     default:
                         System.out.println( "Weird packet - " + command + "." );
-
                 }
             }
         }
@@ -242,6 +191,46 @@ public class Client extends DatagramListener
     public boolean serverTimeout()
     {
         return server.shouldTimeout();
+    }
+
+    /**
+     * Handles a multipacket series.
+     */
+    private void processMultiPacket( DatagramPacket p, ByteInputStream in ) throws IOException
+    {
+        int seriesId = in.readInt();
+        int count = in.readInt();
+        int index = in.readInt();
+
+        // Are we continuing an existing series?
+        PacketSeries series = null;
+        for ( PacketSeries s : packetSeries )
+        {
+            if ( s.getSeriesId() == seriesId )
+            {
+                series = s;
+                break;
+            }
+        }
+
+        if ( series == null )
+        {
+            // No, so start a new one.
+            series = new PacketSeries( seriesId, count );
+            packetSeries.add( series );
+        }
+
+        // Plug in this packet.
+        series.addPacket( index, p );
+        // System.out.println("Received packet " + index + "/" + count + " in series " + seriesId + " - " + hashPacket(p.getData()));
+
+        // Does this complete the series? Rejoice!
+        if ( series.isComplete() )
+        {
+            // System.out.println( "Series complete!\nContigous data: " + hashPacket(series.contiguousData));
+            parseReceived( new DatagramPacket( series.getContiguousData(), 0, series.getContiguousData().length, server.address, server.port ) );
+            packetSeries.remove( series );
+        }
     }
 
     /**

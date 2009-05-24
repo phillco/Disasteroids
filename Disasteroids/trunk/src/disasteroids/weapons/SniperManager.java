@@ -91,20 +91,10 @@ public class SniperManager extends Weapon
         return damage;
     }
 
-    public String applyBonus( int key )
+    public String applyBonus()
     {
-        String ret = "";
-
-        switch ( key )
-        {
-            case 1:
-                intervalShoot = Math.max( intervalShoot - 10, 30 );
-                ret = "Faster Reload";
-                break;
-            default:
-                ret = "";
-        }
-        return ret;
+        intervalShoot = Math.max( intervalShoot - 10, 30 );
+        return "Faster Reload";
     }
 
     public int getSpeed()
@@ -166,7 +156,7 @@ public class SniperManager extends Weapon
         intervalShoot = stream.readInt();
         radius = stream.readInt();
         speed = stream.readInt();
-        
+
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )

@@ -79,9 +79,9 @@ public class SoundLibrary
         int frequency = 440;
         for ( int index = 0; index < 3000; index++ )
         {
-            temp[index] = (byte) ( 100 * Math.sin( phase ) );
+            temp[index] = (byte) ( 10 * Math.sin( phase ) );
             phase += frequency;
-            frequency = (int) ( 440 + 100 * Math.tan( freqPhase / 20 ) );
+            frequency = (int) ( 200 + 100 * Math.tan( freqPhase / 400 ) );
             freqPhase++;
         }
         return new SoundClip( temp );

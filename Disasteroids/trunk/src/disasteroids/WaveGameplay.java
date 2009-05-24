@@ -55,30 +55,30 @@ public class WaveGameplay implements GameMode
             wavePoints -= 50;
 
             // Make it a bonus asteroid.
-            if ( Util.getRandomGenerator().nextDouble() * 12 * spawnRate <= 0.3 )
+            if ( Util.getRandomGenerator().nextDouble() * 20 * spawnRate <= 0.3 )
                 Game.getInstance().getObjectManager().addObject( new BonusAsteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
-                                                                                    Util.getRandomGenerator().nextInt( 60 ) + 40, 15 ) );
+                        Util.getRandomGenerator().nextInt( 60 ) + 50, 15 ) );
             else
                 Game.getInstance().getObjectManager().addObject( new Asteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
-                                                                               Util.getRandomGenerator().nextInt( 70 ) + 10, 15 ) );
+                        Util.getRandomGenerator().nextInt( 70 ) + 30, 15 ) );
         }
 
         // Spawn an alien.
-        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 3 * spawnRate <= 0.3 )
+        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 30 * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
             Game.getInstance().getObjectManager().addObject( new Alien( x, y, Util.getRandomGenerator().nextDouble() * 8 - 4, Util.getRandomGenerator().nextDouble() * 8 - 4 ) );
         }
 
         // Spawn a station.
-        if ( wavePoints >= 150 && Util.getRandomGenerator().nextDouble() * 11 * spawnRate <= 0.3 )
+        if ( wavePoints >= 150 && Util.getRandomGenerator().nextDouble() * 25 * spawnRate <= 0.3 )
         {
             wavePoints -= 150;
             Game.getInstance().getObjectManager().addObject( new Station( x, y, Util.getRandomGenerator().nextInt( 4 ) - 2, Util.getRandomGenerator().nextInt( 4 ) - 2 ) );
         }
 
         // Create a black hole.
-        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 11 * Math.pow( Game.getInstance().getObjectManager().getBlackHoles().size() + 1, 3 ) * spawnRate <= 0.3 )
+        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 40 * Math.pow( Game.getInstance().getObjectManager().getBlackHoles().size() + 1, 3 ) * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
             Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ) ) );
@@ -117,7 +117,7 @@ public class WaveGameplay implements GameMode
 
     int getWavePoints( int wave )
     {
-        return wave * 1200 + 100;
+        return wave * 1200 + 200;
     }
 
     public void flatten( DataOutputStream stream ) throws IOException
@@ -134,17 +134,9 @@ public class WaveGameplay implements GameMode
 
     public void optionsKey()
     {
-        try
-        {
-            int newWave = Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the wave to start.", currentWave ) );
-            Game.getInstance().getObjectManager().clearObstacles();
-            currentWave = newWave;
-            wavePoints = getWavePoints( currentWave );
-        }
-        catch ( NumberFormatException e )
-        {
-            // Do nothing with incorrect or cancelled input.
-            Running.log( "Invalid warp command.", 800 );
-        }
+        Game.getInstance().getObjectManager().clearObstacles();
+        currentWave++;
+        wavePoints = getWavePoints( currentWave );
+        System.out.println( "Welcome to wave " + currentWave + "." );
     }
 }

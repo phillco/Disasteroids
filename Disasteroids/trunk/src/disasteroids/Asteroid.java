@@ -98,7 +98,7 @@ public class Asteroid extends GameObject implements GameElement
                 Local.getStarBackground().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) getX(), (int) getY(), killer.getColor().darker() );
         }
 
-        if ( radius >= 20 )
+        if ( radius >= 45 )
         {
             Game.getInstance().getObjectManager().addObject( new Asteroid( this ) );
             Game.getInstance().getObjectManager().addObject( new Asteroid( this ) );

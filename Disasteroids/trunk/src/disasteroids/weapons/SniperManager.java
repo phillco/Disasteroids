@@ -25,10 +25,13 @@ public class SniperManager extends Weapon
 
     private int damage = 1000;
 
+    // Bonus IDs.
+    public int BONUS_INTERVALSHOOT = getNewBonusID();
+
     public SniperManager()
     {
         ammo = 20;
-        bonusValues.put( "intervalShoot", new BonusValue( 30, 10, "Faster reloading" ) );
+        bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 30, 10, "Faster reloading" ) );
     }
 
     @Override
@@ -48,7 +51,7 @@ public class SniperManager extends Weapon
         if ( !isInfiniteAmmo() )
             --ammo;
 
-        timeTillNextShot = getBonusValue( "intervalShoot" ).getValue();
+        timeTillNextShot = getBonusValue( BONUS_INTERVALSHOOT ).getValue();
         Sound.playInternal( SoundLibrary.SNIPER_SHOOT );
     }
 

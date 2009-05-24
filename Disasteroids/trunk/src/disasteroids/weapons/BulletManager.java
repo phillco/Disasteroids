@@ -21,12 +21,15 @@ public class BulletManager extends Weapon
 {
     private int speed = 20;
 
+    // Bonus IDs.
+    public int BONUS_INTERVALSHOOT = getNewBonusID(), BONUS_RADIUS = getNewBonusID(), BONUS_DAMAGE = getNewBonusID(), BONUS_THREEWAYSHOT;
+
     public BulletManager()
     {
-        bonusValues.put( "intervalShoot", new BonusValue( 4, 1, "Rapid fire" ) );
-        bonusValues.put( "radius", new BonusValue( 2, 6, "Huge bullets" ) );
-        bonusValues.put( "damage", new BonusValue( 10, 60, "More damaging bullets" ) );
-        bonusValues.put( "threeWayShot", new BonusValue( 0, 1, "Three way shoot" ) );
+        bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 4, 1, "Rapid fire" ) );
+        bonusValues.put( BONUS_RADIUS, new BonusValue( 2, 6, "Huge bullets" ) );
+        bonusValues.put( BONUS_DAMAGE, new BonusValue( 10, 60, "More damaging bullets" ) );
+        bonusValues.put( BONUS_THREEWAYSHOT, new BonusValue( 0, 1, "Three way shoot" ) );
     }
 
     @Override
@@ -38,7 +41,7 @@ public class BulletManager extends Weapon
         units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         // This bonus fires two extra bullets at an angle.
-        if ( getBonusValue( "threeWayShot" ).getValue() == 1 )
+        if ( getBonusValue( BONUS_THREEWAYSHOT ).getValue() == 1 )
         {
             units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle + Math.PI / 8 ) );
             units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle - Math.PI / 8 ) );
@@ -47,7 +50,7 @@ public class BulletManager extends Weapon
         if ( !isInfiniteAmmo() )
             --ammo;
 
-        timeTillNextShot = getBonusValue( "intervalShoot" ).getValue();
+        timeTillNextShot = getBonusValue( BONUS_INTERVALSHOOT ).getValue();
         Sound.playInternal( SoundLibrary.BULLET_SHOOT );
     }
 

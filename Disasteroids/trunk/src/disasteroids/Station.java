@@ -79,7 +79,7 @@ public class Station extends GameObject implements ShootingObject
         super( x, y, dx, dy );
         angle = 0;
         manager = new MissileManager();
-        manager.getBonusValue( "poppingQuantity" ).override( 0 );
+        manager.getBonusValue( manager.BONUS_POPPINGQUANTITY ).override( 0 );
         manager.setLife( 50 );
     }
 
@@ -464,7 +464,7 @@ public class Station extends GameObject implements ShootingObject
 
         // TODO [PC]: Sync!
         manager = new MissileManager();
-        manager.getBonusValue( "poppingQuantity" ).override( 0 );
+        manager.getBonusValue( manager.BONUS_POPPINGQUANTITY ).override( 0 );
         manager.setLife( 50 );
     }
 }

@@ -28,7 +28,9 @@ public abstract class Weapon implements GameElement
      */
     protected ConcurrentLinkedQueue<Unit> units = new ConcurrentLinkedQueue<Unit>();
 
-    protected Map<String, BonusValue> bonusValues = new HashMap<String, BonusValue>();
+    protected Map<Integer, BonusValue> bonusValues = new HashMap<Integer, BonusValue>();
+
+    private int nextBonusID = 0;
 
     /**
      * Remaining ammo (-1 means infinite). All bonus weapons start with zero ammo and are "picked up" by getting entryAmmo().
@@ -214,7 +216,7 @@ public abstract class Weapon implements GameElement
     {
         // Create a list of availible upgrades.
         ArrayList<BonusValue> availableUpgrades = new ArrayList( bonusValues.size() );
-        for ( String key : bonusValues.keySet() )
+        for ( int key : bonusValues.keySet() )
             if ( bonusValues.get( key ).canUpgrade() )
                 availableUpgrades.add( bonusValues.get( key ) );
 
@@ -225,14 +227,19 @@ public abstract class Weapon implements GameElement
             return "";
     }
 
-    public BonusValue getBonusValue( String key )
+    protected int getNewBonusID()
+    {
+        return nextBonusID++;
+    }
+
+    public BonusValue getBonusValue( int key )
     {
         return bonusValues.get( key );
     }
 
     public void undoBonuses()
     {
-        for ( String key : bonusValues.keySet() )
+        for ( int key : bonusValues.keySet() )
             bonusValues.get( key ).restore();
     }
 
@@ -248,9 +255,9 @@ public abstract class Weapon implements GameElement
         stream.writeInt( timeTillNextBerserk );
         stream.writeInt( timeTillNextShot );
         stream.writeInt( bonusValues.keySet().size() );
-        for ( String key : bonusValues.keySet() )
+        for ( int key : bonusValues.keySet() )
         {
-            stream.writeUTF( key ); // Yuck. :P
+            stream.writeInt( key );
             bonusValues.get( key ).flatten( stream );
         }
     }
@@ -264,6 +271,6 @@ public abstract class Weapon implements GameElement
         timeTillNextBerserk = stream.readInt();
         timeTillNextShot = stream.readInt();
         for ( int i = 0, size = stream.readInt(); i < size; i++ )
-            bonusValues.get( stream.readUTF() ).loadFromSteam( stream );
+            bonusValues.get( stream.readInt() ).loadFromSteam( stream );
     }
 }

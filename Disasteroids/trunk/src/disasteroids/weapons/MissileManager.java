@@ -32,15 +32,17 @@ public class MissileManager extends Weapon
 
     protected int maxShots = 120;
 
+    // Bonus IDs.
+    public int BONUS_INTERVALSHOOT = getNewBonusID(), BONUS_HUGEBLASTPROB = getNewBonusID(), BONUS_HUGEBLASTSIZE = getNewBonusID(), BONUS_POPPINGPROB = getNewBonusID(), BONUS_POPPINGQUANTITY = getNewBonusID();
+
     public MissileManager()
     {
         ammo = -1;
-        bonusValues.put( "intervalShoot", new BonusValue( 15, 6, "Rapid fire" ) );
-        bonusValues.put( "hugeBlastProb", new BonusValue( 5, 2, "Huge blast probable" ) );
-        bonusValues.put( "hugeBlastSize", new BonusValue( 50, 100, "Huge blast radius" ) );
-        bonusValues.put( "poppingProb", new BonusValue( 2000, 500, "Missiles more likely to split" ) );
-        bonusValues.put( "poppingQuantity", new BonusValue( 5, 15, "Splitting quantity increased" ) );
-        bonusValues.put( "maxShots", new BonusValue( 5, 15, "Splitting quantity increased" ) );
+        bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 15, 6, "Rapid fire" ) );
+        bonusValues.put( BONUS_HUGEBLASTPROB, new BonusValue( 5, 2, "Huge blast probable" ) );
+        bonusValues.put( BONUS_HUGEBLASTSIZE, new BonusValue( 50, 100, "Huge blast radius" ) );
+        bonusValues.put( BONUS_POPPINGPROB, new BonusValue( 2000, 500, "Missiles more likely to split" ) );
+        bonusValues.put( BONUS_POPPINGQUANTITY, new BonusValue( 5, 15, "Splitting quantity increased" ) );
     }
 
     @Override
@@ -60,7 +62,7 @@ public class MissileManager extends Weapon
         if ( !isInfiniteAmmo() )
             --ammo;
 
-        timeTillNextShot = getBonusValue( "intervalShoot" ).getValue();
+        timeTillNextShot = getBonusValue( BONUS_INTERVALSHOOT ).getValue();
         Sound.playInternal( SoundLibrary.MISSILE_SHOOT );
     }
 
@@ -76,8 +78,8 @@ public class MissileManager extends Weapon
         if ( units.size() >= maxShots )
             return;
         
-        for ( int i = 0; i < getBonusValue( "poppingQuantity" ).getValue(); i++ )
-            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( "poppingQuantity" ).getValue() + i * Math.PI ) );
+        for ( int i = 0; i < getBonusValue( BONUS_POPPINGQUANTITY ).getValue(); i++ )
+            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI ) );
     }
 
     @Override
@@ -111,13 +113,13 @@ public class MissileManager extends Weapon
     public void explodeAllUnits()
     {
         // Temporarily prevent popping.
-        int poppingProbTemp = getBonusValue( "poppingProb" ).getValue();
-        getBonusValue( "poppingProb" ).override( Integer.MAX_VALUE );
+        int poppingProbTemp = getBonusValue( BONUS_POPPINGPROB ).getValue();
+        getBonusValue( BONUS_POPPINGPROB ).override( Integer.MAX_VALUE );
 
         for ( Unit w : units )
             w.explode();
         
-        getBonusValue( "poppingProb" ).override( poppingProbTemp );
+        getBonusValue( BONUS_POPPINGPROB ).override( poppingProbTemp );
     }
 
     public int getMaxUnits()

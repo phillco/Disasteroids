@@ -349,7 +349,7 @@ public class Alien extends GameObject implements ShootingObject
         public AlienMissileManager( int life )
         {
             super();
-            bonusValues.get( "poppingQuantity" ).override( 0 );
+            bonusValues.get( BONUS_POPPINGQUANTITY ).override( 0 );
             setLife( (int) ( life * 1.2 ) );
         }
 

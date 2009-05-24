@@ -42,7 +42,7 @@ public class AsteroidsFrame extends Frame
      * Dimensions of the window when not in fullscreen mode.
      * @since November 15 2007
      */
-    private static final int WINDOW_WIDTH = 900,  WINDOW_HEIGHT = 750;
+    private static final int WINDOW_WIDTH = 900, WINDOW_HEIGHT = 750;
 
     private AsteroidsPanel panel;
 
@@ -105,13 +105,12 @@ public class AsteroidsFrame extends Frame
         panel.background.init();
         ParticleManager.clear();
     }
-    
+
     public void showStartMessage( String message )
     {
-        if ( !Client.is() )
-            AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( message,
-                                                                                     (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
-                                                                                     AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
+        AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( message,
+                (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
+                AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
     }
 
     /**
@@ -375,7 +374,7 @@ public class AsteroidsFrame extends Frame
         // [PC] Prevent a bug caused by the game drawing asteroids and aliens (anything that scales, really) before they're fully constructed.
         if ( scale < 0 )
             return;
-        
+
         AffineTransform af = new AffineTransform();
         af.translate( RelativeGraphics.translateX( x ), RelativeGraphics.translateY( y ) );
         af.scale( scale, scale );
@@ -398,7 +397,7 @@ public class AsteroidsFrame extends Frame
     public void drawImage( Graphics g, Image img, int x, int y )
     {
         g.drawImage( img, RelativeGraphics.translateX( x ) - img.getWidth( null ) / 2,
-                     RelativeGraphics.translateY( y ) - img.getHeight( null ) / 2, null );
+                RelativeGraphics.translateY( y ) - img.getHeight( null ) / 2, null );
     }
 
     /**

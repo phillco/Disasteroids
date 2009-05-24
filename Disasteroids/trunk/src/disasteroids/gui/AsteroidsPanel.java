@@ -4,15 +4,14 @@
  */
 package disasteroids.gui;
 
-import disasteroids.BlackHole;
 import disasteroids.Game;
 import disasteroids.GameLoop;
-import disasteroids.GameObject;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
 import disasteroids.Util;
 import disasteroids.networking.Client;
+import disasteroids.networking.Server;
 import disasteroids.sound.Sound;
 import java.awt.Color;
 import java.awt.Font;
@@ -21,7 +20,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Panel;
 import java.awt.RenderingHints;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -52,12 +50,6 @@ public class AsteroidsPanel extends Panel
     long timeOfLastRepaint;
 
     /**
-     * Whether the user is pressing the scoreboard key.
-     * @since December 15 2007
-     */
-    boolean drawScoreboard;
-
-    /**
      * Notification messages always shown in the top-left corner.
      * @since December 19, 2004
      */
@@ -73,16 +65,11 @@ public class AsteroidsPanel extends Panel
 
     int averageFPS = 0;
 
-    /**
-     * @since December 29, 2007
-     */
-    boolean showWarpDialog;
-
     /*
      * Whether to show localPlayer's coordinates.
      * @since January 18, 2008
      */
-    boolean showTracker = false;
+    boolean showTracker = false, showHelp = false, showWarpDialog = false, drawScoreboard = false;
 
     /**
      * The number of times that the paint method has been called, for FPS.
@@ -273,6 +260,46 @@ public class AsteroidsPanel extends Panel
         // Draw game mode status.
         Game.getInstance().getGameMode().draw( g );
 
+        if ( showHelp )
+        {
+            g2d.setColor( Color.white );
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 56 ) );
+            g2d.drawString( "Help", 250, 250 );
+            
+            y = 340;
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 18 ) );
+            g2d.drawString( "BASICS", 250, y );
+
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 14 ) );
+            g2d.setColor( Color.lightGray );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "Arrow keys = move", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "Space = shoot", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "Q = change weapons", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+
+            y += 50;
+
+            g2d.setColor( Color.white );
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 18 ) );
+            g2d.drawString( "ADVANCED", 250, y );
+
+            g2d.setFont( new Font( "Tahoma", Font.BOLD, 14 ) );
+            g2d.setColor( Color.lightGray );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "Ctrl and Numpad0 = strafe", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "End = brake", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "~ = berserk!", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+
+
+
+        }
+
         if ( parent.localPlayer().livesLeft() < 0 )
         {
             g2d.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
@@ -356,7 +383,7 @@ public class AsteroidsPanel extends Panel
         if ( parent.localPlayer().getShield() > 0 )
         {
             g2d.setColor( new Color( 5, 100, 100 ) );
-            g2d.fillRect( x, y, (int) ( Math.min( 100, parent.localPlayer().getShield() )), 20 );
+            g2d.fillRect( x, y, (int) ( Math.min( 100, parent.localPlayer().getShield() ) ), 20 );
             g2d.setColor( new Color( 5, 150, 150 ) );
             g2d.drawRect( x, y, 100, 20 );
         }
@@ -437,7 +464,7 @@ public class AsteroidsPanel extends Panel
         y += (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getHeight() + 10;
 
         // Create the columns.
-        ScoreboardColumn[] columns = new ScoreboardColumn[4];
+        ScoreboardColumn[] columns = new ScoreboardColumn[ 4 ];
         columns[0] = new ScoreboardColumn( getWidth() * 2 / 7, "Name" );
         columns[1] = new ScoreboardColumn( getWidth() * 1 / 2, "Score" );
         columns[2] = new ScoreboardColumn( getWidth() * 3 / 5, "Lives" );
@@ -540,6 +567,11 @@ public class AsteroidsPanel extends Panel
     public void toggleTracker()
     {
         showTracker = !showTracker;
+    }
+
+    public void toggleHelp()
+    {
+        showHelp = !showHelp;
     }
 
     public void toggleScoreboard()

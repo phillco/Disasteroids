@@ -146,7 +146,7 @@ public class Running
             case SINGLEPLAYER:
                 new Game( gameMode );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
-                AsteroidsFrame.frame().showStartMessage( "Press any key to begin." );
+                AsteroidsFrame.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
                 Sound.updateMusic();
                 break;
             case LOAD:

@@ -144,6 +144,7 @@ public class Client extends DatagramListener
 
                         // Start the game.
                         new AsteroidsFrame( id );
+                        AsteroidsFrame.frame().showStartMessage( "Welcome to this server!\nPress F1 for help." );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );

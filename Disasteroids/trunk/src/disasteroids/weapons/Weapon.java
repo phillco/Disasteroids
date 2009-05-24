@@ -12,6 +12,9 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -25,6 +28,8 @@ public abstract class Weapon implements GameElement
      */
     protected ConcurrentLinkedQueue<Unit> units = new ConcurrentLinkedQueue<Unit>();
 
+    protected Map<String, BonusValue> bonusValues = new HashMap<String, BonusValue>();
+
     /**
      * Remaining ammo (-1 means infinite). All bonus weapons start with zero ammo and are "picked up" by getting entryAmmo().
      */
@@ -36,8 +41,6 @@ public abstract class Weapon implements GameElement
 
     public Weapon()
     {
-        // Set up these values.
-        undoBonuses();
     }
 
     /**
@@ -207,12 +210,31 @@ public abstract class Weapon implements GameElement
      * 
      * @return      the name of the applied bonus, e.g. "Rapid fire!", or "" if none.
      */
-    public abstract String applyBonus( );
+    public String applyBonus()
+    {
+        // Create a list of availible upgrades.
+        ArrayList<BonusValue> availableUpgrades = new ArrayList( bonusValues.size() );
+        for ( String key : bonusValues.keySet() )
+            if ( bonusValues.get( key ).canUpgrade() )
+                availableUpgrades.add( bonusValues.get( key ) );
 
-    /**
-     * Restores all atrributes to normal levels.
-     */
-    public abstract void undoBonuses();
+        // If we can, upgrade.
+        if ( availableUpgrades.size() > 0 )
+            return availableUpgrades.get( Util.getRandomGenerator().nextInt( availableUpgrades.size() ) ).upgrade();
+        else
+            return "";
+    }
+
+    public BonusValue getBonusValue( String key )
+    {
+        return bonusValues.get( key );
+    }
+
+    public void undoBonuses()
+    {
+        for ( String key : bonusValues.keySet() )
+            bonusValues.get( key ).restore();
+    }
 
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
@@ -225,7 +247,12 @@ public abstract class Weapon implements GameElement
         stream.writeInt( ammo );
         stream.writeInt( timeTillNextBerserk );
         stream.writeInt( timeTillNextShot );
-
+        stream.writeInt( bonusValues.keySet().size() );
+        for ( String key : bonusValues.keySet() )
+        {
+            stream.writeUTF( key ); // Yuck. :P
+            bonusValues.get( key ).flatten( stream );
+        }
     }
 
     /**
@@ -236,5 +263,7 @@ public abstract class Weapon implements GameElement
         ammo = stream.readInt();
         timeTillNextBerserk = stream.readInt();
         timeTillNextShot = stream.readInt();
+        for ( int i = 0, size = stream.readInt(); i < size; i++ )
+            bonusValues.get( stream.readUTF() ).loadFromSteam( stream );
     }
 }

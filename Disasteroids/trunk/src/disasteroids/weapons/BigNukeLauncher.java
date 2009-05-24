@@ -17,11 +17,10 @@ import java.io.IOException;
  */
 public class BigNukeLauncher extends Weapon
 {
-    private int chainReactionChance = 30;
-
 
     public BigNukeLauncher()
     {
+        bonusValues.put( "chainReactionChance", new BonusValue( 30, 20, "Bigger chain reactions!" ));
     }
 
     @Override
@@ -81,25 +80,7 @@ public class BigNukeLauncher extends Weapon
         return 4;
     }
 
-    @Override
-    public String applyBonus( )
-    {
-        return "";
-    }
-
-    @Override
-    public void undoBonuses()
-    {
-    }
-
-    public int getChainReactionChance()
-    {
-        return chainReactionChance;
-    }
-
-
-    
-     //                                                                            \\
+    //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\
     //                                                                            \\
     /**
@@ -109,7 +90,7 @@ public class BigNukeLauncher extends Weapon
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-        
+
         // Flatten all of the units.
         stream.writeInt( units.size() );
         for ( Unit u : units )
@@ -125,15 +106,15 @@ public class BigNukeLauncher extends Weapon
     public BigNukeLauncher( DataInputStream stream ) throws IOException
     {
         super( stream );
-        
+
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
         {
-            if ( stream.readBoolean())
-                units.add( new BigNuke( stream, this ));
+            if ( stream.readBoolean() )
+                units.add( new BigNuke( stream, this ) );
             else
-                units.add( new BigNukeCharge( stream, this ));
+                units.add( new BigNukeCharge( stream, this ) );
         }
     }
 }

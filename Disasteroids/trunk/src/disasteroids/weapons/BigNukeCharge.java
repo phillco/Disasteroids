@@ -73,7 +73,7 @@ public class BigNukeCharge extends Unit
             explosionSize -= 8;
 
             // Chain reaction.
-            if ( Util.getRandomGenerator().nextInt( parent.getChainReactionChance( ) ) == 0 )
+            if ( Util.getRandomGenerator().nextInt( parent.getBonusValue( "chainReactionChance").getValue() ) == 0 )
                 parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getRandomGenerator().nextAngle(), (int)(explosionAge * 1.5 )));
         }
         // Waxing.

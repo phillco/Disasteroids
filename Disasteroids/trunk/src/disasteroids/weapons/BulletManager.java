@@ -21,16 +21,12 @@ public class BulletManager extends Weapon
 {
     private int speed = 20;
 
-    private boolean threeWayShot;
-
-    private int intervalShoot;
-
-    private int radius;
-
-    private int damage;
-
     public BulletManager()
     {
+        bonusValues.put( "intervalShoot", new BonusValue( 4, 1, "Rapid fire" ) );
+        bonusValues.put( "radius", new BonusValue( 2, 6, "Huge bullets" ) );
+        bonusValues.put( "damage", new BonusValue( 10, 60, "More damaging bullets" ) );
+        bonusValues.put( "threeWayShot", new BonusValue( 0, 1, "Three way shoot" ) );
     }
 
     @Override
@@ -42,7 +38,7 @@ public class BulletManager extends Weapon
         units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         // This bonus fires two extra bullets at an angle.
-        if ( threeWayShot )
+        if ( getBonusValue( "threeWayShot" ).getValue() == 1 )
         {
             units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle + Math.PI / 8 ) );
             units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle - Math.PI / 8 ) );
@@ -51,7 +47,7 @@ public class BulletManager extends Weapon
         if ( !isInfiniteAmmo() )
             --ammo;
 
-        timeTillNextShot = intervalShoot;
+        timeTillNextShot = getBonusValue( "intervalShoot" ).getValue();
         Sound.playInternal( SoundLibrary.BULLET_SHOOT );
     }
 
@@ -105,49 +101,10 @@ public class BulletManager extends Weapon
     //                                                                            \\
     // --------------------------------- BONUS ---------------------------------- \\
     //                                                                            \\
-    public void undoBonuses()
-    {
-        threeWayShot = false;
-        intervalShoot = 4;
-        radius = 2;
-        damage = 10;
-        ammo = -1;
-    }
-
-    public int getDamage()
-    {
-        return damage;
-    }
-
-    public String applyBonus( )
-    {
-        switch ( Util.getRandomGenerator().nextInt( 4 ) )
-        {
-            case 0:
-                damage += 50;
-                return "Depleted Uranium Bullets!";
-            case 1:
-                intervalShoot = 1;
-                return "Rapid Fire";
-            case 2:
-                threeWayShot = true;
-                return "Three Way Shoot";
-            case 3:
-                radius = 6;
-                return "Huge Bullets";
-            default:
-                return "";
-        }
-    }
-
+   
     public int getSpeed()
     {
         return speed;
-    }
-
-    public int getRadius()
-    {
-        return radius;
     }
 
     //                                                                            \\
@@ -160,11 +117,7 @@ public class BulletManager extends Weapon
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-        stream.writeInt( damage);
-        stream.writeInt( intervalShoot);
-        stream.writeInt( radius);
         stream.writeInt( speed );
-        stream.writeBoolean( threeWayShot );        
 
         // Flatten all of the units.
         stream.writeInt( units.size() );
@@ -178,11 +131,7 @@ public class BulletManager extends Weapon
     public BulletManager( DataInputStream stream ) throws IOException
     {
         super( stream );
-        damage = stream.readInt();
-        intervalShoot = stream.readInt();
-        radius = stream.readInt();
         speed = stream.readInt();
-        threeWayShot = stream.readBoolean();
         
         // Restore all of the units.
         int size = stream.readInt();

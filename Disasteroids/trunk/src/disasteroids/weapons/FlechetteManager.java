@@ -89,21 +89,9 @@ public class FlechetteManager extends Weapon
         return intervalShoot;
     }
 
-    public void undoBonuses()
-    {
-        intervalShoot = 2;
-        radius = 1;
-        damage = 1;
-    }
-
     public int getDamage()
     {
         return damage;
-    }
-
-    public String applyBonus( )
-    {
-        return "";
     }
 
     public double getSpeed()

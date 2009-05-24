@@ -95,15 +95,6 @@ public class MineManager extends Weapon
         m.draw( g );
     }
 
-    public void undoBonuses()
-    {
-    }
-
-    public String applyBonus( )
-    {
-        return "";
-    }
-
     public int sight()
     {
         return sight;

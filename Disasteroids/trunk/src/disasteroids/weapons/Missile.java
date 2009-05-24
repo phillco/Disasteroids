@@ -57,7 +57,7 @@ public class Missile extends Unit
         super( color, x, y, dx, dy );
         this.parent = parent;
         this.angle = angle;
-        hugeBlast = ( Util.getRandomGenerator().nextInt( parent.hugeBlastProb() ) <= 1 );
+        hugeBlast = ( Util.getRandomGenerator().nextInt( parent.getBonusValue( "hugeBlastProb" ).getValue() ) <= 1 );
     }
 
     /**
@@ -98,7 +98,7 @@ public class Missile extends Unit
             case 11:
                 if ( hugeBlast )
                 {
-                    radius = parent.hugeBlastSize();
+                    radius = parent.getBonusValue( "hugeBlastSize" ).getValue();
                     AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                 }
                 else
@@ -201,7 +201,7 @@ public class Missile extends Unit
             return;
 
         // Optionally pop into several other missiles.
-        if ( Util.getRandomGenerator().nextInt( parent.probPop() ) <= 101 )
+        if ( Util.getRandomGenerator().nextInt( parent.getBonusValue( "poppingProb" ).getValue() ) <= 101 )
             parent.pop( this );
 
         explosionStage = 1;

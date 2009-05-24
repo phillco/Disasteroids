@@ -115,18 +115,9 @@ public class LaserManager extends Weapon
         new Laser( this, col, x, y, 0, 0, 0, false ).draw( g );
     }
 
-    public void undoBonuses()
-    {
-    }
-
     public int getDamage()
     {
         return damage;
-    }
-
-    public String applyBonus( )
-    {
-        return "";
     }
 
     public int getSpeed()

@@ -21,8 +21,6 @@ public class SniperManager extends Weapon
 {
     private int speed = 30;
 
-    private int intervalShoot;
-
     private int radius = 10;
 
     private int damage = 1000;
@@ -30,6 +28,7 @@ public class SniperManager extends Weapon
     public SniperManager()
     {
         ammo = 20;
+        bonusValues.put( "intervalShoot", new BonusValue( 30, 10, "Faster reloading" ) );
     }
 
     @Override
@@ -49,7 +48,7 @@ public class SniperManager extends Weapon
         if ( !isInfiniteAmmo() )
             --ammo;
 
-        timeTillNextShot = intervalShoot;
+        timeTillNextShot = getBonusValue( "intervalShoot" ).getValue();
         Sound.playInternal( SoundLibrary.SNIPER_SHOOT );
     }
 
@@ -76,25 +75,9 @@ public class SniperManager extends Weapon
         }
     }
 
-    public int getReloadTime()
-    {
-        return intervalShoot;
-    }
-
-    public void undoBonuses()
-    {
-        intervalShoot = 50;
-    }
-
     public int getDamage()
     {
         return damage;
-    }
-
-    public String applyBonus()
-    {
-        intervalShoot = Math.max( intervalShoot - 10, 30 );
-        return "Faster Reload";
     }
 
     public int getSpeed()
@@ -135,7 +118,6 @@ public class SniperManager extends Weapon
         super.flatten( stream );
 
         stream.writeInt( damage );
-        stream.writeInt( intervalShoot );
         stream.writeInt( radius );
         stream.writeInt( speed );
 
@@ -153,7 +135,6 @@ public class SniperManager extends Weapon
         super( stream );
 
         damage = stream.readInt();
-        intervalShoot = stream.readInt();
         radius = stream.readInt();
         speed = stream.readInt();
 

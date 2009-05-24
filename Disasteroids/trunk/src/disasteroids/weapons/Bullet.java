@@ -35,7 +35,7 @@ class Bullet extends Unit
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), parent.getRadius() );
+        AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), parent.getBonusValue( "radius" ).getValue() );
     }
 
     /**
@@ -48,12 +48,12 @@ class Bullet extends Unit
 
     public double getRadius()
     {
-        return parent.getRadius() + 1;
+        return parent.getBonusValue( "radius" ).getValue() + 1;
     }
 
     public int getDamage()
     {
-        return parent.getDamage();
+        return parent.getBonusValue( "damage" ).getValue();
     }
 
     //                                                                            \\

@@ -11,8 +11,6 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A mine that moves towards nearby targets and explodes violently on impact.
@@ -56,10 +54,11 @@ public class Mine extends Unit
         {
             for ( int id : Game.getInstance().getObjectManager().getAllIds() )
             {
-                if ( Game.getInstance().getObjectManager().getObject( id ) instanceof BlackHole )
+                GameObject go = Game.getInstance().getObjectManager().getObject( id );
+                if ( go instanceof BlackHole || ( go instanceof Ship && (((Ship) go) == parent.getParent() )))
                     continue;
 
-                if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id ) ) < parent.sight() )
+                if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id ) ) < parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() )
                 {
                     explode();
                     break;
@@ -101,9 +100,9 @@ public class Mine extends Unit
         }*/
 
         if ( isExploding() )
-            ++explosionSize;
+            explosionSize += 10;
 
-        if ( age > 3000 || explosionSize == 3 )
+        if ( age > 2500 || explosionSize >= parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() )
             parent.remove( this );
     }
 
@@ -113,7 +112,7 @@ public class Mine extends Unit
     public int getDamage()
     {
         if ( isArmed() )
-            return 200;
+            return 400;
         else
             return 0;
     }
@@ -132,7 +131,10 @@ public class Mine extends Unit
     public void draw( Graphics g )
     {
         if ( isExploding() )
-            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), explosionSize * 20 );
+        {
+            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), explosionSize );
+            AsteroidsFrame.frame().drawCircle( g, color, (int) getX(), (int) getY(), parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() );
+        }
         else if ( isArmed() )
         {
             AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), 10 );
@@ -153,7 +155,7 @@ public class Mine extends Unit
      */
     public double getRadius()
     {
-        return isExploding() ? ( explosionSize ) * 20 : 10;
+        return isExploding() ? ( explosionSize ) : 10;
     }
 
     /**
@@ -162,7 +164,7 @@ public class Mine extends Unit
     public void explode()
     {
         if ( !isExploding() && isArmed() )
-            explosionSize = 1;
+            explosionSize = 10;
     }
 
     public boolean isExploding()

@@ -13,6 +13,7 @@ import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
 import disasteroids.networking.Server;
 import disasteroids.networking.ServerCommands;
+import disasteroids.weapons.Weapon;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -391,7 +392,12 @@ public class Game
             case DEVKEY:
                 if ( !Client.is() )
                 {
-                    objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
+                    // Spawns bonus
+                    //objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
+
+                    // Gives ammo to all guns.
+                    for ( Weapon w : Local.getLocalPlayer().getManagers() )
+                        w.giveAmmo();
                 }
                 break;
             default:

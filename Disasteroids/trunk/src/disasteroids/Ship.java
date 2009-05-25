@@ -183,7 +183,7 @@ public class Ship extends GameObject implements ShootingObject
 
         allWeapons[0] = new MissileManager();
         allWeapons[1] = new BulletManager();
-        allWeapons[2] = new MineManager();
+        allWeapons[2] = new MineManager( this );
         allWeapons[3] = new LaserManager();
         allWeapons[4] = new FlechetteManager();
         allWeapons[5] = new BigNukeLauncher();

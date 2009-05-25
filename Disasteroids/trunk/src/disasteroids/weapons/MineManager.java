@@ -25,11 +25,26 @@ public class MineManager extends Weapon
      * The radius in which a mine will latch onto a target.
      */
     private int sight = 200;
-    
 
-    public MineManager()
+    // Bonus IDs.
+    public int BONUS_EXPLODERADIUS;
+
+    private Ship parent;
+
+    public MineManager( Ship parent )
     {
+        this.parent = parent;
     }
+
+    @Override
+    protected void genericInit()
+    {
+        super.genericInit();
+        BONUS_EXPLODERADIUS = getNewBonusID();
+        bonusValues.put( BONUS_EXPLODERADIUS, new BonusValue( 85, 150, "Bigger blast area" ));
+    }
+
+
 
     @Override
     public String getName()
@@ -68,7 +83,7 @@ public class MineManager extends Weapon
                 break;
 
             units.add( new Mine( this, color, parent.getX() + Math.cos( berserkAngleOffset + angle ) * 50,
-                                 parent.getY() + Math.sin( berserkAngleOffset + angle ) * 50, parent.getDx(), parent.getDy() ) );
+                    parent.getY() + Math.sin( berserkAngleOffset + angle ) * 50, parent.getDx(), parent.getDy() ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;
@@ -100,6 +115,13 @@ public class MineManager extends Weapon
     {
         return sight;
     }
+
+    public Ship getParent()
+    {
+        return parent;
+    }
+
+    
 
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\

@@ -44,13 +44,13 @@ public class Bonus extends GameObject
      * The class of bonus (category).
      * @since April 12, 2008
      */
-    private Class myClass = Class.values()[Util.getRandomGenerator().nextInt( Class.values().length )];
+    private int bonusClass = Util.getRandomGenerator().nextInt( Class.values().length );
 
     /**
      * The type of bonus (within its category).
      * @since Classic
      */
-    private int bonusType = Util.getRandomGenerator().nextInt( myClass.types );
+    private int bonusType = Util.getRandomGenerator().nextInt( Class.values()[bonusClass].types );
 
     final int RADIUS = 12;
 
@@ -140,7 +140,7 @@ public class Bonus extends GameObject
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( Util.getDistance( this, s ) < RADIUS + ( myClass == Class.WEAPON ? 3 : 0 ) + s.getRadius() )
+                if ( Util.getDistance( this, s ) < RADIUS + ( Class.values()[bonusClass] == Class.WEAPON ? 3 : 0 ) + s.getRadius() )
                 {
                     if ( applyBonus( s ) )
                     {
@@ -165,7 +165,7 @@ public class Bonus extends GameObject
             return false;
 
         String message = "";
-        switch ( myClass )
+        switch ( Class.values()[bonusClass] )
         {
             case WEAPON:
 
@@ -220,7 +220,7 @@ public class Bonus extends GameObject
         lastHue = ( ( lastHue + 0.01f ) % 1 );
         lastHB = ( ( lastHB + 0.03f ) % 1 );
 
-        switch ( myClass )
+        switch ( Class.values()[bonusClass] )
         {
             case WEAPON:
             {
@@ -294,6 +294,7 @@ public class Bonus extends GameObject
         super.flatten( stream );
         stream.writeDouble( ax );
         stream.writeDouble( ay );
+        stream.writeInt( bonusClass );
         stream.writeInt( bonusType );
         stream.writeInt( age );
         stream.writeFloat( lastHB );
@@ -312,6 +313,7 @@ public class Bonus extends GameObject
         super( stream );
         ax = stream.readDouble();
         ay = stream.readDouble();
+        bonusClass = stream.readInt();
         bonusType = stream.readInt();
         age = stream.readInt();
         lastHB = stream.readFloat();

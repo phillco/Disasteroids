@@ -26,6 +26,7 @@ public class BulletManager extends Weapon
 
     public BulletManager()
     {
+        ammo = -1;
         bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 4, 1, "Rapid fire" ) );
         bonusValues.put( BONUS_RADIUS, new BonusValue( 2, 6, "Huge bullets" ) );
         bonusValues.put( BONUS_DAMAGE, new BonusValue( 10, 60, "More damaging bullets" ) );
@@ -92,7 +93,7 @@ public class BulletManager extends Weapon
     @Override
     public int getEntryAmmo()
     {
-        return -1;
+        return 0;
     }
 
     @Override

@@ -49,10 +49,7 @@ public class Station extends GameObject implements ShootingObject
      */
     private int easterEggCounter = 0;
 
-    /**
-     * If above 0, we've been disabled by a Ship and can't fire.
-     */
-    private int disableCounter = 0;
+    private int health = 500;
 
     /**
      * The angle we're turning towards.
@@ -60,13 +57,6 @@ public class Station extends GameObject implements ShootingObject
     private double desiredAngle = 0.0;
 
     final double SWEEP_SPEED = 0.05;
-
-    final int HITS_TO_KILL = 3;
-
-    /**
-     * How many missile hits we've taken. Reset after the disableCounter runs out.
-     */
-    private int hitsWhileDisabled = 0;
 
     /**
      * Creates the station at the given position and random floating speed.
@@ -105,19 +95,16 @@ public class Station extends GameObject implements ShootingObject
         }
 
         // We're disabled.
-        if ( disableCounter > 0 )
+        if ( isDisabled() )
         {
-            disableCounter--;
+            health++;
 
             // Smoke and spin the turret.
             angle += 0.07 + Util.getRandomGenerator().nextDouble() / 7;
-            ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), 1 + hitsWhileDisabled );
+            ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 20 - health ) / 5 ) );
 
-            // If hit again, set fire.
-            ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), hitsWhileDisabled * 2 );
-
-            if ( disableCounter == 0 )
-                hitsWhileDisabled = 0;
+            // If about to die, set fire.
+            ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 10 - health ) / 5 ) );
 
             return;
         }
@@ -161,6 +148,11 @@ public class Station extends GameObject implements ShootingObject
             angle += 0.01;
     }
 
+    public boolean isDisabled()
+    {
+        return ( health < 20 );
+    }
+
     /**
      * Checks if players run into us and takes action.
      * 
@@ -184,28 +176,22 @@ public class Station extends GameObject implements ShootingObject
                     if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
                             ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
                     {
-                        if ( m instanceof Missile && disableCounter > 0 && !( (Missile) m ).isExploding() )
-                            hitsWhileDisabled++;
+                        health -= m.getDamage();
+                        m.explode();
 
-                        if ( m instanceof Mine && disableCounter > 0 && !( (Mine) m ).isExploding() && ( (Mine) m ).isArmed() )
-                            hitsWhileDisabled += 2;
-
-                        if ( hitsWhileDisabled > 3 )
+                        if ( health < 0 )
                         {
-                            m.explode();
                             destroy();
                             if ( s instanceof Ship )
                                 ( (Ship) s ).increaseScore( 2500 );
                             return;
                         }
-                        m.explode();
-                        disable();
                     }
                 }
             }
         }
 
-        if ( disableCounter > 0 )
+        if ( isDisabled() )
             return;
 
         // Check for ship collision.  
@@ -233,7 +219,7 @@ public class Station extends GameObject implements ShootingObject
     public void draw( Graphics g )
     {
         // Flash when disabled.
-        if ( disableCounter > 0 && Local.getGlobalFlash() )
+        if ( isDisabled() && Local.getGlobalFlash() )
             return;
 
         int rX = RelativeGraphics.translateX( getX() );
@@ -363,19 +349,6 @@ public class Station extends GameObject implements ShootingObject
             easterEggCounter = 290;
     }
 
-    public void disable()
-    {
-        if ( disableCounter > 0 )
-            disableCounter += 80;
-        else
-            disableCounter = 290;
-
-        for ( Unit w : manager.getUnits() )
-            w.explode();
-
-        Sound.playInternal( SoundLibrary.STATION_DISABLED );
-    }
-
     public void destroy()
     {
         Game.getInstance().getObjectManager().removeObject( this );
@@ -384,10 +357,7 @@ public class Station extends GameObject implements ShootingObject
         ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 250 );
 
         if ( Util.getRandomGenerator().nextInt( 4 ) == 0 )
-        {
             Game.getInstance().createBonus( this );
-            Game.getInstance().createBonus( this );
-        }
 
         Sound.playInternal( SoundLibrary.STATION_DIE );
     }
@@ -439,9 +409,8 @@ public class Station extends GameObject implements ShootingObject
         super.flatten( stream );
         stream.writeDouble( angle );
         stream.writeDouble( desiredAngle );
-        stream.writeInt( disableCounter );
+        stream.writeInt( health );
         stream.writeInt( easterEggCounter );
-        stream.writeInt( hitsWhileDisabled );
         stream.writeInt( size );
     }
 
@@ -457,9 +426,8 @@ public class Station extends GameObject implements ShootingObject
         super( stream );
         angle = stream.readDouble();
         desiredAngle = stream.readDouble();
-        disableCounter = stream.readInt();
+        health = stream.readInt();
         easterEggCounter = stream.readInt();
-        hitsWhileDisabled = stream.readInt();
         size = stream.readInt();
 
         // TODO [PC]: Sync!

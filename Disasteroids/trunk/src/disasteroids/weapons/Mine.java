@@ -23,12 +23,9 @@ public class Mine extends Unit
      */
     private int explosionSize = 0;
 
-    /**
-     * Whether we've acquired a target.
-     */
-    private boolean shouldAccelerate = false;
-
     private MineManager parent;
+
+    private GameObject myTarget;
 
     /**
      * Creates a new <code>Minde</code>
@@ -55,7 +52,7 @@ public class Mine extends Unit
             for ( int id : Game.getInstance().getObjectManager().getAllIds() )
             {
                 GameObject go = Game.getInstance().getObjectManager().getObject( id );
-                if ( go instanceof BlackHole || ( go instanceof Ship && (((Ship) go) == parent.getParent() )))
+                if ( go instanceof BlackHole || go instanceof Bonus || ( go instanceof Ship && ( ( (Ship) go ) == parent.getParent() ) ) )
                     continue;
 
                 if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id ) ) < parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() )
@@ -66,43 +63,55 @@ public class Mine extends Unit
             }
         }
 
-        /*
         // Accelerate towards nearby targets.
-        if ( isArmed() )
+        if ( ( parent.getBonusValue( parent.BONUS_TRACKING ).getValue() == 1 ) && isArmed() )
         {
+            // Is our current target out of sight?
+            //if ( myTarget != null && Util.getDistance( this, myTarget ) > parent.sight() )
+            {
+                parent.releaseTarget( myTarget );
+                myTarget = null;
+            }
 
-        // First create a set of everything nearby.
-        Set<GameObject> closeObjects = new HashSet<GameObject>();
-        for ( int id : Game.getInstance().getObjectManager().getAllIds() )
-        {
-        if ( Game.getInstance().getObjectManager().getObject( id ) instanceof BlackHole )
-        continue;
+            // Get a new target by finding the closest object.
+            if ( myTarget == null )
+            {
+                GameObject closestObject = null;
+                for ( int id : Game.getInstance().getObjectManager().getAllIds() )
+                {
+                    GameObject go = Game.getInstance().getObjectManager().getObject( id );
 
-        if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id )) < parent.sight() )
-        closeObjects.add( Game.getInstance().getObjectManager().getObject( id ) );
+                    if ( go instanceof BlackHole || go instanceof Bonus || ( go instanceof Ship && ( ( (Ship) go ) == parent.getParent() ) ) )
+                        continue;
+
+                    if ( Util.getDistance( this, go ) < parent.sight() && parent.isTargetAvailible( go ) )
+                    {
+                        if ( closestObject == null || ( Util.getDistance( this, go ) < Util.getDistance( this, closestObject ) ) )
+                            closestObject = go;
+                    }
+
+                }
+                myTarget = closestObject;
+                parent.reserveTarget( myTarget );
+            }
+
+            // Next, accelerate.
+            if ( myTarget != null )
+            {
+                double angle = Math.atan( ( myTarget.getY() - getY() ) / ( myTarget.getX() - getX() ) );
+                if ( myTarget.getX() < getX() )
+                    angle += Math.PI;
+                double magnitude = Math.min( 0.05, Util.getDistance( this, myTarget ) / 8 );
+                setVelocity( getDx() + magnitude * Math.cos( angle ), getDy() + magnitude * Math.sin( angle ) );
+            }
         }
-
-        // Next, accelerate.
-        shouldAccelerate = !closeObjects.isEmpty();
-        if ( shouldAccelerate )
-        {
-        for ( GameObject go : closeObjects )
-        {
-        double angle = Math.atan( ( go.getY() - getY() ) / ( go.getX() - getX() ) );
-        if ( go.getX() < getX() )
-        angle += Math.PI;
-        double magnitude = 10.0 / Math.sqrt( ( Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) ) );
-        magnitude = Math.min( magnitude, 1 );//regulate the acceleration for (essentially) dividing by zero
-
-        setVelocity( getDx() + magnitude * Math.cos( angle ), getDy() + magnitude * Math.sin( angle ) );
-        }
-        }
-        }*/
 
         if ( isExploding() )
             explosionSize += 10;
 
-        if ( age > 2500 || explosionSize >= parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() )
+        if ( age > 2500 )
+            explode();
+        if ( explosionSize >= parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() )
             parent.remove( this );
     }
 
@@ -111,10 +120,17 @@ public class Mine extends Unit
      */
     public int getDamage()
     {
-        if ( isArmed() )
-            return 400;
+        if ( isExploding() )
+            return 40;
+        else if ( isArmed() )
+            return 100;
         else
             return 0;
+    }
+
+    public GameObject getTarget()
+    {
+        return myTarget;
     }
 
     @Override
@@ -138,7 +154,7 @@ public class Mine extends Unit
         else if ( isArmed() )
         {
             AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), 10 );
-            AsteroidsFrame.frame().fillCircle( g, shouldAccelerate ? Color.red : Color.black, (int) getX(), (int) getY(), 4 );
+            AsteroidsFrame.frame().fillCircle( g, ( myTarget != null ) ? Color.red : Color.black, (int) getX(), (int) getY(), 4 );
         }
         else
         {

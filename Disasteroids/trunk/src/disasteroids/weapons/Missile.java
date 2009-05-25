@@ -214,7 +214,10 @@ public class Missile extends Unit
      */
     public int getDamage()
     {
-        return 100;
+        if ( isExploding() )
+            return 10;
+        else
+            return 80;
     }
 
     /**

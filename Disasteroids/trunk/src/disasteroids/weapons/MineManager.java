@@ -12,6 +12,8 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A bonus weapon that lays dangerous <code>Mine</code>s.
@@ -26,8 +28,10 @@ public class MineManager extends Weapon
      */
     private int sight = 200;
 
+    private Set<GameObject> targetedObjects = new HashSet();
+
     // Bonus IDs.
-    public int BONUS_EXPLODERADIUS;
+    public int BONUS_EXPLODERADIUS, BONUS_TRACKING;
 
     private Ship parent;
 
@@ -41,10 +45,10 @@ public class MineManager extends Weapon
     {
         super.genericInit();
         BONUS_EXPLODERADIUS = getNewBonusID();
-        bonusValues.put( BONUS_EXPLODERADIUS, new BonusValue( 85, 150, "Bigger blast area" ));
+        BONUS_TRACKING = getNewBonusID();
+        bonusValues.put( BONUS_EXPLODERADIUS, new BonusValue( 85, 150, "Bigger blast area" ) );
+        bonusValues.put( BONUS_TRACKING, new BonusValue( 0, 1, "Homing mines!" ) );
     }
-
-
 
     @Override
     public String getName()
@@ -121,7 +125,37 @@ public class MineManager extends Weapon
         return parent;
     }
 
-    
+    /**
+     * Called by mines to reserve a target for homing in on.
+     */
+    public boolean reserveTarget( GameObject go )
+    {
+        if ( isTargetAvailible( go ) )
+        {
+            targetedObjects.add( go );
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public boolean isTargetAvailible( GameObject go )
+    {
+        return !targetedObjects.contains( go );
+    }
+
+    public void releaseTarget( GameObject go )
+    {
+        targetedObjects.remove( go );
+    }
+
+    @Override
+    public void remove( Unit u )
+    {
+        if ( ( (Mine) u ).getTarget() != null )
+            releaseTarget( ( (Mine) u ).getTarget() );
+        super.remove( u );
+    }
 
     //                                                                            \\
     // ------------------------------ NETWORKING -------------------------------- \\

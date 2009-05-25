@@ -393,11 +393,19 @@ public class Game
                 if ( !Client.is() )
                 {
                     // Spawns bonus
-                    //objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
+                    objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
+
+                    //if ( Util.getRandomGenerator().nextInt(10) == 0)
+                    objectManager.addObject( new Station( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) );
+
+
 
                     // Gives ammo to all guns.
                     for ( Weapon w : Local.getLocalPlayer().getManagers() )
+                    {
                         w.giveAmmo();
+                        w.getBonusValue( w.BONUS_FASTERBERSERK).override( 9999);
+                    }
                 }
                 break;
             default:

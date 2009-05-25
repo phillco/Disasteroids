@@ -16,18 +16,28 @@ public class BonusValue
 {
     private int currentValue;
 
-    private int defaultValue;
+    private int[] values;
 
-    private int upgradedValue;
+    private int upgradeIndex = 0;
 
     private String upgradeString;
 
     public BonusValue( int defaultValue, int upgradedValue, String upgradeString )
     {
-        this.defaultValue = defaultValue;
-        this.upgradedValue = upgradedValue;
+        this.values = new int[2];
+        values[0] = currentValue = defaultValue;
+        values[1] = upgradedValue;
         this.upgradeString = upgradeString;
-        this.currentValue = defaultValue;
+    }
+
+    public BonusValue( int[] values, String upgradeString )
+    {
+        if ( values.length == 0 )
+            throw new IllegalArgumentException();
+
+        this.values = values;
+        this.upgradeString = upgradeString;
+        this.currentValue = values[0];
     }
 
     public int getValue()
@@ -37,14 +47,15 @@ public class BonusValue
 
     public boolean canUpgrade()
     {
-        return ( currentValue != upgradedValue );
+        return ( upgradeIndex < values.length - 1 );
     }
 
     public String upgrade()
     {
         if ( !canUpgrade() )
             return "";
-        currentValue = upgradedValue;
+        upgradeIndex++;
+        currentValue = values[upgradeIndex];
         return upgradeString;
     }
 
@@ -55,7 +66,7 @@ public class BonusValue
 
     public void restore()
     {
-        currentValue = defaultValue;
+        currentValue = values[0];
     }
 
     public void flatten( DataOutputStream stream ) throws IOException

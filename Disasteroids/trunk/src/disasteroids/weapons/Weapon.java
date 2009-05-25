@@ -32,6 +32,8 @@ public abstract class Weapon implements GameElement
 
     private int nextBonusID = 0;
 
+    public int BONUS_FASTERBERSERK = getNewBonusID();
+
     /**
      * Remaining ammo (-1 means infinite). All bonus weapons start with zero ammo and are "picked up" by getting entryAmmo().
      */
@@ -43,6 +45,11 @@ public abstract class Weapon implements GameElement
 
     public Weapon()
     {
+        int[] berserkValues =
+        {
+            1, 2, 4
+        };
+        bonusValues.put( BONUS_FASTERBERSERK, new BonusValue( berserkValues, "Faster berserk recharge" ) );
     }
 
     /**
@@ -128,7 +135,7 @@ public abstract class Weapon implements GameElement
     public void reload()
     {
         timeTillNextShot--;
-        timeTillNextBerserk = Math.max( 0, timeTillNextBerserk - 1 );
+        timeTillNextBerserk = Math.max( 0, timeTillNextBerserk - getBonusValue( BONUS_FASTERBERSERK ).getValue() );
     }
 
     //                                                                            \\

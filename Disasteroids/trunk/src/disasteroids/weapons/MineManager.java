@@ -25,6 +25,7 @@ public class MineManager extends Weapon
      * The radius in which a mine will latch onto a target.
      */
     private int sight = 200;
+    
 
     public MineManager()
     {

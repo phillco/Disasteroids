@@ -32,7 +32,7 @@ public abstract class Weapon implements GameElement
 
     private int nextBonusID = 0;
 
-    public int BONUS_FASTERBERSERK = getNewBonusID();
+    public int BONUS_FASTERBERSERK;
 
     /**
      * Remaining ammo (-1 means infinite). All bonus weapons start with zero ammo and are "picked up" by getting entryAmmo().
@@ -45,6 +45,12 @@ public abstract class Weapon implements GameElement
 
     public Weapon()
     {
+        genericInit();
+    }
+
+    protected void genericInit()
+    {
+        BONUS_FASTERBERSERK = getNewBonusID();
         int[] berserkValues =
         {
             1, 2, 4
@@ -261,7 +267,7 @@ public abstract class Weapon implements GameElement
         stream.writeInt( ammo );
         stream.writeInt( timeTillNextBerserk );
         stream.writeInt( timeTillNextShot );
-        stream.writeInt( bonusValues.keySet().size() );
+        stream.writeInt( bonusValues.size() );
         for ( int key : bonusValues.keySet() )
         {
             stream.writeInt( key );
@@ -274,10 +280,12 @@ public abstract class Weapon implements GameElement
      */
     public Weapon( DataInputStream stream ) throws IOException
     {
+        genericInit();
         ammo = stream.readInt();
         timeTillNextBerserk = stream.readInt();
         timeTillNextShot = stream.readInt();
-        for ( int i = 0, size = stream.readInt(); i < size; i++ )
+        int size = stream.readInt();
+        for ( int i = 0; i < size; i++ )
             bonusValues.get( stream.readInt() ).loadFromSteam( stream );
     }
 }

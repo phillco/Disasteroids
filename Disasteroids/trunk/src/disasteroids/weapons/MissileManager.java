@@ -33,11 +33,22 @@ public class MissileManager extends Weapon
     protected int maxShots = 120;
 
     // Bonus IDs.
-    public int BONUS_INTERVALSHOOT = getNewBonusID(), BONUS_HUGEBLASTPROB = getNewBonusID(), BONUS_HUGEBLASTSIZE = getNewBonusID(), BONUS_POPPINGPROB = getNewBonusID(), BONUS_POPPINGQUANTITY = getNewBonusID();
+    public int BONUS_INTERVALSHOOT, BONUS_HUGEBLASTPROB, BONUS_HUGEBLASTSIZE, BONUS_POPPINGPROB, BONUS_POPPINGQUANTITY;
 
     public MissileManager()
     {
+    }
+
+    @Override
+    protected void genericInit()
+    {
+        super.genericInit();
         ammo = -1;
+        BONUS_INTERVALSHOOT = getNewBonusID();
+        BONUS_HUGEBLASTPROB = getNewBonusID();
+        BONUS_HUGEBLASTSIZE = getNewBonusID();
+        BONUS_POPPINGPROB = getNewBonusID();
+        BONUS_POPPINGQUANTITY = getNewBonusID();
         bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 15, 6, "Rapid fire" ) );
         bonusValues.put( BONUS_HUGEBLASTPROB, new BonusValue( 5, 2, "Huge blast probable" ) );
         bonusValues.put( BONUS_HUGEBLASTSIZE, new BonusValue( 50, 100, "Huge blast radius" ) );
@@ -77,7 +88,7 @@ public class MissileManager extends Weapon
     {
         if ( units.size() >= maxShots )
             return;
-        
+
         for ( int i = 0; i < getBonusValue( BONUS_POPPINGQUANTITY ).getValue(); i++ )
             units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI ) );
     }
@@ -118,7 +129,7 @@ public class MissileManager extends Weapon
 
         for ( Unit w : units )
             w.explode();
-        
+
         getBonusValue( BONUS_POPPINGPROB ).override( poppingProbTemp );
     }
 

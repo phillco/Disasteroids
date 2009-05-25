@@ -49,40 +49,56 @@ public class Mine extends Unit
     public void act()
     {
         super.act();
-        decelerate(.95);
+        decelerate( .95 );
 
-        // Accelerate towards nearby targets.
+        // Explode if an object comes too close.
         if ( isArmed() )
         {
-            // First create a set of everything nearby.
-            Set<GameObject> closeObjects = new HashSet<GameObject>();
-            for ( Asteroid ast : Game.getInstance().getObjectManager().getAsteroids() )
+            for ( int id : Game.getInstance().getObjectManager().getAllIds() )
             {
-                if ( Util.getDistance( this, ast ) < parent.sight() )
-                    closeObjects.add( ast );
-            }
-            for ( GameObject go : Game.getInstance().getObjectManager().getBaddies() )
-            {
-                if ( Util.getDistance( this, go ) < parent.sight() )
-                    closeObjects.add( go );
-            }
+                if ( Game.getInstance().getObjectManager().getObject( id ) instanceof BlackHole )
+                    continue;
 
-            // Next, accelerate.
-            shouldAccelerate = !closeObjects.isEmpty();
-            if ( shouldAccelerate )
-            {
-                for ( GameObject go : closeObjects )
+                if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id ) ) < parent.sight() )
                 {
-                    double angle = Math.atan( ( go.getY() - getY() ) / ( go.getX() - getX() ) );
-                    if ( go.getX() < getX() )
-                        angle += Math.PI;
-                    double magnitude = 10.0 / Math.sqrt( ( Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) ) );
-                    magnitude = Math.min( magnitude, 1 );//regulate the acceleration for (essentially) dividing by zero
-
-                    setVelocity( getDx() + magnitude * Math.cos( angle ), getDy() + magnitude * Math.sin( angle ) );
+                    explode();
+                    break;
                 }
             }
         }
+
+        /*
+        // Accelerate towards nearby targets.
+        if ( isArmed() )
+        {
+
+        // First create a set of everything nearby.
+        Set<GameObject> closeObjects = new HashSet<GameObject>();
+        for ( int id : Game.getInstance().getObjectManager().getAllIds() )
+        {
+        if ( Game.getInstance().getObjectManager().getObject( id ) instanceof BlackHole )
+        continue;
+
+        if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id )) < parent.sight() )
+        closeObjects.add( Game.getInstance().getObjectManager().getObject( id ) );
+        }
+
+        // Next, accelerate.
+        shouldAccelerate = !closeObjects.isEmpty();
+        if ( shouldAccelerate )
+        {
+        for ( GameObject go : closeObjects )
+        {
+        double angle = Math.atan( ( go.getY() - getY() ) / ( go.getX() - getX() ) );
+        if ( go.getX() < getX() )
+        angle += Math.PI;
+        double magnitude = 10.0 / Math.sqrt( ( Math.pow( go.getX() - getX(), 2 ) + Math.pow( go.getY() - getY(), 2 ) ) );
+        magnitude = Math.min( magnitude, 1 );//regulate the acceleration for (essentially) dividing by zero
+
+        setVelocity( getDx() + magnitude * Math.cos( angle ), getDy() + magnitude * Math.sin( angle ) );
+        }
+        }
+        }*/
 
         if ( isExploding() )
             ++explosionSize;

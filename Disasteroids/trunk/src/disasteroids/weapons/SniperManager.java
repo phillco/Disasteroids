@@ -30,7 +30,13 @@ public class SniperManager extends Weapon
 
     public SniperManager()
     {
-        ammo = 20;
+        ammo = 20;        
+    }
+
+    @Override
+    protected void genericInit()
+    {
+        super.genericInit();
         bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 30, 10, "Faster reloading" ) );
     }
 

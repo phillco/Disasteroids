@@ -22,11 +22,21 @@ public class BulletManager extends Weapon
     private int speed = 20;
 
     // Bonus IDs.
-    public int BONUS_INTERVALSHOOT = getNewBonusID(), BONUS_RADIUS = getNewBonusID(), BONUS_DAMAGE = getNewBonusID(), BONUS_THREEWAYSHOT;
+    public int BONUS_INTERVALSHOOT, BONUS_RADIUS, BONUS_DAMAGE, BONUS_THREEWAYSHOT;
 
     public BulletManager()
     {
+    }
+
+    @Override
+    protected void genericInit()
+    {
+        super.genericInit();
         ammo = -1;
+        BONUS_INTERVALSHOOT = getNewBonusID();
+        BONUS_RADIUS = getNewBonusID();
+        BONUS_DAMAGE = getNewBonusID();
+        BONUS_THREEWAYSHOT = getNewBonusID();
         bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 4, 1, "Rapid fire" ) );
         bonusValues.put( BONUS_RADIUS, new BonusValue( 2, 6, "Huge bullets" ) );
         bonusValues.put( BONUS_DAMAGE, new BonusValue( 10, 60, "More damaging bullets" ) );
@@ -105,7 +115,6 @@ public class BulletManager extends Weapon
     //                                                                            \\
     // --------------------------------- BONUS ---------------------------------- \\
     //                                                                            \\
-   
     public int getSpeed()
     {
         return speed;
@@ -126,7 +135,7 @@ public class BulletManager extends Weapon
         // Flatten all of the units.
         stream.writeInt( units.size() );
         for ( Unit u : units )
-            ( (Bullet) u ).flatten( stream );        
+            ( (Bullet) u ).flatten( stream );
     }
 
     /**
@@ -136,10 +145,10 @@ public class BulletManager extends Weapon
     {
         super( stream );
         speed = stream.readInt();
-        
+
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-            units.add( new Bullet( stream, this ));
+            units.add( new Bullet( stream, this ) );
     }
 }

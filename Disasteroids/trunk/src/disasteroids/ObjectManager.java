@@ -138,6 +138,9 @@ public class ObjectManager implements GameElement
             case ASTEROID:
                 addObject( new Asteroid(stream));
                 break;
+            case BONUS_ASTEROID:
+                addObject( new BonusAsteroid(stream));
+                break;
             case BLACK_HOLE:
                 addObject( new BlackHole( stream ) );
                 break;

@@ -8,6 +8,7 @@ import disasteroids.Alien;
 import disasteroids.Asteroid;
 import disasteroids.BlackHole;
 import disasteroids.Bonus;
+import disasteroids.BonusAsteroid;
 import disasteroids.Deathmatch;
 import disasteroids.GameMode;
 import disasteroids.GameObject;
@@ -84,7 +85,7 @@ public class Constants
     public static enum GameObjectTIDs
     {
 
-        ALIEN, ASTEROID, BLACK_HOLE, BONUS, SHIP, STATION;
+        ALIEN, ASTEROID, BONUS_ASTEROID, BLACK_HOLE, BONUS, SHIP, STATION;
 
     }
 
@@ -119,7 +120,9 @@ public class Constants
     {
         if ( o instanceof Alien )
             return GameObjectTIDs.ALIEN.ordinal();
-        if ( o instanceof Asteroid )
+        else if ( o instanceof BonusAsteroid )
+            return GameObjectTIDs.BONUS_ASTEROID.ordinal();
+        else if ( o instanceof Asteroid )
             return GameObjectTIDs.ASTEROID.ordinal();
         else if ( o instanceof Bonus )
             return GameObjectTIDs.BONUS.ordinal();

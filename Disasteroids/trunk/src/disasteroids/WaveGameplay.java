@@ -55,9 +55,9 @@ public class WaveGameplay implements GameMode
             wavePoints -= 50;
 
             // Make it a bonus asteroid.
-            if ( Util.getRandomGenerator().nextDouble() * 20 * spawnRate <= 0.3 )
+            if ( Util.getRandomGenerator().nextDouble() * 8 * spawnRate <= 0.3 )
                 Game.getInstance().getObjectManager().addObject( new BonusAsteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
-                        Util.getRandomGenerator().nextInt( 60 ) + 50, 15 ) );
+                        Util.getRandomGenerator().nextInt( 60 ) + 80, 15 ) );
             else
                 Game.getInstance().getObjectManager().addObject( new Asteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
                         Util.getRandomGenerator().nextInt( 70 ) + 30, 15 ) );

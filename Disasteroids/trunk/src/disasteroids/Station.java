@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Station extends GameObject implements ShootingObject
 {
+
     /**
      * The angle we're facing.
      */
@@ -183,7 +184,7 @@ public class Station extends GameObject implements ShootingObject
                         {
                             destroy();
                             if ( s instanceof Ship )
-                                ( (Ship) s ).increaseScore( 2500 );
+                                ( ( Ship ) s ).increaseScore( 2500 );
                             return;
                         }
                     }
@@ -260,31 +261,31 @@ public class Station extends GameObject implements ShootingObject
 
             // Hour hand.
             double hourAngle = ( ( Calendar.getInstance().get( Calendar.HOUR ) / 12.0 ) * 2 - 0.5 ) * Math.PI;
-            int eX = (int) ( cX + 5 * Math.cos( hourAngle ) );
-            int eY = (int) ( cY + 5 * Math.sin( hourAngle ) );
+            int eX = ( int ) ( cX + 5 * Math.cos( hourAngle ) );
+            int eY = ( int ) ( cY + 5 * Math.sin( hourAngle ) );
             g.drawLine( cX, cY, eX, eY );
             g.drawLine( cX, cY + 1, eX, eY + 1 );
             g.drawLine( cX + 1, cY, eX + 1, eY );
 
             // Minute hand.
             double minuteAngle = ( ( Calendar.getInstance().get( Calendar.MINUTE ) / 60.0 ) * 2 - 0.5 ) * Math.PI;
-            eX = (int) ( cX + 10 * Math.cos( minuteAngle ) );
-            eY = (int) ( cY + 10 * Math.sin( minuteAngle ) );
+            eX = ( int ) ( cX + 10 * Math.cos( minuteAngle ) );
+            eY = ( int ) ( cY + 10 * Math.sin( minuteAngle ) );
             g.drawLine( cX, cY, eX, eY );
             g.drawLine( cX, cY + 1, eX, eY + 1 );
 
             // Second hand.
             double secondAngle = ( ( Calendar.getInstance().get( Calendar.SECOND ) / 60.0 ) * 2 - 0.5 ) * Math.PI;
-            eX = (int) ( cX + 15 * Math.cos( secondAngle ) );
-            eY = (int) ( cY + 15 * Math.sin( secondAngle ) );
+            eX = ( int ) ( cX + 15 * Math.cos( secondAngle ) );
+            eY = ( int ) ( cY + 15 * Math.sin( secondAngle ) );
             g.drawLine( cX, cY, eX, eY );
         }
         else
         {
             // Draw the turret.
             g.setColor( Color.white );
-            int eX = (int) ( cX + 15 * Math.cos( angle ) );
-            int eY = (int) ( cY + 15 * Math.sin( angle ) );
+            int eX = ( int ) ( cX + 15 * Math.cos( angle ) );
+            int eY = ( int ) ( cY + 15 * Math.sin( angle ) );
             g.drawLine( cX, cY, eX, eY );
             g.drawLine( cX, cY + 1, eX, eY + 1 );
             g.drawLine( cX + 1, cY, eX + 1, eY );
@@ -300,7 +301,7 @@ public class Station extends GameObject implements ShootingObject
      */
     int centerX()
     {
-        return (int) ( getX() + size / 2 );
+        return ( int ) ( getX() + size / 2 );
     }
 
     /**
@@ -311,7 +312,7 @@ public class Station extends GameObject implements ShootingObject
      */
     int centerY()
     {
-        return (int) ( getY() + size / 2 );
+        return ( int ) ( getY() + size / 2 );
     }
 
     @Override
@@ -412,6 +413,7 @@ public class Station extends GameObject implements ShootingObject
         stream.writeInt( health );
         stream.writeInt( easterEggCounter );
         stream.writeInt( size );
+        manager.flatten( stream );
     }
 
     /**
@@ -429,10 +431,6 @@ public class Station extends GameObject implements ShootingObject
         health = stream.readInt();
         easterEggCounter = stream.readInt();
         size = stream.readInt();
-
-        // TODO [PC]: Sync!
-        manager = new MissileManager();
-        manager.getBonusValue( manager.BONUS_POPPINGQUANTITY ).override( 0 );
-        manager.setLife( 50 );
+        manager = new MissileManager( stream );
     }
 }

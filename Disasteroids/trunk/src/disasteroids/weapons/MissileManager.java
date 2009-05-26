@@ -19,6 +19,7 @@ import java.io.IOException;
  */
 public class MissileManager extends Weapon
 {
+
     /**
      * The current initial speed for <code>Missile</code>s in this manager.
      * @since Classic
@@ -179,9 +180,12 @@ public class MissileManager extends Weapon
         stream.writeDouble( speed );
 
         // Flatten all of the units.
-        stream.writeInt( units.size() );
-        for ( Unit u : units )
-            ( (Missile) u ).flatten( stream );
+        if ( !( this instanceof Alien.AlienMissileManager ) ) // [PC] Hack!
+        {
+            stream.writeInt( units.size() );
+            for ( Unit u : units )
+                ( ( Missile ) u ).flatten( stream );
+        }
     }
 
     /**
@@ -195,8 +199,11 @@ public class MissileManager extends Weapon
         speed = stream.readDouble();
 
         // Restore all of the units.
-        int size = stream.readInt();
-        for ( int i = 0; i < size; i++ )
-            units.add( new Missile( stream, this ) );
+        if ( !( this instanceof Alien.AlienMissileManager ) ) // [PC] Hack!
+        {
+            int size = stream.readInt();
+            for ( int i = 0; i < size; i++ )
+                units.add( new Missile( stream, this ) );
+        }
     }
 }

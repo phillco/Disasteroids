@@ -405,7 +405,7 @@ public class Game
                     objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
 
                     //if ( Util.getRandomGenerator().nextInt(10) == 0)
-                    objectManager.addObject( new Station( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) );
+                    objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) );
 
 
 

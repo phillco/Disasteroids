@@ -20,7 +20,7 @@ public class GameLoop extends Thread
     /**
      * The time in milliseconds between each action loop.
      */
-    private final static int PERIOD = 10;
+    private final static int PERIOD = 50;
 
     /**
      * Whether the thread is enabled. Always true unless the thread is being destroyed.

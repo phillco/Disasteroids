@@ -94,7 +94,7 @@ public class Asteroid extends GameObject implements GameElement
             killer.setNumAsteroidsKilled( killer.getNumAsteroidsKilled() + 1 );
 
             // Write the score on the background.
-            if ( AsteroidsFrame.frame() != null )
+            if ( !Local.isStuffNull() )
                 Local.getStarBackground().writeOnBackground( "+" + String.valueOf( radius * 2 ), (int) getX(), (int) getY(), killer.getColor().darker() );
         }
 

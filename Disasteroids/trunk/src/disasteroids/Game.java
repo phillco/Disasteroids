@@ -133,6 +133,7 @@ public class Game
     public static int loadFromFile()
     {
         GameLoop.stopLoop();
+        Local.loading = true;
 
         // Wait for the frame to stop drawing so we don't get null pointers.
         if ( AsteroidsFrame.frame() != null )
@@ -147,8 +148,6 @@ public class Game
                     Running.fatalError( "Rudely awaken in Game.loadFromFile().", ex );
                 }
         }
-
-        /*
 
         int id = -1;
         try
@@ -169,8 +168,7 @@ public class Game
 
         // [PC] This is required, possibly because we have to go back and do the timestep that was done after saving.
         instance.timeStep -= 1;
-        GameLoop.startLoop();*/
-        return Local.getLocalPlayer().getId();
+        return id;
     }
 
     /**
@@ -387,7 +385,9 @@ public class Game
                 if ( !Client.is() )
                 {
                     AsteroidsFrame.frame().localId = Game.loadFromFile();
+                    Local.loading = false;
                     Game.getInstance().setPaused( false, false );
+                    GameLoop.startLoop();
                 }
                 break;
 

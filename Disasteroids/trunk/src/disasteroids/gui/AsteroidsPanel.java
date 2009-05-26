@@ -111,7 +111,7 @@ public class AsteroidsPanel extends Panel
      */
     private void draw( Graphics g )
     {
-        if ( parent.localPlayer() == null )
+        if ( Local.isStuffNull() )
             return;
 
         if ( !GameLoop.isRunning() )

@@ -19,6 +19,8 @@ public class Local
      */
     static boolean globalFlash = true;
 
+    public static boolean loading = false;
+
     /**
      * Returns if commonly used things (like the AsteroidsFrame and Background) are null, and thus are loading.
      * 
@@ -27,7 +29,7 @@ public class Local
      */
     public static boolean isStuffNull()
     {
-        return ( AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null || AsteroidsFrame.frame().getPanel().getStarBackground() == null );
+        return ( loading || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null || AsteroidsFrame.frame().getPanel().getStarBackground() == null );
     }
 
     /**

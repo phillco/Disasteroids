@@ -17,6 +17,7 @@ import disasteroids.weapons.Weapon;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -132,6 +133,12 @@ public class Game
      */
     public static int loadFromFile()
     {
+        File file = new File( "res\\Game.save" );
+        if ( !file.exists() )
+        {
+            Running.log("There's no saved game to restore!");
+            return Local.getLocalPlayer().getId();
+        }
         GameLoop.stopLoop();
         Local.loading = true;
 
@@ -152,7 +159,7 @@ public class Game
         int id = -1;
         try
         {
-            FileInputStream fis = new FileInputStream( "res\\Game.save" );
+            FileInputStream fis = new FileInputStream( file );
             DataInputStream stream = new DataInputStream( fis );
 
             instance = new Game( stream );

@@ -148,6 +148,8 @@ public class Game
                 }
         }
 
+        /*
+
         int id = -1;
         try
         {
@@ -167,8 +169,8 @@ public class Game
 
         // [PC] This is required, possibly because we have to go back and do the timestep that was done after saving.
         instance.timeStep -= 1;
-        GameLoop.startLoop();
-        return id;
+        GameLoop.startLoop();*/
+        return Local.getLocalPlayer().getId();
     }
 
     /**

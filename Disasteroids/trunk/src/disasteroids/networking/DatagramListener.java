@@ -239,6 +239,7 @@ public abstract class DatagramListener
         public DatagramThread( String name, DatagramListener parent )
         {
             super( name );
+            setPriority( MAX_PRIORITY );
             this.parent = parent;
         }
 
@@ -273,6 +274,7 @@ public abstract class DatagramListener
         public ListenerThread( DatagramListener parent )
         {
             super( "Network listening thread", parent );
+            setPriority( MAX_PRIORITY );
             start();
         }
 

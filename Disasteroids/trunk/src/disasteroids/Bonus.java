@@ -220,6 +220,8 @@ public class Bonus extends GameObject
         lastHue = ( ( lastHue + 0.01f ) % 1 );
         lastHB = ( ( lastHB + 0.03f ) % 1 );
 
+        g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );
+
         switch ( Class.values()[bonusClass] )
         {
             case WEAPON:
@@ -242,11 +244,15 @@ public class Bonus extends GameObject
                 g.fillPolygon( p );
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
                 g.drawPolygon( p );
+                AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "A", Color.darkGray );
             }
             break;
             case WEAPON_POWERUP:
+            {
                 AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( 0, 0, ( (float) age ) / MAX_LIFE ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
-                break;
+                AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "P", Color.darkGray );
+            }
+            break;
             case SHIP_POWERUP:
             {
                 // Draws a square.
@@ -264,11 +270,10 @@ public class Bonus extends GameObject
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
                 g2.draw( rect );
                 g2.setTransform( previousTransform );
+                AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "S", Color.darkGray );
             }
             break;
         }
-        g.setFont( new Font( "Tahoma", Font.BOLD, 12 ) );
-        AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 4, (int) getCenterY() - 1, "B", Color.darkGray );
     }
 
     double getCenterX()

@@ -217,7 +217,7 @@ public class Missile extends Unit
         if ( isExploding() )
             return 10;
         else
-            return 80;
+            return 40;
     }
 
     /**

@@ -51,6 +51,10 @@ public class Game
 
     ObjectManager objectManager;
 
+    public enum GameType { COOPERATIVE, DEATHMATCH };
+
+    private GameType gameType;
+
     /**
      * The game mode that we're playing.
      */
@@ -64,13 +68,14 @@ public class Game
     /**
      * Creates the game.
      */
-    public Game( Class gameMode )
+    public Game( Class gameMode, GameType gameType )
     {
         Game.instance = this;
         timeStep = 0;
 
         actionManager = new ActionManager();
         objectManager = new ObjectManager();
+        this.gameType = gameType;
 
         try
         {
@@ -489,5 +494,10 @@ public class Game
     public ObjectManager getObjectManager()
     {
         return objectManager;
+    }
+
+    public GameType getGameType ()
+    {
+        return gameType;
     }
 }

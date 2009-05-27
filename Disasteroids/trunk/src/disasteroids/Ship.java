@@ -297,10 +297,16 @@ public class Ship extends GameObject implements ShootingObject
             AsteroidsFrame.frame().drawPolygon( g, col, ( myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ), outline );
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
+        // Draw shields.
         if ( shielded > 0 )
         {
-            for ( int i = 0; i < shielded / 100; i++ )
+            int i = 0;
+            for ( ; i < shielded / 100; i++ )
                 AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * i );
+
+            int shieledRemaining = shielded % 100;
+            if ( shieledRemaining > 0 )
+                AsteroidsFrame.frame().drawCircle( g, Color.getHSBColor( 0.5f, 1.0f, shieledRemaining / 100.0f ), (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * ( i ) );
         }
 
         if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )

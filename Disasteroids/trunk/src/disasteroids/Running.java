@@ -136,15 +136,17 @@ public class Running
     public static void startGame( MenuOption option )
     {
         Class gameMode = Settings.getLastGameMode();
+        Game.GameType gameType = Game.GameType.COOPERATIVE;
         switch ( option )
         {
             case START_SERVER:
                 gameMode = Deathmatch.class;
+                gameType = Game.GameType.DEATHMATCH;
                 new Server();
             // Fall-through
 
             case SINGLEPLAYER:
-                new Game( gameMode );
+                new Game( gameMode, gameType );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 AsteroidsFrame.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
                 Sound.updateMusic();
@@ -155,7 +157,7 @@ public class Running
                 break;
 
             case TUTORIAL:
-                new Game( TutorialMode.class );
+                new Game( TutorialMode.class, gameType );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 AsteroidsFrame.frame().showStartMessage( "Press any key to start the tutorial." );
                 Sound.updateMusic();

@@ -26,10 +26,11 @@ public class SniperManager extends Weapon
     private int damage = 1000;
 
     // Bonus IDs.
-    public int BONUS_INTERVALSHOOT = getNewBonusID();
+    public int BONUS_INTERVALSHOOT;
 
     public SniperManager()
     {
+        super();
         ammo = 20;        
     }
 
@@ -37,6 +38,7 @@ public class SniperManager extends Weapon
     protected void genericInit()
     {
         super.genericInit();
+        BONUS_INTERVALSHOOT = getNewBonusID();
         bonusValues.put( BONUS_INTERVALSHOOT, new BonusValue( 30, 10, "Faster reloading" ) );
     }
 

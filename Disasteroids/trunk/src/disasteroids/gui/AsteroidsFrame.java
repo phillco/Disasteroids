@@ -447,7 +447,8 @@ public class AsteroidsFrame extends Frame
         @Override
         public void windowGainedFocus( WindowEvent e )
         {
-            AsteroidsFrame.frame().addKeyListener( KeystrokeManager.getInstance() );
+            //[MW] this seemed to be the problem with the focus being lost, so fixed
+            //AsteroidsFrame.frame().addKeyListener( KeystrokeManager.getInstance() );
         }
 
         public void componentResized( ComponentEvent e )

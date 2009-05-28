@@ -32,9 +32,9 @@ public class Machine
      * @since January 10, 2007
      */
     public long lastSeen;
-    
+
     public static int multPacketId = 0;
-    
+
     /**
      * Constructs the machine.
      * 
@@ -100,6 +100,6 @@ public class Machine
     @Override
     public String toString()
     {
-        return address.toString() + ":" + port;
+        return address.toString().substring( 1 ) + ":" + port;
     }
 }

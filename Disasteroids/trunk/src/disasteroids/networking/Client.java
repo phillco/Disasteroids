@@ -287,4 +287,9 @@ public class Client extends DatagramListener
         server = null;
         instance = null;
     }
+
+    public Machine getServerAddress()
+    {
+        return server;
+    }
 }

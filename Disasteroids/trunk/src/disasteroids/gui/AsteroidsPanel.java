@@ -299,6 +299,15 @@ public class AsteroidsPanel extends Panel
             y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
             g2d.drawString( "~ = berserk!", 250, y );
             y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "Number keys = quick switch to weapons", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            g2d.drawString( "Home = detonate missiles", 250, y );
+            y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() );
+            if ( Server.is() || Client.is() )
+            {
+                y += (int) ( g2d.getFont().getStringBounds( "A", g2d.getFontRenderContext() ).getHeight() * 2);
+                g2d.drawString( "Server IP: " + (Server.is() ? Server.getLocalIP() : Client.getInstance().getServerAddress().toString() ), 250, y );
+            }
 
 
 

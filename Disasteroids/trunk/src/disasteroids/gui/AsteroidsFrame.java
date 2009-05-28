@@ -11,6 +11,7 @@ import disasteroids.Settings;
 import disasteroids.Ship;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
+import disasteroids.sound.Sound;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -97,6 +98,7 @@ public class AsteroidsFrame extends Frame
         // Receive key events.
         addKeyListener( new KeystrokeManager() );
 
+        Sound.updateMusic();
         GameLoop.startLoop();
     }
 

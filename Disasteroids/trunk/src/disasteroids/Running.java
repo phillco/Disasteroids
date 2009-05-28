@@ -26,7 +26,7 @@ public class Running
      * 
      * @since January 18, 2008
      */
-    private static int errorCount = 0,  warningCount = 0;
+    private static int errorCount = 0, warningCount = 0;
 
     public static boolean isRunningFromJar = false;
 
@@ -132,7 +132,6 @@ public class Running
      * @param option    the selected game choice
      * @since Classic
      */
-    @SuppressWarnings ( "fallthrough" )
     public static void startGame( MenuOption option )
     {
         Class gameMode = Settings.getLastGameMode();
@@ -143,26 +142,26 @@ public class Running
                 gameMode = Deathmatch.class;
                 gameType = Game.GameType.DEATHMATCH;
                 new Server();
-            // Fall-through
-
+                new Game( gameMode, gameType );
+                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
+                AsteroidsFrame.frame().showStartMessage( "Server started!\nAddress is: " + Server.getLocalIP() + "\nPress F1 for help." );
+                Running.log( "Server started! The address is: " + Server.getLocalIP() + "\n." );
+                Game.getInstance().setPaused( false, false );
+                break;
             case SINGLEPLAYER:
                 new Game( gameMode, gameType );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 AsteroidsFrame.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
-                Sound.updateMusic();
                 break;
             case LOAD:
                 new AsteroidsFrame( Game.loadFromFile() );
                 Game.getInstance().setPaused( false, false );
                 break;
-
             case TUTORIAL:
                 new Game( TutorialMode.class, gameType );
                 new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 AsteroidsFrame.frame().showStartMessage( "Press any key to start the tutorial." );
-                Sound.updateMusic();
                 break;
-
             case CONNECT:
                 // Get the server address.
                 String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.getLastConnectionIP() );

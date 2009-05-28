@@ -234,9 +234,8 @@ public class ObjectManager implements GameElement
 
     public void printDebugInfo()
     {
-        System.out.println( "Number of objects: " + gameObjects.size() );
-        System.out.println( "Last ID given: " + nextAvailibleId );
+        Running.log( "Number of objects: " + gameObjects.size() + " / Last ID given: " + nextAvailibleId );
         if ( numOverflows > 0 )
-            System.out.println( "Number of ID overflows: " + numOverflows );
+            Running.log( "Number of ID overflows: " + numOverflows );
     }
 }

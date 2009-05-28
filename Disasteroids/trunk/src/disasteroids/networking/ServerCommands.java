@@ -4,9 +4,7 @@
  */
 package disasteroids.networking;
 
-import disasteroids.GameObject;
-import disasteroids.Running;
-import disasteroids.Ship;
+import disasteroids.*;
 import disasteroids.networking.DatagramListener.ByteOutputStream;
 import java.io.IOException;
 
@@ -31,26 +29,6 @@ public class ServerCommands
         catch ( IOException ex )
         {
             Running.warning( "Network stream failure, updatePause", ex );
-        }
-    }
-
-    /**
-     * Updates clients about a player's position and speed.
-     */
-    public static void updatePlayerPosition( Ship s )
-    {
-        try
-        {
-            ByteOutputStream out = new ByteOutputStream();
-            out.writeInt( Server.Message.PLAYER_UPDATE_POSITION.ordinal() );
-            out.writeLong( s.getId() );
-            s.flattenPosition( out );
-            out.writeInt( s.getWeaponIndex() );
-            Server.getInstance().sendPacketToAllPlayers( out );
-        }
-        catch ( IOException ex )
-        {
-            Running.warning( "Network stream failure, updatePlayerPosition", ex );
         }
     }
 
@@ -88,6 +66,25 @@ public class ServerCommands
         catch ( IOException ex )
         {
             Running.warning( "Network stream failure, strafe", ex );
+        }
+    }
+
+    /**
+     * Updates clients about a object's position and speed.
+     */
+    public static void updateObjectVelocity( GameObject go )
+    {
+        try
+        {
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt( Server.Message.OBJECT_UPDATE_VELOCITY.ordinal() );
+            out.writeLong( go.getId() );
+            go.flattenPosition( out );
+            Server.getInstance().sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
+            Running.warning( "Network stream failure, changeBonusVelocity", ex );
         }
     }
 

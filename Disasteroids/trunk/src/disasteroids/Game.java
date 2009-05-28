@@ -432,7 +432,7 @@ public class Game
         }
 
         if ( Server.is() )
-            ServerCommands.updatePlayerPosition( actor );
+            ServerCommands.updateObjectVelocity( actor );
     }
 
     /**

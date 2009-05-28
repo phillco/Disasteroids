@@ -8,6 +8,7 @@ import disasteroids.Asteroid;
 import disasteroids.gui.AsteroidsFrame;
 import disasteroids.Game;
 import disasteroids.GameLoop;
+import disasteroids.GameObject;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
@@ -163,8 +164,8 @@ public class Client extends DatagramListener
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
                         Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
                         break;
-                    case PLAYER_UPDATE_POSITION:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).restorePosition( in );
+                    case OBJECT_UPDATE_VELOCITY:
+                        Game.getInstance().getObjectManager().getObject( in.readLong() ).restorePosition( in );
                         break;
                     case PLAYER_BERSERK:
                         ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).berserk();
@@ -176,7 +177,12 @@ public class Client extends DatagramListener
                         Game.getInstance().getObjectManager().addObjectFromStream( in );
                         break;
                     case OBJECT_REMOVED:
-                        Game.getInstance().getObjectManager().removeObject( Game.getInstance().getObjectManager().getObject( in.readLong() ) );
+                        id = in.readLong();
+                        GameObject go = Game.getInstance().getObjectManager().getObject( id );
+                        if ( go == null )
+                            Running.fatalError( "NETWORK DESYNC! :(\nObject #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...");
+                        else
+                            Game.getInstance().getObjectManager().removeObject( go );
                         break;
                     default:
                         System.out.println( "Weird packet - " + command + "." );

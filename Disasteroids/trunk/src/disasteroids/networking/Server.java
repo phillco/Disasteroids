@@ -46,12 +46,12 @@ public class Server extends DatagramListener
         //=================
         PLAYER_JOINED,
         PLAYER_QUIT,
-        PLAYER_UPDATE_POSITION,
         PLAYER_STRAFE,
         PLAYER_BERSERK,
         //======
         // MISC
         //======
+        OBJECT_UPDATE_VELOCITY,
         OBJECT_CREATED,
         OBJECT_REMOVED;
 

@@ -9,6 +9,8 @@ import disasteroids.gui.Local;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.RelativeGraphics;
+import disasteroids.networking.Server;
+import disasteroids.networking.ServerCommands;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -89,15 +91,26 @@ public class Bonus extends GameObject
         ax *= 0.98;
         ay *= 0.98;
 
+        boolean bVelocityChanged = false;
         if ( Math.abs( ax ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+        {
             ax = Util.getRandomGenerator().nextDouble() * 0.08 - 0.04;
+            bVelocityChanged = true;
+        }
         if ( Math.abs( ay ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+        {
             ay = Util.getRandomGenerator().nextDouble() * 0.08 - 0.04;
+            bVelocityChanged = true;
+        }
         if ( Util.getRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
         {
             ax *= -1.2;
             ay *= -1.2;
+            bVelocityChanged = true;
         }
+
+        if ( bVelocityChanged && Server.is() )
+            ServerCommands.updateObjectVelocity( this );
 
         ++age;
         if ( age > MAX_LIFE )
@@ -182,7 +195,7 @@ public class Bonus extends GameObject
                 message = player.getWeaponManager().applyBonus();
 
                 // No bonus for this weapon? Just give ammo instead.
-                if ( message.equals( "" ) && ( !player.getWeaponManager().isInfiniteAmmo() ))
+                if ( message.equals( "" ) && ( !player.getWeaponManager().isInfiniteAmmo() ) )
                 {
                     message = "Got ammo for " + player.getWeaponManager().getName() + ".";
                     player.getWeaponManager().giveAmmo();
@@ -286,6 +299,22 @@ public class Bonus extends GameObject
         return getY() + RADIUS / 2;
     }
 
+    @Override
+    public void flattenPosition( DataOutputStream stream ) throws IOException
+    {
+        super.flattenPosition( stream );
+        stream.writeDouble( ax );
+        stream.writeDouble( ay );
+    }
+
+    @Override
+    public void restorePosition( DataInputStream stream ) throws IOException
+    {
+        super.restorePosition( stream );
+        ax = stream.readDouble();
+        ay = stream.readDouble();
+    }
+
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
@@ -297,8 +326,7 @@ public class Bonus extends GameObject
     public void flatten( DataOutputStream stream ) throws IOException
     {
         super.flatten( stream );
-        stream.writeDouble( ax );
-        stream.writeDouble( ay );
+
         stream.writeInt( bonusClass );
         stream.writeInt( bonusType );
         stream.writeInt( age );
@@ -316,8 +344,7 @@ public class Bonus extends GameObject
     public Bonus( DataInputStream stream ) throws IOException
     {
         super( stream );
-        ax = stream.readDouble();
-        ay = stream.readDouble();
+
         bonusClass = stream.readInt();
         bonusType = stream.readInt();
         age = stream.readInt();

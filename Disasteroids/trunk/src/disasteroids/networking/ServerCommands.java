@@ -43,7 +43,7 @@ public class ServerCommands
         {
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Server.Message.PLAYER_UPDATE_POSITION.ordinal() );
-            out.writeInt( s.getId() );
+            out.writeLong( s.getId() );
             s.flattenPosition( out );
             out.writeInt( s.getWeaponIndex() );
             Server.getInstance().sendPacketToAllPlayers( out );
@@ -57,13 +57,13 @@ public class ServerCommands
     /**
      * Notifies clients that the <code>Ship</code> with given id has just berserked.
      */
-    public static void berserk( int id )
+    public static void berserk( long id )
     {
         try
         {
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Server.Message.PLAYER_BERSERK.ordinal() );
-            out.writeInt( id );
+            out.writeLong( id );
             Server.getInstance().sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )
@@ -75,13 +75,13 @@ public class ServerCommands
     /**
      * Notifies clients that the <code>Ship</code> with given id has just strafed.
      */
-    public static void strafe( int id, boolean toRight )
+    public static void strafe( long id, boolean toRight )
     {
         try
         {
             ByteOutputStream out = new ByteOutputStream();
             out.writeInt( Server.Message.PLAYER_STRAFE.ordinal() );
-            out.writeInt( id );
+            out.writeLong( id );
             out.writeBoolean( toRight );
             Server.getInstance().sendPacketToAllPlayers( out );
         }
@@ -108,7 +108,7 @@ public class ServerCommands
             else
             {
                 out.writeInt( Server.Message.OBJECT_REMOVED.ordinal() );
-                out.writeInt( go.getId() );
+                out.writeLong( go.getId() );
             }
             Server.getInstance().sendPacketToAllPlayers( out );
         }

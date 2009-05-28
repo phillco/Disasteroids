@@ -143,12 +143,12 @@ public class Server extends DatagramListener
                         Running.log( "Connection from " + client.toString() + " accepted." );
 
                         // Spawn him in (so he'll be included in the update).
-                        int id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt() ) );
+                        long id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt() ) );
 
                         // Send him a full update.
                         out.writeInt( Message.FULL_UPDATE.ordinal() );
                         Game.getInstance().flatten( out );
-                        out.writeInt( id );
+                        out.writeLong( id );
 
                         // Associate this client with the ship.
                         client.inGamePlayer = (Ship) Game.getInstance().getObjectManager().getObject( id );
@@ -186,7 +186,7 @@ public class Server extends DatagramListener
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( false ); // Not a timeout.
-                        out.writeInt( client.inGamePlayer.getId() );
+                        out.writeLong( client.inGamePlayer.getId() );
 
                         sendPacketToAllButOnePlayer( out, client );
                 }
@@ -299,7 +299,7 @@ public class Server extends DatagramListener
 
                         out.writeInt( Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( true );
-                        out.writeInt( cm.inGamePlayer.getId() );
+                        out.writeLong( cm.inGamePlayer.getId() );
                         sendPacketToAllButOnePlayer( out, cm );
                     }
                     catch ( IOException ex )

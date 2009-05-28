@@ -90,8 +90,8 @@ public class BlackHole extends GameObject
     {
         Set<GameObject> closeObjects = new HashSet<GameObject>();
 
-        // Add asteroids.
-        for ( int id : Game.getInstance().getObjectManager().getAllIds() )
+        // Add game objects.
+        for ( long id : Game.getInstance().getObjectManager().getAllIds() )
             if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id ) ) < ATTRACTION_RADIUS )
                 closeObjects.add( Game.getInstance().getObjectManager().getObject( id ) );
 

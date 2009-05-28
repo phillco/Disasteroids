@@ -53,7 +53,7 @@ public class AsteroidsFrame extends Frame
     /**
      * ID of the player that's at this computer.
      */
-    public int localId;
+    public long localId;
 
     private static AsteroidsFrame frame;
 
@@ -68,7 +68,7 @@ public class AsteroidsFrame extends Frame
      * @param localId   id of the player at this computer
      * @since December 14, 2007
      */
-    public AsteroidsFrame( int localId )
+    public AsteroidsFrame( long localId )
     {
         frame = this;
         this.localId = localId;

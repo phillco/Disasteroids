@@ -120,7 +120,7 @@ public class Game
 
             instance.flatten( stream );
 
-            stream.writeInt( Local.getLocalPlayer().getId() );
+            stream.writeLong( Local.getLocalPlayer().getId() );
             stream.flush();
             fos.close();
         }
@@ -136,7 +136,7 @@ public class Game
     /**
      * Loads the game from <code>res\Game.save</code> and returns the local player ID.
      */
-    public static int loadFromFile()
+    public static long loadFromFile()
     {
         File file = new File( "res\\Game.save" );
         if ( !file.exists() )
@@ -201,7 +201,7 @@ public class Game
      * @param c     the player's color
      * @return      the new player's id
      */
-    public int addPlayer( String name, Color c )
+    public long addPlayer( String name, Color c )
     {
         Ship s = new Ship( GAME_WIDTH / 2 - ( objectManager.getPlayers().size() * 100 ), GAME_HEIGHT / 2, c, Ship.START_LIVES, name );
         addPlayer( s );

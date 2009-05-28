@@ -49,7 +49,7 @@ public class Mine extends Unit
         // Explode if an object comes too close.
         if ( isArmed() )
         {
-            for ( int id : Game.getInstance().getObjectManager().getAllIds() )
+            for ( long id : Game.getInstance().getObjectManager().getAllIds() )
             {
                 GameObject go = Game.getInstance().getObjectManager().getObject( id );
                 if ( go instanceof BlackHole || go instanceof Bonus || ( go instanceof Ship && ( ( (Ship) go ) == parent.getParent() ) ) )
@@ -77,7 +77,7 @@ public class Mine extends Unit
             if ( myTarget == null )
             {
                 GameObject closestObject = null;
-                for ( int id : Game.getInstance().getObjectManager().getAllIds() )
+                for ( long id : Game.getInstance().getObjectManager().getAllIds() )
                 {
                     GameObject go = Game.getInstance().getObjectManager().getObject( id );
 

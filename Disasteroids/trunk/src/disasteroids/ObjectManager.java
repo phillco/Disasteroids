@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
 import disasteroids.networking.Server;
 import disasteroids.networking.ServerCommands;
@@ -24,25 +25,15 @@ public class ObjectManager implements GameElement
     /**
      * The mother map of all game objects. Objects are mapped to their IDs.
      */
-    private ConcurrentHashMap<Integer, GameObject> gameObjects = new ConcurrentHashMap<Integer, GameObject>( 500 );
+    private ConcurrentHashMap<Long, GameObject> gameObjects = new ConcurrentHashMap<Long, GameObject>( 500 );
 
     private ConcurrentLinkedQueue<Asteroid> asteroids = new ConcurrentLinkedQueue<Asteroid>();
-
-    /**
-     * Reference list of all black holes.
-     */
     private ConcurrentLinkedQueue<BlackHole> blackHoles = new ConcurrentLinkedQueue<BlackHole>();
-
-    /**
-     * Reference list of players.
-     */
     private ConcurrentLinkedQueue<Ship> players = new ConcurrentLinkedQueue<Ship>();
-
-    /**
-     * Reference list of all objects that shoot.
-     */
     private ConcurrentLinkedQueue<ShootingObject> shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
 
+    private long nextAvailibleId = 0;
+    
     /**
      * Reference list all of living objects on the level that the player must destroy (aliens, stations, and so on).
      */
@@ -54,14 +45,14 @@ public class ObjectManager implements GameElement
 
     public void act()
     {
-        for ( int id : gameObjects.keySet() )
+        for ( long id : gameObjects.keySet() )
             if ( gameObjects.get( id ) != null )
                 gameObjects.get( id ).act();
     }
 
     public void draw( Graphics g )
     {
-        for ( int id : gameObjects.keySet() )
+        for ( long id : gameObjects.keySet() )
         {
             if ( !GameLoop.isRunning() )
                 return;
@@ -72,6 +63,20 @@ public class ObjectManager implements GameElement
 
         for ( BlackHole b : blackHoles )
             b.draw( g );
+    }
+
+    public long getNewId()
+    {
+        if ( Client.is())
+            throw new UnsupportedOperationException( "Clients should not call getNewId().");
+        
+        if ( nextAvailibleId == Long.MAX_VALUE )
+        {
+            nextAvailibleId = Long.MIN_VALUE;
+            System.out.println( "Note: ID values filled; wrapping over." );
+        }
+        nextAvailibleId++;
+        return nextAvailibleId;
     }
 
     public void addObject( GameObject go )
@@ -121,7 +126,7 @@ public class ObjectManager implements GameElement
     public void flatten( DataOutputStream stream ) throws IOException
     {
         stream.writeInt( gameObjects.size() );
-        for ( int id : gameObjects.keySet() )
+        for ( long id : gameObjects.keySet() )
         {
             stream.writeInt( Constants.parseGameObject( gameObjects.get( id ) ) );
             gameObjects.get( id ).flatten( stream );
@@ -169,7 +174,7 @@ public class ObjectManager implements GameElement
 
     public void clearObstacles()
     {
-        for ( int id : gameObjects.keySet() )
+        for ( long id : gameObjects.keySet() )
         {
             if ( gameObjects.get( id ) instanceof Alien || gameObjects.get( id ) instanceof BlackHole ||
                     gameObjects.get( id ) instanceof Asteroid || gameObjects.get( id ) instanceof Bonus ||
@@ -193,7 +198,7 @@ public class ObjectManager implements GameElement
         return blackHoles;
     }
 
-    public Set<Integer> getAllIds()
+    public Set<Long> getAllIds()
     {
         return gameObjects.keySet();
     }
@@ -208,12 +213,12 @@ public class ObjectManager implements GameElement
         return shootingObjects;
     }
 
-    public GameObject getObject( int id )
+    public GameObject getObject( long id )
     {
         return gameObjects.get( id );
     }
 
-    public boolean contains( int id )
+    public boolean contains( long id )
     {
         return gameObjects.containsKey( id );
     }

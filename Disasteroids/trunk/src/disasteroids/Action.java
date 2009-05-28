@@ -72,7 +72,7 @@ public class Action
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt( actor.getId() );
+        stream.writeLong( actor.getId() );
         stream.writeInt( keyCode );
         stream.writeLong( timestep );
     }
@@ -82,7 +82,7 @@ public class Action
      */
     public Action( DataInputStream stream ) throws IOException
     {
-        actor = (Ship) Game.getInstance().getObjectManager().getObject( stream.readInt() );
+        actor = (Ship) Game.getInstance().getObjectManager().getObject( stream.readLong() );
         keyCode = stream.readInt();
         timestep = stream.readLong();
     }

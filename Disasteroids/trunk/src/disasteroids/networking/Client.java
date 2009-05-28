@@ -139,7 +139,7 @@ public class Client extends DatagramListener
 
                         // Receive status of the entire game.
                         new Game( in );
-                        int id = in.readInt();
+                        long id = in.readLong();
                         System.out.println( "...done. Our ID is: " + id + "." );
 
                         // Start the game.
@@ -161,22 +161,22 @@ public class Client extends DatagramListener
                         break;
                     case PLAYER_QUIT:
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ), quitReason );
+                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
                         break;
                     case PLAYER_UPDATE_POSITION:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).restorePosition( in );
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).restorePosition( in );
                         break;
                     case PLAYER_BERSERK:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).berserk();
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).berserk();
                         break;
                     case PLAYER_STRAFE:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readInt() ) ).strafe( in.readBoolean() );
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).strafe( in.readBoolean() );
                         break;
                     case OBJECT_CREATED:
                         Game.getInstance().getObjectManager().addObjectFromStream( in );
                         break;
                     case OBJECT_REMOVED:
-                        Game.getInstance().getObjectManager().removeObject( Game.getInstance().getObjectManager().getObject( in.readInt() ) );
+                        Game.getInstance().getObjectManager().removeObject( Game.getInstance().getObjectManager().getObject( in.readLong() ) );
                         break;
                     default:
                         System.out.println( "Weird packet - " + command + "." );

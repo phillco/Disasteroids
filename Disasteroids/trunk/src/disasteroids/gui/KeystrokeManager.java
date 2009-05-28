@@ -29,7 +29,7 @@ public class KeystrokeManager implements KeyListener
         UN_FORWARDS, UN_BACKWARDS, BRAKE, UN_BRAKE, BERSERK, STRAFE_RIGHT,
         STRAFE_LEFT, EXPLODE_ALL, ROTATE_WEAPONS, SET_WEAPON_1, SET_WEAPON_2,
         SET_WEAPON_3, SET_WEAPON_4, SET_WEAPON_5, SET_WEAPON_6, SET_WEAPON_7,
-        SET_WEAPON_8, SET_WEAPON_9, PAUSE, SAVE, LOAD, DEVKEY, BENCHMARK_FPS, TOGGLE_HELP
+        SET_WEAPON_8, SET_WEAPON_9, PAUSE, SAVE, LOAD, BENCHMARK_FPS, TOGGLE_HELP
 
     };
     private HashMap<Integer, ActionType> keyboardLayout = new HashMap<Integer, ActionType>();
@@ -81,6 +81,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_T, ActionType.SAVE );
         keyboardLayout.put( KeyEvent.VK_Y, ActionType.LOAD );
         keyboardLayout.put( KeyEvent.VK_F1, ActionType.TOGGLE_HELP );
+        
         keyboardLayout.put( KeyEvent.VK_F9, ActionType.BENCHMARK_FPS );
         keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY );
         keyboardLayout.put( KeyEvent.VK_F12, ActionType.TOGGLE_TRACKER );
@@ -172,10 +173,6 @@ public class KeystrokeManager implements KeyListener
                 break;
             case TOGGLE_HELP:
                 AsteroidsFrame.frame().getPanel().toggleHelp();
-                break;
-
-            case BENCHMARK_FPS:
-                AsteroidsFrame.frame().getPanel().startBenchmarkingFPS();
                 break;
             default:
                 if ( Game.getInstance().isPaused() )

@@ -39,6 +39,8 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
      */
     private int flashControl = 0;
 
+    private int timeInMenu = 0;
+
     public MainMenu()
     {
         // Receive key events.
@@ -50,6 +52,8 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
     {
         // Draw background and shared elements.
         super.paint( g );
+
+        timeInMenu++;
 
         // Some positioning.
         int y = 0;
@@ -63,7 +67,10 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         y += 75;
         g.setColor( Settings.getPlayerColor().darker().darker().darker().darker() );
         g.setFont( new Font( "Tahoma", Font.BOLD, 36 ) );
-        g.drawString( title, 140, 80 );
+        if ( Settings.isInSetup() && timeInMenu < 50 )
+            g.drawString( title,(int) (140 - 50 / Math.pow(timeInMenu, 1.2)), 80 );
+        else
+            g.drawString( title, 140, 80 );
 
         y += 90;
 

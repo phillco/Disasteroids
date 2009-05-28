@@ -48,6 +48,7 @@ public class Settings
      */
     public static boolean loadFromStorage()
     {
+        boolean bSuccess = true;
         try
         {
             // Create the default settings.
@@ -73,8 +74,7 @@ public class Settings
 
             // Load the settings file.
             File settingsFile = new File( SETTINGS_FILE_PATH );
-
-            boolean bSuccess = true;
+            
             if ( settingsFile.exists() )
                 userSettings.load( new FileInputStream( settingsFile ) );
             else
@@ -93,7 +93,7 @@ public class Settings
         }
 
         // Success!
-        return true;
+        return bSuccess;
     }
 
     /**

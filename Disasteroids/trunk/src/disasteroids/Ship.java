@@ -744,9 +744,10 @@ public class Ship extends GameObject implements ShootingObject
     /**
      * Writes our position, angle, key presses, and speed.
      */
+    @Override
     public void flattenPosition( DataOutputStream stream ) throws IOException
     {
-        super.flatten( stream );
+        super.flattenPosition( stream );
         stream.writeDouble( angle );
         stream.writeBoolean( left );
         stream.writeBoolean( right );
@@ -759,9 +760,10 @@ public class Ship extends GameObject implements ShootingObject
     /**
      * Reads our position, angle, key presses, and speed.
      */
+    @Override
     public void restorePosition( DataInputStream stream ) throws IOException
     {
-        super.restore( stream );
+        super.restorePosition( stream );
         angle = stream.readDouble();
         left = stream.readBoolean();
         right = stream.readBoolean();
@@ -777,7 +779,7 @@ public class Ship extends GameObject implements ShootingObject
     @Override
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        flattenPosition( stream );
+        super.flatten( stream );
         stream.writeInt( invincibilityCount );
         stream.writeInt( myColor.getRGB() );
 
@@ -803,7 +805,7 @@ public class Ship extends GameObject implements ShootingObject
      */
     public Ship( DataInputStream stream ) throws IOException
     {
-        restorePosition( stream );
+        super( stream );
         invincibilityCount = stream.readInt();
         myColor = new Color( stream.readInt() );
 

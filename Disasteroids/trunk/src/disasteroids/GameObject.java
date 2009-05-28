@@ -194,6 +194,20 @@ public abstract class GameObject implements GameElement
         return Math.sqrt( getDx() * getDx() + getDy() * getDy() );
     }
 
+    public void flattenPosition( DataOutputStream stream ) throws IOException
+    {
+        stream.writeDouble( getX() );
+        stream.writeDouble( getY() );
+        stream.writeDouble( getDx() );
+        stream.writeDouble( getDy() );
+    }
+
+    public void restorePosition( DataInputStream stream ) throws IOException
+    {
+        setLocation( stream.readDouble(), stream.readDouble() );
+        setVelocity( stream.readDouble(), stream.readDouble() );
+    }
+
     /**
      * Writes <code>this</code> to a stream for client/server transmission.
      * 
@@ -204,10 +218,8 @@ public abstract class GameObject implements GameElement
     public void flatten( DataOutputStream stream ) throws IOException
     {
         stream.writeLong( getId() );
-        stream.writeDouble( getX() );
-        stream.writeDouble( getY() );
-        stream.writeDouble( getDx() );
-        stream.writeDouble( getDy() );
+        flattenPosition( stream );
+
     }
 
     /**
@@ -220,8 +232,7 @@ public abstract class GameObject implements GameElement
     public void restore( DataInputStream stream ) throws IOException
     {
         id = stream.readLong();
-        setLocation( stream.readDouble(), stream.readDouble() );
-        setVelocity( stream.readDouble(), stream.readDouble() );
+        restorePosition( stream );
     }
 
     /**

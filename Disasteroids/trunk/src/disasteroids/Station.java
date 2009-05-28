@@ -4,16 +4,9 @@
  */
 package disasteroids;
 
-import disasteroids.weapons.Missile;
-import disasteroids.weapons.Mine;
-import disasteroids.weapons.Weapon;
-import disasteroids.weapons.MissileManager;
-import disasteroids.gui.Local;
-import disasteroids.gui.RelativeGraphics;
-import disasteroids.sound.Sound;
-import disasteroids.gui.ParticleManager;
-import disasteroids.sound.SoundLibrary;
-import disasteroids.weapons.Unit;
+import disasteroids.weapons.*;
+import disasteroids.gui.*;
+import disasteroids.sound.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;

@@ -26,7 +26,7 @@ public class BlackHole extends GameObject
     /**
      * The radius of our attraction circle, in pixels.
      */
-    final static int ATTRACTION_RADIUS = 400;
+    final static int ATTRACTION_RADIUS = 425;
 
     /**
      * The pulling power this black hole exerts, in pixels/second^2.
@@ -62,7 +62,13 @@ public class BlackHole extends GameObject
         for ( GameObject go : victims )
         {
             double angle = Util.getAngle( this, go );
-            double magnitude = Math.min( Math.pow( power, 1.7 ) / Math.pow( Util.getDistance( this, go ), 1.7 ), 1 );
+            /*TODO: I think the problem is the magnitude so lets find a better way for this.
+             * this is the old way that didn't work...not sure why, it may have defaulted to 0
+             * double magnitude = Math.min( Math.pow( power, 1.7 ) / Math.pow( Util.getDistance( this, go ), 1.7 ), 1 );
+             * .1 works fairly well. It can still be deadly but is still easy to escape from.
+             * delete TODO if we think this is fine...
+            */
+            double magnitude = .1;
             go.setVelocity( go.getDx() + magnitude * Math.cos( angle ), go.getDy() + magnitude * Math.sin( angle ) );
 
             // Too close to the center! Destroy him!

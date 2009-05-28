@@ -51,8 +51,11 @@ public class Game
 
     ObjectManager objectManager;
 
-    public enum GameType { COOPERATIVE, DEATHMATCH };
+    public enum GameType
+    {
+        COOPERATIVE, DEATHMATCH
 
+    };
     private GameType gameType;
 
     /**
@@ -141,7 +144,7 @@ public class Game
         File file = new File( "res\\Game.save" );
         if ( !file.exists() )
         {
-            Running.log("There's no saved game to restore!");
+            Running.log( "There's no saved game to restore!" );
             return Local.getLocalPlayer().getId();
         }
         GameLoop.stopLoop();
@@ -403,24 +406,26 @@ public class Game
                 }
                 break;
 
-            case DEVKEY:
+            case DEVKEY_BONUS:
                 if ( !Client.is() )
                 {
                     // Spawns bonus
                     objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
 
-                    //if ( Util.getRandomGenerator().nextInt(10) == 0)
-                    objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) );
-
-
-
                     // Gives ammo to all guns.
                     for ( Weapon w : Local.getLocalPlayer().getManagers() )
                     {
                         w.giveAmmo();
-                        w.getBonusValue( w.BONUS_FASTERBERSERK).override( 9999);
+                        w.getBonusValue( w.BONUS_FASTERBERSERK ).override( 9999 );
                     }
                 }
+                break;
+
+            case DEVKEY_ENEMY:
+                objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) );
+                break;
+            case DEVKEY_DEBUG:
+                getObjectManager().printDebugInfo();
                 break;
             default:
                 break;
@@ -496,7 +501,7 @@ public class Game
         return objectManager;
     }
 
-    public GameType getGameType ()
+    public GameType getGameType()
     {
         return gameType;
     }

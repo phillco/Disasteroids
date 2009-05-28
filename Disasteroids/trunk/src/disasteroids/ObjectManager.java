@@ -32,7 +32,15 @@ public class ObjectManager implements GameElement
     private ConcurrentLinkedQueue<Ship> players = new ConcurrentLinkedQueue<Ship>();
     private ConcurrentLinkedQueue<ShootingObject> shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
 
+    /**
+     * The next ID we can give to an object.
+     */
     private long nextAvailibleId = 0;
+
+    /**
+     * The number of times nextAvailibleId has been cycled (overflown).
+     */
+    private int numOverflows = 0;
     
     /**
      * Reference list all of living objects on the level that the player must destroy (aliens, stations, and so on).
@@ -73,6 +81,7 @@ public class ObjectManager implements GameElement
         if ( nextAvailibleId == Long.MAX_VALUE )
         {
             nextAvailibleId = Long.MIN_VALUE;
+            numOverflows++;
             System.out.println( "Note: ID values filled; wrapping over." );
         }
         nextAvailibleId++;
@@ -221,5 +230,13 @@ public class ObjectManager implements GameElement
     public boolean contains( long id )
     {
         return gameObjects.containsKey( id );
+    }
+
+    public void printDebugInfo()
+    {
+        System.out.println( "Number of objects: " + gameObjects.size() );
+        System.out.println( "Last ID given: " + nextAvailibleId );
+        if ( numOverflows > 0 )
+            System.out.println( "Number of ID overflows: " + numOverflows );
     }
 }

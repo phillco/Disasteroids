@@ -43,7 +43,7 @@ public class TutorialMode implements GameMode
         if ( stage == 2 && counter > 200 )
         {
             nextStage();
-            Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 150, 0, -0.5, 150, 5 ) );
+            Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 150, 0, -0.5, 150, 5 ), true );
         }
 
         // Ram it!
@@ -69,7 +69,7 @@ public class TutorialMode implements GameMode
             for ( int i = 0; i < 8; i++ )
                 Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
                                                                                Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
-                                                                               Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2, Util.getRandomGenerator().nextInt( 50 ) + 60, 50 ) );
+                                                                               Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2, Util.getRandomGenerator().nextInt( 50 ) + 60, 50 ), true );
         }
 
         // Take it out!
@@ -95,7 +95,7 @@ public class TutorialMode implements GameMode
             for ( int i = 0; i < 4; i++ )
                 Game.getInstance().getObjectManager().addObject( new Alien( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
                                                                             Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
-                                                                            Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2 ) );
+                                                                            Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2 ), true );
         }
 
         // Here they come!

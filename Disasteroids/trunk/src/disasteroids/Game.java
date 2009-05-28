@@ -216,7 +216,7 @@ public class Game
      */
     public void addPlayer( Ship newPlayer )
     {
-        objectManager.addObject( newPlayer );
+        objectManager.addObject( newPlayer , false);
         Running.log( newPlayer.getName() + " entered the game.", 800 );
     }
 
@@ -410,7 +410,7 @@ public class Game
                 if ( !Client.is() )
                 {
                     // Spawns bonus
-                    objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) );
+                    objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) , false);
 
                     // Gives ammo to all guns.
                     for ( Weapon w : Local.getLocalPlayer().getManagers() )
@@ -422,7 +422,8 @@ public class Game
                 break;
 
             case DEVKEY_ENEMY:
-                objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) );
+                if ( !Client.is() )
+                    objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) , false);
                 break;
             case DEVKEY_DEBUG:
                 getObjectManager().printDebugInfo();
@@ -493,7 +494,7 @@ public class Game
 
     public void createBonus( GameObject parent )
     {
-        objectManager.addObject( new Bonus( parent.getX(), parent.getY() ) );
+        objectManager.addObject( new Bonus( parent.getX(), parent.getY() ) , false);
     }
 
     public ObjectManager getObjectManager()

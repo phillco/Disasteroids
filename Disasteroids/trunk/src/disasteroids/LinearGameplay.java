@@ -47,7 +47,7 @@ public class LinearGameplay implements GameMode
                                                                            rand.nextDouble() * 6 - 3,
                                                                            rand.nextDouble() * 6 - 3,
                                                                            rand.nextInt( 150 ) + 25,
-                                                                           rand.nextInt( level * 10 + 10 ) - 9 ) );
+                                                                           rand.nextInt( level * 10 + 10 ) - 9 ) , false);
             if ( rand.nextInt( 10 ) == 1 )
             {
                 numBonuses++;
@@ -62,7 +62,7 @@ public class LinearGameplay implements GameMode
                                                                                 rand.nextDouble() * 6 - 3,
                                                                                 rand.nextDouble() * 6 - 3,
                                                                                 rand.nextInt( 150 ) + 25,
-                                                                                rand.nextInt( level * 10 + 10 ) - 9 ) );
+                                                                                rand.nextInt( level * 10 + 10 ) - 9 ) , false);
 
         }
     }

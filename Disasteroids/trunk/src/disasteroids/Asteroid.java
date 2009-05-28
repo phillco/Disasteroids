@@ -100,8 +100,8 @@ public class Asteroid extends GameObject implements GameElement
 
         if ( radius >= 45 )
         {
-            Game.getInstance().getObjectManager().addObject( new Asteroid( this ) );
-            Game.getInstance().getObjectManager().addObject( new Asteroid( this ) );
+            Game.getInstance().getObjectManager().addObject( new Asteroid( this ) , false);
+            Game.getInstance().getObjectManager().addObject( new Asteroid( this ) , false);
         }
         
         Game.getInstance().getObjectManager().removeObject( this );

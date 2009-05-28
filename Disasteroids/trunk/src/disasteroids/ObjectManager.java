@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.GameObject;
 import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
 import disasteroids.networking.Server;
@@ -28,8 +29,11 @@ public class ObjectManager implements GameElement
     private ConcurrentHashMap<Long, GameObject> gameObjects = new ConcurrentHashMap<Long, GameObject>( 500 );
 
     private ConcurrentLinkedQueue<Asteroid> asteroids = new ConcurrentLinkedQueue<Asteroid>();
+
     private ConcurrentLinkedQueue<BlackHole> blackHoles = new ConcurrentLinkedQueue<BlackHole>();
+
     private ConcurrentLinkedQueue<Ship> players = new ConcurrentLinkedQueue<Ship>();
+
     private ConcurrentLinkedQueue<ShootingObject> shootingObjects = new ConcurrentLinkedQueue<ShootingObject>();
 
     /**
@@ -41,7 +45,7 @@ public class ObjectManager implements GameElement
      * The number of times nextAvailibleId has been cycled (overflown).
      */
     private int numOverflows = 0;
-    
+
     /**
      * Reference list all of living objects on the level that the player must destroy (aliens, stations, and so on).
      */
@@ -75,21 +79,31 @@ public class ObjectManager implements GameElement
 
     public long getNewId()
     {
-        if ( Client.is())
-            throw new UnsupportedOperationException( "Clients should not call getNewId().");
-        
+        if ( Client.is() )
+            throw new UnsupportedOperationException( "Clients should not call getNewId()." );
+
         if ( nextAvailibleId == Long.MAX_VALUE )
         {
             nextAvailibleId = Long.MIN_VALUE;
             numOverflows++;
-            System.out.println( "Note: ID values filled; wrapping over." );
+            Running.warning( "Note: ID values filled; wrapping over." );
         }
         nextAvailibleId++;
         return nextAvailibleId;
     }
 
-    public void addObject( GameObject go )
+    public void addObject( GameObject go, boolean fromServer )
     {
+        if ( !fromServer )
+        {
+            if ( go instanceof Bonus )
+            {
+                if ( Server.is() )
+                    ServerCommands.objectCreatedOrDestroyed( go, true );
+                else if ( Client.is() )
+                    return;
+            }
+        }
         gameObjects.put( go.getId(), go );
         if ( go instanceof Asteroid )
             asteroids.add( (Asteroid) go );
@@ -99,9 +113,6 @@ public class ObjectManager implements GameElement
             shootingObjects.add( (ShootingObject) go );
         if ( go instanceof Ship )
             players.add( (Ship) go );
-
-        if ( Server.is() )
-            ServerCommands.objectCreatedOrDestroyed( go, true );
     }
 
     public void removeObject( GameObject go )
@@ -115,9 +126,6 @@ public class ObjectManager implements GameElement
             shootingObjects.remove( (ShootingObject) go );
         if ( go instanceof Ship )
             players.remove( (Ship) go );
-
-        if ( Server.is() )
-            ServerCommands.objectCreatedOrDestroyed( go, false );
     }
 
     public void clear()
@@ -147,25 +155,25 @@ public class ObjectManager implements GameElement
         switch ( Constants.GameObjectTIDs.values()[stream.readInt()] )
         {
             case ALIEN:
-                addObject( new Alien( stream ) );
+                addObject( new Alien( stream ), true );
                 break;
             case ASTEROID:
-                addObject( new Asteroid(stream));
+                addObject( new Asteroid( stream ), true );
                 break;
             case BONUS_ASTEROID:
-                addObject( new BonusAsteroid(stream));
+                addObject( new BonusAsteroid( stream ), true );
                 break;
             case BLACK_HOLE:
-                addObject( new BlackHole( stream ) );
+                addObject( new BlackHole( stream ), true );
                 break;
             case BONUS:
-                addObject( new Bonus( stream ) );
+                addObject( new Bonus( stream ), true );
                 break;
             case SHIP:
-                addObject( new Ship( stream ) );
+                addObject( new Ship( stream ), true );
                 break;
             case STATION:
-                addObject( new Station( stream ) );
+                addObject( new Station( stream ), true );
                 break;
         }
     }

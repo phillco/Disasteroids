@@ -35,7 +35,7 @@ public class Deathmatch implements GameMode
         {
             if ( Util.getRandomGenerator().nextInt( 1500 ) == 0 )
             {
-                Game.getInstance().getObjectManager().addObject( new Bonus( b.getX(), b.getY() - 150, Util.getRandomGenerator().nextInt( 8 ) - 4, 0 ) );
+                Game.getInstance().getObjectManager().addObject( new Bonus( b.getX(), b.getY() - 150, Util.getRandomGenerator().nextInt( 8 ) - 4, 0 ) , false);
                 for ( int i = 0; i < 6; i++ )
                     ParticleManager.addParticle( new Particle(
                             b.getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,

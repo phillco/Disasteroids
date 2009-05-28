@@ -165,7 +165,12 @@ public class Client extends DatagramListener
                         Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
                         break;
                     case OBJECT_UPDATE_VELOCITY:
-                        Game.getInstance().getObjectManager().getObject( in.readLong() ).restorePosition( in );
+                         id = in.readLong();
+                        GameObject go = Game.getInstance().getObjectManager().getObject( id );
+                        if ( go == null )
+                            Running.fatalError( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException());
+                        else
+                            go.restorePosition( in );
                         break;
                     case PLAYER_BERSERK:
                         ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).berserk();
@@ -178,9 +183,9 @@ public class Client extends DatagramListener
                         break;
                     case OBJECT_REMOVED:
                         id = in.readLong();
-                        GameObject go = Game.getInstance().getObjectManager().getObject( id );
+                        go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Running.fatalError( "NETWORK DESYNC! :(\nObject #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...");
+                            Running.fatalError( "NETWORK DESYNC! :(\nRemove: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException());
                         else
                             Game.getInstance().getObjectManager().removeObject( go );
                         break;

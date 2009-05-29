@@ -307,7 +307,7 @@ public class GameCanvas extends Canvas
 
         }
 
-        if ( parent.localPlayer().livesLeft() < 0 )
+        if ( Local.getLocalPlayer().livesLeft() < 0 && !Server.is() && !Client.is() )
         {
             g2d.setFont( new Font( "Tahoma", Font.BOLD, 32 ) );
             g2d.setColor( parent.localPlayer().getColor() );

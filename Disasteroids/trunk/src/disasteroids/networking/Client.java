@@ -195,7 +195,7 @@ public class Client extends DatagramListener
                         id = in.readLong();
                         GameObject go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Main.fatalError( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
+                            Main.warning( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).");
                         else
                             go.restorePosition( in );
                         break;
@@ -212,7 +212,7 @@ public class Client extends DatagramListener
                         id = in.readLong();
                         go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Main.fatalError( "NETWORK DESYNC! :(\nRemove: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
+                            Main.warning( "NETWORK DESYNC! :(\nRemove: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it)." );
                         else
                             Game.getInstance().getObjectManager().removeObject( go );
                         break;

@@ -148,7 +148,6 @@ public class Game
             return Local.getLocalPlayer().getId();
         }
         GameLoop.stopLoop();
-        Local.loading = true;
 
         // Wait for the frame to stop drawing so we don't get null pointers.
         if ( MainWindow.frame() != null )
@@ -273,10 +272,7 @@ public class Game
         // Check if we've lost in singleplayer.
         if ( !Client.is() && !Local.isStuffNull() && Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 )
         {
-            // Return to the menu.
-            MainWindow.frame().setVisible( false );
-            GameLoop.stopLoop();
-            new MainMenu();
+            Running.quit();
             return;
         }
 
@@ -399,8 +395,7 @@ public class Game
             case LOAD:
                 if ( !Client.is() )
                 {
-                    MainWindow.frame().localId = Game.loadFromFile();
-                    Local.loading = false;
+                    Local.loadGame();
                     Game.getInstance().setPaused( false, false );
                     GameLoop.startLoop();
                 }

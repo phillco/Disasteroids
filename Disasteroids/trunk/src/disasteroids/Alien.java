@@ -7,7 +7,7 @@ package disasteroids;
 import disasteroids.weapons.Missile;
 import disasteroids.weapons.Weapon;
 import disasteroids.weapons.MissileManager;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.ParticleManager;
 import disasteroids.sound.Sound;
@@ -272,10 +272,10 @@ public class Alien extends GameObject implements ShootingObject
 
         if ( explosionTime > 0 )
         {
-            AsteroidsFrame.frame().fillCircle( g, color.darker().darker(), ( int ) getX(), ( int ) getY(), ( int ) ( size * 0.1 * ( explosionTime - 1 ) ) );
+            MainWindow.frame().fillCircle( g, color.darker().darker(), ( int ) getX(), ( int ) getY(), ( int ) ( size * 0.1 * ( explosionTime - 1 ) ) );
             return;
         }
-        AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAlien(), ( int ) getX() + size / 2, ( int ) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
+        MainWindow.frame().drawImage( g, ImageLibrary.getAlien(), ( int ) getX() + size / 2, ( int ) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
     }
 
     /**
@@ -468,10 +468,10 @@ public class Alien extends GameObject implements ShootingObject
             @Override
             public void draw( Graphics g )
             {
-                AsteroidsFrame.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * finRotation );
-                AsteroidsFrame.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
-                AsteroidsFrame.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
-                AsteroidsFrame.frame().fillCircle( g, color, ( int ) getX(), ( int ) getY(), ( int ) getRadius() );
+                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * finRotation );
+                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
+                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
+                MainWindow.frame().fillCircle( g, color, ( int ) getX(), ( int ) getY(), ( int ) getRadius() );
             }
         }
     }

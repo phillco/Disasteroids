@@ -29,7 +29,7 @@ public class Local
      */
     public static boolean isStuffNull()
     {
-        return ( loading || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null || AsteroidsFrame.frame().getPanel().getStarBackground() == null );
+        return ( loading || MainWindow.frame() == null || MainWindow.frame().localPlayer() == null || MainWindow.frame().getPanel().getStarBackground() == null );
     }
 
     /**
@@ -43,7 +43,7 @@ public class Local
         if ( isStuffNull() )
             return null;
         else
-            return AsteroidsFrame.frame().getPanel().getStarBackground();
+            return MainWindow.frame().getPanel().getStarBackground();
     }
 
     public static Ship getLocalPlayer()
@@ -51,7 +51,7 @@ public class Local
         if ( isStuffNull() )
             return null;
         else
-            return AsteroidsFrame.frame().localPlayer();
+            return MainWindow.frame().localPlayer();
     }
 
     /**

@@ -5,7 +5,7 @@
 package disasteroids.weapons;
 
 import disasteroids.*;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
 import java.awt.Color;
@@ -126,7 +126,7 @@ public class BigNukeCharge extends Unit
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), Math.max( 1, explosionSize ) );
+        MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), Math.max( 1, explosionSize ) );
     }
 
     //                                                                            \\

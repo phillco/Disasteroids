@@ -78,7 +78,7 @@ public class Background
     {
         // Create the image if we haven't yet.
         if ( image == null )
-            image = AsteroidsFrame.frame().createImage( width, height );
+            image = MainWindow.frame().createImage( width, height );
 
         // Create the array of stars.
         Random rand = Util.getRandomGenerator();
@@ -128,7 +128,7 @@ public class Background
             for ( Star star : this.theStars )
                 synchronized (this)
                 {
-                    if ( ( !Settings.isQualityRendering() && ++count % 3 == 0 ) || star == null || AsteroidsFrame.frame() == null || AsteroidsFrame.frame().localPlayer() == null )
+                    if ( ( !Settings.isQualityRendering() && ++count % 3 == 0 ) || star == null || MainWindow.frame() == null || MainWindow.frame().localPlayer() == null )
                         continue;
                     // Move them.
                     //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
@@ -137,7 +137,7 @@ public class Background
                     // Wrap them.
                     //   star.checkWrap();
 
-                    AsteroidsFrame.frame().drawPoint( g, star.getColor(), (int) star.x + AsteroidsFrame.frame().getRumbleX(), (int) star.y + AsteroidsFrame.frame().getRumbleY() );
+                    MainWindow.frame().drawPoint( g, star.getColor(), (int) star.x + MainWindow.frame().getRumbleX(), (int) star.y + MainWindow.frame().getRumbleY() );
                 }
         }
         catch ( NullPointerException e )
@@ -164,8 +164,8 @@ public class Background
         {
             if ( star == null )
                 continue;
-            star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
-            star.y += star.dy - AsteroidsFrame.frame().localPlayer().getDy() * star.depth;
+            star.x += star.dx - MainWindow.frame().localPlayer().getDx() * star.depth;
+            star.y += star.dy - MainWindow.frame().localPlayer().getDy() * star.depth;
             star.checkWrap();
         }
     }
@@ -309,7 +309,7 @@ public class Background
                                  col.getBlue() * life / lifeMax );
 
             gBack.setFont( font );
-            AsteroidsFrame.frame().drawString( gBack, (int) ( dy == 0 ? x : x + 3 * Math.cos( life / 5.0 ) ), (int) y, message, c );
+            MainWindow.frame().drawString( gBack, (int) ( dy == 0 ? x : x + 3 * Math.cos( life / 5.0 ) ), (int) y, message, c );
         }
     }
 }

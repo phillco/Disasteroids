@@ -4,7 +4,7 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.RelativeGraphics;
 import java.awt.Color;
 import java.awt.Font;
@@ -89,8 +89,8 @@ public class WaveGameplay implements GameMode
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";
-        int x = AsteroidsFrame.frame().getPanel().getWidth() - 10;
-        int y = AsteroidsFrame.frame().getPanel().getHeight() - 25;
+        int x = MainWindow.frame().getPanel().getWidth() - 10;
+        int y = MainWindow.frame().getPanel().getHeight() - 25;
 
         // Draw the counter.
         g2d.setColor( Color.lightGray );
@@ -106,7 +106,7 @@ public class WaveGameplay implements GameMode
         g2d.drawString( text, x, y );
 
         // Draw the progress box.
-        x = AsteroidsFrame.frame().getPanel().getWidth() - 110;
+        x = MainWindow.frame().getPanel().getWidth() - 110;
         y += 10;
         g.setColor( Color.darkGray );
         g.drawRect( x, y, 100, 10 );

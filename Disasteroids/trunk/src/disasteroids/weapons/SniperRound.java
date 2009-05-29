@@ -4,7 +4,7 @@
  */
 package disasteroids.weapons;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.io.DataInputStream;
@@ -51,7 +51,7 @@ class SniperRound extends Unit
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, Math.PI + angle );
+        MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, Math.PI + angle );
     }
 
     public int getDamage()

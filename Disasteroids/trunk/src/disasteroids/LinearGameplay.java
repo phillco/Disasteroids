@@ -4,7 +4,7 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -81,7 +81,7 @@ public class LinearGameplay implements GameMode
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";
-        int x = AsteroidsFrame.frame().getPanel().getWidth(), y = AsteroidsFrame.frame().getPanel().getHeight() - 18;
+        int x = MainWindow.frame().getPanel().getWidth(), y = MainWindow.frame().getPanel().getHeight() - 18;
 
         // Draw the level counter.
         g2d.setColor( Color.lightGray );
@@ -145,11 +145,11 @@ public class LinearGameplay implements GameMode
         Game.getInstance().getObjectManager().clearObstacles();
         Game.getInstance().actionManager.clear();
 
-        if ( AsteroidsFrame.frame() != null )
-            AsteroidsFrame.frame().nextLevel();
+        if ( MainWindow.frame() != null )
+            MainWindow.frame().nextLevel();
 
         setUpAsteroidField( level );
-        AsteroidsFrame.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
+        MainWindow.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
     }
 
     public void flatten( DataOutputStream stream ) throws IOException

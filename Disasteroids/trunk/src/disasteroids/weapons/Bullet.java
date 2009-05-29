@@ -4,7 +4,7 @@
  */
 package disasteroids.weapons;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.io.DataInputStream;
@@ -35,7 +35,7 @@ class Bullet extends Unit
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), parent.getBonusValue( parent.BONUS_RADIUS ).getValue() );
+        MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), parent.getBonusValue( parent.BONUS_RADIUS ).getValue() );
     }
 
     /**

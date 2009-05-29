@@ -5,7 +5,7 @@
 package disasteroids;
 
 import disasteroids.gui.MenuOption;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.MainMenu;
 import disasteroids.networking.Client;
@@ -143,24 +143,24 @@ public class Running
                 gameType = Game.GameType.DEATHMATCH;
                 new Server();
                 new Game( gameMode, gameType );
-                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
-                AsteroidsFrame.frame().showStartMessage( "Server started!\nAddress is: " + Server.getLocalIP() + "\nPress F1 for help." );
+                new MainWindow( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
+                MainWindow.frame().showStartMessage( "Server started!\nAddress is: " + Server.getLocalIP() + "\nPress F1 for help." );
                 Running.log( "Server started! The address is: " + Server.getLocalIP() + "\n." );
                 Game.getInstance().setPaused( false, false );
                 break;
             case SINGLEPLAYER:
                 new Game( gameMode, gameType );
-                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
-                AsteroidsFrame.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
+                new MainWindow( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
+                MainWindow.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
                 break;
             case LOAD:
-                new AsteroidsFrame( Game.loadFromFile() );
+                new MainWindow( Game.loadFromFile() );
                 Game.getInstance().setPaused( false, false );
                 break;
             case TUTORIAL:
                 new Game( TutorialMode.class, gameType );
-                new AsteroidsFrame( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
-                AsteroidsFrame.frame().showStartMessage( "Press any key to start the tutorial." );
+                new MainWindow( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
+                MainWindow.frame().showStartMessage( "Press any key to start the tutorial." );
                 break;
             case CONNECT:
                 // Get the server address.
@@ -199,8 +199,8 @@ public class Running
     public static void log( String message )
     {
         System.out.println( message );
-        if ( AsteroidsFrame.frame() != null )
-            AsteroidsFrame.addNotificationMessage( message );
+        if ( MainWindow.frame() != null )
+            MainWindow.addNotificationMessage( message );
     }
 
     /**
@@ -213,8 +213,8 @@ public class Running
     public static void log( String message, int life )
     {
         System.out.println( message );
-        if ( AsteroidsFrame.frame() != null )
-            AsteroidsFrame.addNotificationMessage( message, life );
+        if ( MainWindow.frame() != null )
+            MainWindow.addNotificationMessage( message, life );
     }
 
     /**

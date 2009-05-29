@@ -4,7 +4,7 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import java.awt.Graphics;
 import java.io.DataInputStream;
@@ -65,7 +65,7 @@ public class BonusAsteroid extends Asteroid
     @Override
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawImage( g, ImageLibrary.getBonusAsteroid(),
+        MainWindow.frame().drawImage( g, ImageLibrary.getBonusAsteroid(),
                                           (int) getX(), (int) getY(), angle, radius * 2.0 / ImageLibrary.getBonusAsteroid().getWidth( null ) );
     }
 }

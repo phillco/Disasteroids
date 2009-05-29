@@ -5,7 +5,7 @@
 package disasteroids.weapons;
 
 import disasteroids.*;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
 import java.awt.Color;
@@ -69,8 +69,8 @@ public class Missile extends Unit
     public void draw( Graphics g )
     {
         // Draw the body.
-        AsteroidsFrame.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, angle + Math.PI );
-        AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), (int) radius );
+        MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, angle + Math.PI );
+        MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), (int) radius );
 
         // Draw the explosion.
         Color col = color;
@@ -82,7 +82,7 @@ public class Missile extends Unit
             case 4:
                 if ( explosionStage % 2 != 0 )
                     col = Color.yellow;
-                AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
+                MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                 break;
             case 5:
             case 6:
@@ -91,7 +91,7 @@ public class Missile extends Unit
                 if ( explosionStage % 2 != 0 )
                     col = Color.yellow;
                 radius = 5;
-                AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
+                MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                 break;
             case 9:
             case 10:
@@ -99,13 +99,13 @@ public class Missile extends Unit
                 if ( hugeBlast )
                 {
                     radius = parent.getBonusValue( parent.BONUS_HUGEBLASTSIZE ).getValue();
-                    AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
+                    MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                 }
                 else
                 {
                     radius = 14;
                     col = Color.yellow;
-                    AsteroidsFrame.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
+                    MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
                     this.explosionStage++;
                 }
                 break;

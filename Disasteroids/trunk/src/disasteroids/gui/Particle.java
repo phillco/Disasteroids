@@ -132,6 +132,6 @@ public class Particle implements GameElement
 
         double fadePct = life / life_max;
         color = new Color( (int) ( rgb[0] * fadePct ), (int) ( rgb[1] * fadePct ), (int) ( rgb[2] * fadePct ) );
-        AsteroidsFrame.frame().fillCircle( g, color, (int) x, (int) y, (int) size / 2 );
+        MainWindow.frame().fillCircle( g, color, (int) x, (int) y, (int) size / 2 );
     }
 }

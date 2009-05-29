@@ -5,7 +5,7 @@
 package disasteroids;
 
 import disasteroids.weapons.FlechetteManager;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;
 import disasteroids.gui.ParticleManager;
 import disasteroids.gui.Particle;
@@ -272,15 +272,15 @@ public class Ship extends GameObject implements ShootingObject
 
         double centerX, centerY;
 
-        if ( this == AsteroidsFrame.frame().localPlayer() )
+        if ( this == MainWindow.frame().localPlayer() )
         {
-            centerX = AsteroidsFrame.frame().getWidth() / 2;
-            centerY = AsteroidsFrame.frame().getHeight() / 2;
+            centerX = MainWindow.frame().getWidth() / 2;
+            centerY = MainWindow.frame().getHeight() / 2;
         }
         else
         {
-            centerX = ( getX() - AsteroidsFrame.frame().localPlayer().getX() + AsteroidsFrame.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-            centerY = ( getY() - AsteroidsFrame.frame().localPlayer().getY() + AsteroidsFrame.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+            centerX = ( getX() - MainWindow.frame().localPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
+            centerY = ( getY() - MainWindow.frame().localPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
 
             if ( !( centerX > -100 && centerX < Game.getInstance().GAME_WIDTH + 100 && centerY > -100 && centerY < Game.getInstance().GAME_HEIGHT + 100 ) )
                 return;
@@ -288,13 +288,13 @@ public class Ship extends GameObject implements ShootingObject
 
         // TODO: Create RelativeGraphics.transformPolygon()
         Polygon outline = new Polygon();
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle ) ) + AsteroidsFrame.frame().getRumbleY() );
-        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + AsteroidsFrame.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) - AsteroidsFrame.frame().getRumbleY() );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ) + MainWindow.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle ) ) + MainWindow.frame().getRumbleY() );
+        outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ) + MainWindow.frame().getRumbleX(), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) - MainWindow.frame().getRumbleY() );
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
 
         // Flash when invincible.
         if ( !cannotDie() || ( cannotDie() && Local.getGlobalFlash() ) )
-            AsteroidsFrame.frame().drawPolygon( g, col, ( myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ), outline );
+            MainWindow.frame().drawPolygon( g, col, ( myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ), outline );
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 
         // Draw shields.
@@ -302,18 +302,18 @@ public class Ship extends GameObject implements ShootingObject
         {
             int i = 0;
             for ( ; i < shielded / 100; i++ )
-                AsteroidsFrame.frame().drawCircle( g, Color.CYAN, (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * i );
+                MainWindow.frame().drawCircle( g, Color.CYAN, (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * i );
 
             int shieledRemaining = shielded % 100;
             if ( shieledRemaining > 0 )
-                AsteroidsFrame.frame().drawCircle( g, Color.getHSBColor( 0.5f, 1.0f, shieledRemaining / 100.0f ), (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * ( i ) );
+                MainWindow.frame().drawCircle( g, Color.getHSBColor( 0.5f, 1.0f, shieledRemaining / 100.0f ), (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * ( i ) );
         }
 
-        if ( this == AsteroidsFrame.frame().localPlayer() && drawWeaponNameTimer > 0 )
+        if ( this == MainWindow.frame().localPlayer() && drawWeaponNameTimer > 0 )
         {
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
-            AsteroidsFrame.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getName(), Color.gray );
+            MainWindow.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getName(), Color.gray );
             allWeapons[weaponIndex].drawOrphanUnit( g, getX(), getY() + 25, Color.gray );
         }
 
@@ -330,7 +330,7 @@ public class Ship extends GameObject implements ShootingObject
                 Stroke old = ( (Graphics2D) g ).getStroke();
                 ( (Graphics2D) g ).setStroke( new BasicStroke( 3.0f, BasicStroke.CAP_ROUND,
                         BasicStroke.JOIN_ROUND, 5.0f, dash, 2.0f ) );
-                AsteroidsFrame.frame().drawLine( g, myInvicibleColor, (int) getX(), (int) getY(), 1500, 15, angle );
+                MainWindow.frame().drawLine( g, myInvicibleColor, (int) getX(), (int) getY(), 1500, 15, angle );
                 ( (Graphics2D) g ).setStroke( old );
             }
         }
@@ -589,7 +589,7 @@ public class Ship extends GameObject implements ShootingObject
         if ( health > 0 )
         {
             Sound.playInternal( SoundLibrary.SHIP_HIT );
-            AsteroidsFrame.frame().rumble( amount * 2 / 3.0 );
+            MainWindow.frame().rumble( amount * 2 / 3.0 );
             return true;
         }
 
@@ -601,7 +601,7 @@ public class Ship extends GameObject implements ShootingObject
         {
             health = healthMax = 100;
             setInvincibilityCount( 300 );
-            AsteroidsFrame.frame().rumble( 30 );
+            MainWindow.frame().rumble( 30 );
             Sound.playInternal( SoundLibrary.SHIP_DIE );
 
             // Create particles.
@@ -622,8 +622,8 @@ public class Ship extends GameObject implements ShootingObject
             invincibilityCount = Integer.MAX_VALUE;
             explosionTime = 160;
             setBrake( true );
-            AsteroidsFrame.frame().rumble( 85 );
-            if ( Settings.isSoundOn() && this == AsteroidsFrame.frame().localPlayer() )
+            MainWindow.frame().rumble( 85 );
+            if ( Settings.isSoundOn() && this == MainWindow.frame().localPlayer() )
                 Sound.playInternal( SoundLibrary.GAME_OVER );
 
             // Create lots of particles.

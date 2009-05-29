@@ -5,7 +5,7 @@
 package disasteroids.weapons;
 
 import disasteroids.*;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
 import java.awt.Color;
@@ -100,9 +100,9 @@ public class BigNuke extends Unit
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawOutlinedCircle( g, color, color.darker(), (int) getX(), (int) getY(), 8 );
-        AsteroidsFrame.frame().drawOutlinedCircle( g, color.darker().darker(), color.darker(), (int) getX(), (int) getY(), 6 );
-        AsteroidsFrame.frame().drawOutlinedCircle( g, color.brighter(), color, (int) getX(), (int) getY(), 2 );
+        MainWindow.frame().drawOutlinedCircle( g, color, color.darker(), (int) getX(), (int) getY(), 8 );
+        MainWindow.frame().drawOutlinedCircle( g, color.darker().darker(), color.darker(), (int) getX(), (int) getY(), 6 );
+        MainWindow.frame().drawOutlinedCircle( g, color.brighter(), color, (int) getX(), (int) getY(), 2 );
     }
 
     //                                                                            \\

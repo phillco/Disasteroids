@@ -5,7 +5,7 @@
 package disasteroids;
 
 import disasteroids.weapons.Weapon;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.Local;
 import disasteroids.sound.Sound;
@@ -72,7 +72,7 @@ public class Asteroid extends GameObject implements GameElement
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawImage( g, ImageLibrary.getAsteroid(), (int) getX(), (int) getY(), angle, radius * 2.0 / ImageLibrary.getAsteroid().getWidth( null ) );
+        MainWindow.frame().drawImage( g, ImageLibrary.getAsteroid(), (int) getX(), (int) getY(), angle, radius * 2.0 / ImageLibrary.getAsteroid().getWidth( null ) );
     }
 
     public void act()

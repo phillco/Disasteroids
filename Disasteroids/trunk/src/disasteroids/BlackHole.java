@@ -4,7 +4,7 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.weapons.Unit;
 import disasteroids.weapons.Weapon;
@@ -128,7 +128,7 @@ public class BlackHole extends GameObject
 
     public void draw( Graphics g )
     {
-        AsteroidsFrame.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY() );
+        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY() );
     }
 
     /**

@@ -4,7 +4,7 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;
 import disasteroids.weapons.BulletManager;
 import java.awt.Font;
@@ -126,14 +126,14 @@ public class TutorialMode implements GameMode
         Font title = new Font( "Tahoma", Font.BOLD, 24 );
         Font textFont = new Font( "Tahoma", Font.BOLD, 12 );
         g.setFont( textFont );
-        int x = 0,  y = AsteroidsFrame.frame().getPanel().getHeight() / 4;
+        int x = 0,  y = MainWindow.frame().getPanel().getHeight() / 4;
         String text = "";
         g.setColor( Local.getLocalPlayer().getColor() );
         switch ( stage )
         {
             case 0:
                 g.setFont( title );
-                y = Math.min( counter * 4, AsteroidsFrame.frame().getPanel().getHeight() / 4 );
+                y = Math.min( counter * 4, MainWindow.frame().getPanel().getHeight() / 4 );
                 text = "Welcome to DISASTEROIDS!";
                 break;
             case 1:
@@ -192,7 +192,7 @@ public class TutorialMode implements GameMode
                 break;
 
         }
-        x = (int) ( AsteroidsFrame.frame().getPanel().getWidth() / 2 - g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2 );
+        x = (int) ( MainWindow.frame().getPanel().getWidth() / 2 - g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() / 2 );
         g.drawString( text, x, y );
     }
 

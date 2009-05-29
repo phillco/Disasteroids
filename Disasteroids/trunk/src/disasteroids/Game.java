@@ -4,7 +4,7 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.KeystrokeManager;
 import disasteroids.gui.Local;
 import disasteroids.gui.MainMenu;
@@ -95,8 +95,8 @@ public class Game
         }
 
         // Update the GUI.
-        if ( AsteroidsFrame.frame() != null )
-            AsteroidsFrame.frame().resetGame();
+        if ( MainWindow.frame() != null )
+            MainWindow.frame().resetGame();
 
         GameLoop.startLoop();
     }
@@ -151,9 +151,9 @@ public class Game
         Local.loading = true;
 
         // Wait for the frame to stop drawing so we don't get null pointers.
-        if ( AsteroidsFrame.frame() != null )
+        if ( MainWindow.frame() != null )
         {
-            while ( AsteroidsFrame.frame().getPanel().isDrawing() )
+            while ( MainWindow.frame().getPanel().isDrawing() )
                 try
                 {
                     Thread.sleep( 3 );
@@ -262,8 +262,8 @@ public class Game
         // Update the game mode.
         gameMode.act();
 
-        if ( !Local.isStuffNull() && AsteroidsFrame.frame().getPanel().getStarBackground() != null )
-            AsteroidsFrame.frame().getPanel().getStarBackground().act();
+        if ( !Local.isStuffNull() && MainWindow.frame().getPanel().getStarBackground() != null )
+            MainWindow.frame().getPanel().getStarBackground().act();
 
         // Execute game actions.
         timeStep++;
@@ -274,7 +274,7 @@ public class Game
         if ( !Client.is() && !Local.isStuffNull() && Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 )
         {
             // Return to the menu.
-            AsteroidsFrame.frame().setVisible( false );
+            MainWindow.frame().setVisible( false );
             GameLoop.stopLoop();
             new MainMenu();
             return;
@@ -399,7 +399,7 @@ public class Game
             case LOAD:
                 if ( !Client.is() )
                 {
-                    AsteroidsFrame.frame().localId = Game.loadFromFile();
+                    MainWindow.frame().localId = Game.loadFromFile();
                     Local.loading = false;
                     Game.getInstance().setPaused( false, false );
                     GameLoop.startLoop();

@@ -5,7 +5,7 @@
 package disasteroids.weapons;
 
 import disasteroids.*;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -86,13 +86,13 @@ public abstract class Weapon implements GameElement
         {
             // Draw a reload bar for the next berserk.
             g.setColor( units.size() < getMaxUnits() ? parentShip.getColor() : parentShip.getColor().darker().darker() );
-            g.drawRect( AsteroidsFrame.frame().getWidth() - 120, 30, 100, 10 );
+            g.drawRect( MainWindow.frame().getWidth() - 120, 30, 100, 10 );
             int width = ( 200 - Math.max( timeTillNextBerserk, 0 ) ) / 2;
-            g.fillRect( AsteroidsFrame.frame().getWidth() - 120, 30, width, 10 );
+            g.fillRect( MainWindow.frame().getWidth() - 120, 30, width, 10 );
 
             // Draw ammo.
             if ( !isInfiniteAmmo() )
-                g.drawString( "" + ammo, AsteroidsFrame.frame().getWidth() - 40, 60 );
+                g.drawString( "" + ammo, MainWindow.frame().getWidth() - 40, 60 );
         }
     }
 

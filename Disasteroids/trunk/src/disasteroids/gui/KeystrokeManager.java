@@ -114,11 +114,11 @@ public class KeystrokeManager implements KeyListener
         if ( !GameLoop.isRunning() )
             return;
 
-        Game.getInstance().getActionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+        Game.getInstance().getActionManager().add( new Action( MainWindow.frame().localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
         if ( e.isShiftDown() )
-            AsteroidsFrame.frame().localPlayer().setSnipeMode( true );
+            MainWindow.frame().localPlayer().setSnipeMode( true );
         else
-            AsteroidsFrame.frame().localPlayer().setSnipeMode( false );
+            MainWindow.frame().localPlayer().setSnipeMode( false );
         if ( Client.is() )
             Client.getInstance().keyStroke( 0 - e.getKeyCode() );
     }
@@ -137,9 +137,9 @@ public class KeystrokeManager implements KeyListener
         if ( !Game.getInstance().isPaused() )
         {
             if ( e.isShiftDown() )
-                AsteroidsFrame.frame().localPlayer().setSnipeMode( true );
+                MainWindow.frame().localPlayer().setSnipeMode( true );
             else
-                AsteroidsFrame.frame().localPlayer().setSnipeMode( false );
+                MainWindow.frame().localPlayer().setSnipeMode( false );
         }
 
         // Is it a local action?
@@ -149,13 +149,13 @@ public class KeystrokeManager implements KeyListener
                 Running.quit();
                 break;
             case TOGGLE_MUSIC:
-                AsteroidsFrame.frame().getPanel().toggleMusic();
+                MainWindow.frame().getPanel().toggleMusic();
                 break;
             case TOGGLE_SOUND:
-                AsteroidsFrame.frame().getPanel().toggleSound();
+                MainWindow.frame().getPanel().toggleSound();
                 break;
             case TOGGLE_FULL_SCREEN:
-                AsteroidsFrame.frame().toggleFullscreen();
+                MainWindow.frame().toggleFullscreen();
                 break;
             case SET_EASTER_EGG:
                 for ( GameObject go : Game.getInstance().getObjectManager().getBaddies() )
@@ -164,19 +164,19 @@ public class KeystrokeManager implements KeyListener
                 break;
             case WARP:
                 if ( !Client.is() )
-                    AsteroidsFrame.frame().getPanel().warpDialog();
+                    MainWindow.frame().getPanel().warpDialog();
                 break;
             case TOGGLE_ANTIALIASING:
-                AsteroidsFrame.frame().getPanel().toggleReneringQuality();
+                MainWindow.frame().getPanel().toggleReneringQuality();
                 break;
             case TOGGLE_SCOREBOARD:
-                AsteroidsFrame.frame().getPanel().toggleScoreboard();
+                MainWindow.frame().getPanel().toggleScoreboard();
                 break;
             case TOGGLE_TRACKER:
-                AsteroidsFrame.frame().getPanel().toggleTracker();
+                MainWindow.frame().getPanel().toggleTracker();
                 break;
             case TOGGLE_HELP:
-                AsteroidsFrame.frame().getPanel().toggleHelp();
+                MainWindow.frame().getPanel().toggleHelp();
                 break;
             default:
                 if ( Game.getInstance().isPaused() )
@@ -186,7 +186,7 @@ public class KeystrokeManager implements KeyListener
                 }
                 else
                 {
-                    Game.getInstance().getActionManager().add( new Action( AsteroidsFrame.frame().localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+                    Game.getInstance().getActionManager().add( new Action( MainWindow.frame().localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
 
                     if ( Client.is() )
                         Client.getInstance().keyStroke( e.getKeyCode() );

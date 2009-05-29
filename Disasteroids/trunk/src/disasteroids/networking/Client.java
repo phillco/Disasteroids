@@ -4,8 +4,7 @@
  */
 package disasteroids.networking;
 
-import disasteroids.Asteroid;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.Game;
 import disasteroids.GameLoop;
 import disasteroids.GameObject;
@@ -144,16 +143,16 @@ public class Client extends DatagramListener
                         System.out.println( "...done. Our ID is: " + id + "." );
 
                         // Start the game.
-                        new AsteroidsFrame( id );
-                        AsteroidsFrame.frame().showStartMessage( "Welcome to this server!\nPress F1 for help." );
+                        new MainWindow( id );
+                        MainWindow.frame().showStartMessage( "Welcome to this server!\nPress F1 for help." );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );
                         break;
                     case SERVER_QUITTING:
                         GameLoop.stopLoop();
-                        if ( AsteroidsFrame.frame() != null )
-                            AsteroidsFrame.frame().dispose();
+                        if ( MainWindow.frame() != null )
+                            MainWindow.frame().dispose();
                         JOptionPane.showMessageDialog( null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE );
                         Running.quit();
                         break;

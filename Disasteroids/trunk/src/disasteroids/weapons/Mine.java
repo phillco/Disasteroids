@@ -5,7 +5,7 @@
 package disasteroids.weapons;
 
 import disasteroids.*;
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
@@ -148,19 +148,19 @@ public class Mine extends Unit
     {
         if ( isExploding() )
         {
-            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), explosionSize );
-            AsteroidsFrame.frame().drawCircle( g, color, (int) getX(), (int) getY(), parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() );
+            MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), explosionSize );
+            MainWindow.frame().drawCircle( g, color, (int) getX(), (int) getY(), parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() );
         }
         else if ( isArmed() )
         {
-            AsteroidsFrame.frame().fillCircle( g, color, (int) getX(), (int) getY(), 10 );
-            AsteroidsFrame.frame().fillCircle( g, ( myTarget != null ) ? Color.red : Color.black, (int) getX(), (int) getY(), 4 );
+            MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), 10 );
+            MainWindow.frame().fillCircle( g, ( myTarget != null ) ? Color.red : Color.black, (int) getX(), (int) getY(), 4 );
         }
         else
         {
             double multiplier = age / 100.0;
             Color outline = new Color( (int) ( color.getRed() * multiplier ), (int) ( color.getGreen() * multiplier ), (int) ( color.getBlue() * multiplier ) );
-            AsteroidsFrame.frame().fillCircle( g, outline, (int) getX(), (int) getY(), 10 );
+            MainWindow.frame().fillCircle( g, outline, (int) getX(), (int) getY(), 10 );
         }
     }
 

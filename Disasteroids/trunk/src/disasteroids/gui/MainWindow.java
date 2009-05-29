@@ -34,11 +34,8 @@ import javax.swing.SwingUtilities;
 
 /**
  * The big momma class up in the sky.
- * 
- * @author Andy Kooiman, Phillip Cohen
- * @since Classic
  */
-public class AsteroidsFrame extends Frame
+public class MainWindow extends Frame
 {
 
     /**
@@ -47,9 +44,9 @@ public class AsteroidsFrame extends Frame
      */
     private static final int WINDOW_WIDTH = 900, WINDOW_HEIGHT = 750;
 
-    private AsteroidsPanel panel;
+    private GameCanvas panel;
 
-    public AsteroidsPanel getPanel()
+    public GameCanvas getPanel()
     {
         return panel;
     }
@@ -58,9 +55,9 @@ public class AsteroidsFrame extends Frame
      */
     public long localId;
 
-    private static AsteroidsFrame frame;
+    private static MainWindow frame;
 
-    public static AsteroidsFrame frame()
+    public static MainWindow frame()
     {
         return frame;
     }
@@ -71,7 +68,7 @@ public class AsteroidsFrame extends Frame
      * @param localId   id of the player at this computer
      * @since December 14, 2007
      */
-    public AsteroidsFrame( long localId )
+    public MainWindow( long localId )
     {
         frame = this;
         this.localId = localId;
@@ -84,7 +81,7 @@ public class AsteroidsFrame extends Frame
         else
             setTitle( "Disasteroids" );
 
-        panel = new AsteroidsPanel( this );
+        panel = new GameCanvas( this );
 
         add( panel );
         setResizable( true );
@@ -121,9 +118,9 @@ public class AsteroidsFrame extends Frame
 
     public void showStartMessage( String message )
     {
-        AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( message,
-                ( int ) AsteroidsFrame.frame().localPlayer().getX(), ( int ) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
-                AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
+        MainWindow.frame().getPanel().getStarBackground().writeOnBackground( message,
+                ( int ) MainWindow.frame().localPlayer().getX(), ( int ) MainWindow.frame().localPlayer().getY() - 40, 0, 50,
+                MainWindow.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
     }
 
     /**
@@ -466,7 +463,7 @@ public class AsteroidsFrame extends Frame
 
         public void componentResized( ComponentEvent e )
         {
-            AsteroidsFrame.frame().setSize( e.getComponent().getWidth(), e.getComponent().getHeight() );
+            MainWindow.frame().setSize( e.getComponent().getWidth(), e.getComponent().getHeight() );
         }
 
         public void componentMoved( ComponentEvent e )

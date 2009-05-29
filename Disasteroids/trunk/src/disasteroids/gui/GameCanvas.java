@@ -4,32 +4,17 @@
  */
 package disasteroids.gui;
 
-import disasteroids.Game;
-import disasteroids.GameLoop;
-import disasteroids.Running;
-import disasteroids.Settings;
-import disasteroids.Ship;
-import disasteroids.Util;
-import disasteroids.networking.Client;
-import disasteroids.networking.Server;
-import disasteroids.sound.Sound;
-import java.awt.Canvas;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.util.Iterator;
-import java.util.LinkedList;
+import disasteroids.*;
+import disasteroids.networking.*;
+import disasteroids.sound.*;
+import java.awt.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- *
- * @author Phillip Cohen
- * @since January 15, 2008
+ * The screen-sized canvas where we draw everything.
  */
-public class AsteroidsPanel extends Canvas
+public class GameCanvas extends Canvas
 {
 
     /**
@@ -94,14 +79,14 @@ public class AsteroidsPanel extends Canvas
      * The parent frame containing this.
      * @since January 15, 2008
      */
-    AsteroidsFrame parent;
+    MainWindow parent;
 
     /**
      * Whether we're in the draw() loop.
      */
     private boolean isDrawing = false;
 
-    public AsteroidsPanel( AsteroidsFrame parent )
+    public GameCanvas( MainWindow parent )
     {
         this.parent = parent;
         background = new Background( Game.getInstance().GAME_WIDTH, Game.getInstance().GAME_HEIGHT );

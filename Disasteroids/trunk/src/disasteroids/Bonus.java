@@ -4,7 +4,7 @@
  */
 package disasteroids;
 
-import disasteroids.gui.AsteroidsFrame;
+import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;
 import disasteroids.gui.Particle;
 import disasteroids.gui.ParticleManager;
@@ -221,7 +221,7 @@ public class Bonus extends GameObject
         if ( !Local.isStuffNull() )
         {
             Local.getStarBackground().writeOnBackground( message, (int) getX(), (int) getY(), player.getColor() );
-            if ( player == AsteroidsFrame.frame().localPlayer() )
+            if ( player == MainWindow.frame().localPlayer() )
                 Running.log( "Bonus: " + message );
         }
 
@@ -257,13 +257,13 @@ public class Bonus extends GameObject
                 g.fillPolygon( p );
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
                 g.drawPolygon( p );
-                AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "A", Color.darkGray );
+                MainWindow.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "A", Color.darkGray );
             }
             break;
             case WEAPON_POWERUP:
             {
-                AsteroidsFrame.frame().drawOutlinedCircle( g, Color.getHSBColor( 0, 0, ( (float) age ) / MAX_LIFE ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
-                AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "P", Color.darkGray );
+                MainWindow.frame().drawOutlinedCircle( g, Color.getHSBColor( 0, 0, ( (float) age ) / MAX_LIFE ), Color.getHSBColor( lastHue, lastHB, 1 - lastHB ), (int) getX(), (int) getY(), Math.min( Math.min( RADIUS, age / 2 ), ( MAX_LIFE - age ) / 2 ) );
+                MainWindow.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "P", Color.darkGray );
             }
             break;
             case SHIP_POWERUP:
@@ -283,7 +283,7 @@ public class Bonus extends GameObject
                 g.setColor( Color.getHSBColor( lastHue, lastHB, 1 - lastHB ) );
                 g2.draw( rect );
                 g2.setTransform( previousTransform );
-                AsteroidsFrame.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "S", Color.darkGray );
+                MainWindow.frame().drawString( g, (int) getCenterX() - 6, (int) getCenterY() - 1, "S", Color.darkGray );
             }
             break;
         }

@@ -21,8 +21,10 @@ import java.util.HashMap;
  */
 public class KeystrokeManager implements KeyListener
 {
+
     public enum ActionType
     {
+
         UNKNOWN, QUIT, TOGGLE_MUSIC, TOGGLE_SOUND, TOGGLE_FULL_SCREEN,
         SET_EASTER_EGG, WARP, TOGGLE_ANTIALIASING, TOGGLE_SCOREBOARD, TOGGLE_TRACKER,
         START_SHOOT, STOP_SHOOT, LEFT, RIGHT, FORWARDS, BACKWARDS, UN_LEFT, UN_RIGHT,
@@ -34,7 +36,7 @@ public class KeystrokeManager implements KeyListener
     };
     private HashMap<Integer, ActionType> keyboardLayout = new HashMap<Integer, ActionType>();
 
-    public static KeystrokeManager instance = new KeystrokeManager();
+    public static KeystrokeManager instance;
 
     public KeystrokeManager()
     {
@@ -81,7 +83,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_T, ActionType.SAVE );
         keyboardLayout.put( KeyEvent.VK_Y, ActionType.LOAD );
         keyboardLayout.put( KeyEvent.VK_F1, ActionType.TOGGLE_HELP );
-        
+
         keyboardLayout.put( KeyEvent.VK_F9, ActionType.DEVKEY_DEBUG );
         keyboardLayout.put( KeyEvent.VK_F10, ActionType.DEVKEY_ENEMY );
         keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY_BONUS );
@@ -95,6 +97,8 @@ public class KeystrokeManager implements KeyListener
 
     public static KeystrokeManager getInstance()
     {
+        if ( instance == null )
+            instance = new KeystrokeManager();
         return instance;
     }
 
@@ -156,7 +160,7 @@ public class KeystrokeManager implements KeyListener
             case SET_EASTER_EGG:
                 for ( GameObject go : Game.getInstance().getObjectManager().getBaddies() )
                     if ( go instanceof Station )
-                        ( (Station) go ).setEasterEgg();
+                        ( ( Station ) go ).setEasterEgg();
                 break;
             case WARP:
                 if ( !Client.is() )

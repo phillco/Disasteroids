@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
  */
 public class MainMenu extends AsteroidsMenu implements KeyListener
 {
+
     private static final String title = "DISASTEROIDS!";
 
     /**
@@ -81,8 +82,14 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             {
                 int ff = ( choice == 2 ? 3 : choice );
                 g.setFont( accent );
-                int[] xp = { 190, 190, 190 + 5 };
-                int[] yp = { y - 10 + 20 * ff, y + 20 * ff, y - 5 + 20 * ff };
+                int[] xp =
+                {
+                    190, 190, 190 + 5
+                };
+                int[] yp =
+                {
+                    y - 10 + 20 * ff, y + 20 * ff, y - 5 + 20 * ff
+                };
                 g.fillPolygon( new Polygon( xp, yp, 3 ) );
             }
 
@@ -101,9 +108,9 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                 double RADIUS = 10;
                 int centerX = 280;
                 int centerY = y - 2;
-                outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle ) ), (int) ( centerY - RADIUS * Math.sin( angle ) ) );
-                outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
-                outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
+                outline.addPoint( ( int ) ( centerX + RADIUS * Math.cos( angle ) ), ( int ) ( centerY - RADIUS * Math.sin( angle ) ) );
+                outline.addPoint( ( int ) ( centerX + RADIUS * Math.cos( angle + Math.PI * .85 ) ), ( int ) ( centerY - RADIUS * Math.sin( angle + Math.PI * .85 ) ) );
+                outline.addPoint( ( int ) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), ( int ) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
             }
             g.fillPolygon( outline );
             g.setColor( ( Settings.getPlayerColor().getRed() + Settings.getPlayerColor().getGreen() + Settings.getPlayerColor().getBlue() > 64 * 3 ? Color.black : Color.darkGray ) );
@@ -125,31 +132,37 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             for ( int i = 0; i < MenuOption.values().length; i++ )
             {
                 int midpoint = WINDOW_WIDTH / 2;
-                int string_width = (int) normal.getStringBounds( MenuOption.values()[i].toString(), ( (Graphics2D) g ).getFontRenderContext() ).getWidth();
+                int string_width = ( int ) normal.getStringBounds( MenuOption.values()[i].toString(), ( ( Graphics2D ) g ).getFontRenderContext() ).getWidth();
                 g.setFont( choice == i ? accent : normal );
                 g.drawString( MenuOption.values()[i].toString(), midpoint - string_width / 2, y );
                 if ( choice == i )
                 {
                     g.setFont( accent );
-                    int[] xp = { midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 5 };
-                    int[] yp = { y - 10, y, y - 5 };
+                    int[] xp =
+                    {
+                        midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 10, midpoint - string_width / 2 - 5
+                    };
+                    int[] yp =
+                    {
+                        y - 10, y, y - 5
+                    };
                     g.fillPolygon( new Polygon( xp, yp, 3 ) );
                 }
                 y += 25;
             }
 
             // Draw some settings.
-            int height = (int) ( normal.getStringBounds( "|", ( (Graphics2D) g ).getFontRenderContext() ).getHeight() );
-            drawSetting( ( (Graphics2D) g ), "Music " + ( Settings.isMusicOn() ? "on" : "off" ), 'M', 14, ( WINDOW_HEIGHT - height ), normal, false );
-            drawSetting( ( (Graphics2D) g ), "Sound " + ( Settings.isSoundOn() ? "on" : "off" ), 'S', 14, ( WINDOW_HEIGHT - 2 * height ), normal, false );
-            drawSetting( ( (Graphics2D) g ), ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" ), 'F', getWidth(), ( WINDOW_HEIGHT - height ), normal, false );
-            drawSetting( ( (Graphics2D) g ), ( Settings.isQualityRendering() ? "Quality" : "Speed" ), 'A', getWidth(), ( WINDOW_HEIGHT - height * 2 ), normal, false );
+            int height = ( int ) ( normal.getStringBounds( "|", ( ( Graphics2D ) g ).getFontRenderContext() ).getHeight() );
+            drawSetting( ( ( Graphics2D ) g ), "Music " + ( Settings.isMusicOn() ? "on" : "off" ), 'M', 14, ( WINDOW_HEIGHT - height ), normal, false );
+            drawSetting( ( ( Graphics2D ) g ), "Sound " + ( Settings.isSoundOn() ? "on" : "off" ), 'S', 14, ( WINDOW_HEIGHT - 2 * height ), normal, false );
+            drawSetting( ( ( Graphics2D ) g ), ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" ), 'F', getWidth(), ( WINDOW_HEIGHT - height ), normal, false );
+            drawSetting( ( ( Graphics2D ) g ), ( Settings.isQualityRendering() ? "Quality" : "Speed" ), 'A', getWidth(), ( WINDOW_HEIGHT - height * 2 ), normal, false );
             String mode = "Wave";
-            if ( Settings.getLastGameMode() == Deathmatch.class)
+            if ( Settings.getLastGameMode() == Deathmatch.class )
                 mode = "Deathmatch";
-            else if ( Settings.getLastGameMode() == LinearGameplay.class)
+            else if ( Settings.getLastGameMode() == LinearGameplay.class )
                 mode = "Linear";
-            drawSetting( ( (Graphics2D) g ), "Game mode: " + mode, 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
+            drawSetting( ( ( Graphics2D ) g ), "Game mode: " + mode, 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
 
         }
     }
@@ -166,7 +179,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
         g.setFont( normal );
         g.setColor( Color.lightGray );
         g.drawString( statusString, x, y );
-        x += (int) ( normal.getStringBounds( statusString, g.getFontRenderContext() ).getWidth() ) + 5;
+        x += ( int ) ( normal.getStringBounds( statusString, g.getFontRenderContext() ).getWidth() ) + 5;
 
         // Draw the hotkey.
         g.setFont( normal.deriveFont( Font.ITALIC ) );
@@ -191,12 +204,10 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
      */
     public void keyTyped( KeyEvent e )
     {
-
     }
 
     public void keyReleased( KeyEvent e )
     {
-
     }
 
     public void keyPressed( KeyEvent e )
@@ -206,53 +217,53 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
             // Selecting a choice?
             case KeyEvent.VK_ENTER:
             case KeyEvent.VK_SPACE:
+            {
+                if ( Settings.isInSetup() )
                 {
-                    if ( Settings.isInSetup() )
+                    if ( choice == 0 )
                     {
-                        if ( choice == 0 )
+                        String n = JOptionPane.showInputDialog( this, "Enter your name.", Settings.getPlayerName() );
+                        if ( n != null && !n.equals( "" ) )
+                            Settings.setPlayerName( n );
+                    }
+                    else if ( choice == 1 )
+                    {
+                        Color oldColor = Settings.getPlayerColor();
+                        Settings.setPlayerColor( JColorChooser.showDialog( this, "Select player color...", Settings.getPlayerColor() ) );
+                        if ( Settings.getPlayerColor().getRed() + Settings.getPlayerColor().getGreen() + Settings.getPlayerColor().getBlue() < 12 * 3 )
                         {
-                            String n = JOptionPane.showInputDialog( this, "Enter your name.", Settings.getPlayerName() );
-                            if(! n.equals(""))
-                                Settings.setPlayerName( n );
-                        }
-                        else if ( choice == 1 )
-                        {
-                            Color oldColor = Settings.getPlayerColor();
-                            Settings.setPlayerColor( JColorChooser.showDialog( this, "Select player color...", Settings.getPlayerColor() ) );
-                            if ( Settings.getPlayerColor().getRed() + Settings.getPlayerColor().getGreen() + Settings.getPlayerColor().getBlue() < 12 * 3 )
-                            {
-                                JOptionPane.showMessageDialog( this, "Sorry, that's a bit too dark." );
-                                Settings.setPlayerColor( oldColor );
-                            }
-                        }
-                        else
-                        {
-                            choice = 0;
-                            Settings.setInSetup( false );
+                            JOptionPane.showMessageDialog( this, "Sorry, that's a bit too dark." );
+                            Settings.setPlayerColor( oldColor );
                         }
                     }
                     else
                     {
-                        if ( MenuOption.values()[choice] == MenuOption.OPTIONS )
-                        {
-                            // Go to the setup menu.
-                            choice = 0;
-                            Settings.setInSetup( true );
-                        }
-                        else
-                        {
-                            if ( MenuOption.values()[choice] == MenuOption.LOAD && !new File("res\\Game.save").exists())
-                            {
-                                JOptionPane.showMessageDialog( this, "No saved games found.", "Couldn't load...", JOptionPane.INFORMATION_MESSAGE );
-                                return;
-                            }
-                            setVisible( false );
-                            dispose();
-                            Running.startGame( MenuOption.values()[choice] );
-                        }
+                        choice = 0;
+                        Settings.setInSetup( false );
                     }
                 }
-                break;
+                else
+                {
+                    if ( MenuOption.values()[choice] == MenuOption.OPTIONS )
+                    {
+                        // Go to the setup menu.
+                        choice = 0;
+                        Settings.setInSetup( true );
+                    }
+                    else
+                    {
+                        if ( MenuOption.values()[choice] == MenuOption.LOAD && !new File( "res\\Game.save" ).exists() )
+                        {
+                            JOptionPane.showMessageDialog( this, "No saved games found.", "Couldn't load...", JOptionPane.INFORMATION_MESSAGE );
+                            return;
+                        }
+                        setVisible( false );
+                        dispose();
+                        Running.startGame( MenuOption.values()[choice] );
+                    }
+                }
+            }
+            break;
 
             // Changing a setting?
             case KeyEvent.VK_M:

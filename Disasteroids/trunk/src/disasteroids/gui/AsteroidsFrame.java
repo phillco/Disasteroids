@@ -30,6 +30,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
+import javax.swing.SwingUtilities;
 
 /**
  * The big momma class up in the sky.
@@ -39,6 +40,7 @@ import java.awt.geom.AffineTransform;
  */
 public class AsteroidsFrame extends Frame
 {
+
     /**
      * Dimensions of the window when not in fullscreen mode.
      * @since November 15 2007
@@ -94,9 +96,18 @@ public class AsteroidsFrame extends Frame
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
+        panel.setKeyListener();
+        
+        // [PC] This trick gives the canvas focus, so it immediately can receive key events.
+        SwingUtilities.invokeLater( new Runnable()
+        {
 
-        // Receive key events.
-        addKeyListener( new KeystrokeManager() );
+            public void run()
+            {
+                panel.requestFocusInWindow();
+            }
+        } );
+
 
         Sound.updateMusic();
         GameLoop.startLoop();
@@ -111,7 +122,7 @@ public class AsteroidsFrame extends Frame
     public void showStartMessage( String message )
     {
         AsteroidsFrame.frame().getPanel().getStarBackground().writeOnBackground( message,
-                (int) AsteroidsFrame.frame().localPlayer().getX(), (int) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
+                ( int ) AsteroidsFrame.frame().localPlayer().getX(), ( int ) AsteroidsFrame.frame().localPlayer().getY() - 40, 0, 50,
                 AsteroidsFrame.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
     }
 
@@ -267,10 +278,10 @@ public class AsteroidsFrame extends Frame
      */
     public void drawLine( Graphics graph, Color col, int x1, int y1, int x2, int y2 )
     {
-        x1 = (int) ( ( x1 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH );
-        y1 = (int) ( ( y1 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT );
-        x2 = (int) ( ( x2 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH );
-        y2 = (int) ( ( y2 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT );
+        x1 = ( int ) ( ( x1 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH );
+        y1 = ( int ) ( ( y1 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT );
+        x2 = ( int ) ( ( x2 - localPlayer().getX() + getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH );
+        y2 = ( int ) ( ( y2 - localPlayer().getY() + getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT );
         graph.setColor( col );
         graph.drawLine( x1, y1, x2, y2 );
     }
@@ -281,7 +292,7 @@ public class AsteroidsFrame extends Frame
         y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
-            graph.drawLine( x, y, (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
+            graph.drawLine( x, y, ( int ) ( x + length * Math.cos( angle ) ), ( int ) ( y - length * Math.sin( angle ) ) );
     }
 
     public void drawLine( Graphics graph, Color col, int x, int y, int length, int offset, double angle )
@@ -290,7 +301,7 @@ public class AsteroidsFrame extends Frame
         y = RelativeGraphics.translateY( y );
         graph.setColor( col );
         if ( x > -length && x < Game.getInstance().GAME_WIDTH + length && y > -length && y < Game.getInstance().GAME_HEIGHT + length )
-            graph.drawLine( (int) ( x + offset * Math.cos( angle ) ), (int) ( y - offset * Math.sin( angle ) ), (int) ( x + length * Math.cos( angle ) ), (int) ( y - length * Math.sin( angle ) ) );
+            graph.drawLine( ( int ) ( x + offset * Math.cos( angle ) ), ( int ) ( y - offset * Math.sin( angle ) ), ( int ) ( x + length * Math.cos( angle ) ), ( int ) ( y - length * Math.sin( angle ) ) );
     }
 
     /**
@@ -322,8 +333,8 @@ public class AsteroidsFrame extends Frame
             String[] lines = str.split( "\n" );
             for ( String line : lines )
             {
-                graph.drawString( line, x - (int) graph.getFont().getStringBounds( line, ( (Graphics2D) graph ).getFontRenderContext() ).getWidth() / 2, y );
-                y += (int) graph.getFont().getStringBounds( line, ( (Graphics2D) graph ).getFontRenderContext() ).getHeight();
+                graph.drawString( line, x - ( int ) graph.getFont().getStringBounds( line, ( ( Graphics2D ) graph ).getFontRenderContext() ).getWidth() / 2, y );
+                y += ( int ) graph.getFont().getStringBounds( line, ( ( Graphics2D ) graph ).getFontRenderContext() ).getHeight();
             }
         }
     }
@@ -382,7 +393,7 @@ public class AsteroidsFrame extends Frame
         af.scale( scale, scale );
         af.rotate( angle );
         af.translate( -img.getWidth( null ) / 2, -img.getHeight( null ) / 2 );
-        ( (Graphics2D) g ).drawImage( img, af, null );
+        ( ( Graphics2D ) g ).drawImage( img, af, null );
     }
 
     /**
@@ -424,7 +435,7 @@ public class AsteroidsFrame extends Frame
      */
     public Ship localPlayer()
     {
-        return (Ship) Game.getInstance().getObjectManager().getObject( localId );
+        return ( Ship ) Game.getInstance().getObjectManager().getObject( localId );
     }
 
     /**
@@ -434,6 +445,7 @@ public class AsteroidsFrame extends Frame
      */
     private static class AsteroidsFrameAdapter extends WindowAdapter implements ComponentListener
     {
+
         /**
          * Invoked when a window has been closed.
          * 
@@ -449,8 +461,7 @@ public class AsteroidsFrame extends Frame
         @Override
         public void windowGainedFocus( WindowEvent e )
         {
-            //[MW] this seemed to be the problem with the focus being lost, so fixed
-            //AsteroidsFrame.frame().addKeyListener( KeystrokeManager.getInstance() );
+            frame.panel.setKeyListener();
         }
 
         public void componentResized( ComponentEvent e )

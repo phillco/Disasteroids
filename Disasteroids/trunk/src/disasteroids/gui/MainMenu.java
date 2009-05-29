@@ -5,7 +5,7 @@
 package disasteroids.gui;
 
 import disasteroids.LinearGameplay;
-import disasteroids.Running;
+import disasteroids.Main;
 import disasteroids.Settings;
 import disasteroids.WaveGameplay;
 import disasteroids.Deathmatch;
@@ -259,7 +259,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
                         }
                         setVisible( false );
                         dispose();
-                        Running.startGame( MenuOption.values()[choice] );
+                        Main.startGame( MenuOption.values()[choice] );
                     }
                 }
             }
@@ -297,7 +297,7 @@ public class MainMenu extends AsteroidsMenu implements KeyListener
 
             // Exiting?
             case KeyEvent.VK_ESCAPE:
-                Running.quit();
+                Main.quit();
         }
         repaint();
     }

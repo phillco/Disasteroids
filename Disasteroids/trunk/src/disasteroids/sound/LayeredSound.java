@@ -5,7 +5,7 @@
 
 package disasteroids.sound;
 
-import disasteroids.Running;
+import disasteroids.Main;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -85,7 +85,7 @@ public class LayeredSound {
             sdl.close();
         }catch(LineUnavailableException e)
         {
-            Running.log(e.getMessage());
+            Main.log(e.getMessage());
         }
     }
     

@@ -4,7 +4,7 @@
  */
 package disasteroids.gui;
 
-import disasteroids.Running;
+import disasteroids.Main;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;

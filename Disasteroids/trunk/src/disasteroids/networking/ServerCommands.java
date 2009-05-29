@@ -28,7 +28,7 @@ public class ServerCommands
         }
         catch ( IOException ex )
         {
-            Running.warning( "Network stream failure, updatePause", ex );
+            Main.warning( "Network stream failure, updatePause", ex );
         }
     }
 
@@ -46,7 +46,7 @@ public class ServerCommands
         }
         catch ( IOException ex )
         {
-            Running.warning( "Network stream failure, berkserk", ex );
+            Main.warning( "Network stream failure, berkserk", ex );
         }
     }
 
@@ -65,7 +65,7 @@ public class ServerCommands
         }
         catch ( IOException ex )
         {
-            Running.warning( "Network stream failure, strafe", ex );
+            Main.warning( "Network stream failure, strafe", ex );
         }
     }
 
@@ -84,7 +84,7 @@ public class ServerCommands
         }
         catch ( IOException ex )
         {
-            Running.warning( "Network stream failure, changeBonusVelocity", ex );
+            Main.warning( "Network stream failure, changeBonusVelocity", ex );
         }
     }
 
@@ -111,7 +111,7 @@ public class ServerCommands
         }
         catch ( IOException ex )
         {
-            Running.warning( "Network stream failure, objectCreatedOrDestroyed", ex );
+            Main.warning( "Network stream failure, objectCreatedOrDestroyed", ex );
         }
     }
 }

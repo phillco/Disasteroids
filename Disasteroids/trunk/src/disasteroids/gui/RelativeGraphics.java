@@ -5,7 +5,7 @@
 package disasteroids.gui;
 
 import disasteroids.Game;
-import disasteroids.Running;
+import disasteroids.Main;
 
 /**
  * Utility class for drawing graphics around the localPlayer.
@@ -23,7 +23,7 @@ public abstract class RelativeGraphics
         }
         catch ( NullPointerException nullPointerException )
         {
-            Running.warning( "Null Pointer Exception, translateX" );
+            Main.warning( "Null Pointer Exception, translateX" );
             return -1;
         }
 
@@ -38,7 +38,7 @@ public abstract class RelativeGraphics
         }
         catch ( NullPointerException nullPointerException )
         {
-            Running.warning( "Null Pointer Exception, translateY" );
+            Main.warning( "Null Pointer Exception, translateY" );
             return -1;
         }
     }
@@ -56,7 +56,7 @@ public abstract class RelativeGraphics
         }
         catch ( Exception exception )
         {
-            Running.warning( exception.getClass().getName() + " at oppositeX" );
+            Main.warning( exception.getClass().getName() + " at oppositeX" );
             return -1;
         }
 
@@ -74,7 +74,7 @@ public abstract class RelativeGraphics
         }
         catch ( Exception exception )
         {
-            Running.warning( exception.getClass().getName() + " at oppositeY" );
+            Main.warning( exception.getClass().getName() + " at oppositeY" );
             return -1;
         }
     }

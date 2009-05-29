@@ -87,11 +87,11 @@ public class Game
         }
         catch ( InstantiationException ex )
         {
-            Running.fatalError( "Couldn't create game mode.", ex );
+            Main.fatalError( "Couldn't create game mode.", ex );
         }
         catch ( IllegalAccessException ex )
         {
-            Running.fatalError( "Couldn't create game mode.", ex );
+            Main.fatalError( "Couldn't create game mode.", ex );
         }
 
         // Update the GUI.
@@ -130,7 +130,7 @@ public class Game
             ex.printStackTrace();
         }
 
-        Running.log( "Game saved!" );
+        Main.log( "Game saved!" );
         GameLoop.startLoop();
     }
 
@@ -142,7 +142,7 @@ public class Game
         File file = new File( "res\\Game.save" );
         if ( !file.exists() )
         {
-            Running.log( "There's no saved game to restore!" );
+            Main.log( "There's no saved game to restore!" );
             return Local.getLocalPlayer().getId();
         }
         GameLoop.stopLoop();
@@ -157,7 +157,7 @@ public class Game
                 }
                 catch ( InterruptedException ex )
                 {
-                    Running.fatalError( "Rudely awaken in Game.loadFromFile().", ex );
+                    Main.fatalError( "Rudely awaken in Game.loadFromFile().", ex );
                 }
         }
 
@@ -171,7 +171,7 @@ public class Game
             id = stream.readInt();
 
             fis.close();
-            Running.log( "Game restored!" );
+            Main.log( "Game restored!" );
         }
         catch ( IOException ex )
         {
@@ -214,7 +214,7 @@ public class Game
     public void addPlayer( Ship newPlayer )
     {
         objectManager.addObject( newPlayer , false);
-        Running.log( newPlayer.getName() + " entered the game.", 800 );
+        Main.log( newPlayer.getName() + " entered the game.", 800 );
     }
 
     /**
@@ -240,7 +240,7 @@ public class Game
     {
         objectManager.removeObject( leavingPlayer );
         if ( quitReason.length() > 0 )
-            Running.log( leavingPlayer.getName() + quitReason, 800 );
+            Main.log( leavingPlayer.getName() + quitReason, 800 );
     }
 
     /**
@@ -270,7 +270,7 @@ public class Game
         // Check if we've lost in singleplayer.
         if ( !Client.is() && !Local.isStuffNull() && Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 )
         {
-            Running.quit();
+            Main.quit();
             return;
         }
 
@@ -475,7 +475,7 @@ public class Game
     {
         this.paused = paused;
         if ( announce )
-            Running.log( "Game " + ( paused ? "paused" : "unpaused" ) + "." );
+            Main.log( "Game " + ( paused ? "paused" : "unpaused" ) + "." );
         if ( Server.is() )
             ServerCommands.updatePause( paused );
     }

@@ -4,7 +4,7 @@
  */
 package disasteroids.sound;
 
-import disasteroids.Running;
+import disasteroids.Main;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.sound.midi.InvalidMidiDataException;
@@ -57,11 +57,11 @@ public class MusicPlayer implements MetaEventListener
         }
         catch ( InvalidMidiDataException imde )
         {
-            Running.warning( "|         Not a MIDI File         |", imde );
+            Main.warning( "|         Not a MIDI File         |", imde );
         }
         catch ( MidiUnavailableException mue )
         {
-            Running.warning( "| MIDI Device is currently in use |", mue );
+            Main.warning( "| MIDI Device is currently in use |", mue );
         }
     }
 

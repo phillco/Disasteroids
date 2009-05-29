@@ -206,7 +206,7 @@ public class Ship extends GameObject implements ShootingObject
                 if ( getWeaponManager().getAmmo() == 0 )
                 {
                     Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
-                    Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+                    Main.log( "Out of ammo for " + getWeaponManager().getName() + "." );
                     rotateWeapons();
                     shooting = false;
                 }
@@ -642,7 +642,7 @@ public class Ship extends GameObject implements ShootingObject
 
         // Print the obit.
         if ( obituary.length() > 0 )
-            Running.log( obituary );
+            Main.log( obituary );
 
         return true;
     }
@@ -688,7 +688,7 @@ public class Ship extends GameObject implements ShootingObject
         if ( getWeaponManager().getAmmo() == 0 )
         {
             Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
-            Running.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+            Main.log( "Out of ammo for " + getWeaponManager().getName() + "." );
             rotateWeapons();
         }
         if ( Server.is() )
@@ -829,7 +829,7 @@ public class Ship extends GameObject implements ShootingObject
 
         int check = stream.readInt();
         if ( check != 666 )
-            Running.fatalError( "Failed checksum test.\n\nReceived " + check + "..." + allWeapons[0].getAmmo() );
+            Main.fatalError( "Failed checksum test.\n\nReceived " + check + "..." + allWeapons[0].getAmmo() );
 
         // Apply basic construction.        
         double fadePct = 0.6;

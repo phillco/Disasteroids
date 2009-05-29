@@ -86,7 +86,7 @@ public class ObjectManager implements GameElement
         {
             nextAvailibleId = Long.MIN_VALUE;
             numOverflows++;
-            Running.warning( "Note: ID values filled; wrapping over." );
+            Main.warning( "Note: ID values filled; wrapping over." );
         }
         nextAvailibleId++;
         return nextAvailibleId;
@@ -242,8 +242,8 @@ public class ObjectManager implements GameElement
 
     public void printDebugInfo()
     {
-        Running.log( "Number of objects: " + gameObjects.size() + " / Last ID given: " + nextAvailibleId );
+        Main.log( "Number of objects: " + gameObjects.size() + " / Last ID given: " + nextAvailibleId );
         if ( numOverflows > 0 )
-            Running.log( "Number of ID overflows: " + numOverflows );
+            Main.log( "Number of ID overflows: " + numOverflows );
     }
 }

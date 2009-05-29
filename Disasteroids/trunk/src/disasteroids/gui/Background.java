@@ -142,7 +142,7 @@ public class Background
         }
         catch ( NullPointerException e )
         {
-            Running.warning( "Star Null Pointer :(" );
+            Main.warning( "Star Null Pointer :(" );
         }
 
         // Draw background messages.

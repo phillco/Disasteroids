@@ -6,7 +6,7 @@ package disasteroids.networking;
 
 import disasteroids.Action;
 import disasteroids.Game;
-import disasteroids.Running;
+import disasteroids.Main;
 import disasteroids.Ship;
 import java.awt.Color;
 import java.io.IOException;
@@ -82,7 +82,7 @@ public class Server extends DatagramListener
         }
         catch ( BindException e )
         {
-            Running.fatalError( "Couldn't bind to port " + Constants.DEFAULT_PORT + ". Perhaps a server is already running?\n\n" + e.getLocalizedMessage() );
+            Main.fatalError( "Couldn't bind to port " + Constants.DEFAULT_PORT + ". Perhaps a server is already running?\n\n" + e.getLocalizedMessage() );
         }
         catch ( SocketException ex )
         {
@@ -137,10 +137,10 @@ public class Server extends DatagramListener
                             out.writeInt( Message.CONNECT_ERROR_OLDNETCODE.ordinal() );
                             out.writeInt( Constants.NETCODE_VERSION );
                             sendPacket( client, out );
-                            Running.log( "Connection from " + client.toString() + " refused, using old version: " + version + ".", 800 );
+                            Main.log( "Connection from " + client.toString() + " refused, using old version: " + version + ".", 800 );
                             return;
                         }
-                        Running.log( "Connection from " + client.toString() + " accepted." );
+                        Main.log( "Connection from " + client.toString() + " accepted." );
 
                         // Spawn him in (so he'll be included in the update).
                         long id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt() ) );
@@ -194,7 +194,7 @@ public class Server extends DatagramListener
         }
         catch ( IOException ex )
         {
-            Running.fatalError( "Server parsing exception.", ex );
+            Main.fatalError( "Server parsing exception.", ex );
         }
     }
 
@@ -290,7 +290,7 @@ public class Server extends DatagramListener
                 if ( cm.isInGame() )
                 {
                     Game.getInstance().removePlayer( cm.inGamePlayer, "" );
-                    Running.log( cm.inGamePlayer.getName() + " timed out." );
+                    Main.log( cm.inGamePlayer.getName() + " timed out." );
 
                     try
                     {

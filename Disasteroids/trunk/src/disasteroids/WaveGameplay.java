@@ -37,7 +37,7 @@ public class WaveGameplay implements GameMode
         if ( wavePoints <= 0 && Game.getInstance().getObjectManager().getAsteroids().isEmpty() &&
                 Game.getInstance().getObjectManager().getBaddies().isEmpty() )
         {
-            Running.log( "Wave " + currentWave + " completed!", 300 );
+            Main.log( "Wave " + currentWave + " completed!", 300 );
             currentWave += 1;
             wavePoints = getWavePoints( currentWave );
         }

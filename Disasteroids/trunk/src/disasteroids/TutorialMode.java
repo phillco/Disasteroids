@@ -211,7 +211,7 @@ public class TutorialMode implements GameMode
         catch ( NumberFormatException e )
         {
             // Do nothing with incorrect or cancelled input.
-            Running.log( "Invalid section command.", 800 );
+            Main.log( "Invalid section command.", 800 );
         }
     }
 

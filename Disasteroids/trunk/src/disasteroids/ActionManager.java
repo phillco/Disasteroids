@@ -57,7 +57,7 @@ public class ActionManager
             else if ( a.getTimestep() < timestep )
             {
                 // Not critical, but notable.
-                Running.warning("Unsyncronized action at timestep " + timestep + " for actor " + a.getActor() + ".");
+                Main.warning("Unsyncronized action at timestep " + timestep + " for actor " + a.getActor() + ".");
             }
         }
     }

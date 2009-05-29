@@ -61,7 +61,7 @@ public class AsteroidsMenu extends BufferedFrame
         @Override
         public void windowClosing( WindowEvent e )
         {
-            Running.quit();
+            Main.quit();
         }
     }
 }

@@ -4,7 +4,7 @@
  */
 package disasteroids.networking;
 
-import disasteroids.Running;
+import disasteroids.Main;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
@@ -70,7 +70,7 @@ public class PacketSeries
         }
         catch ( IOException ex )
         {
-            Running.warning( "Multiseries read", ex );
+            Main.warning( "Multiseries read", ex );
         }
     }
 

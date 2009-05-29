@@ -6,7 +6,7 @@ package disasteroids.gui;
 
 import disasteroids.Game;
 import disasteroids.GameLoop;
-import disasteroids.Running;
+import disasteroids.Main;
 import disasteroids.Settings;
 import disasteroids.Ship;
 import disasteroids.networking.Client;
@@ -140,7 +140,7 @@ public class MainWindow extends Frame
     public void toggleFullscreen()
     {
         Settings.setUseFullscreen( !Settings.isUseFullscreen() );
-        Running.log( "The game will run " + ( Settings.isUseFullscreen() ? "in fullscreen" : "as a window" ) + " after you restart." );
+        Main.log( "The game will run " + ( Settings.isUseFullscreen() ? "in fullscreen" : "as a window" ) + " after you restart." );
         /* [PC] This is rather problematic.
         updateFullscreen();
          */
@@ -441,7 +441,7 @@ public class MainWindow extends Frame
         public void windowClosing( WindowEvent e )
         {
             frame().dispose();
-            Running.quit();
+            Main.quit();
         }
 
         @Override

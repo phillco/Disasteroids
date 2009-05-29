@@ -171,7 +171,7 @@ public class LinearGameplay implements GameMode
         catch ( NumberFormatException e )
         {
             // Do nothing with incorrect or cancelled input.
-            Running.log( "Invalid warp command.", 800 );
+            Main.log( "Invalid warp command.", 800 );
         }
     }
 }

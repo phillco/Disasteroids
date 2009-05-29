@@ -8,7 +8,7 @@ import disasteroids.Action;
 import disasteroids.Game;
 import disasteroids.GameLoop;
 import disasteroids.GameObject;
-import disasteroids.Running;
+import disasteroids.Main;
 import disasteroids.Station;
 import disasteroids.networking.Client;
 import java.awt.event.KeyEvent;
@@ -146,7 +146,7 @@ public class KeystrokeManager implements KeyListener
         switch ( translate( e.getKeyCode() ) )
         {
             case QUIT:
-                Running.quit();
+                Main.quit();
                 break;
             case TOGGLE_MUSIC:
                 MainWindow.frame().getPanel().toggleMusic();

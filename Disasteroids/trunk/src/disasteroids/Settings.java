@@ -124,12 +124,12 @@ public class Settings
         }
         catch ( IOException e )
         {
-            Running.warning( "Failed to save settings.", e );
+            Main.warning( "Failed to save settings.", e );
             return false;
         }
         catch ( RuntimeException t )
         {
-            Running.warning( "Failed to save settings.", t );
+            Main.warning( "Failed to save settings.", t );
             throw t;
         }
 

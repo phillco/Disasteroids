@@ -8,7 +8,7 @@ import disasteroids.gui.MainWindow;
 import disasteroids.Game;
 import disasteroids.GameLoop;
 import disasteroids.GameObject;
-import disasteroids.Running;
+import disasteroids.Main;
 import disasteroids.Settings;
 import disasteroids.Ship;
 import disasteroids.gui.Local;
@@ -87,7 +87,7 @@ public class Client extends DatagramListener
         }
         catch ( UnknownHostException ex )
         {
-            Running.fatalError( "Couldn't look up " + address + "." );
+            Main.fatalError( "Couldn't look up " + address + "." );
         }
     }
 
@@ -159,7 +159,7 @@ public class Client extends DatagramListener
                         processMultiPacket( p, in );
                         break;
                     case CONNECT_ERROR_OLDNETCODE:
-                        Running.fatalError( "Couldn't connect because the server is using a newer version.\nTheirs: " + in.readInt() + "\nOurs: " + Constants.NETCODE_VERSION + "\n\nYou'll have to update." );
+                        Main.fatalError( "Couldn't connect because the server is using a newer version.\nTheirs: " + in.readInt() + "\nOurs: " + Constants.NETCODE_VERSION + "\n\nYou'll have to update." );
                         return;
                     case FULL_UPDATE:
                         System.out.print( "Receiving full update..." );
@@ -182,7 +182,7 @@ public class Client extends DatagramListener
                         if ( MainWindow.frame() != null )
                             MainWindow.frame().dispose();
                         JOptionPane.showMessageDialog( null, "Server has quit.", "Disasteroids", JOptionPane.INFORMATION_MESSAGE );
-                        Running.quit();
+                        Main.quit();
                         break;
                     case PLAYER_JOINED:
                         Game.getInstance().addPlayer( new Ship( in ) );
@@ -195,7 +195,7 @@ public class Client extends DatagramListener
                         id = in.readLong();
                         GameObject go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Running.fatalError( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
+                            Main.fatalError( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
                         else
                             go.restorePosition( in );
                         break;
@@ -212,7 +212,7 @@ public class Client extends DatagramListener
                         id = in.readLong();
                         go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Running.fatalError( "NETWORK DESYNC! :(\nRemove: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
+                            Main.fatalError( "NETWORK DESYNC! :(\nRemove: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
                         else
                             Game.getInstance().getObjectManager().removeObject( go );
                         break;

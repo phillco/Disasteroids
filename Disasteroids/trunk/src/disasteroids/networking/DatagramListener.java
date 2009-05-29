@@ -4,7 +4,7 @@ package disasteroids.networking;
  * DISASTEROIDS
  * DatagramListener.java
  */
-import disasteroids.Running;
+import disasteroids.Main;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -302,7 +302,7 @@ public abstract class DatagramListener
             }
             catch ( IOException e )
             {
-                Running.fatalError( "Listening error.", e );
+                Main.fatalError( "Listening error.", e );
             }
         }
     }

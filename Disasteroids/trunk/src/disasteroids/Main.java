@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
  * Main utility code for startup, exit, logs, and errors.
  * @author Andy Kooiman, Phillip Cohen
  */
-public class Running
+public class Main
 {
 
     /**
@@ -167,7 +167,7 @@ public class Running
         {
             case START_SERVER:
                 MainWindow.frame().showStartMessage( "Server started!\nAddress is: " + Server.getLocalIP() + "\nPress F1 for help." );
-                Running.log( "Server started! The address is: " + Server.getLocalIP() + "\n." );
+                Main.log( "Server started! The address is: " + Server.getLocalIP() + "\n." );
                 Game.getInstance().setPaused( false, false );
                 break;
             case SINGLEPLAYER:
@@ -180,9 +180,9 @@ public class Running
                 MainWindow.frame().showStartMessage( "Press any key to start the tutorial." );
                 break;
             default:
-                Running.fatalError( "Unexpected menu selection." );
+                Main.fatalError( "Unexpected menu selection." );
             case EXIT:
-                Running.quit();
+                Main.quit();
         }
 
         if ( option == MenuOption.START_SERVER )
@@ -253,7 +253,7 @@ public class Running
         JOptionPane.showMessageDialog( null, message, "Disasteroids: Very Fatal Error", JOptionPane.ERROR_MESSAGE );
         System.out.println( "FATAL ERROR: " + message );
         errorCount++;
-        Running.quit();
+        Main.quit();
     }
 
     /**
@@ -272,7 +272,7 @@ public class Running
     /**
      * Utility class - no constructor. (Happy, NetBeans?)
      */
-    private Running()
+    private Main()
     {
     }
 }

@@ -85,7 +85,7 @@ public class GameLoop extends Thread
             }
             catch ( InterruptedException ex )
             {
-                Running.fatalError( "Game loop interrupted while sleeping.", ex );
+                Main.fatalError( "Game loop interrupted while sleeping.", ex );
             }
         }
     }

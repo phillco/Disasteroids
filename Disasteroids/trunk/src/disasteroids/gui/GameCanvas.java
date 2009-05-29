@@ -157,7 +157,7 @@ public class GameCanvas extends Canvas
             // Regression!
             if ( highestScorer.getScore() < Settings.getOldHighScore() && Settings.getHighScore() != Settings.getOldHighScore() )
             {
-                Running.log( "The high score record has been returned to " + Settings.getOldHighScorer() + ".", 800 );
+                Main.log( "The high score record has been returned to " + Settings.getOldHighScorer() + ".", 800 );
                 Settings.setHighScore( Settings.getOldHighScore() );
                 Settings.setHighScoreName( Settings.getOldHighScorer() );
             }
@@ -167,7 +167,7 @@ public class GameCanvas extends Canvas
                 if ( !highestScorer.getName().equals( Settings.getHighScoreName() ) )
                 {
                     Settings.setHighScoreName( highestScorer.getName() );
-                    Running.log( highestScorer.getName() + " just broke the high score record of " + Util.insertThousandCommas( highestScorer.getScore() ) + "!", 800 );
+                    Main.log( highestScorer.getName() + " just broke the high score record of " + Util.insertThousandCommas( highestScorer.getScore() ) + "!", 800 );
                 }
             }
 
@@ -540,7 +540,7 @@ public class GameCanvas extends Canvas
      */
     public void toggleMusic()
     {
-        Running.log( "Music " + ( Sound.toggleMusic() ? "on." : "off." ) );
+        Main.log( "Music " + ( Sound.toggleMusic() ? "on." : "off." ) );
     }
 
     /**
@@ -550,7 +550,7 @@ public class GameCanvas extends Canvas
      */
     public void toggleSound()
     {
-        Running.log( "Sound " + ( Sound.toggleSound() ? "on." : "off." ) );
+        Main.log( "Sound " + ( Sound.toggleSound() ? "on." : "off." ) );
     }
 
     /**
@@ -561,7 +561,7 @@ public class GameCanvas extends Canvas
     public void toggleReneringQuality()
     {
         Settings.setQualityRendering( !Settings.isQualityRendering() );
-        Running.log( ( Settings.isQualityRendering() ? "Quality rendering." : "Speed rendering." ) );
+        Main.log( ( Settings.isQualityRendering() ? "Quality rendering." : "Speed rendering." ) );
     }
 
     public void toggleTracker()

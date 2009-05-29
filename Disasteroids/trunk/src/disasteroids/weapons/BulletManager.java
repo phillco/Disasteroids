@@ -26,6 +26,7 @@ public class BulletManager extends Weapon
 
     public BulletManager()
     {
+        super();
     }
 
     @Override

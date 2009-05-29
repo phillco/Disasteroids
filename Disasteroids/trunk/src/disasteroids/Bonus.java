@@ -221,7 +221,7 @@ public class Bonus extends GameObject
         if ( !Local.isStuffNull() )
         {
             Local.getStarBackground().writeOnBackground( message, (int) getX(), (int) getY(), player.getColor() );
-            if ( player == MainWindow.frame().localPlayer() )
+            if ( player == Local.getLocalPlayer() )
                 Running.log( "Bonus: " + message );
         }
 

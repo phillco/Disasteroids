@@ -7,9 +7,10 @@ package disasteroids;
 import disasteroids.gui.MenuOption;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
+import disasteroids.gui.Local;
 import disasteroids.gui.MainMenu;
-import disasteroids.networking.Client;
-import disasteroids.networking.Server;
+import disasteroids.gui.MenuOption;
+import disasteroids.networking.*;
 import disasteroids.sound.Sound;
 import java.net.UnknownHostException;
 import javax.swing.JOptionPane;
@@ -20,6 +21,7 @@ import javax.swing.JOptionPane;
  */
 public class Running
 {
+
     /**
      * Small counters that are incremented each time <code>warning</code> or <code>fatalError</code> is called.
      * Shown when Disasteroids shuts down.
@@ -134,60 +136,57 @@ public class Running
      */
     public static void startGame( MenuOption option )
     {
-        Class gameMode = Settings.getLastGameMode();
-        Game.GameType gameType = Game.GameType.COOPERATIVE;
+        if ( option == MenuOption.CONNECT )
+        {
+            new Client();
+            return;
+        }
+        // Decide which game mode to use (yuck!).
+        {
+            Class gameMode = Settings.getLastGameMode();
+            Game.GameType gameType = Game.GameType.COOPERATIVE;
+            if ( option == MenuOption.START_SERVER )
+            {
+                gameMode = Deathmatch.class;
+                gameType = Game.GameType.DEATHMATCH;
+            }
+            else if ( option == MenuOption.TUTORIAL )
+                gameMode = TutorialMode.class;
+
+            new Game( gameMode, gameType );
+        }
+
+        // Create the local player and window. Start the game.
+        long localPlayerID = ( option == MenuOption.LOAD ) ? Game.loadFromFile() : Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() );
+        Local.init( localPlayerID );
+        new MainWindow();
+        GameLoop.startLoop();
+
+        // Show start message.
         switch ( option )
         {
             case START_SERVER:
-                gameMode = Deathmatch.class;
-                gameType = Game.GameType.DEATHMATCH;
-                new Server();
-                new Game( gameMode, gameType );
-                new MainWindow( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 MainWindow.frame().showStartMessage( "Server started!\nAddress is: " + Server.getLocalIP() + "\nPress F1 for help." );
                 Running.log( "Server started! The address is: " + Server.getLocalIP() + "\n." );
                 Game.getInstance().setPaused( false, false );
                 break;
             case SINGLEPLAYER:
-                new Game( gameMode, gameType );
-                new MainWindow( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 MainWindow.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
                 break;
             case LOAD:
-                new MainWindow( Game.loadFromFile() );
                 Game.getInstance().setPaused( false, false );
                 break;
             case TUTORIAL:
-                new Game( TutorialMode.class, gameType );
-                new MainWindow( Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() ) );
                 MainWindow.frame().showStartMessage( "Press any key to start the tutorial." );
-                break;
-            case CONNECT:
-                // Get the server address.
-                String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.getLastConnectionIP() );
-                if ( ( address == null ) || ( address.equals( "" ) ) )
-                    return;
-
-                Settings.setLastConnectionIP( address );
-                Settings.saveToStorage();
-                if ( Settings.isMusicOn() )
-                    Sound.startMusic();
-
-                // Connect to it.
-                try
-                {
-                    new Client( address );
-                }
-                catch ( UnknownHostException ex )
-                {
-                    fatalError( "Couldn't look up " + address + "." );
-                }
                 break;
             default:
                 Running.fatalError( "Unexpected menu selection." );
             case EXIT:
                 Running.quit();
         }
+
+        if ( option == MenuOption.START_SERVER )
+            new Server();
     }
 
     /**

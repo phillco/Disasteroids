@@ -39,21 +39,17 @@ public class MainWindow extends Frame
 {
 
     /**
-     * Dimensions of the window when not in fullscreen mode.
-     * @since November 15 2007
+     * Dimensions of the window (when not in fullscreen mode).
      */
     private static final int WINDOW_WIDTH = 900, WINDOW_HEIGHT = 750;
 
-    private GameCanvas panel;
+    private GameCanvas gameCanvas;
 
     public GameCanvas getPanel()
     {
-        return panel;
+        return gameCanvas;
     }
-    /**
-     * ID of the player that's at this computer.
-     */
-    public long localId;
+
 
     private static MainWindow frame;
 
@@ -63,15 +59,11 @@ public class MainWindow extends Frame
     }
 
     /**
-     * Constructs the game frame and game elements.
-     * 
-     * @param localId   id of the player at this computer
-     * @since December 14, 2007
+     * Constructs the game frame.
      */
-    public MainWindow( long localId )
+    public MainWindow()
     {
         frame = this;
-        this.localId = localId;
 
         // Reflect the network state.
         if ( Server.is() )
@@ -81,9 +73,8 @@ public class MainWindow extends Frame
         else
             setTitle( "Disasteroids" );
 
-        panel = new GameCanvas( this );
-
-        add( panel );
+        gameCanvas = new GameCanvas( this );
+        add( gameCanvas );
         setResizable( true );
 
         // Close when the exit key is pressed.
@@ -93,7 +84,7 @@ public class MainWindow extends Frame
 
         // Set our size - fullscreen or windowed.
         updateFullscreen();
-        panel.setKeyListener();
+        gameCanvas.setKeyListener();
         
         // [PC] This trick gives the canvas focus, so it immediately can receive key events.
         SwingUtilities.invokeLater( new Runnable()
@@ -101,26 +92,23 @@ public class MainWindow extends Frame
 
             public void run()
             {
-                panel.requestFocusInWindow();
+                gameCanvas.requestFocusInWindow();
             }
-        } );
-
-
-        Sound.updateMusic();
+        } );      
         GameLoop.startLoop();
     }
 
     public void nextLevel()
     {
-        panel.background.init();
+        gameCanvas.background.init();
         ParticleManager.clear();
     }
 
     public void showStartMessage( String message )
     {
         MainWindow.frame().getPanel().getStarBackground().writeOnBackground( message,
-                ( int ) MainWindow.frame().localPlayer().getX(), ( int ) MainWindow.frame().localPlayer().getY() - 40, 0, 50,
-                MainWindow.frame().localPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
+                ( int ) Local.getLocalPlayer().getX(), ( int ) Local.getLocalPlayer().getY() - 40, 0, 50,
+                Local.getLocalPlayer().getColor(), new Font( "Century Gothic", Font.BOLD, 20 ) );
     }
 
     /**
@@ -130,18 +118,18 @@ public class MainWindow extends Frame
      */
     public void resetGame()
     {
-        panel.background.clearMessages();
-        panel.notificationMessages.clear();
+        gameCanvas.background.clearMessages();
+        gameCanvas.notificationMessages.clear();
         ParticleManager.clear();
 
         // Reset the background.
-        panel.background.init();
+        gameCanvas.background.init();
     }
 
     public static void addNotificationMessage( String message, int life )
     {
         if ( frame() != null )
-            frame().panel.addNotificationMessage( message, life );
+            frame().gameCanvas.addNotificationMessage( message, life );
     }
 
     /**
@@ -164,7 +152,7 @@ public class MainWindow extends Frame
         super.setSize( width, height );
 
         // Force the main image to be resized.
-        panel.virtualMem = null;
+        gameCanvas.virtualMem = null;
     }
 
     @Override
@@ -173,7 +161,7 @@ public class MainWindow extends Frame
         super.setSize( d );
 
         // Force the main image to be resized.
-        panel.virtualMem = null;
+        gameCanvas.virtualMem = null;
     }
 
     /**
@@ -190,7 +178,7 @@ public class MainWindow extends Frame
         {
             dispose();
             setUndecorated( true );
-            panel.setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
+            gameCanvas.setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
             setSize( graphicsDevice.getDisplayMode().getWidth(), graphicsDevice.getDisplayMode().getHeight() );
             pack();
             graphicsDevice.setFullScreenWindow( this );
@@ -201,8 +189,8 @@ public class MainWindow extends Frame
             setCursor( blankCursor );
 
             // Re-create the background.
-            if ( panel.background != null )
-                panel.background.init();
+            if ( gameCanvas.background != null )
+                gameCanvas.background.init();
         }
         // Set windowed mode if we're not already.
         else if ( ( getSize().width != WINDOW_WIDTH ) || ( getSize().height != WINDOW_HEIGHT ) )
@@ -223,8 +211,8 @@ public class MainWindow extends Frame
             setCursor( new Cursor( Cursor.DEFAULT_CURSOR ) );
 
             // Re-create the background.
-            if ( panel.background != null )
-                panel.background.init();
+            if ( gameCanvas.background != null )
+                gameCanvas.background.init();
         }
         setVisible( true );
     }
@@ -430,9 +418,10 @@ public class MainWindow extends Frame
      * @return  the <code>Ship</code> controlled by the player at this computer
      * @since December 19, 2007
      */
+    @Deprecated
     public Ship localPlayer()
     {
-        return ( Ship ) Game.getInstance().getObjectManager().getObject( localId );
+        return Local.getLocalPlayer();
     }
 
     /**
@@ -458,7 +447,7 @@ public class MainWindow extends Frame
         @Override
         public void windowGainedFocus( WindowEvent e )
         {
-            frame.panel.setKeyListener();
+            frame.gameCanvas.setKeyListener();
         }
 
         public void componentResized( ComponentEvent e )
@@ -487,16 +476,16 @@ public class MainWindow extends Frame
      */
     public int getRumbleX()
     {
-        return panel.rumbleX;
+        return gameCanvas.rumbleX;
     }
 
     public int getRumbleY()
     {
-        return panel.rumbleY;
+        return gameCanvas.rumbleY;
     }
 
     public void rumble( double amount )
     {
-        panel.rumble += amount;
+        gameCanvas.rumble += amount;
     }
 }

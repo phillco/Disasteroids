@@ -4,22 +4,38 @@
  */
 package disasteroids.gui;
 
+import disasteroids.Game;
 import disasteroids.Ship;
+import disasteroids.sound.Sound;
 
 /**
- * Quick access class for local objects.
- * @author Phillip Cohen
- * @since January 15, 2008
+ * Manages the local (on this computer) objects.
  */
 public class Local
 {
+
+    /**
+     * ID of the player that's at this computer.
+     */
+    private static long localPlayerID = -1;
+
     /**
      * A boolean that's toggled every step. Useful for flashing objects.
-     * @since April 11, 2008
      */
     static boolean globalFlash = true;
 
-    public static boolean loading = false;
+    /**
+     * Whether the game is loading.
+     */
+    private static boolean loading = false;
+
+    public static void init( long localID )
+    {
+        if ( localPlayerID == -1 )
+            localPlayerID = localID;
+        Sound.updateMusic();
+    }
+
 
     /**
      * Returns if commonly used things (like the AsteroidsFrame and Background) are null, and thus are loading.
@@ -29,7 +45,7 @@ public class Local
      */
     public static boolean isStuffNull()
     {
-        return ( loading || MainWindow.frame() == null || MainWindow.frame().localPlayer() == null || MainWindow.frame().getPanel().getStarBackground() == null );
+        return ( loading || MainWindow.frame() == null || localPlayerID == -1 || MainWindow.frame().getPanel().getStarBackground() == null );
     }
 
     /**
@@ -51,7 +67,14 @@ public class Local
         if ( isStuffNull() )
             return null;
         else
-            return MainWindow.frame().localPlayer();
+            return ( Ship ) Game.getInstance().getObjectManager().getObject( localPlayerID );
+    }
+
+    public static void loadGame()
+    {
+        loading = true;
+        localPlayerID = Game.loadFromFile();
+        loading = false;
     }
 
     /**

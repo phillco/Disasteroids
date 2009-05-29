@@ -96,9 +96,7 @@ public class Game
 
         // Update the GUI.
         if ( MainWindow.frame() != null )
-            MainWindow.frame().resetGame();
-
-        GameLoop.startLoop();
+            MainWindow.frame().resetGame();        
     }
 
     /**

@@ -11,6 +11,8 @@ import disasteroids.GameObject;
 import disasteroids.Running;
 import disasteroids.Settings;
 import disasteroids.Ship;
+import disasteroids.gui.Local;
+import disasteroids.sound.Sound;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -25,6 +27,7 @@ import javax.swing.JOptionPane;
  */
 public class Client extends DatagramListener
 {
+
     /**
      * Location of the server.
      * @since December 29, 2007
@@ -37,6 +40,7 @@ public class Client extends DatagramListener
      */
     public enum Message
     {
+
         /**
          * We want to connect to the server and join the game.
          */
@@ -63,6 +67,29 @@ public class Client extends DatagramListener
         return ( instance != null );
     }
     LinkedList<PacketSeries> packetSeries;
+
+    public Client()
+    {
+        // Get the server address.
+        String address = JOptionPane.showInputDialog( "Enter the IP address of the host computer.", Settings.getLastConnectionIP() );
+        if ( ( address == null ) || ( address.equals( "" ) ) )
+            return;
+
+        Settings.setLastConnectionIP( address );
+        Settings.saveToStorage();
+        if ( Settings.isMusicOn() )
+            Sound.startMusic();
+
+        // Connect to it.
+        try
+        {
+            new Client( address );
+        }
+        catch ( UnknownHostException ex )
+        {
+            Running.fatalError( "Couldn't look up " + address + "." );
+        }
+    }
 
     /**
      * Binds this client to the given server, and connects to it. Assumes the default server port.
@@ -140,10 +167,11 @@ public class Client extends DatagramListener
                         // Receive status of the entire game.
                         new Game( in );
                         long id = in.readLong();
+                        Local.init( id );
                         System.out.println( "...done. Our ID is: " + id + "." );
 
                         // Start the game.
-                        new MainWindow( id );
+                        new MainWindow( );
                         MainWindow.frame().showStartMessage( "Welcome to this server!\nPress F1 for help." );
                         break;
                     case PAUSE:
@@ -161,21 +189,21 @@ public class Client extends DatagramListener
                         break;
                     case PLAYER_QUIT:
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
+                        Game.getInstance().removePlayer( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
                         break;
                     case OBJECT_UPDATE_VELOCITY:
-                         id = in.readLong();
+                        id = in.readLong();
                         GameObject go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Running.fatalError( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException());
+                            Running.fatalError( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
                         else
                             go.restorePosition( in );
                         break;
                     case PLAYER_BERSERK:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).berserk();
+                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).berserk();
                         break;
                     case PLAYER_STRAFE:
-                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).strafe( in.readBoolean() );
+                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).strafe( in.readBoolean() );
                         break;
                     case OBJECT_CREATED:
                         Game.getInstance().getObjectManager().addObjectFromStream( in );
@@ -184,7 +212,7 @@ public class Client extends DatagramListener
                         id = in.readLong();
                         go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Running.fatalError( "NETWORK DESYNC! :(\nRemove: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException());
+                            Running.fatalError( "NETWORK DESYNC! :(\nRemove: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).\nDisconnecting...", new NullPointerException() );
                         else
                             Game.getInstance().getObjectManager().removeObject( go );
                         break;

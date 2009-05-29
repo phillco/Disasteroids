@@ -272,15 +272,15 @@ public class Ship extends GameObject implements ShootingObject
 
         double centerX, centerY;
 
-        if ( this == MainWindow.frame().localPlayer() )
+        if ( this == Local.getLocalPlayer() )
         {
             centerX = MainWindow.frame().getWidth() / 2;
             centerY = MainWindow.frame().getHeight() / 2;
         }
         else
         {
-            centerX = ( getX() - MainWindow.frame().localPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
-            centerY = ( getY() - MainWindow.frame().localPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
+            centerX = ( getX() - Local.getLocalPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;
+            centerY = ( getY() - Local.getLocalPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT;
 
             if ( !( centerX > -100 && centerX < Game.getInstance().GAME_WIDTH + 100 && centerY > -100 && centerY < Game.getInstance().GAME_HEIGHT + 100 ) )
                 return;
@@ -309,7 +309,7 @@ public class Ship extends GameObject implements ShootingObject
                 MainWindow.frame().drawCircle( g, Color.getHSBColor( 0.5f, 1.0f, shieledRemaining / 100.0f ), (int) getX(), (int) getY(), ( RADIUS + 2 ) + 3 * ( i ) );
         }
 
-        if ( this == MainWindow.frame().localPlayer() && drawWeaponNameTimer > 0 )
+        if ( this == Local.getLocalPlayer() && drawWeaponNameTimer > 0 )
         {
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
@@ -623,7 +623,7 @@ public class Ship extends GameObject implements ShootingObject
             explosionTime = 160;
             setBrake( true );
             MainWindow.frame().rumble( 85 );
-            if ( Settings.isSoundOn() && this == MainWindow.frame().localPlayer() )
+            if ( Settings.isSoundOn() && this == Local.getLocalPlayer() )
                 Sound.playInternal( SoundLibrary.GAME_OVER );
 
             // Create lots of particles.

@@ -114,11 +114,11 @@ public class KeystrokeManager implements KeyListener
         if ( !GameLoop.isRunning() )
             return;
 
-        Game.getInstance().getActionManager().add( new Action( MainWindow.frame().localPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+        Game.getInstance().getActionManager().add( new Action( Local.getLocalPlayer(), 0 - e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
         if ( e.isShiftDown() )
-            MainWindow.frame().localPlayer().setSnipeMode( true );
+            Local.getLocalPlayer().setSnipeMode( true );
         else
-            MainWindow.frame().localPlayer().setSnipeMode( false );
+            Local.getLocalPlayer().setSnipeMode( false );
         if ( Client.is() )
             Client.getInstance().keyStroke( 0 - e.getKeyCode() );
     }
@@ -137,9 +137,9 @@ public class KeystrokeManager implements KeyListener
         if ( !Game.getInstance().isPaused() )
         {
             if ( e.isShiftDown() )
-                MainWindow.frame().localPlayer().setSnipeMode( true );
+                Local.getLocalPlayer().setSnipeMode( true );
             else
-                MainWindow.frame().localPlayer().setSnipeMode( false );
+                Local.getLocalPlayer().setSnipeMode( false );
         }
 
         // Is it a local action?
@@ -186,7 +186,7 @@ public class KeystrokeManager implements KeyListener
                 }
                 else
                 {
-                    Game.getInstance().getActionManager().add( new Action( MainWindow.frame().localPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
+                    Game.getInstance().getActionManager().add( new Action( Local.getLocalPlayer(), e.getKeyCode(), Game.getInstance().timeStep + 2 ) );
 
                     if ( Client.is() )
                         Client.getInstance().keyStroke( e.getKeyCode() );

@@ -128,7 +128,7 @@ public class Background
             for ( Star star : this.theStars )
                 synchronized (this)
                 {
-                    if ( ( !Settings.isQualityRendering() && ++count % 3 == 0 ) || star == null || MainWindow.frame() == null || MainWindow.frame().localPlayer() == null )
+                    if ( ( !Settings.isQualityRendering() && ++count % 3 == 0 ) || star == null || MainWindow.frame() == null || Local.getLocalPlayer() == null )
                         continue;
                     // Move them.
                     //   star.x += star.dx - AsteroidsFrame.frame().localPlayer().getDx() * star.depth;
@@ -164,8 +164,8 @@ public class Background
         {
             if ( star == null )
                 continue;
-            star.x += star.dx - MainWindow.frame().localPlayer().getDx() * star.depth;
-            star.y += star.dy - MainWindow.frame().localPlayer().getDy() * star.depth;
+            star.x += star.dx - Local.getLocalPlayer().getDx() * star.depth;
+            star.y += star.dy - Local.getLocalPlayer().getDy() * star.depth;
             star.checkWrap();
         }
     }

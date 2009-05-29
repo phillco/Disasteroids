@@ -18,7 +18,7 @@ public abstract class RelativeGraphics
     {
         try
         {
-            return (int) Math.round( ( x - MainWindow.frame().localPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH ) + MainWindow.frame().getRumbleX();
+            return (int) Math.round( ( x - Local.getLocalPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH ) + MainWindow.frame().getRumbleX();
 
         }
         catch ( NullPointerException nullPointerException )
@@ -33,7 +33,7 @@ public abstract class RelativeGraphics
     {
         try
         {
-            return (int) Math.round( ( y - MainWindow.frame().localPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT ) + MainWindow.frame().getRumbleY();
+            return (int) Math.round( ( y - Local.getLocalPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT ) + MainWindow.frame().getRumbleY();
 
         }
         catch ( NullPointerException nullPointerException )

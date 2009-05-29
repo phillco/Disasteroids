@@ -80,7 +80,7 @@ public class GameLoop extends Thread
                     Game.getInstance().act();
 
                 while ( enabled && System.currentTimeMillis() - timeOfLast < PERIOD )
-                    Thread.sleep( 2 );
+                    Thread.sleep( PERIOD / 2 );
 
             }
             catch ( InterruptedException ex )

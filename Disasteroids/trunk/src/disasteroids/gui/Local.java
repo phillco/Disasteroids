@@ -20,11 +20,6 @@ public class Local
     private static long localPlayerID = -1;
 
     /**
-     * A boolean that's toggled every step. Useful for flashing objects.
-     */
-    static boolean globalFlash = true;
-
-    /**
      * Whether the game is loading.
      */
     private static boolean loading = false;
@@ -75,16 +70,5 @@ public class Local
         loading = true;
         localPlayerID = Game.loadFromFile();
         loading = false;
-    }
-
-    /**
-     * Returns a boolean that's toggled every step. Useful for flashing objects.
-     * 
-     * @return  a global boolean, toggled at every step.
-     * @since April 11, 2008
-     */
-    public static boolean getGlobalFlash()
-    {
-        return globalFlash;
     }
 }

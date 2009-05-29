@@ -213,7 +213,7 @@ public class Station extends GameObject implements ShootingObject
     public void draw( Graphics g )
     {
         // Flash when disabled.
-        if ( isDisabled() && Local.getGlobalFlash() )
+        if ( isDisabled() && Util.getGlobalFlash() )
             return;
 
         int rX = RelativeGraphics.translateX( getX() );

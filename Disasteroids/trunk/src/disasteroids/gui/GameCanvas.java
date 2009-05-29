@@ -205,7 +205,7 @@ public class GameCanvas extends Canvas
             virtualMem = createImage( getWidth(), getHeight() );
 
         // Flashing game objects.
-        Local.globalFlash = !Local.globalFlash;
+        Util.flipGlobalFlash();
 
         // Shake the screen when hit.
         if ( rumble < 0.1 )

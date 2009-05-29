@@ -14,6 +14,11 @@ import java.util.Random;
 public class Util
 {
     /**
+     * A boolean that's toggled every step. Useful for flashing objects.
+     */
+    private static boolean globalFlash = true;
+
+    /**
      * Global array of random generators.
      * @see Util#getRandomGenerator()
      */
@@ -33,6 +38,19 @@ public class Util
      * @see Util#insertThousandCommas(int) 
      */
     private static DecimalFormat thousands = new DecimalFormat( "" );
+
+    /**
+     * Returns a boolean that's toggled every step. Useful for flashing objects.
+     */
+    public static boolean getGlobalFlash()
+    {
+        return globalFlash;
+    }
+
+    public static void flipGlobalFlash()
+    {
+        globalFlash = !globalFlash;
+    }
 
     /**
      * Takes the given number and inserts comma seperators at each grouping.
@@ -126,6 +144,7 @@ public class Util
      */
     public static class ExtendedRandom extends Random
     {
+
         /**
          * Randoms a random double between 0 and 2 * PI.
          */

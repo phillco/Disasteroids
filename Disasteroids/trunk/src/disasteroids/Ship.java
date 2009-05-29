@@ -293,7 +293,7 @@ public class Ship extends GameObject implements ShootingObject
         outline.addPoint( (int) ( centerX + RADIUS * Math.cos( angle - Math.PI * .85 ) ), (int) ( centerY - RADIUS * Math.sin( angle - Math.PI * .85 ) ) );
 
         // Flash when invincible.
-        if ( !cannotDie() || ( cannotDie() && Local.getGlobalFlash() ) )
+        if ( !cannotDie() || ( cannotDie() && Util.getGlobalFlash() ) )
             MainWindow.frame().drawPolygon( g, col, ( myColor.getRed() + myColor.getGreen() + myColor.getBlue() > 64 * 3 ? Color.black : Color.darkGray ), outline );
         //  AsteroidsFrame.frame().drawImage(g, ImageLibrary.getShip(Color.red), (int)x, (int)y,Math.PI/2 -angle, Ship.RADIUS/37.5);
 

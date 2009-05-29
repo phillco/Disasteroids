@@ -40,6 +40,7 @@ public class KeystrokeManager implements KeyListener
 
     public KeystrokeManager()
     {
+        instance = this;
         keyboardLayout.put( KeyEvent.VK_ESCAPE, ActionType.QUIT );
         keyboardLayout.put( KeyEvent.VK_M, ActionType.TOGGLE_MUSIC );
         keyboardLayout.put( KeyEvent.VK_S, ActionType.TOGGLE_SOUND );
@@ -98,7 +99,7 @@ public class KeystrokeManager implements KeyListener
     public static KeystrokeManager getInstance()
     {
         if ( instance == null )
-            instance = new KeystrokeManager();
+            new KeystrokeManager();
         return instance;
     }
 

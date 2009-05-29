@@ -97,6 +97,7 @@ public class GameCanvas extends Canvas
     public void setKeyListener()
     {
         // Receive key events.
+        removeKeyListener( KeystrokeManager.getInstance() );
         addKeyListener( KeystrokeManager.getInstance() );
     }
 

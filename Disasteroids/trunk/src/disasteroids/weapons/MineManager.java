@@ -179,11 +179,12 @@ public class MineManager extends Weapon
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public MineManager( DataInputStream stream ) throws IOException
+    public MineManager( DataInputStream stream, Ship parent ) throws IOException
     {
         super( stream );
         berserkAngleOffset = stream.readDouble();
         sight = stream.readInt();
+        this.parent = parent;
 
         // Restore all of the units.
         int size = stream.readInt();

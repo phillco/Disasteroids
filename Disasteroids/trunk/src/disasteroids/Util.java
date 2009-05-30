@@ -27,6 +27,8 @@ public class Util
         new ExtendedRandom(), new ExtendedRandom(), new ExtendedRandom()
     };
 
+    private static ExtendedRandom graphicsRandomGenerator = new ExtendedRandom(), unsyncedGameplayRandomGenerator = new ExtendedRandom();
+
     /**
      * The last used random generator in <code>instances</code>.
      * @see Util#instances
@@ -129,13 +131,30 @@ public class Util
     /**
      * Returns a global random generator, which gives better pseudorandomness than constantly making a new instance.
      * Multiple instances are cycled through to relieve bottlenecks.
-     * 
-     * @return  a static instance of <code>Random</code>
+     *
+     * @deprecated Replace with getGraphicsRandomGenerator when used for graphics. Leave alone otherwise for now.
      */
+    @Deprecated
     public static ExtendedRandom getRandomGenerator()
     {
         lastGeneratorUsed = ( lastGeneratorUsed + 1 ) % instances.length;
         return instances[lastGeneratorUsed];
+    }
+
+    /**
+     * Returns a random generator for use in the graphics thread only.
+     */
+    public static ExtendedRandom getGraphicsRandomGenerator()
+    {
+        return graphicsRandomGenerator;
+    }
+
+    /**
+     * Returns a random generator for the gameplay thread. Use when it doesn't matter what values are generated (for example, because they are synced manually by other code).
+     */
+    public static ExtendedRandom getUnsyncedGameplayRandomGenerator()
+    {
+        return unsyncedGameplayRandomGenerator;
     }
 
     /**

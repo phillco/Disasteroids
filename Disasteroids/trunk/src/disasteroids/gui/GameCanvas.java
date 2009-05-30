@@ -213,8 +213,8 @@ public class GameCanvas extends Canvas
             rumble = 0;
         else
         {
-            rumbleX = ( int ) ( Util.getRandomGenerator().nextDouble() * rumble - rumble / 2 );
-            rumbleY = ( int ) ( Util.getRandomGenerator().nextDouble() * rumble - rumble / 2 );
+            rumbleX = ( int ) ( Util.getGraphicsRandomGenerator().nextDouble() * rumble - rumble / 2 );
+            rumbleY = ( int ) ( Util.getGraphicsRandomGenerator().nextDouble() * rumble - rumble / 2 );
             rumble *= 0.9;
         }
 

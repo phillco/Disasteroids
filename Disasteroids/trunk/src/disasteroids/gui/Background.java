@@ -81,7 +81,7 @@ public class Background
             image = MainWindow.frame().createImage( width, height );
 
         // Create the array of stars.
-        Random rand = Util.getRandomGenerator();
+        Random rand = Util.getGraphicsRandomGenerator();
         this.theStars = new Star[( width * height / ( rand.nextInt( 600 ) + 750 ) )];
         for ( int star = 0; star < theStars.length; star++ )
         {
@@ -215,21 +215,21 @@ public class Background
             this.x = x;
             this.y = y;
             this.color = col;
-            twinkle = Util.getRandomGenerator().nextDouble() < .05;
+            twinkle = Util.getGraphicsRandomGenerator().nextDouble() < .05;
             if ( twinkle )
-                twinkleCount = Util.getRandomGenerator().nextInt( 50 );
+                twinkleCount = Util.getGraphicsRandomGenerator().nextInt( 50 );
             // Simulated depth. Multiplied by the localPlayer's dx and dy to determine speed.
-            depth = Util.getRandomGenerator().nextDouble() * .5;
+            depth = Util.getGraphicsRandomGenerator().nextDouble() * .5;
 
             // Force some to the 'background'.
-            if ( Util.getRandomGenerator().nextInt( 15 ) == 0 )
+            if ( Util.getGraphicsRandomGenerator().nextInt( 15 ) == 0 )
                 depth /= 3;
 
             // Some stars also move.
-            if ( !twinkle && Util.getRandomGenerator().nextInt( 10 ) == 0 )
+            if ( !twinkle && Util.getGraphicsRandomGenerator().nextInt( 10 ) == 0 )
             {
-                dx = Util.getRandomGenerator().nextDouble() - 0.5;
-                dy = Util.getRandomGenerator().nextDouble() - 0.5;
+                dx = Util.getGraphicsRandomGenerator().nextDouble() - 0.5;
+                dy = Util.getGraphicsRandomGenerator().nextDouble() - 0.5;
                 dx *= .07;
                 dy *= .07;
             }
@@ -284,8 +284,8 @@ public class Background
             this.message = message;
             this.col = col;
 
-            life = lifeMax = Util.getRandomGenerator().nextInt( 30 ) + 40;
-            dy = -Util.getRandomGenerator().nextDouble() * 4;
+            life = lifeMax = Util.getGraphicsRandomGenerator().nextInt( 30 ) + 40;
+            dy = -Util.getGraphicsRandomGenerator().nextDouble() * 4;
             font = new Font( "Century Gothic", Font.BOLD, 10 );
         }
 

@@ -37,7 +37,7 @@ public class ParticleManager
      */
     public static void addParticle( Particle p )
     {   //always add if less than 1000; less likely if there are already that many in the list.
-        if( Util.getRandomGenerator().nextInt( Math.max( particleCount , 1 ) ) < 400 )
+        if( Util.getGraphicsRandomGenerator().nextInt( Math.max( particleCount , 1 ) ) < 400 )
         {
             allParticles.add( p );
             ++particleCount;
@@ -91,9 +91,9 @@ public class ParticleManager
     {
         for ( int i = 0; i < getNumberToMake( amount ); i++ )
         {
-            addParticle( new Particle( x, y, Util.getRandomGenerator().nextInt( 5 ) + 2,
-                                       Util.getRandomGenerator().nextBoolean() ? Color.gray : Color.darkGray,
-                                       Util.getRandomGenerator().nextDouble() * 3 + 1, Util.getRandomGenerator().nextDouble() * 1.6 + 0.3,
+            addParticle( new Particle( x, y, Util.getGraphicsRandomGenerator().nextInt( 5 ) + 2,
+                                       Util.getGraphicsRandomGenerator().nextBoolean() ? Color.gray : Color.darkGray,
+                                       Util.getGraphicsRandomGenerator().nextDouble() * 3 + 1, Util.getGraphicsRandomGenerator().nextDouble() * 1.6 + 0.3,
                                        50, 30 ) );
         }
     }
@@ -102,10 +102,10 @@ public class ParticleManager
     {
         for ( int i = 0; i < getNumberToMake( amount ); i++ )
         {
-            addParticle( new Particle( x, y, Util.getRandomGenerator().nextInt( 5 ) + 2,
-                                       new Color( (float) ( Util.getRandomGenerator().nextDouble() * 0.4 + 0.6 ),
-                                                  (float) ( Util.getRandomGenerator().nextDouble() * 0.3 + 0.2 ), 0.01f, 1 ),
-                                       Util.getRandomGenerator().nextDouble() * 3 + 1, Util.getRandomGenerator().nextDouble() * 1.6 + 0.3,
+            addParticle( new Particle( x, y, Util.getGraphicsRandomGenerator().nextInt( 5 ) + 2,
+                                       new Color( (float) ( Util.getGraphicsRandomGenerator().nextDouble() * 0.4 + 0.6 ),
+                                                  (float) ( Util.getGraphicsRandomGenerator().nextDouble() * 0.3 + 0.2 ), 0.01f, 1 ),
+                                       Util.getGraphicsRandomGenerator().nextDouble() * 3 + 1, Util.getGraphicsRandomGenerator().nextDouble() * 1.6 + 0.3,
                                        50, 30 ) );
         }
     }
@@ -113,7 +113,7 @@ public class ParticleManager
     private static int getNumberToMake( double amountScalar )
     {
         if ( amountScalar < 0 )
-            return Util.getRandomGenerator().nextDouble() < amountScalar ? 1 : 0;
+            return Util.getGraphicsRandomGenerator().nextDouble() < amountScalar ? 1 : 0;
         else
             return (int) amountScalar;
     }

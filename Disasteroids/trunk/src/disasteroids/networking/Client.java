@@ -59,7 +59,9 @@ public class Client extends DatagramListener
     }
     private static Client instance;
 
-    LinkedList<PacketSeries> packetSeries;
+    private LinkedList<PacketSeries> packetSeries;
+
+    private boolean isConnected = false;
 
     public Client()
     {
@@ -166,6 +168,7 @@ public class Client extends DatagramListener
                         // Start the game.
                         new MainWindow();
                         MainWindow.frame().showStartMessage( "Welcome to this server!\nPress F1 for help." );
+                        isConnected = true;
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );
@@ -273,11 +276,15 @@ public class Client extends DatagramListener
 
     @Override
     void intervalLogic()
-    {
-        // Tell the server we're still here.
+    {        
         try
         {
-            if ( server.shouldPong() )
+            // No response on connect?
+            if ( server.shouldTimeout() && !isConnected )
+                Main.fatalError( "Couldn't connect to " + server.toString() + ".\nWe didn't get any response.\n\nAre you sure a server is running there?" );
+            
+            // Tell the server we're still here.
+            if ( server.shouldPong() && isConnected )
             {
                 ByteOutputStream out = new ByteOutputStream();
                 out.writeInt( Message.PONG.ordinal() );

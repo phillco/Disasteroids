@@ -52,7 +52,7 @@ public class Mine extends Unit
             for ( long id : Game.getInstance().getObjectManager().getAllIds() )
             {
                 GameObject go = Game.getInstance().getObjectManager().getObject( id );
-                if ( go instanceof BlackHole || go instanceof Bonus || ( go instanceof Ship && ( ( (Ship) go ) == parent.getParent() ) ) )
+                if ( go instanceof BlackHole || go instanceof Bonus || ( go instanceof Ship && ( ( (Ship) go ).cannotDie() || ( (Ship) go ) == parent.getParent() ) ) )
                     continue;
 
                 if ( Util.getDistance( this, Game.getInstance().getObjectManager().getObject( id ) ) < parent.getBonusValue( parent.BONUS_EXPLODERADIUS ).getValue() )

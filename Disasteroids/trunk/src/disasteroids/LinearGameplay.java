@@ -36,7 +36,7 @@ public class LinearGameplay implements GameMode
 
     void setUpAsteroidField( int level )
     {
-        Random rand = Util.getRandomGenerator();
+        Random rand = Util.getGameplayRandomGenerator();
         int numBonuses = 0;
 
         // Create regular asteroids.

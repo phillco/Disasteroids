@@ -43,45 +43,46 @@ public class WaveGameplay implements GameMode
         }
 
         // Spawn asteroids directly opposite from player 1.
-        double x = RelativeGraphics.oppositeX() + Util.getRandomGenerator().nextInt( 100 ) - 50;
-        double y = RelativeGraphics.oppositeY() + Util.getRandomGenerator().nextInt( 100 ) - 50;
+        // TODO: Sync all of these creations.
+        double x = RelativeGraphics.oppositeX() + Util.getGameplayRandomGenerator().nextInt( 100 ) - 50;
+        double y = RelativeGraphics.oppositeY() + Util.getGameplayRandomGenerator().nextInt( 100 ) - 50;
 
         double spawnRate = Math.min( 9, Math.max( 1, ( Game.getInstance().getObjectManager().getBaddies().size() + Game.getInstance().getObjectManager().getAsteroids().size() ) / 20.0 ) );
         // System.out.println(spawnRate + " " + wavePoints);
 
         // Spawn an asteroid.
-        if ( wavePoints >= 50 && Util.getRandomGenerator().nextDouble() * spawnRate <= 0.3 )
+        if ( wavePoints >= 50 && Util.getGameplayRandomGenerator().nextDouble() * spawnRate <= 0.3 )
         {
             wavePoints -= 50;
 
             // Make it a bonus asteroid.
-            if ( Util.getRandomGenerator().nextDouble() * 8 * spawnRate <= 0.3 )
-                Game.getInstance().getObjectManager().addObject( new BonusAsteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
-                        Util.getRandomGenerator().nextInt( 60 ) + 80, 15 ) , false);
+            if ( Util.getGameplayRandomGenerator().nextDouble() * 8 * spawnRate <= 0.3 )
+                Game.getInstance().getObjectManager().addObject( new BonusAsteroid( x, y, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3,
+                        Util.getGameplayRandomGenerator().nextInt( 60 ) + 80, 15 ) , false);
             else
-                Game.getInstance().getObjectManager().addObject( new Asteroid( x, y, Util.getRandomGenerator().nextInt( 6 ) - 3, Util.getRandomGenerator().nextInt( 6 ) - 3,
-                        Util.getRandomGenerator().nextInt( 70 ) + 30, 15 ) , false);
+                Game.getInstance().getObjectManager().addObject( new Asteroid( x, y, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3,
+                        Util.getGameplayRandomGenerator().nextInt( 70 ) + 30, 15 ) , false);
         }
 
         // Spawn an alien.
-        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 30 * spawnRate <= 0.3 )
+        if ( wavePoints >= 100 && Util.getGameplayRandomGenerator().nextDouble() * 30 * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
-            Game.getInstance().getObjectManager().addObject( new Alien( x, y, Util.getRandomGenerator().nextDouble() * 8 - 4, Util.getRandomGenerator().nextDouble() * 8 - 4 ) , false);
+            Game.getInstance().getObjectManager().addObject( new Alien( x, y, Util.getGameplayRandomGenerator().nextDouble() * 8 - 4, Util.getGameplayRandomGenerator().nextDouble() * 8 - 4 ) , false);
         }
 
         // Spawn a station.
-        if ( wavePoints >= 150 && Util.getRandomGenerator().nextDouble() * 25 * spawnRate <= 0.3 )
+        if ( wavePoints >= 150 && Util.getGameplayRandomGenerator().nextDouble() * 25 * spawnRate <= 0.3 )
         {
             wavePoints -= 150;
-            Game.getInstance().getObjectManager().addObject( new Station( x, y, Util.getRandomGenerator().nextInt( 4 ) - 2, Util.getRandomGenerator().nextInt( 4 ) - 2 ) , false);
+            Game.getInstance().getObjectManager().addObject( new Station( x, y, Util.getGameplayRandomGenerator().nextInt( 4 ) - 2, Util.getGameplayRandomGenerator().nextInt( 4 ) - 2 ) , false);
         }
 
         // Create a black hole.
-        if ( wavePoints >= 100 && Util.getRandomGenerator().nextDouble() * 40 * Math.pow( Game.getInstance().getObjectManager().getBlackHoles().size() + 1, 3 ) * spawnRate <= 0.3 )
+        if ( wavePoints >= 100 && Util.getGameplayRandomGenerator().nextDouble() * 40 * Math.pow( Game.getInstance().getObjectManager().getBlackHoles().size() + 1, 3 ) * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
-            Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ), 30 , 50 ) , false);
+            Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ), 30 , 50 ) , false);
         }
     }
 

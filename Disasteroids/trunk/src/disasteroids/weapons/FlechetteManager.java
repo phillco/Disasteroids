@@ -43,7 +43,7 @@ public class FlechetteManager extends Weapon
                 break;
 
             units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
-                                      angle + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
+                                      angle + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
             if ( !isInfiniteAmmo() )
                 --ammo;
         }
@@ -64,7 +64,7 @@ public class FlechetteManager extends Weapon
                     break;
 
                 units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
-                                          Util.getRandomGenerator().nextAngle() + ( Util.getRandomGenerator().nextDouble() - .5 ) ) );
+                                          Util.getGameplayRandomGenerator().nextAngle() + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
                 ++firedShots;
                 if ( !isInfiniteAmmo() )
                     --ammo;
@@ -96,7 +96,7 @@ public class FlechetteManager extends Weapon
 
     public double getSpeed()
     {
-        return ( speed * Util.getRandomGenerator().nextDouble() );
+        return ( speed * Util.getGameplayRandomGenerator().nextDouble() );
     }
 
     public int getMaxUnits()

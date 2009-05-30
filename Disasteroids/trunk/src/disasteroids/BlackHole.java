@@ -40,7 +40,8 @@ public class BlackHole extends GameObject
 
     public BlackHole( double x, double y )
     {
-        super( x, y, Util.getRandomGenerator().nextInt( 9 ) + 8, 30 );
+        // TODO: Sync creation
+        super( x, y, Util.getGameplayRandomGenerator().nextInt( 9 ) + 8, 30 );
     }
 
     public BlackHole( double x, double y, int power, int numToEat )

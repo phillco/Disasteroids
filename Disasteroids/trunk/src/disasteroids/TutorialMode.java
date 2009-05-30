@@ -67,9 +67,9 @@ public class TutorialMode implements GameMode
         {
             nextStage();
             for ( int i = 0; i < 8; i++ )
-                Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
-                                                                               Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
-                                                                               Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2, Util.getRandomGenerator().nextInt( 50 ) + 60, 50 ), true );
+                Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX() + Util.getGameplayRandomGenerator().nextInt( 900 ) - 450,
+                                                                               Local.getLocalPlayer().getY() - 700 + Util.getGameplayRandomGenerator().nextInt( 80 ) - 40,
+                                                                               Util.getGameplayRandomGenerator().nextMidpointDouble( 2 ), Util.getGameplayRandomGenerator().nextDouble() * 2, Util.getGameplayRandomGenerator().nextInt( 50 ) + 60, 50 ), true );
         }
 
         // Take it out!
@@ -93,9 +93,9 @@ public class TutorialMode implements GameMode
         {
             nextStage();
             for ( int i = 0; i < 4; i++ )
-                Game.getInstance().getObjectManager().addObject( new Alien( Local.getLocalPlayer().getX() + Util.getRandomGenerator().nextInt( 900 ) - 450,
-                                                                            Local.getLocalPlayer().getY() - 700 + Util.getRandomGenerator().nextInt( 80 ) - 40,
-                                                                            Util.getRandomGenerator().nextMidpointDouble( 2 ), Util.getRandomGenerator().nextDouble() * 2 ), true );
+                Game.getInstance().getObjectManager().addObject( new Alien( Local.getLocalPlayer().getX() + Util.getGameplayRandomGenerator().nextInt( 900 ) - 450,
+                                                                            Local.getLocalPlayer().getY() - 700 + Util.getGameplayRandomGenerator().nextInt( 80 ) - 40,
+                                                                            Util.getGameplayRandomGenerator().nextMidpointDouble( 2 ), Util.getGameplayRandomGenerator().nextDouble() * 2 ), true );
         }
 
         // Here they come!

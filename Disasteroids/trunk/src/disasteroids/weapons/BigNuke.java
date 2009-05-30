@@ -37,8 +37,9 @@ public class BigNuke extends Unit
     {
         super( color, x, y, dx + 6 * Math.cos( angle ), dy - 6 * Math.sin( angle ) );
         this.parent = parent;
-        ax = Util.getRandomGenerator().nextDouble() / 8 - 1 / 16.0;
-        ay = Util.getRandomGenerator().nextDouble() / 8 - 1 / 16.0;
+        // TODO: Sync, or use syncedRandom()
+        ax = Util.getGameplayRandomGenerator().nextDouble() / 8 - 1 / 16.0;
+        ay = Util.getGameplayRandomGenerator().nextDouble() / 8 - 1 / 16.0;
     }
 
     @Override
@@ -52,19 +53,19 @@ public class BigNuke extends Unit
 
         for ( int i = 0; i < 18; i++ )
             ParticleManager.addParticle( new Particle(
-                                         getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                         getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                         Util.getRandomGenerator().nextInt( 4 ),
+                                         getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                                         getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                                         Util.getGameplayRandomGenerator().nextInt( 4 ),
                                          color,
-                                         Util.getRandomGenerator().nextDouble(),
-                                         Util.getRandomGenerator().nextAngle(),
+                                         Util.getGameplayRandomGenerator().nextDouble(),
+                                         Util.getGameplayRandomGenerator().nextAngle(),
                                          20, 1 ) );
 
         if ( age > 30 )
         {
             for ( int i = 0; i < 9; i++ )
             {
-                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Math.PI * 2 * Util.getRandomGenerator().nextDouble(), 30 + Util.getRandomGenerator().nextInt( 15 ) ) );
+                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Math.PI * 2 * Util.getGameplayRandomGenerator().nextDouble(), 30 + Util.getGameplayRandomGenerator().nextInt( 15 ) ) );
                 ++chargesDeployed;
             }
 

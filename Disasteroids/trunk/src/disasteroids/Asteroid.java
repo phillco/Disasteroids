@@ -41,12 +41,13 @@ public class Asteroid extends GameObject implements GameElement
     public Asteroid( double x, double y, double dx, double dy, int diameter, int lifeMax )
     {
         super( x, y, dx, dy );
+        // TODO: Sync, objectmanager
         this.radius = diameter / 2;
         this.life = this.lifeMax = Math.max( 1, lifeMax );
 
         // Enforce a minimum size.
         if ( diameter < 25 )
-            diameter = 25 + Util.getRandomGenerator().nextInt( 25 );
+            diameter = 25 + Util.getGameplayRandomGenerator().nextInt( 25 );
 
         // Enforce a mininum speed.
         checkMovement();
@@ -60,7 +61,7 @@ public class Asteroid extends GameObject implements GameElement
      */
     public Asteroid( Asteroid parent )
     {
-        super( parent.getX(), parent.getY(), Util.getRandomGenerator().nextDouble() * 2 - 1, Util.getRandomGenerator().nextDouble() * 2 - 1 );
+        super( parent.getX(), parent.getY(), Util.getGameplayRandomGenerator().nextDouble() * 2 - 1, Util.getGameplayRandomGenerator().nextDouble() * 2 - 1 );
         this.radius = parent.radius * 3 / 5;
 
         // Live half as long as parents.

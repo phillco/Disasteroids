@@ -21,6 +21,7 @@ class Flechette extends Unit
 
     public Flechette( FlechetteManager parent, Color color, double x, double y, double dx, double dy, double angle )
     {
+        // TODO: Sync unit creation.
         super( color, x, y, dx + parent.getSpeed() * Math.cos( angle ), dy - parent.getSpeed() * Math.sin( angle ) );
         this.parent = parent;
     }

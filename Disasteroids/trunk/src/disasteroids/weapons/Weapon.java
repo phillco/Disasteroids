@@ -235,7 +235,7 @@ public abstract class Weapon implements GameElement
 
         // If we can, upgrade.
         if ( availableUpgrades.size() > 0 )
-            return availableUpgrades.get( Util.getRandomGenerator().nextInt( availableUpgrades.size() ) ).upgrade();
+            return availableUpgrades.get( Util.getGameplayRandomGenerator().nextInt( availableUpgrades.size() ) ).upgrade();
         else
             return "";
     }

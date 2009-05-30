@@ -23,8 +23,8 @@ public class Deathmatch implements GameMode
     {
         /*
         // Create some random black holes.
-        for ( int i = 0, numHoles = Util.getRandomGenerator().nextInt( 2 ) + 1; i < numHoles; i++ )
-            Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ), 13, -1 ) );
+        for ( int i = 0, numHoles = Util.getUnsyncedGameplayRandomGenerator().nextInt( 2 ) + 1; i < numHoles; i++ )
+            Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getUnsyncedGameplayRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getUnsyncedGameplayRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ), 13, -1 ) );
          * */
     }
 
@@ -33,18 +33,20 @@ public class Deathmatch implements GameMode
         // Spawn bonuses at the black holes.
         for ( BlackHole b : Game.getInstance().getObjectManager().getBlackHoles() )
         {
-            if ( Util.getRandomGenerator().nextInt( 1500 ) == 0 )
+            if ( Util.getGameplayRandomGenerator().nextInt( 1500 ) == 0 )
             {
-                Game.getInstance().getObjectManager().addObject( new Bonus( b.getX(), b.getY() - 150, Util.getRandomGenerator().nextInt( 8 ) - 4, 0 ) , false);
+                Game.getInstance().getObjectManager().addObject( new Bonus( b.getX(), b.getY() - 150, Util.getGameplayRandomGenerator().nextInt( 8 ) - 4, 0 ) , false);
+                /* TODO: Sync, or move to bonus creation
                 for ( int i = 0; i < 6; i++ )
                     ParticleManager.addParticle( new Particle(
-                            b.getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                            ( b.getY() - 150 ) + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                            Util.getRandomGenerator().nextInt( 4 ),
+                            b.getX() + Util.getUnsyncedGameplayRandomGenerator().nextInt( 8 ) - 4,
+                            ( b.getY() - 150 ) + Util.getUnsyncedGameplayRandomGenerator().nextInt( 8 ) - 4,
+                            Util.getUnsyncedGameplayRandomGenerator().nextInt( 4 ),
                             Color.white,
-                            Util.getRandomGenerator().nextDouble() * 3,
-                            Util.getRandomGenerator().nextAngle(),
+                            Util.getUnsyncedGameplayRandomGenerator().nextDouble() * 3,
+                            Util.getUnsyncedGameplayRandomGenerator().nextAngle(),
                             50, 1 ) );
+                 */
             }
         }
     }

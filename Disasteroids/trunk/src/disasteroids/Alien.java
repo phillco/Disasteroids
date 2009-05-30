@@ -63,7 +63,7 @@ public class Alien extends GameObject implements ShootingObject
     /**
      * The direction this <code>Alien</code> is "pointing."
      */
-    double angle = Util.getRandomGenerator().nextAngle();
+    double angle = Util.getGameplayRandomGenerator().nextAngle();
 
     /**
      * Creates a new <code>Alien</code>
@@ -77,9 +77,9 @@ public class Alien extends GameObject implements ShootingObject
     public Alien( double x, double y, double dx, double dy )
     {
         super( x, y, dx, dy );
-        size = Util.getRandomGenerator().nextInt( 50 ) + 30;
+        size = Util.getGameplayRandomGenerator().nextInt( 50 ) + 30;
         manager = new AlienMissileManager( size );
-        color = new Color( Util.getRandomGenerator().nextInt( 60 ), Util.getRandomGenerator().nextInt( 128 ) + 96, Util.getRandomGenerator().nextInt( 60 ) );
+        color = new Color( Util.getGameplayRandomGenerator().nextInt( 60 ), Util.getGameplayRandomGenerator().nextInt( 128 ) + 96, Util.getGameplayRandomGenerator().nextInt( 60 ) );
         life = 500;
         explosionTime = 0;
     }
@@ -94,15 +94,16 @@ public class Alien extends GameObject implements ShootingObject
         ax *= 0.94;
         ay *= 0.94;
 
-        if ( Math.abs( ax ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
-            ax = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
-        if ( Math.abs( ay ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
-            ay = Util.getRandomGenerator().nextDouble() * 0.12 - 0.06;
-        if ( Util.getRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
+        if ( Math.abs( ax ) <= 0.01 || Util.getGameplayRandomGenerator().nextInt( 60 ) == 0 )
+            ax = Util.getGameplayRandomGenerator().nextDouble() * 0.12 - 0.06;
+        if ( Math.abs( ay ) <= 0.01 || Util.getGameplayRandomGenerator().nextInt( 60 ) == 0 )
+            ay = Util.getGameplayRandomGenerator().nextDouble() * 0.12 - 0.06;
+        if ( Util.getGameplayRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
         {
             ax *= -1.8;
             ay *= -1.8;
         }
+        // TODO: Sync like Bonus
 
         // Find players within our range.        
         int range = 300;
@@ -151,7 +152,7 @@ public class Alien extends GameObject implements ShootingObject
             {
                 explosionTime = 20;
 
-                if ( Util.getRandomGenerator().nextInt( 5 ) == 0 )
+                if ( Util.getGameplayRandomGenerator().nextInt( 5 ) == 0 )
                     Game.getInstance().createBonus( this );
             }
 
@@ -166,11 +167,11 @@ public class Alien extends GameObject implements ShootingObject
 
         // Smoke when low on health.
         if ( life < 80 )
-            ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), 1 );
+            ParticleManager.createSmoke( getX() + Util.getGameplayRandomGenerator().nextInt( size ), centerY(), 1 );
 
         // Flames when doomed!
         if ( life < 40 )
-            ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), ( 50 - life ) / 10 );
+            ParticleManager.createFlames( getX() + Util.getGameplayRandomGenerator().nextInt( size ), centerY(), ( 50 - life ) / 10 );
 
     }
 
@@ -233,7 +234,8 @@ public class Alien extends GameObject implements ShootingObject
     {
         double desiredAngle = 0.0;
         double distance = Util.getDistance( this, target );
-        double time = Math.log( distance ) * ( 5 + Util.getRandomGenerator().nextInt( 2 ) );
+        // TODO: Sync
+        double time = Math.log( distance ) * ( 5 + Util.getGameplayRandomGenerator().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 
@@ -389,9 +391,10 @@ public class Alien extends GameObject implements ShootingObject
             if ( !canShoot() )
                 return;
 
-            // Shoot a missile, and, randomly, an alien bullet. 
+            // Shoot a missile, and, randomly, an alien bullet.
+            // TODO: Sync
             units.add( new AlienMissile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx() / 8, parent.getDy() / 8, angle ) );
-            if ( Util.getRandomGenerator().nextBoolean() )
+            if ( Util.getGameplayRandomGenerator().nextBoolean() )
                 units.add( new AlienBomb( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
             if ( !isInfiniteAmmo() )

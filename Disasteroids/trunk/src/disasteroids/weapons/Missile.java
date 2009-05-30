@@ -57,7 +57,7 @@ public class Missile extends Unit
         super( color, x, y, dx, dy );
         this.parent = parent;
         this.angle = angle;
-        hugeBlast = ( Util.getRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_HUGEBLASTPROB ).getValue() ) <= 1 );
+        hugeBlast = ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_HUGEBLASTPROB ).getValue() ) <= 1 );
     }
 
     /**
@@ -139,7 +139,7 @@ public class Missile extends Unit
         // Create particles when launched. 
         if ( age < 30 )
         {
-            Random rand = Util.getRandomGenerator();
+            Random rand = Util.getGameplayRandomGenerator();
             for ( int i = 0; i < (int) ( 7 - Math.sqrt( getDx() * getDx() + getDy() * getDy() ) ); i++ )
                 ParticleManager.addParticle( new Particle(
                                              getX() + rand.nextInt( 8 ) - 4,
@@ -201,7 +201,8 @@ public class Missile extends Unit
             return;
 
         // Optionally pop into several other missiles.
-        if ( Util.getRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_POPPINGPROB ).getValue() ) <= 101 )
+        // TODO: Sync (whether pop, whether huge blast)
+        if ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_POPPINGPROB ).getValue() ) <= 101 )
             parent.pop( this );
 
         explosionStage = 1;

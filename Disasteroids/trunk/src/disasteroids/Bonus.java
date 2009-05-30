@@ -46,13 +46,13 @@ public class Bonus extends GameObject
      * The class of bonus (category).
      * @since April 12, 2008
      */
-    private int bonusClass = Util.getRandomGenerator().nextInt( Class.values().length );
+    private int bonusClass = Util.getGameplayRandomGenerator().nextInt( Class.values().length );
 
     /**
      * The type of bonus (within its category).
      * @since Classic
      */
-    private int bonusType = Util.getRandomGenerator().nextInt( Class.values()[bonusClass].types );
+    private int bonusType = Util.getGameplayRandomGenerator().nextInt( Class.values()[bonusClass].types );
 
     final int RADIUS = 12;
 
@@ -80,7 +80,7 @@ public class Bonus extends GameObject
 
     public Bonus( double x, double y )
     {
-        this( x, y, Util.getRandomGenerator().nextDouble() * 2 - 1, Util.getRandomGenerator().nextDouble() * 2 - 1 );
+        this( x, y, Util.getGameplayRandomGenerator().nextDouble() * 2 - 1, Util.getGameplayRandomGenerator().nextDouble() * 2 - 1 );
     }
 
     public void act()
@@ -92,17 +92,17 @@ public class Bonus extends GameObject
         ay *= 0.98;
 
         boolean bVelocityChanged = false;
-        if ( Math.abs( ax ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+        if ( Math.abs( ax ) <= 0.01 || Util.getGameplayRandomGenerator().nextInt( 60 ) == 0 )
         {
-            ax = Util.getRandomGenerator().nextDouble() * 0.08 - 0.04;
+            ax = Util.getGameplayRandomGenerator().nextDouble() * 0.08 - 0.04;
             bVelocityChanged = true;
         }
-        if ( Math.abs( ay ) <= 0.01 || Util.getRandomGenerator().nextInt( 60 ) == 0 )
+        if ( Math.abs( ay ) <= 0.01 || Util.getGameplayRandomGenerator().nextInt( 60 ) == 0 )
         {
-            ay = Util.getRandomGenerator().nextDouble() * 0.08 - 0.04;
+            ay = Util.getGameplayRandomGenerator().nextDouble() * 0.08 - 0.04;
             bVelocityChanged = true;
         }
-        if ( Util.getRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
+        if ( Util.getGameplayRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
         {
             ax *= -1.2;
             ay *= -1.2;
@@ -118,24 +118,24 @@ public class Bonus extends GameObject
             Game.getInstance().getObjectManager().removeObject( this );
             for ( int i = 0; i < 500; i++ )
                 ParticleManager.addParticle( new Particle(
-                        getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                        getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                        Util.getRandomGenerator().nextInt( 8 ),
+                        getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                        getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                        Util.getGameplayRandomGenerator().nextInt( 8 ),
                         Color.getHSBColor( bonusType / 9.0f, 1f, .7f ),
-                        Util.getRandomGenerator().nextDouble() * 5,
-                        Util.getRandomGenerator().nextAngle(),
+                        Util.getGameplayRandomGenerator().nextDouble() * 5,
+                        Util.getGameplayRandomGenerator().nextAngle(),
                         40, 2 ) );
             Sound.playInternal( SoundLibrary.BONUS_FIZZLE );
         }
         checkCollision();
         for ( int i = 0; i < 3; i++ )
             ParticleManager.addParticle( new Particle(
-                    getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    Util.getRandomGenerator().nextInt( 4 ),
+                    getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    Util.getGameplayRandomGenerator().nextInt( 4 ),
                     Color.getHSBColor( lastHue, lastHB, 1 - lastHB ),
-                    Util.getRandomGenerator().nextDouble() * 3,
-                    Util.getRandomGenerator().nextAngle(),
+                    Util.getGameplayRandomGenerator().nextDouble() * 3,
+                    Util.getGameplayRandomGenerator().nextAngle(),
                     50, 1 ) );
         angle = ( angle + 0.03 ) % ( 2 * Math.PI );
     }
@@ -192,6 +192,7 @@ public class Bonus extends GameObject
                 player.setWeapon( bonusType + 2 );
                 break;
             case WEAPON_POWERUP:
+                // TODO: Test, Sync?
                 message = player.getWeaponManager().applyBonus();
 
                 // No bonus for this weapon? Just give ammo instead.

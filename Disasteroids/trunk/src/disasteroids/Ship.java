@@ -229,12 +229,12 @@ public class Ship extends GameObject implements ShootingObject
             for ( int i = 0; i < explosionTime / 12; i++ )
             {
                 ParticleManager.addParticle( new Particle(
-                        getX() + Util.getRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
-                        getY() + Util.getRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
-                        Util.getRandomGenerator().nextInt( 4 ) + 3,
-                        Util.getRandomGenerator().nextBoolean() ? myColor : myInvicibleColor,
-                        Util.getRandomGenerator().nextDouble() * 6,
-                        Util.getRandomGenerator().nextAngle(),
+                        getX() + Util.getGameplayRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
+                        getY() + Util.getGameplayRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
+                        Util.getGameplayRandomGenerator().nextInt( 4 ) + 3,
+                        Util.getGameplayRandomGenerator().nextBoolean() ? myColor : myInvicibleColor,
+                        Util.getGameplayRandomGenerator().nextDouble() * 6,
+                        Util.getGameplayRandomGenerator().nextAngle(),
                         25 + explosionTime / 10, 10 ) );
             }
         }
@@ -470,22 +470,22 @@ public class Ship extends GameObject implements ShootingObject
 
         for ( int i = 0; i < (int) ( particleRateForward * 3 ); i++ )
             ParticleManager.addParticle( new Particle(
-                    -15 * Math.cos( angle ) + getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    15 * Math.sin( angle ) + getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    Util.getRandomGenerator().nextInt( 4 ) + 3,
+                    -15 * Math.cos( angle ) + getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    15 * Math.sin( angle ) + getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    Util.getGameplayRandomGenerator().nextInt( 4 ) + 3,
                     myColor,
-                    Util.getRandomGenerator().nextDouble() * 4,
-                    angle + Util.getRandomGenerator().nextDouble() * .4 - .2 + Math.PI,
+                    Util.getGameplayRandomGenerator().nextDouble() * 4,
+                    angle + Util.getGameplayRandomGenerator().nextDouble() * .4 - .2 + Math.PI,
                     30, 10 ) );
 
         for ( int i = 0; i < (int) ( particleRateBackward * 3 ); i++ )
             ParticleManager.addParticle( new Particle(
-                    15 * Math.cos( angle ) + getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    -15 * Math.sin( angle ) + getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    Util.getRandomGenerator().nextInt( 4 ) + 3,
+                    15 * Math.cos( angle ) + getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    -15 * Math.sin( angle ) + getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    Util.getGameplayRandomGenerator().nextInt( 4 ) + 3,
                     myColor,
-                    Util.getRandomGenerator().nextDouble() * 4,
-                    angle + Util.getRandomGenerator().nextDouble() * .4 - .2,
+                    Util.getGameplayRandomGenerator().nextDouble() * 4,
+                    angle + Util.getGameplayRandomGenerator().nextDouble() * .4 - .2,
                     30, 10 ) );
 
 
@@ -608,12 +608,12 @@ public class Ship extends GameObject implements ShootingObject
             for ( int i = 0; i < 80; i++ )
             {
                 ParticleManager.addParticle( new Particle(
-                        getX() + Util.getRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
-                        getY() + Util.getRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
-                        Util.getRandomGenerator().nextInt( 4 ) + 3,
+                        getX() + Util.getGameplayRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
+                        getY() + Util.getGameplayRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
+                        Util.getGameplayRandomGenerator().nextInt( 4 ) + 3,
                         myColor,
-                        Util.getRandomGenerator().nextDouble() * 6,
-                        Util.getRandomGenerator().nextAngle(),
+                        Util.getGameplayRandomGenerator().nextDouble() * 6,
+                        Util.getGameplayRandomGenerator().nextAngle(),
                         30, 10 ) );
             }
         } // We lost the game.
@@ -630,12 +630,12 @@ public class Ship extends GameObject implements ShootingObject
             for ( int i = 0; i < 500; i++ )
             {
                 ParticleManager.addParticle( new Particle(
-                        getX() + Util.getRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
-                        getY() + Util.getRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
-                        Util.getRandomGenerator().nextInt( 4 ) + 3,
+                        getX() + Util.getGameplayRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
+                        getY() + Util.getGameplayRandomGenerator().nextInt( 16 ) - 8 - RADIUS,
+                        Util.getGameplayRandomGenerator().nextInt( 4 ) + 3,
                         myColor,
-                        Util.getRandomGenerator().nextDouble() * 4,
-                        Util.getRandomGenerator().nextAngle(),
+                        Util.getGameplayRandomGenerator().nextDouble() * 4,
+                        Util.getGameplayRandomGenerator().nextAngle(),
                         60, 5 ) );
             }
         }
@@ -878,12 +878,12 @@ public class Ship extends GameObject implements ShootingObject
 
         for ( int i = 0; i < 9; i++ )
             ParticleManager.addParticle( new Particle(
-                    getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                    Util.getRandomGenerator().nextInt( 4 ) + 3,
+                    getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    Util.getGameplayRandomGenerator().nextInt( 4 ) + 3,
                     myColor,
-                    Util.getRandomGenerator().nextDouble() * 4,
-                    angle + Util.getRandomGenerator().nextDouble() * .8 - .2 + Math.PI,
+                    Util.getGameplayRandomGenerator().nextDouble() * 4,
+                    angle + Util.getGameplayRandomGenerator().nextDouble() * .8 - .2 + Math.PI,
                     35, 35 ) );
 
         if ( Server.is() )

@@ -44,10 +44,11 @@ public class BigNukeCharge extends Unit
 
     public BigNukeCharge( BigNukeLauncher parent, Color color, double x, double y, double dx, double dy, double angle, int explosionAge )
     {
-        super( color, x, y, dx + Util.getRandomGenerator().nextDouble() * 14 * Math.cos( angle ), dy - Util.getRandomGenerator().nextDouble() * 14 * Math.sin( angle ) );
+        // TODO: Sync unit creation
+        super( color, x, y, dx + Util.getGameplayRandomGenerator().nextDouble() * 14 * Math.cos( angle ), dy - Util.getGameplayRandomGenerator().nextDouble() * 14 * Math.sin( angle ) );
         this.parent = parent;
-        ax = Util.getRandomGenerator().nextDouble() * 0.1 - 0.05;
-        ay = Util.getRandomGenerator().nextDouble() * 0.1 - 0.05;
+        ax = Util.getGameplayRandomGenerator().nextDouble() * 0.1 - 0.05;
+        ay = Util.getGameplayRandomGenerator().nextDouble() * 0.1 - 0.05;
         this.explosionAge = explosionAge;
     }
 
@@ -57,14 +58,14 @@ public class BigNukeCharge extends Unit
         super.act();
 
         // Emit a few particles.
-        if ( Util.getRandomGenerator().nextInt( 3 ) == 0 )
+        if ( Util.getGameplayRandomGenerator().nextInt( 3 ) == 0 )
             ParticleManager.addParticle( new Particle(
-                                         getX() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                         getY() + Util.getRandomGenerator().nextInt( 8 ) - 4,
-                                         Util.getRandomGenerator().nextInt( 4 ),
+                                         getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                                         getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                                         Util.getGameplayRandomGenerator().nextInt( 4 ),
                                          color,
-                                         Util.getRandomGenerator().nextDouble(),
-                                         Util.getRandomGenerator().nextAngle(),
+                                         Util.getGameplayRandomGenerator().nextDouble(),
+                                         Util.getGameplayRandomGenerator().nextAngle(),
                                          20, 1 ) );
 
         // Waning.
@@ -73,13 +74,16 @@ public class BigNukeCharge extends Unit
             explosionSize -= 8;
 
             // Chain reaction.
-            if ( Util.getRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_CHAINREACTIONCHANCE ).getValue() ) == 0 )
-                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getRandomGenerator().nextAngle(), (int)(explosionAge * 1.5 )));
+            if ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_CHAINREACTIONCHANCE ).getValue() ) == 0 )
+            {
+                // TODO: Sync chain reaction
+                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getGameplayRandomGenerator().nextAngle(), (int)(explosionAge * 1.5 )));
+            }
         }
         // Waxing.
         else if ( age > explosionAge )
         {
-            if ( age > explosionAge + 3 && Util.getRandomGenerator().nextInt( 5 ) == 0 )
+            if ( age > explosionAge + 3 && Util.getGameplayRandomGenerator().nextInt( 5 ) == 0 )
                 isReducing = true;
             explosionSize += 5;
         }

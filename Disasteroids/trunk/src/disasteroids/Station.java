@@ -94,11 +94,11 @@ public class Station extends GameObject implements ShootingObject
             health++;
 
             // Smoke and spin the turret.
-            angle += 0.07 + Util.getRandomGenerator().nextDouble() / 7;
-            ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 20 - health ) / 5 ) );
+            angle += 0.07 + Util.getGameplayRandomGenerator().nextDouble() / 7;
+            ParticleManager.createSmoke( getX() + Util.getGameplayRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 20 - health ) / 5 ) );
 
             // If about to die, set fire.
-            ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 10 - health ) / 5 ) );
+            ParticleManager.createFlames( getX() + Util.getGameplayRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 10 - health ) / 5 ) );
 
             return;
         }
@@ -347,10 +347,10 @@ public class Station extends GameObject implements ShootingObject
     {
         Game.getInstance().getObjectManager().removeObject( this );
 
-        ParticleManager.createSmoke( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 100 );
-        ParticleManager.createFlames( getX() + Util.getRandomGenerator().nextInt( size ) / 2, centerY() + Util.getRandomGenerator().nextInt( size ) / 2, 250 );
+        ParticleManager.createSmoke( getX() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, centerY() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, 100 );
+        ParticleManager.createFlames( getX() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, centerY() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, 250 );
 
-        if ( Util.getRandomGenerator().nextInt( 4 ) == 0 )
+        if ( Util.getGameplayRandomGenerator().nextInt( 4 ) == 0 )
             Game.getInstance().createBonus( this );
 
         Sound.playInternal( SoundLibrary.STATION_DIE );
@@ -365,7 +365,8 @@ public class Station extends GameObject implements ShootingObject
     private void calculateAngle( Ship target )
     {
         double distance = Util.getDistance( this, target );
-        double time = Math.log( distance ) * ( 5 + Util.getRandomGenerator().nextInt( 2 ) );
+        // TODO: Sync
+        double time = Math.log( distance ) * ( 5 + Util.getGameplayRandomGenerator().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 

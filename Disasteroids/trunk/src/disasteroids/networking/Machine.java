@@ -31,7 +31,13 @@ public class Machine
      * @see System#currentTimeMillis()
      * @since January 10, 2007
      */
-    public long lastSeen;
+    private long lastSeen;
+
+    /**
+     * The last time, in milliseconds, that we sent a message to this machine.
+     * @see System#currentTimeMillis()
+     */
+    private long lastMessageSentTime;
 
     public static int multPacketId = 0;
 
@@ -60,15 +66,28 @@ public class Machine
     }
 
     /**
+     * Should be called whenever a message is sent to this machine.
+     */
+    public void sentMessage()
+    {
+       lastMessageSentTime = System.currentTimeMillis();
+    }
+
+    /**
      * Runs a check to see if this machine has timed out.
      * This is true when our <code>lastSeen</code> time is more than <code>Constants.TIMEOUT_TIME</code>.
-     * 
-     * @return  whether this machine has timed out
-     * @since January 10, 2007
      */
     public boolean shouldTimeout()
     {
         return ( System.currentTimeMillis() - lastSeen >= Constants.TIMEOUT_TIME * 1000 );
+    }
+
+    /**
+     * Returns whether this machine is about to time *us* out, and we need to send them a "we're here" pong.
+     */
+    public boolean shouldPong()
+    {
+        return ( System.currentTimeMillis() - lastMessageSentTime >= 0.3 * Constants.TIMEOUT_TIME * 1000 );
     }
 
     /**

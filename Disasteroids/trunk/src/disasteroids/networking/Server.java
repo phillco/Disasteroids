@@ -38,7 +38,11 @@ public class Server extends DatagramListener
         //====================
         MULTI_PACKET,
         CONNECT_ERROR_OLDNETCODE,
+        PONG,
         FULL_UPDATE,
+        //======
+        // GAME
+        //======
         PAUSE,
         SERVER_QUITTING,
         //=================
@@ -173,6 +177,12 @@ public class Server extends DatagramListener
                         Game.getInstance().getActionManager().add( new Action( client.inGamePlayer, keyCode, Game.getInstance().timeStep + 2 ) );
                         break;
 
+                    // Client is telling us he's still here.
+                    case PONG:
+
+                        client.see();
+                        break;
+
                     // Client wishes to resume life.
                     case QUITTING:
 
@@ -279,18 +289,19 @@ public class Server extends DatagramListener
     @Override
     void intervalLogic()
     {
-        // Check for timeouts.
+        // Check for timeouts/pongs.
         Iterator<ClientMachine> i = clients.iterator();
         while ( i.hasNext() )
         {
             ClientMachine cm = i.next();
+
+            // The client timed out. Remove him.
             if ( cm.shouldTimeout() )
             {
                 // Remove the player.
                 if ( cm.isInGame() )
                 {
-                    Game.getInstance().removePlayer( cm.inGamePlayer, "" );
-                    Main.log( cm.inGamePlayer.getName() + " timed out." );
+                    Game.getInstance().removePlayer( cm.inGamePlayer, " timed out." );
 
                     try
                     {
@@ -307,6 +318,20 @@ public class Server extends DatagramListener
                     }
                 }
                 i.remove();
+            }
+
+            // We haven't sent this client a message in a while. Pong him.
+            if ( cm.shouldPong() )
+            {
+                try
+                {
+                    ByteOutputStream out = new ByteOutputStream();
+                    out.writeInt( Message.PONG.ordinal() );
+                    sendPacket( cm, out );
+                }
+                catch ( IOException ex )
+                {
+                }
             }
         }
     }

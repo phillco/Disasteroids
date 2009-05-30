@@ -96,22 +96,15 @@ public abstract class DatagramListener
      * @see Constants#INTERVAL_TIME
      * @since January 13, 2008
      */
-    void intervalLogic()
-    {
-    }
-
+    abstract void intervalLogic();
+ 
     /**
      * Sends a packet to a machine (a shortcut for stream.toByteArray).
      * bytestream->buffer->packet->machine
-     *
-     * @param client    the client to send to
-     * @param stream    the bytestream of data to be sent
-     * @throws java.io.IOException
-     * @since December 29, 2007
      */
-    void sendPacket( Machine client, ByteOutputStream stream ) throws IOException
+    void sendPacket( Machine destination, ByteOutputStream stream ) throws IOException
     {
-        sendPacket( client, stream.toByteArray() );
+        sendPacket( destination, stream.toByteArray() );
     }
 
     /**
@@ -129,13 +122,8 @@ public abstract class DatagramListener
     /**
      * Sends a packet to a machine.
      * buffer->packet->machine
-     *
-     * @param client    the client to send to
-     * @param buffer    the buffer of data to be sent
-     * @throws java.io.IOException
-     * @since December 29, 2007
      */
-    void sendPacket( Machine client, byte[] buffer ) throws IOException
+    void sendPacket( Machine destination, byte[] buffer ) throws IOException
     {
         // Will this packet have to be split?
         if ( buffer.length > Constants.MAX_PACKET_SIZE )
@@ -155,12 +143,14 @@ public abstract class DatagramListener
 
                 out.write( buffer, i * Constants.MULTIPACKET_DATA_SIZE, Math.min( buffer.length - i * Constants.MULTIPACKET_DATA_SIZE, Constants.MULTIPACKET_DATA_SIZE ) );
                 //System.out.println( "Sending packet " + i + "/" + packetCount + " in series " + seriesId + " - " + hashPacket( out.toByteArray() ) );
-                sendPacket( client, out );
+                sendPacket( destination, out );
             }
             System.out.println();
         }
         else
-            socket.send( new DatagramPacket( buffer, buffer.length, client.address, client.port ) );
+            socket.send( new DatagramPacket( buffer, buffer.length, destination.address, destination.port ) );
+        
+        destination.sentMessage();
     }
 
     /**
@@ -287,7 +277,7 @@ public abstract class DatagramListener
                 while ( shouldRun() )
                 {
                     // Create a buffer to receive the packet in.
-                    byte[] buffer = new byte[Constants.MAX_PACKET_SIZE];
+                    byte[] buffer = new byte[ Constants.MAX_PACKET_SIZE ];
                     DatagramPacket packet = new DatagramPacket( buffer, buffer.length );
 
                     if ( shouldRun() )
@@ -312,7 +302,7 @@ public abstract class DatagramListener
         public IntervalThread( DatagramListener parent )
         {
             super( "Network interval thread", parent );
-            setPriority( MIN_PRIORITY );
+            setPriority( MAX_PRIORITY );
             start();
         }
 

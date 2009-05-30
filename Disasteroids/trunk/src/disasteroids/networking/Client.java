@@ -27,7 +27,6 @@ import javax.swing.JOptionPane;
  */
 public class Client extends DatagramListener
 {
-
     /**
      * Location of the server.
      * @since December 29, 2007
@@ -40,7 +39,6 @@ public class Client extends DatagramListener
      */
     public enum Message
     {
-
         /**
          * We want to connect to the server and join the game.
          */
@@ -50,6 +48,10 @@ public class Client extends DatagramListener
          */
         KEYSTROKE,
         /**
+         * We're still here!
+         */
+        PONG,
+        /**
          * Leaving the server.
          */
         QUITTING;
@@ -57,15 +59,6 @@ public class Client extends DatagramListener
     }
     private static Client instance;
 
-    public static Client getInstance()
-    {
-        return instance;
-    }
-
-    public static boolean is()
-    {
-        return ( instance != null );
-    }
     LinkedList<PacketSeries> packetSeries;
 
     public Client()
@@ -171,11 +164,14 @@ public class Client extends DatagramListener
                         System.out.println( "...done. Our ID is: " + id + "." );
 
                         // Start the game.
-                        new MainWindow( );
+                        new MainWindow();
                         MainWindow.frame().showStartMessage( "Welcome to this server!\nPress F1 for help." );
                         break;
                     case PAUSE:
                         Game.getInstance().setPaused( in.readBoolean(), true );
+                        break;
+                    case PONG:
+                        server.see();
                         break;
                     case SERVER_QUITTING:
                         GameLoop.stopLoop();
@@ -189,21 +185,21 @@ public class Client extends DatagramListener
                         break;
                     case PLAYER_QUIT:
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
+                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
                         break;
                     case OBJECT_UPDATE_VELOCITY:
                         id = in.readLong();
                         GameObject go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
-                            Main.warning( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it).");
+                            Main.warning( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it)." );
                         else
                             go.restorePosition( in );
                         break;
                     case PLAYER_BERSERK:
-                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).berserk();
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).berserk();
                         break;
                     case PLAYER_STRAFE:
-                        ( ( Ship ) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).strafe( in.readBoolean() );
+                        ( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ) ).strafe( in.readBoolean() );
                         break;
                     case OBJECT_CREATED:
                         Game.getInstance().getObjectManager().addObjectFromStream( in );
@@ -229,9 +225,6 @@ public class Client extends DatagramListener
 
     /**
      * Checks for a server timeout.
-     * 
-     * @return  whether the server has timed out
-     * @since January 13, 2008
      */
     public boolean serverTimeout()
     {
@@ -275,6 +268,25 @@ public class Client extends DatagramListener
             // System.out.println( "Series complete!\nContigous data: " + hashPacket(series.contiguousData));
             parseReceived( new DatagramPacket( series.getContiguousData(), 0, series.getContiguousData().length, server.address, server.port ) );
             packetSeries.remove( series );
+        }
+    }
+
+    @Override
+    void intervalLogic()
+    {
+        // Tell the server we're still here.
+        try
+        {
+            if ( server.shouldPong() )
+            {
+                ByteOutputStream out = new ByteOutputStream();
+                out.writeInt( Message.PONG.ordinal() );
+                sendPacket( server, out );
+            }
+        }
+        catch ( IOException ex )
+        {
+            ex.printStackTrace();
         }
     }
 
@@ -329,5 +341,15 @@ public class Client extends DatagramListener
     public Machine getServerAddress()
     {
         return server;
+    }
+
+    public static Client getInstance()
+    {
+        return instance;
+    }
+
+    public static boolean is()
+    {
+        return ( instance != null );
     }
 }

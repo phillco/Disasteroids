@@ -31,7 +31,7 @@ public class Constants
      * The version of our net code protocol. Bump to ensure older clients don't connect and cause havoc.
      * @since April 11, 2008
      */
-    public static final int NETCODE_VERSION = 4;
+    public static final int NETCODE_VERSION = 5;
 
     /**
      * The default port that the server runs on.
@@ -43,13 +43,13 @@ public class Constants
      * Time (in seconds) that must elapse before a machine is considered to have timed out.
      * @since January 13, 2008
      */
-    public static final int TIMEOUT_TIME = 15;
+    public static final int TIMEOUT_TIME = 5;
 
     /**
      * Time (in seconds) between intervalLogic() calls.
      * @since January 13, 2008
      */
-    public static final int INTERVAL_TIME = 5;
+    public static final int INTERVAL_TIME = TIMEOUT_TIME / 5;
 
     /**
      * The max size of a packet (bytes).

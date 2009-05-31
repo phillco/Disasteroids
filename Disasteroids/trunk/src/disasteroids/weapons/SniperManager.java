@@ -54,7 +54,7 @@ public class SniperManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new SniperRound( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+        addUnit( new SniperRound( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         if ( !isInfiniteAmmo() )
             --ammo;
@@ -72,7 +72,7 @@ public class SniperManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new SniperRound( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+            addUnit( new SniperRound( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
             if ( !isInfiniteAmmo() )
                 --ammo;
 
@@ -152,6 +152,6 @@ public class SniperManager extends Weapon
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-            units.add( new SniperRound( stream, this ) );
+            addUnit( new SniperRound( stream, this ) );
     }
 }

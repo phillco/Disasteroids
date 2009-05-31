@@ -66,7 +66,7 @@ public class MineManager extends Weapon
        if ( !canShoot() )
             return;
 
-        units.add( new Mine( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy() ) );
+        addUnit( new Mine( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy() ) );
         if ( !isInfiniteAmmo() )
             --ammo;
 
@@ -84,7 +84,7 @@ public class MineManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new Mine( this, color, parent.getX() + Math.cos( berserkAngleOffset + angle ) * 50,
+            addUnit( new Mine( this, color, parent.getX() + Math.cos( berserkAngleOffset + angle ) * 50,
                     parent.getY() + Math.sin( berserkAngleOffset + angle ) * 50, parent.getDx(), parent.getDy() ) );
 
             if ( !isInfiniteAmmo() )
@@ -181,6 +181,6 @@ public class MineManager extends Weapon
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-            units.add( new Mine( stream, this ) );
+            addUnit( new Mine( stream, this ) );
     }
 }

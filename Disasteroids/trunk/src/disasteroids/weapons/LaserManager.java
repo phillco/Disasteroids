@@ -74,7 +74,7 @@ public class LaserManager extends Weapon
             Laser last = new Laser( this, color, X, Y, parent.getDx(), parent.getDy(), angle, ( i == 0 ) );
             if ( l != null )
                 l.setNext( last );
-            units.add( last );
+            addUnit( last );
             X += length * Math.cos( angle );
             Y -= length * Math.sin( angle );
             l = last;
@@ -180,6 +180,6 @@ public class LaserManager extends Weapon
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-            units.add( new Laser( stream, this ) );
+            addUnit( new Laser( stream, this ) );
     }
 }

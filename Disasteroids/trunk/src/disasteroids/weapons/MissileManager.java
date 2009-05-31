@@ -71,7 +71,7 @@ public class MissileManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle, 0 ) );
+        addUnit( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle, 0 ) );
 
         if ( !isInfiniteAmmo() )
             --ammo;
@@ -93,7 +93,7 @@ public class MissileManager extends Weapon
             return;
 
         for ( int i = 0; i < getBonusValue( BONUS_POPPINGQUANTITY ).getValue(); i++ )
-            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI, origin.getGeneration() + 1 ) );
+            addUnit( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI, origin.getGeneration() + 1 ) );
     }
 
     @Override
@@ -105,7 +105,7 @@ public class MissileManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle, 0 ) );
+            addUnit( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle, 0 ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;
@@ -210,7 +210,7 @@ public class MissileManager extends Weapon
         {
             int size = stream.readInt();
             for ( int i = 0; i < size; i++ )
-                units.add( new Missile( stream, this ) );
+                addUnit( new Missile( stream, this ) );
         }
     }
 }

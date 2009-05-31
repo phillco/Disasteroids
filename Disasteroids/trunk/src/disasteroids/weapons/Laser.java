@@ -133,7 +133,7 @@ class Laser extends Unit
             // System.out.println( X +" , " + Y );
             Laser last = new Laser( parent, color, X, Y, getDx(), getDy(), angle, false );
             l.setNext( last );
-            parent.units.add( last );
+            parent.addUnit( last );
             X += length * Math.cos( angle );
             Y -= length * Math.sin( angle );
             l = last;

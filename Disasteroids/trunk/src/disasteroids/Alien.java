@@ -377,9 +377,9 @@ public class Alien extends GameObject implements ShootingObject
             for ( int i = 0; i < size; i++ )
             {
                 if ( stream.readBoolean() )
-                    units.add( new AlienBomb( stream, this ) );
+                    addUnit( new AlienBomb( stream, this ) );
                 else
-                    units.add( new AlienMissile( stream, this ) );
+                    addUnit( new AlienMissile( stream, this ) );
             }
         }
 
@@ -391,9 +391,9 @@ public class Alien extends GameObject implements ShootingObject
 
             // Shoot a missile, and, randomly, an alien bullet.
             // TODO: Sync
-            units.add( new AlienMissile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx() / 8, parent.getDy() / 8, angle ) );
+            addUnit( new AlienMissile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx() / 8, parent.getDy() / 8, angle ) );
             if ( Util.getGameplayRandomGenerator().nextBoolean() )
-                units.add( new AlienBomb( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+                addUnit( new AlienBomb( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;

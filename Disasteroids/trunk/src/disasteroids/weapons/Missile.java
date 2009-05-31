@@ -46,7 +46,6 @@ public class Missile extends Unit
      */
     protected MissileManager parent;
 
-
     /**
      * What "generation" this missile is.  Missiles shot from the ship are generation 0, wile those formed
      * through splitting are higher generations.
@@ -67,9 +66,9 @@ public class Missile extends Unit
         this.angle = angle;
         this.generation = generation;
         hugeBlast = ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_HUGEBLASTPROB ).getValue() ) <= 1 );
-        
-        if(generation >= parent.getMaxGenerations())//should never be true, but left it here for good measure
-            parent.remove(this);
+
+        if ( generation >= parent.getMaxGenerations() )//should never be true, but left it here for good measure
+            parent.remove( this );
     }
 
     /**
@@ -154,13 +153,13 @@ public class Missile extends Unit
             Random rand = Util.getGameplayRandomGenerator();
             for ( int i = 0; i < (int) ( 7 - Math.sqrt( getDx() * getDx() + getDy() * getDy() ) ); i++ )
                 ParticleManager.addParticle( new Particle(
-                                             getX() + rand.nextInt( 8 ) - 4,
-                                             getY() + rand.nextInt( 8 ) - 4,
-                                             rand.nextInt( 4 ),
-                                             color,
-                                             rand.nextDouble() * 3,
-                                             angle + rand.nextDouble() * .4 - .2 + Math.PI,
-                                             30, 10 ) );
+                        getX() + rand.nextInt( 8 ) - 4,
+                        getY() + rand.nextInt( 8 ) - 4,
+                        rand.nextInt( 4 ),
+                        color,
+                        rand.nextDouble() * 3,
+                        angle + rand.nextDouble() * .4 - .2 + Math.PI,
+                        30, 10 ) );
         }
         // Explode when old.
         if ( age > parent.life() && explosionStage == 0 )

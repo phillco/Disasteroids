@@ -58,7 +58,7 @@ public abstract class Weapon implements GameElement
      * Init code shared among the constructors.
      */
     protected void genericInit()
-    {        
+    {
         BONUS_FASTERBERSERK = getNewBonusID();
         int[] berserkValues =
         {
@@ -156,6 +156,11 @@ public abstract class Weapon implements GameElement
     //                                                                            \\
     // --------------------------------- UNITS ---------------------------------- \\
     //                                                                            \\
+    protected void addUnit( Unit u )
+    {
+        units.add( u );
+    }
+
     /**
      * Detonates all living units.
      */
@@ -298,7 +303,7 @@ public abstract class Weapon implements GameElement
     public Weapon( DataInputStream stream, ShootingObject parent ) throws IOException
     {
         this.parent = parent;
-        genericInit( );
+        genericInit();
         ammo = stream.readInt();
         timeTillNextBerserk = stream.readInt();
         timeTillNextShot = stream.readInt();

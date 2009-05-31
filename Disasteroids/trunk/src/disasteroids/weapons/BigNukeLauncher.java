@@ -38,7 +38,7 @@ public class BigNukeLauncher extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new BigNuke( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
+        addUnit( new BigNuke( this, color, parent.getX(), parent.getY(), parent.getDx(), parent.getDy(), angle ) );
 
         if ( !isInfiniteAmmo() )
             --ammo;
@@ -57,7 +57,7 @@ public class BigNukeLauncher extends Weapon
 
         int shotsToFire = ammo == -1 ? 8 : Math.min( 8, ammo );
         for ( int i = 0; i < shotsToFire; i++ )
-            units.add( new BigNuke( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), Math.PI * 2 * i / shotsToFire ) );
+            addUnit( new BigNuke( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), Math.PI * 2 * i / shotsToFire ) );
 
         if ( !isInfiniteAmmo() )
             ammo -= shotsToFire;
@@ -121,9 +121,9 @@ public class BigNukeLauncher extends Weapon
         for ( int i = 0; i < size; i++ )
         {
             if ( stream.readBoolean() )
-                units.add( new BigNuke( stream, this ) );
+                addUnit( new BigNuke( stream, this ) );
             else
-                units.add( new BigNukeCharge( stream, this ) );
+                addUnit( new BigNukeCharge( stream, this ) );
         }
     }
 }

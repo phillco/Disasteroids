@@ -77,7 +77,7 @@ public class BigNukeCharge extends Unit
             if ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_CHAINREACTIONCHANCE ).getValue() ) == 0 )
             {
                 // TODO: Sync chain reaction
-                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getGameplayRandomGenerator().nextAngle(), (int)(explosionAge * 1.5 )));
+                parent.addUnit( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getGameplayRandomGenerator().nextAngle(), (int)(explosionAge * 1.5 )));
             }
         }
         // Waxing.

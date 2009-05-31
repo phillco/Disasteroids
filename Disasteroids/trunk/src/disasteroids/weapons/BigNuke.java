@@ -65,7 +65,7 @@ public class BigNuke extends Unit
         {
             for ( int i = 0; i < 9; i++ )
             {
-                parent.units.add( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Math.PI * 2 * Util.getGameplayRandomGenerator().nextDouble(), 30 + Util.getGameplayRandomGenerator().nextInt( 15 ) ) );
+                parent.addUnit( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Math.PI * 2 * Util.getGameplayRandomGenerator().nextDouble(), 30 + Util.getGameplayRandomGenerator().nextInt( 15 ) ) );
                 ++chargesDeployed;
             }
 

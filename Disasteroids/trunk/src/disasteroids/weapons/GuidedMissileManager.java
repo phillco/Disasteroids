@@ -47,7 +47,7 @@ public class GuidedMissileManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new GuidedMissile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+        addUnit( new GuidedMissile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         if ( !isInfiniteAmmo() )
             --ammo;

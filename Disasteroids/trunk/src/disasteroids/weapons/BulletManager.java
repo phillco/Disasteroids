@@ -50,13 +50,13 @@ public class BulletManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+        addUnit( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
         // This bonus fires two extra bullets at an angle.
         if ( getBonusValue( BONUS_THREEWAYSHOT ).getValue() == 1 )
         {
-            units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle + Math.PI / 8 ) );
-            units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle - Math.PI / 8 ) );
+            addUnit( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle + Math.PI / 8 ) );
+            addUnit( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle - Math.PI / 8 ) );
         }
 
         if ( !isInfiniteAmmo() )
@@ -75,7 +75,7 @@ public class BulletManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+            addUnit( new Bullet( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;
@@ -150,6 +150,6 @@ public class BulletManager extends Weapon
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-            units.add( new Bullet( stream, this ) );
+            addUnit( new Bullet( stream, this ) );
     }
 }

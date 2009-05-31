@@ -43,7 +43,7 @@ public class FlechetteManager extends Weapon
             if ( !canShoot() )
                 break;
 
-            units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
+            addUnit( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
                     angle + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
             if ( !isInfiniteAmmo() )
                 --ammo;
@@ -64,7 +64,7 @@ public class FlechetteManager extends Weapon
                 if ( !canBerserk() )
                     break;
 
-                units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
+                addUnit( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
                         Util.getGameplayRandomGenerator().nextAngle() + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
                 ++firedShots;
                 if ( !isInfiniteAmmo() )
@@ -155,6 +155,6 @@ public class FlechetteManager extends Weapon
         // Restore all of the units.
         int size = stream.readInt();
         for ( int i = 0; i < size; i++ )
-            units.add( new Flechette( stream, this ) );
+            addUnit( new Flechette( stream, this ) );
     }
 }

@@ -1,4 +1,3 @@
-
 package disasteroids.weapons;
 
 import disasteroids.GameObject;
@@ -14,7 +13,6 @@ import java.awt.Graphics;
  */
 public class GuidedMissileManager extends Weapon
 {
-
     @Override
     protected void genericInit()
     {
@@ -26,9 +24,9 @@ public class GuidedMissileManager extends Weapon
     }
 
     @Override
-    public void drawOrphanUnit(Graphics g, double x, double y, Color col)
+    public void drawOrphanUnit( Graphics g, double x, double y, Color col )
     {
-        new GuidedMissile(this, col, x, y, 0, 0, 0).draw(g);
+        new GuidedMissile( this, col, x, y, 0, 0, 0 ).draw( g );
     }
 
     @Override
@@ -38,7 +36,7 @@ public class GuidedMissileManager extends Weapon
     }
 
     @Override
-    public void shoot(GameObject parent, Color color, double angle)
+    public void shoot( GameObject parent, Color color, double angle )
     {
         if ( !canShoot() )
             return;
@@ -48,12 +46,12 @@ public class GuidedMissileManager extends Weapon
         if ( !isInfiniteAmmo() )
             --ammo;
 
-        timeTillNextShot = getBonusValue( 0 ).getValue();
+        timeTillNextShot = 30;
         Sound.playInternal( SoundLibrary.MISSILE_SHOOT );
     }
 
     @Override
-    public void berserk(GameObject parent, Color color)
+    public void berserk( GameObject parent, Color color )
     {
         //need to think of a berserk for this, maybe just normal missile beserk?
     }
@@ -67,18 +65,17 @@ public class GuidedMissileManager extends Weapon
     @Override
     public int getEntryAmmo()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException( "Not supported yet." );
     }
 
     public int getSpeed()
     {
         //just a little faster than regular misile
-        return 1;
+        return 15;
     }
 
     public int life()
     {
         return 125;
     }
-
 }

@@ -66,9 +66,6 @@ public class Missile extends Unit
         this.angle = angle;
         this.generation = generation;
         hugeBlast = ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_HUGEBLASTPROB ).getValue() ) <= 1 );
-
-        if ( generation >= parent.getMaxGenerations() )//should never be true, but left it here for good measure
-            parent.remove( this );
     }
 
     /**

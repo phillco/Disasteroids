@@ -33,6 +33,8 @@ public class MissileManager extends Weapon
 
     protected int maxShots = 120;
 
+    protected int maxGenerations = 3;
+
     // Bonus IDs.
     public int BONUS_INTERVALSHOOT, BONUS_HUGEBLASTPROB, BONUS_HUGEBLASTSIZE, BONUS_POPPINGPROB, BONUS_POPPINGQUANTITY;
 
@@ -60,7 +62,7 @@ public class MissileManager extends Weapon
     @Override
     public void drawOrphanUnit( Graphics g, double x, double y, Color col )
     {
-        new Missile( this, col, x, y, 0, 0, 0 ).draw( g );
+        new Missile( this, col, x, y, 0, 0, 0, 0 ).draw( g );
     }
 
     @Override
@@ -69,7 +71,7 @@ public class MissileManager extends Weapon
         if ( !canShoot() )
             return;
 
-        units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+        units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle, 0 ) );
 
         if ( !isInfiniteAmmo() )
             --ammo;
@@ -91,7 +93,7 @@ public class MissileManager extends Weapon
             return;
 
         for ( int i = 0; i < getBonusValue( BONUS_POPPINGQUANTITY ).getValue(); i++ )
-            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI ) );
+            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI, origin.getGeneration()+1)  );
     }
 
     @Override
@@ -103,7 +105,7 @@ public class MissileManager extends Weapon
             if ( !canBerserk() )
                 break;
 
-            units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle ) );
+            units.add( new Missile( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(), angle, 0 ) );
 
             if ( !isInfiniteAmmo() )
                 --ammo;
@@ -163,6 +165,11 @@ public class MissileManager extends Weapon
     public int getEntryAmmo()
     {
         return 0;
+    }
+
+    public int getMaxGenerations()
+    {
+        return maxGenerations;
     }
 
     //                                                                            \\

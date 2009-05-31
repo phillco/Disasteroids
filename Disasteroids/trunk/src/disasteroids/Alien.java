@@ -411,7 +411,7 @@ public class Alien extends GameObject implements ShootingObject
 
             public AlienMissile( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
-                super( manager, color, x, y, dx, dy, angle );
+                super( manager, color, x, y, dx, dy, angle, 0 );
             }
 
             private AlienMissile( DataInputStream stream, AlienMissileManager parent ) throws IOException
@@ -434,7 +434,7 @@ public class Alien extends GameObject implements ShootingObject
 
             public AlienBomb( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
-                super( manager, color, x, y, dx, dy, angle );
+                super( manager, color, x, y, dx, dy, angle, 0 );
                 radius = 1;
             }
 

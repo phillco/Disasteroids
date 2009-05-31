@@ -46,18 +46,30 @@ public class Missile extends Unit
      */
     protected MissileManager parent;
 
+
+    /**
+     * What "generation" this missile is.  Missiles shot from the ship are generation 0, wile those formed
+     * through splitting are higher generations.
+     * @since May 31, 2009
+     */
+    protected int generation;
+
     /**
      * Whether <code>this</code> will have a huge blast when it explodes.
      * @since Classic
      */
     protected boolean hugeBlast;
 
-    public Missile( MissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
+    public Missile( MissileManager parent, Color color, double x, double y, double dx, double dy, double angle, int generation )
     {
         super( color, x, y, dx, dy );
         this.parent = parent;
         this.angle = angle;
+        this.generation = generation;
         hugeBlast = ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_HUGEBLASTPROB ).getValue() ) <= 1 );
+        
+        if(generation >= parent.getMaxGenerations())//should never be true, but left it here for good measure
+            parent.remove(this);
     }
 
     /**
@@ -202,7 +214,7 @@ public class Missile extends Unit
 
         // Optionally pop into several other missiles.
         // TODO: Sync (whether pop, whether huge blast)
-        if ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_POPPINGPROB ).getValue() ) <= 101 )
+        if ( generation < parent.getMaxGenerations() && Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_POPPINGPROB ).getValue() ) <= 101 )
             parent.pop( this );
 
         explosionStage = 1;
@@ -241,6 +253,15 @@ public class Missile extends Unit
     public void remove()
     {
         parent.remove( this );
+    }
+
+    /**
+     * Getter for the generation field
+     * @return <code>this</code> Missile's generation.
+     */
+    public int getGeneration()
+    {
+        return generation;
     }
 
     //                                                                            \\

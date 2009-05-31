@@ -38,6 +38,11 @@ public class BlackHole extends GameObject
      */
     private int numLeftToEat;
 
+    /**
+     * Angle at which to draw black hole.
+     */
+    private double angle;
+
     public BlackHole( double x, double y )
     {
         // TODO: Sync creation
@@ -56,6 +61,9 @@ public class BlackHole extends GameObject
      */
     public void act()
     {
+        // Rotate
+        angle += .05;
+
         // Find nearby objects.
         Set<GameObject> victims = getNearbyVictims();
 
@@ -63,7 +71,7 @@ public class BlackHole extends GameObject
         for ( GameObject go : victims )
         {
             double angle = Util.getAngle( this, go );
-            
+
             double magnitude = Math.min( Math.pow( power, 1.9 ) / Math.pow( Util.getDistance( this, go ), 1.7 ), 1 );
             go.setVelocity( go.getDx() + magnitude * Math.cos( angle ), go.getDy() + magnitude * Math.sin( angle ) );
 
@@ -124,7 +132,8 @@ public class BlackHole extends GameObject
 
     public void draw( Graphics g )
     {
-        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY() );
+        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY(), angle, 1 );
+        // I think generating a black hole is much cooler
     }
 
     /**

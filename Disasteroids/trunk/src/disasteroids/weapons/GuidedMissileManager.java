@@ -1,6 +1,7 @@
 package disasteroids.weapons;
 
 import disasteroids.GameObject;
+import disasteroids.ShootingObject;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
@@ -13,12 +14,10 @@ import java.awt.Graphics;
  */
 public class GuidedMissileManager extends Weapon
 {
-
-    public GuidedMissileManager()
+    public GuidedMissileManager( ShootingObject parent )
     {
-        super();
+        super( parent );
     }
-
 
     @Override
     protected void genericInit()

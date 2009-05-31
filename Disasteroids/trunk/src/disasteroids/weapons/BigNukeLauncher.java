@@ -17,22 +17,21 @@ import java.io.IOException;
  */
 public class BigNukeLauncher extends Weapon
 {
-
     // Bonus IDs.
     public int BONUS_CHAINREACTIONCHANCE = getNewBonusID();
 
-    public BigNukeLauncher()
+    public BigNukeLauncher( ShootingObject parent )
     {
-        super();
+        super( parent );
     }
 
     @Override
     protected void genericInit()
     {
         super.genericInit();
-        bonusValues.put( BONUS_CHAINREACTIONCHANCE, new BonusValue( 30, 20, "Bigger chain reactions!" ));
+        bonusValues.put( BONUS_CHAINREACTIONCHANCE, new BonusValue( 30, 20, "Bigger chain reactions!" ) );
     }
-    
+
     @Override
     public void shoot( GameObject parent, Color color, double angle )
     {
@@ -113,9 +112,9 @@ public class BigNukeLauncher extends Weapon
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public BigNukeLauncher( DataInputStream stream ) throws IOException
+    public BigNukeLauncher( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        super( stream );
+        super( stream, parent );
 
         // Restore all of the units.
         int size = stream.readInt();

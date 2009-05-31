@@ -19,7 +19,6 @@ import java.io.IOException;
  */
 public class MissileManager extends Weapon
 {
-
     /**
      * The current initial speed for <code>Missile</code>s in this manager.
      * @since Classic
@@ -38,9 +37,9 @@ public class MissileManager extends Weapon
     // Bonus IDs.
     public int BONUS_INTERVALSHOOT, BONUS_HUGEBLASTPROB, BONUS_HUGEBLASTSIZE, BONUS_POPPINGPROB, BONUS_POPPINGQUANTITY;
 
-    public MissileManager()
+    public MissileManager( ShootingObject parent )
     {
-        super();
+        super( parent );
     }
 
     @Override
@@ -94,7 +93,7 @@ public class MissileManager extends Weapon
             return;
 
         for ( int i = 0; i < getBonusValue( BONUS_POPPINGQUANTITY ).getValue(); i++ )
-            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI, origin.getGeneration()+1)  );
+            units.add( new Missile( this, origin.color, origin.getX(), origin.getY(), 0, 0, i * 2 * Math.PI / getBonusValue( BONUS_POPPINGQUANTITY ).getValue() + i * Math.PI, origin.getGeneration() + 1 ) );
     }
 
     @Override
@@ -192,16 +191,16 @@ public class MissileManager extends Weapon
         {
             stream.writeInt( units.size() );
             for ( Unit u : units )
-                ( ( Missile ) u ).flatten( stream );
+                ( (Missile) u ).flatten( stream );
         }
     }
 
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public MissileManager( DataInputStream stream ) throws IOException
+    public MissileManager( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        super( stream );
+        super( stream, parent );
         life = stream.readInt();
         maxShots = stream.readInt();
         speed = stream.readDouble();

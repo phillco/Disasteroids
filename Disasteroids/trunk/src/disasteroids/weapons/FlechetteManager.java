@@ -27,9 +27,9 @@ public class FlechetteManager extends Weapon
 
     private int damage = 1;
 
-    public FlechetteManager()
+    public FlechetteManager( ShootingObject parent )
     {
-        super();
+        super( parent );
     }
 
     @Override
@@ -44,7 +44,7 @@ public class FlechetteManager extends Weapon
                 break;
 
             units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
-                                      angle + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
+                    angle + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
             if ( !isInfiniteAmmo() )
                 --ammo;
         }
@@ -65,7 +65,7 @@ public class FlechetteManager extends Weapon
                     break;
 
                 units.add( new Flechette( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy(),
-                                          Util.getGameplayRandomGenerator().nextAngle() + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
+                        Util.getGameplayRandomGenerator().nextAngle() + ( Util.getGameplayRandomGenerator().nextDouble() - .5 ) ) );
                 ++firedShots;
                 if ( !isInfiniteAmmo() )
                     --ammo;
@@ -145,9 +145,9 @@ public class FlechetteManager extends Weapon
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public FlechetteManager( DataInputStream stream ) throws IOException
+    public FlechetteManager( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        super( stream );
+        super( stream, parent );
         intervalShoot = stream.readInt();
         radius = stream.readInt();
         damage = stream.readInt();

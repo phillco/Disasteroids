@@ -33,12 +33,9 @@ public class MineManager extends Weapon
     // Bonus IDs.
     public int BONUS_EXPLODERADIUS, BONUS_TRACKING;
 
-    private Ship parent;
-
-    public MineManager( Ship parent )
+    public MineManager( ShootingObject parent )
     {
-        super();
-        this.parent = parent;
+        super(parent);
     }
 
     @Override
@@ -121,11 +118,6 @@ public class MineManager extends Weapon
         return sight;
     }
 
-    public Ship getParent()
-    {
-        return parent;
-    }
-
     /**
      * Called by mines to reserve a target for homing in on.
      */
@@ -180,12 +172,11 @@ public class MineManager extends Weapon
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public MineManager( DataInputStream stream, Ship parent ) throws IOException
+    public MineManager( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        super( stream );
+        super( stream, parent );
         berserkAngleOffset = stream.readDouble();
         sight = stream.readInt();
-        this.parent = parent;
 
         // Restore all of the units.
         int size = stream.readInt();

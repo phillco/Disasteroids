@@ -29,9 +29,9 @@ public class LaserManager extends Weapon
 
     private int length = 10;
 
-    public LaserManager()
+    public LaserManager( ShootingObject parent )
     {
-        super();
+        super( parent );
     }
 
     @Override
@@ -153,25 +153,25 @@ public class LaserManager extends Weapon
 
         // Flatten all of the units.
         // To save space, we flatten only the head of each beam.
-        Set<Laser> heads = new HashSet<Laser>();                
+        Set<Laser> heads = new HashSet<Laser>();
         for ( Unit u : units )
         {
             Laser l = (Laser) u;
             if ( l.isHead() )
                 heads.add( l );
         }
-        
+
         stream.writeInt( heads.size() );
         for ( Laser l : heads )
-                l.flatten( stream );
+            l.flatten( stream );
     }
 
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public LaserManager( DataInputStream stream ) throws IOException
+    public LaserManager( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        super( stream );
+        super( stream, parent );
         damage = stream.readInt();
         intervalShoot = stream.readInt();
         length = stream.readInt();

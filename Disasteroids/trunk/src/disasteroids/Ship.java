@@ -171,7 +171,7 @@ public class Ship extends GameObject implements ShootingObject
     private boolean snipeFlash = false;
 
     /**
-     * If this <code>Ship</code> has a shield; good for one free hit.
+     * If this <code>Ship</code> has a shield(s).
      */
     private int shielded = 0;
 
@@ -187,13 +187,13 @@ public class Ship extends GameObject implements ShootingObject
         this.livesLeft = lives;
         this.name = name;
 
-        allWeapons[0] = new MissileManager();
-        allWeapons[1] = new BulletManager();
+        allWeapons[0] = new MissileManager( this );
+        allWeapons[1] = new BulletManager( this );
         allWeapons[2] = new MineManager( this );
-        allWeapons[3] = new LaserManager();
-        allWeapons[4] = new FlechetteManager();
-        allWeapons[5] = new BigNukeLauncher();
-        sniperManager = new SniperManager();
+        allWeapons[3] = new LaserManager( this );
+        allWeapons[4] = new FlechetteManager( this );
+        allWeapons[5] = new BigNukeLauncher( this );
+        sniperManager = new SniperManager( this );
 
         // Colors.        
         double fadePct = 0.6;
@@ -831,13 +831,13 @@ public class Ship extends GameObject implements ShootingObject
         healthMax = stream.readDouble();
         shielded = stream.readInt();
 
-        allWeapons[0] = new MissileManager( stream );
-        allWeapons[1] = new BulletManager( stream );
+        allWeapons[0] = new MissileManager( stream, this );
+        allWeapons[1] = new BulletManager( stream, this );
         allWeapons[2] = new MineManager( stream, this );
-        allWeapons[3] = new LaserManager( stream );
-        allWeapons[4] = new FlechetteManager( stream );
-        allWeapons[5] = new BigNukeLauncher( stream );
-        sniperManager = new SniperManager( stream );
+        allWeapons[3] = new LaserManager( stream, this );
+        allWeapons[4] = new FlechetteManager( stream, this );
+        allWeapons[5] = new BigNukeLauncher( stream, this );
+        sniperManager = new SniperManager( stream, this );
 
         int check = stream.readInt();
         if ( check != 666 )

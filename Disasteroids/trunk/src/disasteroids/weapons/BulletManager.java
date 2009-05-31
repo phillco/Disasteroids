@@ -24,9 +24,9 @@ public class BulletManager extends Weapon
     // Bonus IDs.
     public int BONUS_INTERVALSHOOT, BONUS_RADIUS, BONUS_DAMAGE, BONUS_THREEWAYSHOT;
 
-    public BulletManager()
+    public BulletManager( ShootingObject parent )
     {
-        super();
+        super( parent );
     }
 
     @Override
@@ -142,9 +142,9 @@ public class BulletManager extends Weapon
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public BulletManager( DataInputStream stream ) throws IOException
+    public BulletManager( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        super( stream );
+        super( stream, parent );
         speed = stream.readInt();
 
         // Restore all of the units.

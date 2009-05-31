@@ -28,6 +28,11 @@ public abstract class Weapon implements GameElement
      */
     protected ConcurrentLinkedQueue<Unit> units = new ConcurrentLinkedQueue<Unit>();
 
+    /**
+     * The owner of this weapon.
+     */
+    private ShootingObject parent;
+
     protected Map<Integer, BonusValue> bonusValues = new HashMap<Integer, BonusValue>();
 
     private int nextBonusID = 0;
@@ -43,13 +48,17 @@ public abstract class Weapon implements GameElement
 
     protected int timeTillNextShot = 0;
 
-    public Weapon()
+    public Weapon( ShootingObject parent )
     {
+        this.parent = parent;
         genericInit();
     }
 
+    /**
+     * Init code shared among the constructors.
+     */
     protected void genericInit()
-    {
+    {        
         BONUS_FASTERBERSERK = getNewBonusID();
         int[] berserkValues =
         {
@@ -181,6 +190,14 @@ public abstract class Weapon implements GameElement
     }
 
     /**
+     * Returns the owner of this weapon.
+     */
+    public ShootingObject getParent()
+    {
+        return parent;
+    }
+
+    /**
      * Returns the max amount of units that can be in-game at once.
      */
     public abstract int getMaxUnits();
@@ -278,9 +295,10 @@ public abstract class Weapon implements GameElement
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public Weapon( DataInputStream stream ) throws IOException
+    public Weapon( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        genericInit();
+        this.parent = parent;
+        genericInit( );
         ammo = stream.readInt();
         timeTillNextBerserk = stream.readInt();
         timeTillNextShot = stream.readInt();

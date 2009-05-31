@@ -28,10 +28,10 @@ public class SniperManager extends Weapon
     // Bonus IDs.
     public int BONUS_INTERVALSHOOT;
 
-    public SniperManager()
+    public SniperManager( ShootingObject parent )
     {
-        super();
-        ammo = 20;        
+        super( parent );
+        ammo = 20;
     }
 
     @Override
@@ -141,9 +141,9 @@ public class SniperManager extends Weapon
     /**
      * Reads <code>this</code> from a stream for client/server transmission.
      */
-    public SniperManager( DataInputStream stream ) throws IOException
+    public SniperManager( DataInputStream stream, ShootingObject parent ) throws IOException
     {
-        super( stream );
+        super( stream, parent );
 
         damage = stream.readInt();
         radius = stream.readInt();

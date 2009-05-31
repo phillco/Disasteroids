@@ -62,7 +62,7 @@ public class Station extends GameObject implements ShootingObject
     {
         super( x, y, dx, dy );
         angle = 0;
-        manager = new MissileManager();
+        manager = new MissileManager( this );
         manager.getBonusValue( manager.BONUS_POPPINGQUANTITY ).override( 0 );
         manager.setLife( 50 );
     }
@@ -425,6 +425,6 @@ public class Station extends GameObject implements ShootingObject
         health = stream.readInt();
         easterEggCounter = stream.readInt();
         size = stream.readInt();
-        manager = new MissileManager( stream );
+        manager = new MissileManager( stream, this );
     }
 }

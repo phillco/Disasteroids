@@ -15,6 +15,7 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import disasteroids.weapons.BigNukeLauncher;
 import disasteroids.weapons.BulletManager;
+import disasteroids.weapons.GuidedMissileManager;
 import disasteroids.weapons.LaserManager;
 import disasteroids.weapons.MineManager;
 import disasteroids.weapons.MissileManager;

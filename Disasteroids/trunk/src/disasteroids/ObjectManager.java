@@ -4,7 +4,6 @@
  */
 package disasteroids;
 
-import disasteroids.GameObject;
 import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
 import disasteroids.networking.Server;

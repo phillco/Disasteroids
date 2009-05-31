@@ -97,7 +97,7 @@ public abstract class DatagramListener
      * @since January 13, 2008
      */
     abstract void intervalLogic();
- 
+
     /**
      * Sends a packet to a machine (a shortcut for stream.toByteArray).
      * bytestream->buffer->packet->machine
@@ -128,6 +128,13 @@ public abstract class DatagramListener
         // Will this packet have to be split?
         if ( buffer.length > Constants.MAX_PACKET_SIZE )
         {
+            // Servers can't parse multipackets yet (no need to).
+            if ( !( this instanceof Server ) )
+            {
+                Main.warning( "Trying to send a big packet to the server, which isn't supported. " );
+                return;
+            }
+
             int packetCount = (int) Math.ceil( (double) buffer.length / Constants.MULTIPACKET_DATA_SIZE );
             //System.out.println( "Original contiguous data: " + hashPacket( buffer ) + "\nWill need " + packetCount + " packets ( each containing " + Constants.MULTIPACKET_DATA_SIZE + " bytes)." );
 
@@ -149,7 +156,7 @@ public abstract class DatagramListener
         }
         else
             socket.send( new DatagramPacket( buffer, buffer.length, destination.address, destination.port ) );
-        
+
         destination.sentMessage();
     }
 

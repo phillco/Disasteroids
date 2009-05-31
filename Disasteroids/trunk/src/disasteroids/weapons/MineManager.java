@@ -65,7 +65,7 @@ public class MineManager extends Weapon
     @Override
     public void shoot( GameObject parent, Color color, double angle )
     {
-        if ( !canShoot() )
+       if ( !canShoot() )
             return;
 
         units.add( new Mine( this, color, parent.getFiringOriginX(), parent.getFiringOriginY(), parent.getDx(), parent.getDy() ) );

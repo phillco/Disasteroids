@@ -88,6 +88,11 @@ public class Ship extends GameObject implements ShootingObject
     private int invincibilityCount;
 
     /**
+     * How long until we are able to start repairing
+     */
+    private int repairCount;
+
+    /**
      * How many reserve lives remain. When less than 0, the game is over.
      * @since Classic
      */
@@ -196,6 +201,7 @@ public class Ship extends GameObject implements ShootingObject
 
         // Start invincible.
         invincibilityCount = 200;
+        repairCount=-1;
     }
 
     public void act()
@@ -218,6 +224,10 @@ public class Ship extends GameObject implements ShootingObject
                 }
             }
             invincibilityCount--;
+            if( repairCount == 0 )
+                repair();
+            else if( repairCount > 0 )
+                repairCount--;
             checkCollision();
             generateParticles();
             move();
@@ -581,7 +591,7 @@ public class Ship extends GameObject implements ShootingObject
         // Lose health, and some max health as well.
         health -= amount;
         healthMax -= amount / 3.0;
-        score -= amount * 5;
+        score -= Math.min(amount,300)*5;
 
         // Bounce.
         setVelocity( getDx() * -.3, getDy() * -.3 );
@@ -589,6 +599,7 @@ public class Ship extends GameObject implements ShootingObject
         // If just a wound, play the sound and leave.
         if ( health > 0 )
         {
+            repairCount=100;
             Sound.playInternal( SoundLibrary.SHIP_HIT );
             MainWindow.frame().rumble( amount * 2 / 3.0 );
             return true;
@@ -930,6 +941,18 @@ public class Ship extends GameObject implements ShootingObject
     public double getShield()
     {
         return shielded;
+    }
+
+    private void repair()
+    {
+        if(repairCount!=0)
+            return;
+        if(health>=healthMax)
+        {
+            repairCount=-1;
+            return;
+        }
+        health+=.1;
     }
 
     private void slowStop()

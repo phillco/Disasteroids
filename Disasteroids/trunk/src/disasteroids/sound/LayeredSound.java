@@ -19,14 +19,20 @@ import javax.sound.sampled.SourceDataLine;
 public class LayeredSound {
     
     /**
+     * The fraction of the loudest possible volume to play the sounds at
+     * @since February 22, 2009
+     */
+    private double volume = .1;
+    
+    /**
      * All of the sounds waiting to be played
-     * @since January 13, 2007
+     * @since January 13, 2008
      */
     private ConcurrentLinkedQueue<SoundClip> theSounds;
     
     /**
      * The one instance of this class to be used in all cases
-     * @since January 13, 2007
+     * @since January 13, 2008
      */
     private static LayeredSound instance= new LayeredSound();
     
@@ -75,9 +81,12 @@ public class LayeredSound {
             {
                 //get 1 second of sound prepared
                 byte[] buffer=new byte[8000];
-                for(SoundClip s: theSounds)
-                    for(int index=0; index<8000; index++)
-                        buffer[index]+=s.getValue()/(Math.max(theSounds.size(),1));
+                int denominator = Math.max(theSounds.size(),1);
+                for(int index=0; index<8000; index++)
+                {    for(SoundClip s: theSounds)
+                        buffer[index]+=s.getValue()/denominator;
+                     buffer[index]*=volume;
+                }
                 sdl.write(buffer, 0, 8000);
             }while(theSounds.size()>0);
             sdl.drain();
@@ -109,6 +118,26 @@ public class LayeredSound {
     public static LayeredSound getInstance()
     {
         return instance;
+    }
+    
+    /**
+     * Increases the volume by 1/20 max volume
+     * @since Februrary 22, 2009
+     */
+    public void volumeUp()
+    {
+        volume=Math.min(1, volume+.05);
+        Main.log("Volume is now "+((int)(volume*20))+"/20.",100);
+    }
+    
+    /**
+     * Decreases the volume by 1/20 max volume
+     * @since February 22, 2009
+     */
+    public void volumeDown()
+    {
+        volume = Math.max(0, volume-.05);
+        Main.log("Volume is now "+((int)(volume*20))+"/20.",100);
     }
 
     /**

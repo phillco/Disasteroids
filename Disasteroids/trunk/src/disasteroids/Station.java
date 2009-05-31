@@ -178,8 +178,8 @@ public class Station extends GameObject implements ShootingObject
                             destroy();
                             if ( s instanceof Ship )
                                 ( ( Ship ) s ).increaseScore( 2500 );
-                            return;
-                        }
+                                return;
+                            }
                     }
                 }
             }

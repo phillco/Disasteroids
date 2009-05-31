@@ -36,9 +36,9 @@ public class Settings
      * The user's settings.
      */
     private static Properties userSettings;
-    
+
     private static String oldHighScorer;
-    
+
     private static double oldHighScore;
 
     /**
@@ -368,12 +368,12 @@ public class Settings
     public static double getOldHighScore()
     {
         return oldHighScore;
-    }
+}
 
     public static String getOldHighScorer()
     {
         return oldHighScorer;
     }
-    
-    
+
+
 }

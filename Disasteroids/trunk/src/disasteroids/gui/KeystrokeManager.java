@@ -11,6 +11,7 @@ import disasteroids.GameObject;
 import disasteroids.Main;
 import disasteroids.Station;
 import disasteroids.networking.Client;
+import disasteroids.sound.LayeredSound;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
@@ -31,7 +32,8 @@ public class KeystrokeManager implements KeyListener
         UN_FORWARDS, UN_BACKWARDS, BRAKE, UN_BRAKE, BERSERK, STRAFE_RIGHT,
         STRAFE_LEFT, EXPLODE_ALL, ROTATE_WEAPONS, SET_WEAPON_1, SET_WEAPON_2,
         SET_WEAPON_3, SET_WEAPON_4, SET_WEAPON_5, SET_WEAPON_6, SET_WEAPON_7,
-        SET_WEAPON_8, SET_WEAPON_9, PAUSE, SAVE, LOAD, BENCHMARK_FPS, TOGGLE_HELP, DEVKEY_DEBUG, DEVKEY_BONUS, DEVKEY_ENEMY
+        SET_WEAPON_8, SET_WEAPON_9, PAUSE, SAVE, LOAD, BENCHMARK_FPS, TOGGLE_HELP,
+        DEVKEY_DEBUG, DEVKEY_BONUS, DEVKEY_ENEMY, VOLUME_UP,VOLUME_DOWN
 
     };
     private HashMap<Integer, ActionType> keyboardLayout = new HashMap<Integer, ActionType>();
@@ -84,10 +86,13 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_T, ActionType.SAVE );
         keyboardLayout.put( KeyEvent.VK_Y, ActionType.LOAD );
         keyboardLayout.put( KeyEvent.VK_F1, ActionType.TOGGLE_HELP );
-
+        
         keyboardLayout.put( KeyEvent.VK_F9, ActionType.DEVKEY_DEBUG );
         keyboardLayout.put( KeyEvent.VK_F10, ActionType.DEVKEY_ENEMY );
         keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY_BONUS );
+        
+        keyboardLayout.put( KeyEvent.VK_EQUALS, ActionType.VOLUME_UP );
+        keyboardLayout.put( KeyEvent.VK_MINUS, ActionType.VOLUME_DOWN );
 
     }
 
@@ -178,6 +183,12 @@ public class KeystrokeManager implements KeyListener
                 break;
             case TOGGLE_HELP:
                 MainWindow.frame().getPanel().toggleHelp();
+                break;
+            case VOLUME_UP:
+                LayeredSound.getInstance().volumeUp();
+                break;
+            case VOLUME_DOWN:
+                LayeredSound.getInstance().volumeDown();
                 break;
             default:
                 if ( Game.getInstance().isPaused() )

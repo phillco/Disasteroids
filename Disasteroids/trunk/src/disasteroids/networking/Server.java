@@ -28,39 +28,6 @@ import java.util.Set;
 public class Server extends DatagramListener
 {
     /**
-     * Messages that we send to the client.
-     * @since December 29, 2007
-     */
-    public enum Message
-    {
-        //====================
-        // GENERAL NETWORKING
-        //====================
-        MULTI_PACKET,
-        CONNECT_ERROR_OLDNETCODE,
-        PONG,
-        FULL_UPDATE,
-        //======
-        // GAME
-        //======
-        PAUSE,
-        SERVER_QUITTING,
-        //=================
-        // PLAYER COMMANDS
-        //=================
-        PLAYER_JOINED,
-        PLAYER_QUIT,
-        PLAYER_STRAFE,
-        PLAYER_BERSERK,
-        //======
-        // MISC
-        //======
-        OBJECT_UPDATE_VELOCITY,
-        OBJECT_CREATED,
-        OBJECT_REMOVED;
-
-    }
-    /**
      * List of everyone who has sent us a packet.
      * @since December 29, 2007
      */
@@ -138,7 +105,7 @@ public class Server extends DatagramListener
                         int version = in.readInt();
                         if ( version < Constants.NETCODE_VERSION )
                         {
-                            out.writeInt( Message.CONNECT_ERROR_OLDNETCODE.ordinal() );
+                            out.writeInt( ServerCommands.Message.CONNECT_ERROR_OLDNETCODE.ordinal() );
                             out.writeInt( Constants.NETCODE_VERSION );
                             sendPacket( client, out );
                             Main.log( "Connection from " + client.toString() + " refused, using old version: " + version + ".", 800 );
@@ -150,7 +117,7 @@ public class Server extends DatagramListener
                         long id = Game.getInstance().addPlayer( in.readUTF(), new Color( in.readInt() ) );
 
                         // Send him a full update.
-                        out.writeInt( Message.FULL_UPDATE.ordinal() );
+                        out.writeInt( ServerCommands.Message.FULL_UPDATE.ordinal() );
                         Game.getInstance().flatten( out );
                         out.writeLong( id );
 
@@ -162,7 +129,7 @@ public class Server extends DatagramListener
 
                         // Tell everyone else about the player joining.
                         out = new ByteOutputStream();
-                        out.writeInt( Message.PLAYER_JOINED.ordinal() );
+                        out.writeInt( ServerCommands.Message.PLAYER_JOINED.ordinal() );
                         client.inGamePlayer.flatten( out );
                         sendPacketToAllButOnePlayer( out, client );
                         break;
@@ -194,7 +161,7 @@ public class Server extends DatagramListener
                         // Tell everyone else.
                         out = new ByteOutputStream();
 
-                        out.writeInt( Message.PLAYER_QUIT.ordinal() );
+                        out.writeInt( ServerCommands.Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( false ); // Not a timeout.
                         out.writeLong( client.inGamePlayer.getId() );
 
@@ -308,7 +275,7 @@ public class Server extends DatagramListener
                         // Tell clients.
                         ByteOutputStream out = new ByteOutputStream();
 
-                        out.writeInt( Message.PLAYER_QUIT.ordinal() );
+                        out.writeInt( ServerCommands.Message.PLAYER_QUIT.ordinal() );
                         out.writeBoolean( true );
                         out.writeLong( cm.inGamePlayer.getId() );
                         sendPacketToAllButOnePlayer( out, cm );
@@ -326,7 +293,7 @@ public class Server extends DatagramListener
                 try
                 {
                     ByteOutputStream out = new ByteOutputStream();
-                    out.writeInt( Message.PONG.ordinal() );
+                    out.writeInt( ServerCommands.Message.PONG.ordinal() );
                     sendPacket( cm, out );
                 }
                 catch ( IOException ex )
@@ -346,7 +313,7 @@ public class Server extends DatagramListener
         try
         {
             ByteOutputStream out = new ByteOutputStream();
-            out.writeInt( Message.SERVER_QUITTING.ordinal() );
+            out.writeInt( ServerCommands.Message.SERVER_QUITTING.ordinal() );
             sendPacketToAllPlayers( out );
         }
         catch ( IOException ex )

@@ -136,7 +136,7 @@ public abstract class DatagramListener
             for ( int i = 0; i < packetCount; i++ )
             {
                 ByteOutputStream out = new ByteOutputStream();
-                out.writeInt( Server.Message.MULTI_PACKET.ordinal() );
+                out.writeInt( ServerCommands.Message.MULTI_PACKET.ordinal() );
                 out.writeInt( seriesId );
                 out.writeInt( packetCount );
                 out.writeInt( i );

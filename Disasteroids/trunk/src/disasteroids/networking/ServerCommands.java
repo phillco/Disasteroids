@@ -15,6 +15,43 @@ import java.io.IOException;
 public class ServerCommands
 {
     /**
+     * Headers of the messages that we send to the client.
+     */
+    public enum Message
+    {
+        //====================
+        // GENERAL NETWORKING
+        //====================
+        MULTI_PACKET,
+        CONNECT_ERROR_OLDNETCODE,
+        PONG,
+        FULL_UPDATE,
+        //======
+        // GAME
+        //======
+        PAUSE,
+        SERVER_QUITTING,
+        //=================
+        // PLAYER COMMANDS
+        //=================
+        PLAYER_JOINED,
+        PLAYER_QUIT,
+        PLAYER_STRAFE,
+        PLAYER_BERSERK,
+        //======
+        // MISC
+        //======
+        OBJECT_UPDATE_VELOCITY,
+        OBJECT_CREATED,
+        OBJECT_REMOVED;
+
+    }
+
+    //=========================//=====================================//=========================//
+    //                         //      DANGER: COPYPASTA              //                         //
+    //=========================//=====================================//=========================//
+
+    /**
      * Notifies all players as to whether the game is paused.     
      */
     public static void updatePause( boolean paused )
@@ -22,7 +59,7 @@ public class ServerCommands
         try
         {
             ByteOutputStream out = new ByteOutputStream();
-            out.writeInt( Server.Message.PAUSE.ordinal() );
+            out.writeInt( ServerCommands.Message.PAUSE.ordinal() );
             out.writeBoolean( paused );
             Server.getInstance().sendPacketToAllPlayers( out );
         }
@@ -40,7 +77,7 @@ public class ServerCommands
         try
         {
             ByteOutputStream out = new ByteOutputStream();
-            out.writeInt( Server.Message.PLAYER_BERSERK.ordinal() );
+            out.writeInt( ServerCommands.Message.PLAYER_BERSERK.ordinal() );
             out.writeLong( id );
             Server.getInstance().sendPacketToAllPlayers( out );
         }
@@ -58,7 +95,7 @@ public class ServerCommands
         try
         {
             ByteOutputStream out = new ByteOutputStream();
-            out.writeInt( Server.Message.PLAYER_STRAFE.ordinal() );
+            out.writeInt( ServerCommands.Message.PLAYER_STRAFE.ordinal() );
             out.writeLong( id );
             out.writeBoolean( toRight );
             Server.getInstance().sendPacketToAllPlayers( out );
@@ -77,7 +114,7 @@ public class ServerCommands
         try
         {
             ByteOutputStream out = new ByteOutputStream();
-            out.writeInt( Server.Message.OBJECT_UPDATE_VELOCITY.ordinal() );
+            out.writeInt( ServerCommands.Message.OBJECT_UPDATE_VELOCITY.ordinal() );
             out.writeLong( go.getId() );
             go.flattenPosition( out );
             Server.getInstance().sendPacketToAllPlayers( out );
@@ -98,13 +135,13 @@ public class ServerCommands
             ByteOutputStream out = new ByteOutputStream();
             if ( created )
             {
-                out.writeInt( Server.Message.OBJECT_CREATED.ordinal() );
+                out.writeInt( ServerCommands.Message.OBJECT_CREATED.ordinal() );
                 out.writeInt( Constants.parseGameObject( go ) );
                 go.flatten( out );
             }
             else
             {
-                out.writeInt( Server.Message.OBJECT_REMOVED.ordinal() );
+                out.writeInt( ServerCommands.Message.OBJECT_REMOVED.ordinal() );
                 out.writeLong( go.getId() );
             }
             Server.getInstance().sendPacketToAllPlayers( out );

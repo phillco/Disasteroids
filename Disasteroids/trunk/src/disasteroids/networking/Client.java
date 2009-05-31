@@ -146,9 +146,9 @@ public class Client extends DatagramListener
 
             // Determine the type of message.
             int command = in.readInt();
-            if ( ( command >= 0 ) && ( command < Server.Message.values().length ) )
+            if ( ( command >= 0 ) && ( command < ServerCommands.Message.values().length ) )
             {
-                switch ( Server.Message.values()[command] )
+                switch ( ServerCommands.Message.values()[command] )
                 {
                     case MULTI_PACKET:
                         processMultiPacket( p, in );

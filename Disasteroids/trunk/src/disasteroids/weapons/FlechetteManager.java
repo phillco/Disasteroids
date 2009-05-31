@@ -29,6 +29,7 @@ public class FlechetteManager extends Weapon
 
     public FlechetteManager()
     {
+        super();
     }
 
     @Override

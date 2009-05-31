@@ -37,6 +37,7 @@ public class MineManager extends Weapon
 
     public MineManager( Ship parent )
     {
+        super();
         this.parent = parent;
     }
 

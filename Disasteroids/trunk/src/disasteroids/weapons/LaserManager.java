@@ -31,6 +31,7 @@ public class LaserManager extends Weapon
 
     public LaserManager()
     {
+        super();
     }
 
     @Override

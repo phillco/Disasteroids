@@ -23,12 +23,13 @@ public class BigNukeLauncher extends Weapon
 
     public BigNukeLauncher()
     {
-        genericInit();
+        super();
     }
 
     @Override
     protected void genericInit()
     {
+        super.genericInit();
         bonusValues.put( BONUS_CHAINREACTIONCHANCE, new BonusValue( 30, 20, "Bigger chain reactions!" ));
     }
     

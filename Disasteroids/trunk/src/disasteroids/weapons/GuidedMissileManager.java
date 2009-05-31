@@ -13,6 +13,13 @@ import java.awt.Graphics;
  */
 public class GuidedMissileManager extends Weapon
 {
+
+    public GuidedMissileManager()
+    {
+        super();
+    }
+
+
     @Override
     protected void genericInit()
     {

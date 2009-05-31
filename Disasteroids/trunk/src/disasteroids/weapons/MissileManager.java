@@ -40,6 +40,7 @@ public class MissileManager extends Weapon
 
     public MissileManager()
     {
+        super();
     }
 
     @Override

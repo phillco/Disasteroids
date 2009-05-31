@@ -278,6 +278,7 @@ public class Missile extends Unit
         stream.writeInt( explosionStage );
         stream.writeBoolean( hugeBlast );
         stream.writeDouble( radius );
+        stream.writeInt( generation );
     }
 
     /**
@@ -290,6 +291,7 @@ public class Missile extends Unit
         explosionStage = stream.readInt();
         hugeBlast = stream.readBoolean();
         radius = stream.readDouble();
+        generation = stream.readInt();
 
         this.parent = parent;
     }

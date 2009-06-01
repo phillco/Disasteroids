@@ -45,6 +45,24 @@ public abstract class ShootingObject extends GameObject implements GameElement
     }
 
     /**
+     * Returns the index of the given weapon in our array, or -1 if we don't have it.
+     */
+    public int getIndexOfWeapon( Weapon w )
+    {
+        for ( int i = 0; i < weapons.length; i++ )
+        {
+            if ( w == weapons[i] )
+                return i;
+        }
+        return -1;
+    }
+
+    public Weapon getWeapon( int index )
+    {
+        return weapons[index];
+    }
+
+    /**
      * Returns an array all of our weapons.
      */
     public Weapon[] getWeapons()

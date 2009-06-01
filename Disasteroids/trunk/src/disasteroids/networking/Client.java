@@ -4,15 +4,10 @@
  */
 package disasteroids.networking;
 
-import disasteroids.gui.MainWindow;
-import disasteroids.Game;
-import disasteroids.GameLoop;
-import disasteroids.GameObject;
-import disasteroids.Main;
-import disasteroids.Settings;
-import disasteroids.Ship;
-import disasteroids.gui.Local;
-import disasteroids.sound.Sound;
+import disasteroids.gui.*;
+import disasteroids.*;
+import disasteroids.weapons.*;
+import disasteroids.sound.*;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -215,6 +210,16 @@ public class Client extends DatagramListener
                         else
                             Game.getInstance().getObjectManager().removeObject( go );
                         break;
+                    case WEAPON_UNIT_CREATED:
+                    {
+                        id = in.readLong();
+                        int indexOfWeapon = in.readInt();
+                        int unitTID = in.readInt();
+
+                        ShootingObject shooter = (ShootingObject) Game.getInstance().getObjectManager().getObject( id );
+                        shooter.getWeapon( indexOfWeapon ).addUnit( Constants.parseWeaponUnit( unitTID, shooter.getWeapon( indexOfWeapon ), in ), true );
+                    }
+                    break;
                     default:
                         System.out.println( "Weird packet - " + command + "." );
                 }
@@ -276,13 +281,13 @@ public class Client extends DatagramListener
 
     @Override
     void intervalLogic()
-    {        
+    {
         try
         {
             // No response on connect?
             if ( server.shouldTimeout() && !isConnected )
                 Main.fatalError( "Couldn't connect to " + server.toString() + ".\nWe didn't get any response.\n\nAre you sure a server is running there?" );
-            
+
             // Tell the server we're still here.
             if ( server.shouldPong() && isConnected )
             {

@@ -4,18 +4,8 @@
  */
 package disasteroids.networking;
 
-import disasteroids.Alien;
-import disasteroids.Asteroid;
-import disasteroids.BlackHole;
-import disasteroids.Bonus;
-import disasteroids.BonusAsteroid;
-import disasteroids.Deathmatch;
-import disasteroids.GameMode;
-import disasteroids.GameObject;
-import disasteroids.LinearGameplay;
-import disasteroids.Ship;
-import disasteroids.Station;
-import disasteroids.WaveGameplay;
+import disasteroids.*;
+import disasteroids.weapons.*;
 import java.io.DataInputStream;
 import java.io.IOException;
 
@@ -26,12 +16,12 @@ import java.io.IOException;
  */
 public class Constants
 {
-
     /**
      * The version of our net code protocol. Bump to ensure older clients don't connect and cause havoc.
-     * @since April 11, 2008
+     * @since import disasteroids.weapons.Weapon;
+    April 11, 2008
      */
-    public static final int NETCODE_VERSION = 5;
+    public static final int NETCODE_VERSION = 6;
 
     /**
      * The default port that the server runs on.
@@ -71,7 +61,6 @@ public class Constants
 
     public static enum GameModeTIDs
     {
-
         LINEAR( LinearGameplay.class ), WAVE( WaveGameplay.class ), DEATHMATCH( Deathmatch.class );
 
         final Class myClass;
@@ -84,9 +73,36 @@ public class Constants
 
     public static enum GameObjectTIDs
     {
-
         ALIEN, ASTEROID, BONUS_ASTEROID, BLACK_HOLE, BONUS, SHIP, STATION;
 
+    }
+
+    /**
+     * Weapon units that need to be synched.
+     */
+    public static enum WeaponUnitTID
+    {
+        MISSILE;
+
+    }
+
+    public static WeaponUnitTID parseWeaponUnit( Unit u )
+    {
+        if ( u instanceof Missile )
+            return WeaponUnitTID.MISSILE;
+        else
+            return null;
+    }
+
+    public static Unit parseWeaponUnit( int type, Weapon w, DataInputStream stream ) throws IOException
+    {
+        switch ( WeaponUnitTID.values()[type] )
+        {
+            case MISSILE:
+                return new Missile( stream, (MissileManager) w );
+        }
+
+        return null;
     }
 
     public static int parseGameMode( GameMode m )

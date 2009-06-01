@@ -6,6 +6,7 @@ package disasteroids.networking;
 
 import disasteroids.*;
 import disasteroids.networking.DatagramListener.ByteOutputStream;
+import disasteroids.weapons.Unit;
 import java.io.IOException;
 
 /**
@@ -41,6 +42,7 @@ public class ServerCommands
         //======
         // MISC
         //======
+        WEAPON_UNIT_CREATED,
         OBJECT_UPDATE_VELOCITY,
         OBJECT_CREATED,
         OBJECT_REMOVED;
@@ -103,6 +105,26 @@ public class ServerCommands
         catch ( IOException ex )
         {
             Main.warning( "Network stream failure, strafe", ex );
+        }
+    }
+
+    /**
+     * Notifies clients that the <code>Ship</code> with given id has just strafed.
+     */
+    public static void weaponUnitCreated( Unit u, long id, int indexOfWeapon )
+    {
+        try
+        {
+            ByteOutputStream out = new ByteOutputStream();
+            out.writeInt( ServerCommands.Message.WEAPON_UNIT_CREATED.ordinal() );
+            out.writeLong( id );
+            out.writeInt( indexOfWeapon );
+            out.writeInt( Constants.parseWeaponUnit( u ).ordinal() );
+            u.flatten( out );
+            Server.getInstance().sendPacketToAllPlayers( out );
+        }
+        catch ( IOException ex )
+        {
         }
     }
 

@@ -100,6 +100,7 @@ public class Main
                 System.out.print( " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." ) );
 
             // Daisy.....daisy....
+            System.out.println( );
             System.exit( 0 );
 
         }

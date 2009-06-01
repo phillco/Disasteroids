@@ -104,6 +104,15 @@ public class Missile extends Unit
             case 9:
             case 10:
             case 11:
+            case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
                 if ( hugeBlast )
                 {
                     radius = parent.getBonusValue( parent.BONUS_HUGEBLASTSIZE ).getValue();
@@ -188,6 +197,16 @@ public class Missile extends Unit
                 case 9:
                 case 10:
                 case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                case 17:
+                case 18:
+                case 19:
+                case 20:
+
                     setDx( getDx() * .8 );
                     setDy( getDy() * .8 );
                     break;

@@ -162,6 +162,20 @@ public abstract class Weapon implements GameElement
     //                                                                            \\
     protected void addUnit( Unit u )
     {
+        addUnit( u, false );
+    }
+
+    public void addUnit( Unit u, boolean fromServer )
+    {
+        // Some units need to be synced by the server.
+        if ( Constants.parseWeaponUnit( u ) != null && !fromServer )
+        {
+            if ( Server.is() )
+                ServerCommands.weaponUnitCreated( u, parent.getId(), parent.getIndexOfWeapon( this ) );
+            else if ( Client.is() )
+                return;
+        }
+        
         units.add( u );
     }
 

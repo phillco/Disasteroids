@@ -58,6 +58,15 @@ public class GameCanvas extends Canvas
     boolean showTracker = false, showHelp = false, showWarpDialog = false, drawScoreboard = false;
 
     /**
+     * flag for how to show radar:
+     * 0 = do not show
+     * 1 = show on bottom
+     * 2 = show on top
+     * @since May 31, 2009
+     */
+    int drawRadar = 0;
+
+    /**
      * The number of times that the paint method has been called, for FPS.
      * @since January 10, 2008
      */
@@ -183,7 +192,13 @@ public class GameCanvas extends Canvas
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );
 
+        if(drawRadar == 1)
+            Radar.draw(g, getWidth(), getHeight(), false);
+
         Game.getInstance().getObjectManager().draw( g );
+        
+        if(drawRadar==2)
+            Radar.draw(g, getWidth(), getHeight(), true);
 
         // Draw the on-screen HUD.
         drawHud( g );
@@ -579,6 +594,12 @@ public class GameCanvas extends Canvas
     {
         drawScoreboard = !drawScoreboard;
     }
+    
+    public void rotateRadar()
+    {
+        drawRadar = ( drawRadar + 1 ) % 3;
+    }
+
 
     /**
      * Enables or disables fancy rendering of the provided <code>Graphics</code>.

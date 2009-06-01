@@ -62,7 +62,7 @@ public class BlackHole extends GameObject
     public void act()
     {
         // Rotate
-        angle += .05;
+        angle -= .05;
 
         // Find nearby objects.
         Set<GameObject> victims = getNearbyVictims();
@@ -132,7 +132,7 @@ public class BlackHole extends GameObject
 
     public void draw( Graphics g )
     {
-        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY(), angle, 1 );
+        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY(), angle, 1.0 );
         // I think generating a black hole is much cooler
     }
 

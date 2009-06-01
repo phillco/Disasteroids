@@ -33,7 +33,7 @@ public class KeystrokeManager implements KeyListener
         STRAFE_LEFT, EXPLODE_ALL, ROTATE_WEAPONS, SET_WEAPON_1, SET_WEAPON_2,
         SET_WEAPON_3, SET_WEAPON_4, SET_WEAPON_5, SET_WEAPON_6, SET_WEAPON_7,
         SET_WEAPON_8, SET_WEAPON_9, PAUSE, SAVE, LOAD, BENCHMARK_FPS, TOGGLE_HELP,
-        DEVKEY_DEBUG, DEVKEY_BONUS, DEVKEY_ENEMY, VOLUME_UP,VOLUME_DOWN
+        DEVKEY_DEBUG, DEVKEY_BONUS, DEVKEY_ENEMY, VOLUME_UP, VOLUME_DOWN, ROTATE_RADAR
 
     };
     private HashMap<Integer, ActionType> keyboardLayout = new HashMap<Integer, ActionType>();
@@ -51,6 +51,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_W, ActionType.WARP );
         keyboardLayout.put( KeyEvent.VK_A, ActionType.TOGGLE_ANTIALIASING );
         keyboardLayout.put( KeyEvent.VK_BACK_SLASH, ActionType.TOGGLE_SCOREBOARD );
+        keyboardLayout.put( KeyEvent.VK_R, ActionType.ROTATE_RADAR );
         keyboardLayout.put( KeyEvent.VK_SPACE, ActionType.START_SHOOT );
         keyboardLayout.put( KeyEvent.VK_CLEAR, ActionType.START_SHOOT );//numpad 5 w/o numlock
 
@@ -180,6 +181,9 @@ public class KeystrokeManager implements KeyListener
                 break;
             case TOGGLE_TRACKER:
                 MainWindow.frame().getPanel().toggleTracker();
+                break;
+            case ROTATE_RADAR:
+                MainWindow.frame().getPanel().rotateRadar();
                 break;
             case TOGGLE_HELP:
                 MainWindow.frame().getPanel().toggleHelp();

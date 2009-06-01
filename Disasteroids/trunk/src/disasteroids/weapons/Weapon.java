@@ -7,6 +7,10 @@ package disasteroids.weapons;
 import disasteroids.*;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;
+import disasteroids.networking.Client;
+import disasteroids.networking.Constants;
+import disasteroids.networking.Server;
+import disasteroids.networking.ServerCommands;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
@@ -91,7 +95,7 @@ public abstract class Weapon implements GameElement
     public void drawHUD( Graphics g, Ship parentShip )
     {
         // Only draw if we're the local player, and if this is the selected weapon.
-        if ( parentShip == Local.getLocalPlayer() && parentShip.getWeaponManager() == this )
+        if ( parentShip == Local.getLocalPlayer() && parentShip.getActiveWeapon() == this )
         {
             // Draw a reload bar for the next berserk.
             g.setColor( units.size() < getMaxUnits() ? parentShip.getColor() : parentShip.getColor().darker().darker() );

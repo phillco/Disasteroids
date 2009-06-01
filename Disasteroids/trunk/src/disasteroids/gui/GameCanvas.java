@@ -192,13 +192,13 @@ public class GameCanvas extends Canvas
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );
 
-        if(drawRadar == 1)
-            Radar.draw(g, getWidth(), getHeight(), false);
+        if ( drawRadar == 1 )
+            Radar.draw( g, getWidth(), getHeight(), false );
 
         Game.getInstance().getObjectManager().draw( g );
-        
-        if(drawRadar==2)
-            Radar.draw(g, getWidth(), getHeight(), true);
+
+        if ( drawRadar == 2 )
+            Radar.draw( g, getWidth(), getHeight(), true );
 
         // Draw the on-screen HUD.
         drawHud( g );
@@ -594,12 +594,11 @@ public class GameCanvas extends Canvas
     {
         drawScoreboard = !drawScoreboard;
     }
-    
+
     public void rotateRadar()
     {
         drawRadar = ( drawRadar + 1 ) % 3;
     }
-
 
     /**
      * Enables or disables fancy rendering of the provided <code>Graphics</code>.

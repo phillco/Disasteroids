@@ -18,7 +18,7 @@ import java.io.IOException;
 public class BigNukeLauncher extends Weapon
 {
     // Bonus IDs.
-    public int BONUS_CHAINREACTIONCHANCE = getNewBonusID();
+    public int BONUS_CHAINREACTIONCHANCE;
 
     public BigNukeLauncher( ShootingObject parent )
     {
@@ -29,6 +29,7 @@ public class BigNukeLauncher extends Weapon
     protected void genericInit()
     {
         super.genericInit();
+        BONUS_CHAINREACTIONCHANCE = getNewBonusID();
         bonusValues.put( BONUS_CHAINREACTIONCHANCE, new BonusValue( 30, 20, "Bigger chain reactions!" ) );
     }
 

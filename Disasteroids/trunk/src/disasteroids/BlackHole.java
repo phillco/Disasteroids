@@ -107,7 +107,7 @@ public class BlackHole extends GameObject
 
         // Add the units of weapons.
         for ( ShootingObject s : Game.getInstance().getObjectManager().getShootingObjects() )
-            for ( Weapon w : s.getManagers() )
+            for ( Weapon w : s.getWeapons() )
                 for ( Unit u : w.getUnits() )
                     if ( Util.getDistance( this, u ) < ATTRACTION_RADIUS )
                         closeObjects.add( u );

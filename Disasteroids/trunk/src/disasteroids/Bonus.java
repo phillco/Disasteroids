@@ -193,13 +193,13 @@ public class Bonus extends GameObject
                 break;
             case WEAPON_POWERUP:
                 // TODO: Test, Sync?
-                message = player.getWeaponManager().applyBonus();
+                message = player.getActiveWeapon().applyBonus();
 
                 // No bonus for this weapon? Just give ammo instead.
-                if ( message.equals( "" ) && ( !player.getWeaponManager().isInfiniteAmmo() ) )
+                if ( message.equals( "" ) && ( !player.getActiveWeapon().isInfiniteAmmo() ) )
                 {
-                    message = "Got ammo for " + player.getWeaponManager().getName() + ".";
-                    player.getWeaponManager().giveAmmo();
+                    message = "Got ammo for " + player.getActiveWeapon().getName() + ".";
+                    player.getActiveWeapon().giveAmmo();
                 }
                 break;
             case SHIP_POWERUP:

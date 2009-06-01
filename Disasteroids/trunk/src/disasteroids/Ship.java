@@ -15,7 +15,6 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import disasteroids.weapons.BigNukeLauncher;
 import disasteroids.weapons.BulletManager;
-import disasteroids.weapons.GuidedMissileManager;
 import disasteroids.weapons.LaserManager;
 import disasteroids.weapons.MineManager;
 import disasteroids.weapons.MissileManager;
@@ -32,14 +31,13 @@ import java.awt.Stroke;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A player ship.
  * @author Andy Kooiman, Phillip Cohen
  * @since Classic
  */
-public class Ship extends GameObject implements ShootingObject
+public class Ship extends ShootingObject
 {
     public final static double SENSITIVITY = 20;
 
@@ -117,18 +115,6 @@ public class Ship extends GameObject implements ShootingObject
     private int numShipsKilled = 0;
 
     /**
-     * The current weapon selected in <code>allWeapons</code>.
-     * @since December 25, 2007
-     */
-    private int weaponIndex = 0;
-
-    /**
-     * Our cache of weapons.
-     * @since December 16, 2007
-     */
-    private Weapon[] allWeapons = new Weapon[ 6 ];
-
-    /**
      * The <code>SniperManager</code> for this <code>Ship</code>
      * @since March 26, 2008
      */
@@ -182,17 +168,17 @@ public class Ship extends GameObject implements ShootingObject
     // ***************************************************** Standard API **
     public Ship( double x, double y, Color c, int lives, String name )
     {
-        super( x, y, 0, 0 );
+        super( x, y, 0, 0, 6 );
         this.myColor = c;
         this.livesLeft = lives;
         this.name = name;
 
-        allWeapons[0] = new MissileManager( this );
-        allWeapons[1] = new BulletManager( this );
-        allWeapons[2] = new MineManager( this );
-        allWeapons[3] = new LaserManager( this );
-        allWeapons[4] = new FlechetteManager( this );
-        allWeapons[5] = new BigNukeLauncher( this );
+        weapons[0] = new MissileManager( this );
+        weapons[1] = new BulletManager( this );
+        weapons[2] = new MineManager( this );
+        weapons[3] = new LaserManager( this );
+        weapons[4] = new FlechetteManager( this );
+        weapons[5] = new BigNukeLauncher( this );
         sniperManager = new SniperManager( this );
 
         // Colors.        
@@ -201,19 +187,21 @@ public class Ship extends GameObject implements ShootingObject
 
         // Start invincible.
         invincibilityCount = 200;
-        repairCount=-1;
+        repairCount = -1;
     }
 
+    @Override
     public void act()
     {
+        super.act();
         if ( livesLeft >= 0 )
         {
             if ( shooting )
             {
-                if ( getWeaponManager().getAmmo() == 0 )
+                if ( getActiveWeapon().getAmmo() == 0 )
                 {
-                    Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
-                    Main.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+                    Local.getStarBackground().writeOnBackground( "Out of ammo for " + getActiveWeapon().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
+                    Main.log( "Out of ammo for " + getActiveWeapon().getName() + "." );
                     rotateWeapons();
                     shooting = false;
                 }
@@ -224,9 +212,9 @@ public class Ship extends GameObject implements ShootingObject
                 }
             }
             invincibilityCount--;
-            if( repairCount == 0 )
+            if ( repairCount == 0 )
                 repair();
-            else if( repairCount > 0 )
+            else if ( repairCount > 0 )
                 repairCount--;
             checkCollision();
             generateParticles();
@@ -249,12 +237,8 @@ public class Ship extends GameObject implements ShootingObject
                         25 + explosionTime / 10, 10 ) );
             }
         }
-        for ( Weapon wm : allWeapons )
-            wm.act();
-        sniperManager.act();
 
-        // Reload active gun, and the sniper.
-        getWeaponManager().reload();
+        sniperManager.act();
         sniperManager.reload();
 
         // Out of ammo. :(
@@ -266,21 +250,17 @@ public class Ship extends GameObject implements ShootingObject
         }*/
     }
 
+    @Override
     public void draw( Graphics g )
     {
-        for ( Weapon wm : allWeapons )
-            wm.draw( g );
+        super.draw( g );
         sniperManager.draw( g );
 
         if ( livesLeft < 0 )
             return;
 
-        allWeapons[weaponIndex].draw( g );
-
         // Set our color.
         Color col = ( cannotDie() ? myInvicibleColor : myColor );
-
-
         double centerX, centerY;
 
         if ( this == Local.getLocalPlayer() )
@@ -324,8 +304,8 @@ public class Ship extends GameObject implements ShootingObject
         {
             drawWeaponNameTimer--;
             g.setFont( new Font( "Century Gothic", Font.BOLD, 14 ) );
-            MainWindow.frame().drawString( g, (int) getX(), (int) getY() - 15, getWeaponManager().getName(), Color.gray );
-            allWeapons[weaponIndex].drawOrphanUnit( g, getX(), getY() + 25, Color.gray );
+            MainWindow.frame().drawString( g, (int) getX(), (int) getY() - 15, getActiveWeapon().getName(), Color.gray );
+            weapons[activeWeapon].drawOrphanUnit( g, getX(), getY() + 25, Color.gray );
         }
 
         if ( sniping )
@@ -346,7 +326,7 @@ public class Ship extends GameObject implements ShootingObject
             }
         }
         else
-            getWeaponManager().drawHUD( g, this );
+            getActiveWeapon().drawHUD( g, this );
     }
 
     // ***************************************************** Key press & release **
@@ -388,14 +368,14 @@ public class Ship extends GameObject implements ShootingObject
 
     public void clearWeapons()
     {
-        for ( Weapon wM : allWeapons )
+        for ( Weapon wM : weapons )
             wM.clear();
         sniperManager.clear();
     }
 
     public void restoreBonusValues()
     {
-        for ( Weapon wM : allWeapons )
+        for ( Weapon wM : weapons )
             wM.undoBonuses();
         sniperManager.undoBonuses();
     }
@@ -405,13 +385,13 @@ public class Ship extends GameObject implements ShootingObject
      */
     public void rotateWeapons()
     {
-        int startIndex = weaponIndex;
+        int startIndex = activeWeapon;
         do
         {
-            weaponIndex++;
-            weaponIndex %= allWeapons.length;
+            activeWeapon++;
+            activeWeapon %= weapons.length;
         }
-        while ( allWeapons[weaponIndex].getAmmo() == 0 && weaponIndex != startIndex );
+        while ( weapons[activeWeapon].getAmmo() == 0 && activeWeapon != startIndex );
         drawWeaponNameTimer = 50;
     }
 
@@ -428,7 +408,7 @@ public class Ship extends GameObject implements ShootingObject
             if ( other == this )
                 continue;
 
-            for ( Weapon wm : other.getManagers() )
+            for ( Weapon wm : other.getWeapons() )
             {
                 for ( Unit m : wm.getUnits() )
                 {
@@ -537,12 +517,12 @@ public class Ship extends GameObject implements ShootingObject
     {
         if ( livesLeft < 0 )
             return;
-        getWeaponManager().shoot( this, myColor, angle );
+        getActiveWeapon().shoot( this, myColor, angle );
     }
 
     public boolean canShoot()
     {
-        return ( livesLeft >= 0 && getWeaponManager().canShoot() );
+        return ( livesLeft >= 0 && getActiveWeapon().canShoot() );
     }
 
     public Color getColor()
@@ -591,7 +571,7 @@ public class Ship extends GameObject implements ShootingObject
         // Lose health, and some max health as well.
         health -= amount;
         healthMax -= amount / 3.0;
-        score -= Math.min(amount,300)*5;
+        score -= Math.min( amount, 300 ) * 5;
 
         // Bounce.
         setVelocity( getDx() * -.3, getDy() * -.3 );
@@ -599,7 +579,7 @@ public class Ship extends GameObject implements ShootingObject
         // If just a wound, play the sound and leave.
         if ( health > 0 )
         {
-            repairCount=100;
+            repairCount = 100;
             Sound.playInternal( SoundLibrary.SHIP_HIT );
             MainWindow.frame().rumble( amount * 2 / 3.0 );
             return true;
@@ -664,9 +644,10 @@ public class Ship extends GameObject implements ShootingObject
         return invincibilityCount > 0;
     }
 
-    public Weapon getWeaponManager()
+    @Override
+    public Weapon getActiveWeapon()
     {
-        return sniping ? this.sniperManager : allWeapons[weaponIndex];
+        return sniping ? this.sniperManager : super.getActiveWeapon();
     }
 
     public void increaseScore( int points )
@@ -697,15 +678,15 @@ public class Ship extends GameObject implements ShootingObject
 
     public void berserk()
     {
-        if ( getWeaponManager().getAmmo() == 0 )
+        if ( getActiveWeapon().getAmmo() == 0 )
         {
-            Local.getStarBackground().writeOnBackground( "Out of ammo for " + getWeaponManager().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
-            Main.log( "Out of ammo for " + getWeaponManager().getName() + "." );
+            Local.getStarBackground().writeOnBackground( "Out of ammo for " + getActiveWeapon().getName() + ".", (int) getX(), (int) getY() - 5, myColor );
+            Main.log( "Out of ammo for " + getActiveWeapon().getName() + "." );
             rotateWeapons();
         }
         if ( Server.is() )
             ServerCommands.berserk( getId() );
-        getWeaponManager().berserk( this, myColor );
+        getActiveWeapon().berserk( this, myColor );
     }
 
     /**
@@ -766,7 +747,7 @@ public class Ship extends GameObject implements ShootingObject
         stream.writeBoolean( backwards );
         stream.writeBoolean( forward );
         stream.writeBoolean( shooting );
-        stream.writeInt( weaponIndex );
+        stream.writeInt( activeWeapon );
     }
 
     /**
@@ -782,7 +763,7 @@ public class Ship extends GameObject implements ShootingObject
         backwards = stream.readBoolean();
         forward = stream.readBoolean();
         shooting = stream.readBoolean();
-        weaponIndex = stream.readInt();
+        activeWeapon = stream.readInt();
     }
 
     /**
@@ -796,7 +777,7 @@ public class Ship extends GameObject implements ShootingObject
         stream.writeInt( myColor.getRGB() );
 
         stream.writeUTF( name );
-        stream.writeInt( weaponIndex );
+        stream.writeInt( activeWeapon );
         stream.writeInt( numAsteroidsKilled );
         stream.writeInt( numShipsKilled );
 
@@ -805,7 +786,7 @@ public class Ship extends GameObject implements ShootingObject
         stream.writeDouble( healthMax );
         stream.writeInt( shielded );
 
-        for ( Weapon w : allWeapons )
+        for ( Weapon w : weapons )
             w.flatten( stream );
 
         sniperManager.flatten( stream );
@@ -817,12 +798,12 @@ public class Ship extends GameObject implements ShootingObject
      */
     public Ship( DataInputStream stream ) throws IOException
     {
-        super( stream );
+        super( stream, 6 );
         invincibilityCount = stream.readInt();
         myColor = new Color( stream.readInt() );
 
         name = stream.readUTF();
-        weaponIndex = stream.readInt();
+        activeWeapon = stream.readInt();
         numAsteroidsKilled = stream.readInt();
         numShipsKilled = stream.readInt();
 
@@ -831,17 +812,17 @@ public class Ship extends GameObject implements ShootingObject
         healthMax = stream.readDouble();
         shielded = stream.readInt();
 
-        allWeapons[0] = new MissileManager( stream, this );
-        allWeapons[1] = new BulletManager( stream, this );
-        allWeapons[2] = new MineManager( stream, this );
-        allWeapons[3] = new LaserManager( stream, this );
-        allWeapons[4] = new FlechetteManager( stream, this );
-        allWeapons[5] = new BigNukeLauncher( stream, this );
+        weapons[0] = new MissileManager( stream, this );
+        weapons[1] = new BulletManager( stream, this );
+        weapons[2] = new MineManager( stream, this );
+        weapons[3] = new LaserManager( stream, this );
+        weapons[4] = new FlechetteManager( stream, this );
+        weapons[5] = new BigNukeLauncher( stream, this );
         sniperManager = new SniperManager( stream, this );
 
         int check = stream.readInt();
         if ( check != 666 )
-            Main.fatalError( "Failed checksum test.\n\nReceived " + check + "..." + allWeapons[0].getAmmo() );
+            Main.fatalError( "Failed checksum test.\n\nReceived " + check + "..." + weapons[0].getAmmo() );
 
         // Apply basic construction.        
         double fadePct = 0.6;
@@ -850,24 +831,7 @@ public class Ship extends GameObject implements ShootingObject
 
     public int getWeaponIndex()
     {
-        return weaponIndex;
-    }
-
-    /**
-     * @Deprecated  inefficient and only used to satisfy the interface. Use getWeapons() when possible.
-     */
-    public ConcurrentLinkedQueue<Weapon> getManagers()
-    {
-        ConcurrentLinkedQueue<Weapon> c = new ConcurrentLinkedQueue<Weapon>();
-        for ( Weapon w : allWeapons )
-            c.add( w );
-        c.add( sniperManager );
-        return c;
-    }
-
-    public Weapon[] getWeapons()
-    {
-        return allWeapons;
+        return activeWeapon;
     }
 
     public int getExplosionTime()
@@ -926,10 +890,10 @@ public class Ship extends GameObject implements ShootingObject
      */
     public void setWeapon( int index )
     {
-        if ( allWeapons[index % allWeapons.length].getAmmo() == 0 )
+        if ( weapons[index % weapons.length].getAmmo() == 0 )
             return;
 
-        weaponIndex = index % allWeapons.length;
+        activeWeapon = index % weapons.length;
         drawWeaponNameTimer = 50;
     }
 
@@ -945,14 +909,14 @@ public class Ship extends GameObject implements ShootingObject
 
     private void repair()
     {
-        if(repairCount!=0)
+        if ( repairCount != 0 )
             return;
-        if(health>=healthMax)
+        if ( health >= healthMax )
         {
-            repairCount=-1;
+            repairCount = -1;
             return;
         }
-        health+=.1;
+        health += .1;
     }
 
     private void slowStop()
@@ -980,6 +944,4 @@ public class Ship extends GameObject implements ShootingObject
     {
         this.health = health;
     }
-
-    
 }

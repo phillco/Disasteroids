@@ -63,7 +63,7 @@ public class TutorialMode implements GameMode
             nextStage();
 
         // Use whichever.
-        if ( stage == 8 && Local.getLocalPlayer().getWeaponManager() instanceof BulletManager )
+        if ( stage == 8 && Local.getLocalPlayer().getActiveWeapon() instanceof BulletManager )
         {
             nextStage();
             for ( int i = 0; i < 8; i++ )

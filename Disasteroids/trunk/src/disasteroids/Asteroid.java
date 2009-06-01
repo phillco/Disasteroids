@@ -135,7 +135,7 @@ public class Asteroid extends GameObject implements GameElement
         // Go through ships, stations, etc.
         for ( ShootingObject s : Game.getInstance().getObjectManager().getShootingObjects() )
         {
-            for ( Weapon wm : s.getManagers() )
+            for ( Weapon wm : s.getWeapons() )
             {
                 // Loop through all this ship's Missiles.
                 for ( Unit m : wm.getUnits() )

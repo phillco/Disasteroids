@@ -343,7 +343,7 @@ public class Game
                 actor.strafe( false );
                 break;
             case EXPLODE_ALL:
-                actor.getWeaponManager().explodeAllUnits();
+                actor.getActiveWeapon().explodeAllUnits();
                 break;
             case ROTATE_WEAPONS:
                 actor.rotateWeapons();
@@ -406,7 +406,7 @@ public class Game
                     objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) , false);
 
                     // Gives ammo to all guns.
-                    for ( Weapon w : Local.getLocalPlayer().getManagers() )
+                    for ( Weapon w : Local.getLocalPlayer().getWeapons() )
                     {
                         w.giveAmmo();
                         w.getBonusValue( w.BONUS_FASTERBERSERK ).override( 9999 );

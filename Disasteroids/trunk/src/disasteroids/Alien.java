@@ -25,13 +25,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Phillip Cohen
  * @since February 6, 2008
  */
-public class Alien extends GameObject implements ShootingObject
+public class Alien extends ShootingObject
 {
-    /**
-     * Our firing manager.
-     * @since January 6, 2008
-     */
-    protected MissileManager manager;
 
     /**
      * The color of this <code>Alien</code>
@@ -75,9 +70,9 @@ public class Alien extends GameObject implements ShootingObject
      */
     public Alien( double x, double y, double dx, double dy )
     {
-        super( x, y, dx, dy );
+        super( x, y, dx, dy, 1 );
         size = Util.getGameplayRandomGenerator().nextInt( 50 ) + 30;
-        manager = new AlienMissileManager( size, this );
+        weapons[0] = new AlienMissileManager( size, this );
         color = new Color( Util.getGameplayRandomGenerator().nextInt( 60 ), Util.getGameplayRandomGenerator().nextInt( 128 ) + 96, Util.getGameplayRandomGenerator().nextInt( 60 ) );
         life = 500;
         explosionTime = 0;
@@ -86,8 +81,10 @@ public class Alien extends GameObject implements ShootingObject
     /**
      * Iterates through the necessary actions of a single timestep
      */
+    @Override
     public void act()
     {
+        super.act();
         generalActBehavior();
 
         ax *= 0.94;
@@ -125,7 +122,7 @@ public class Alien extends GameObject implements ShootingObject
         if ( closestShip != null )
         {
             double mAngle = calculateAngle( closestShip );
-            manager.shoot( this, color, mAngle );
+            getActiveWeapon().shoot( this, color, mAngle );
         }
 
         angle += size / 560.0 + 0.015;
@@ -139,10 +136,7 @@ public class Alien extends GameObject implements ShootingObject
     {
         move();
         setSpeed( Math.min( 3, getDx() + ax ), Math.min( 3, getDy() + ay ) );
-
         checkCollision();
-        manager.act();
-        manager.reload();
 
         // Prepare to flash.
         if ( life <= 0 )
@@ -190,7 +184,7 @@ public class Alien extends GameObject implements ShootingObject
                 continue;
 
             // Loop through the mangers.
-            for ( Weapon wm : s.getManagers() )
+            for ( Weapon wm : s.getWeapons() )
             {
                 // Loop through the bullets.
                 for ( Unit m : wm.getUnits() )
@@ -202,7 +196,7 @@ public class Alien extends GameObject implements ShootingObject
                         m.explode();
                         life -= m.getDamage();
                         if ( life < 0 && s instanceof Ship )
-                            ( (Ship) s ).increaseScore( 1000 );
+                            ( ( Ship ) s ).increaseScore( 1000 );
                     }
                 }
             }
@@ -267,16 +261,16 @@ public class Alien extends GameObject implements ShootingObject
      * Draws <code>this</code> in the given context, using an <code>Image</code>
      * @param g The context in which to draw.
      */
+    @Override
     public void draw( Graphics g )
     {
-        manager.draw( g );
-
+        super.draw( g );
         if ( explosionTime > 0 )
         {
-            MainWindow.frame().fillCircle( g, color.darker().darker(), (int) getX(), (int) getY(), (int) ( size * 0.1 * ( explosionTime - 1 ) ) );
+            MainWindow.frame().fillCircle( g, color.darker().darker(), ( int ) getX(), ( int ) getY(), ( int ) ( size * 0.1 * ( explosionTime - 1 ) ) );
             return;
         }
-        MainWindow.frame().drawImage( g, ImageLibrary.getAlien(), (int) getX() + size / 2, (int) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
+        MainWindow.frame().drawImage( g, ImageLibrary.getAlien(), ( int ) getX() + size / 2, ( int ) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
     }
 
     /**
@@ -297,7 +291,7 @@ public class Alien extends GameObject implements ShootingObject
         stream.writeInt( explosionTime );
         stream.writeInt( life );
         stream.writeInt( size );
-        manager.flatten( stream );
+        getActiveWeapon().flatten( stream );
     }
 
     /**
@@ -309,7 +303,7 @@ public class Alien extends GameObject implements ShootingObject
      */
     public Alien( DataInputStream stream ) throws IOException
     {
-        super( stream );
+        super( stream, 1 );
         angle = stream.readDouble();
         ax = stream.readDouble();
         ay = stream.readDouble();
@@ -317,20 +311,7 @@ public class Alien extends GameObject implements ShootingObject
         explosionTime = stream.readInt();
         life = stream.readInt();
         size = stream.readInt();
-        manager = new AlienMissileManager( stream, this );
-    }
-
-    /**
-     * Returns a linked queue containing our one weapon manager. Used for ShootingObject.
-     * 
-     * @return  thread-safe queue containing our <code>MissileManager</code>
-     * @since January 6, 2008
-     */
-    public ConcurrentLinkedQueue<Weapon> getManagers()
-    {
-        ConcurrentLinkedQueue<Weapon> c = new ConcurrentLinkedQueue<Weapon>();
-        c.add( manager );
-        return c;
+        weapons[0] = new AlienMissileManager( stream, this );
     }
 
     /**
@@ -338,6 +319,7 @@ public class Alien extends GameObject implements ShootingObject
      */
     public class AlienMissileManager extends MissileManager
     {
+
         /**
          * keeps track of the angle to draw the lines coming radially out of the unit
          */
@@ -351,7 +333,7 @@ public class Alien extends GameObject implements ShootingObject
         {
             super( parent );
             bonusValues.get( BONUS_POPPINGQUANTITY ).override( 0 );
-            setLife( (int) ( life * 1.2 ) );
+            setLife( ( int ) ( life * 1.2 ) );
         }
 
         @Override
@@ -364,7 +346,7 @@ public class Alien extends GameObject implements ShootingObject
             for ( Unit u : units )
             {
                 stream.writeBoolean( u instanceof AlienBomb );
-                ( (Missile) u ).flatten( stream );
+                ( ( Missile ) u ).flatten( stream );
             }
         }
 
@@ -406,9 +388,10 @@ public class Alien extends GameObject implements ShootingObject
          */
         private class AlienMissile extends Missile
         {
+
             public AlienMissile( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
-                super( manager, color, x, y, dx, dy, angle, 0 );
+                super( parent, color, x, y, dx, dy, angle, 0 );
             }
 
             private AlienMissile( DataInputStream stream, AlienMissileManager parent ) throws IOException
@@ -428,9 +411,10 @@ public class Alien extends GameObject implements ShootingObject
          */
         private class AlienBomb extends Missile
         {
+
             public AlienBomb( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
-                super( manager, color, x, y, dx, dy, angle, 0 );
+                super( parent, color, x, y, dx, dy, angle, 0 );
                 radius = 1;
             }
 
@@ -467,10 +451,10 @@ public class Alien extends GameObject implements ShootingObject
             @Override
             public void draw( Graphics g )
             {
-                MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * finRotation );
-                MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
-                MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
-                MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), (int) getRadius() );
+                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * finRotation );
+                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
+                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
+                MainWindow.frame().fillCircle( g, color, ( int ) getX(), ( int ) getY(), ( int ) getRadius() );
             }
         }
     }

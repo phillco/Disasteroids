@@ -20,18 +20,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * A satellite that shoots missiles at passing ships.
  * @author Phillip Cohen, Andy Kooiman
  */
-public class Station extends GameObject implements ShootingObject
+public class Station extends ShootingObject
 {
 
     /**
      * The angle we're facing.
      */
     private double angle;
-
-    /**
-     * Our firing manager.
-     */
-    private MissileManager manager;
 
     /**
      * Width/height of the station.
@@ -60,11 +55,14 @@ public class Station extends GameObject implements ShootingObject
      */
     public Station( double x, double y, double dx, double dy )
     {
-        super( x, y, dx, dy );
+        super( x, y, dx, dy, 1 );
         angle = 0;
-        manager = new MissileManager( this );
+        
+        // Set up missile launcher.
+        MissileManager manager = new MissileManager( this );
         manager.getBonusValue( manager.BONUS_POPPINGQUANTITY ).override( 0 );
         manager.setLife( 50 );
+        weapons[0] = manager;
     }
 
     /**
@@ -74,10 +72,9 @@ public class Station extends GameObject implements ShootingObject
      */
     public void act()
     {
+        super.act();
         move();
         checkCollision();
-        manager.act();
-        manager.reload();
 
         angle %= 2 * Math.PI; //Make sure the angle does not grow without bound
 
@@ -130,9 +127,9 @@ public class Station extends GameObject implements ShootingObject
             // Fire!
             if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI ) < SWEEP_SPEED * 6 && !closestShip.cannotDie() )
             {
-                if ( manager.canShoot() )
+                if ( getActiveWeapon().canShoot() )
                 {
-                    manager.shoot( this, Color.white, 0 - angle );
+                    getActiveWeapon().shoot( this, Color.white, 0 - angle );
                     Sound.playInternal( SoundLibrary.STATION_SHOOT );  // Play a custom sound.
 
                 }
@@ -161,7 +158,7 @@ public class Station extends GameObject implements ShootingObject
                 continue;
 
             // Loop through the mangers.
-            for ( Weapon wm : s.getManagers() )
+            for ( Weapon wm : s.getWeapons() )
             {
                 // Loop through the bullets.
                 for ( Unit m : wm.getUnits() )
@@ -206,10 +203,8 @@ public class Station extends GameObject implements ShootingObject
 
     /**
      * Draws this and our bullets to the given context. Uses RelativeGraphics.
-     * 
-     * @param g the context
-     * @since January 6, 2008
      */
+    @Override
     public void draw( Graphics g )
     {
         // Flash when disabled.
@@ -283,14 +278,12 @@ public class Station extends GameObject implements ShootingObject
             g.drawLine( cX, cY + 1, eX, eY + 1 );
             g.drawLine( cX + 1, cY, eX + 1, eY );
         }
-        manager.draw( g );
+
+        super.draw( g );
     }
 
     /**
-     * Returns the center position of the station.
-     * 
-     * @return      the x coordinate of the center
-     * @since January 6, 2008
+     * Returns the center x coordinate of the station.
      */
     int centerX()
     {
@@ -298,10 +291,7 @@ public class Station extends GameObject implements ShootingObject
     }
 
     /**
-     * Returns the center position of the station.
-     * 
-     * @return      the y coordinate of the center
-     * @since January 6, 2008
+     * Returns the center y coordinate of the station.
      */
     int centerY()
     {
@@ -318,19 +308,6 @@ public class Station extends GameObject implements ShootingObject
     public double getFiringOriginY()
     {
         return centerY() - 25 * Math.sin( 0 - angle );
-    }
-
-    /**
-     * Returns a linked queue containing our one weapon manager. Used for ShootingObject.
-     * 
-     * @return  thread-safe queue containg our <code>MissileManager</code>
-     * @since January 6, 2008
-     */
-    public ConcurrentLinkedQueue<Weapon> getManagers()
-    {
-        ConcurrentLinkedQueue<Weapon> c = new ConcurrentLinkedQueue<Weapon>();
-        c.add( manager );
-        return c;
     }
 
     /**
@@ -407,7 +384,7 @@ public class Station extends GameObject implements ShootingObject
         stream.writeInt( health );
         stream.writeInt( easterEggCounter );
         stream.writeInt( size );
-        manager.flatten( stream );
+        getActiveWeapon().flatten( stream );
     }
 
     /**
@@ -419,12 +396,12 @@ public class Station extends GameObject implements ShootingObject
      */
     public Station( DataInputStream stream ) throws IOException
     {
-        super( stream );
+        super( stream, 1 );
         angle = stream.readDouble();
         desiredAngle = stream.readDouble();
         health = stream.readInt();
         easterEggCounter = stream.readInt();
         size = stream.readInt();
-        manager = new MissileManager( stream, this );
+        weapons[0] = new MissileManager( stream, this );
     }
 }

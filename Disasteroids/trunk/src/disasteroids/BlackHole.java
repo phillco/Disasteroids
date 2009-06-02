@@ -36,12 +36,12 @@ public class BlackHole extends GameObject
     /**
      * How many objects we have left to destroy. Can be -1 for infinite.
      */
-    private int numLeftToEat;
+    private int numLeftToEat, totalToEat;
 
     /**
      * Angle at which to draw black hole.
      */
-    private double angle;
+    private double imageAngle;
 
     public BlackHole( double x, double y )
     {
@@ -53,7 +53,7 @@ public class BlackHole extends GameObject
     {
         super( x, y, 0, 0 );
         this.power = power;
-        this.numLeftToEat = numToEat;
+        this.numLeftToEat = totalToEat = numToEat;
     }
 
     /**
@@ -61,8 +61,8 @@ public class BlackHole extends GameObject
      */
     public void act()
     {
-        // Rotate
-        angle -= .05;
+        // Rotate.
+        imageAngle -= .05;
 
         // Find nearby objects.
         Set<GameObject> victims = getNearbyVictims();
@@ -82,7 +82,7 @@ public class BlackHole extends GameObject
                 if ( numLeftToEat > 0 )
                 {
                     // Remove after we've eaten enough, for gameplay reasons.
-                    if ( --numLeftToEat == 0 )
+                    if (( go instanceof Unit == false ) && ( --numLeftToEat == 0 ))
                     {
                         Game.getInstance().getObjectManager().removeObject( this );
                         return;
@@ -132,7 +132,7 @@ public class BlackHole extends GameObject
 
     public void draw( Graphics g )
     {
-        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY(), angle, 1.0 );
+        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY(), imageAngle, 1.0 );
         // I think generating a black hole is much cooler
     }
 

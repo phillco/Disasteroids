@@ -416,7 +416,7 @@ public class Game
 
             case DEVKEY_ENEMY:
                 if ( !Client.is() )
-                    objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ) , false);
+                    objectManager.addObject( new BlackHole( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 30, 50 ), false);
                 break;
             case DEVKEY_DEBUG:
                 getObjectManager().printDebugInfo();

@@ -43,6 +43,10 @@ public class BlackHole extends GameObject
      */
     private double imageAngle;
 
+    private int creationTime = 0;
+
+    private final int TOTAL_CREATION_TIME = 500;
+
     public BlackHole( double x, double y )
     {
         // TODO: Sync creation
@@ -62,7 +66,10 @@ public class BlackHole extends GameObject
     public void act()
     {
         // Rotate.
-        imageAngle -= .05;
+        imageAngle -= .05 * ( 0.5 + 3 * getSizeMultiplier() );
+
+        if ( creationTime < TOTAL_CREATION_TIME )
+            creationTime++;
 
         // Find nearby objects.
         Set<GameObject> victims = getNearbyVictims();
@@ -72,7 +79,7 @@ public class BlackHole extends GameObject
         {
             double angle = Util.getAngle( this, go );
 
-            double magnitude = Math.min( Math.pow( power, 1.9 ) / Math.pow( Util.getDistance( this, go ), 1.7 ), 1 );
+            double magnitude = getSizeMultiplier() * Math.min( Math.pow( power, 1.9 ) / Math.pow( Util.getDistance( this, go ), 1.7 ), 1 );
             go.setVelocity( go.getDx() + magnitude * Math.cos( angle ), go.getDy() + magnitude * Math.sin( angle ) );
 
             // Too close to the center! Destroy him!
@@ -82,7 +89,7 @@ public class BlackHole extends GameObject
                 if ( numLeftToEat > 0 )
                 {
                     // Remove after we've eaten enough, for gameplay reasons.
-                    if (( go instanceof Unit == false ) && ( --numLeftToEat == 0 ))
+                    if ( ( go instanceof Unit == false ) && ( --numLeftToEat == 0 ) )
                     {
                         Game.getInstance().getObjectManager().removeObject( this );
                         return;
@@ -90,6 +97,9 @@ public class BlackHole extends GameObject
                 }
             }
         }
+
+        if ( getSizeMultiplier() < 0 )
+            Game.getInstance().getObjectManager().removeObject( this );
     }
 
     /**
@@ -120,19 +130,32 @@ public class BlackHole extends GameObject
         return closeObjects;
     }
 
+    private double getSizeMultiplier()
+    {
+        // Size follows a function based on how much we've eaten...
+        double percentEaten = 1 - (double) numLeftToEat / totalToEat;
+        double rampedPercentEaten = ( 0.4 * ( percentEaten + 1 ) + 6 * Math.pow( percentEaten, 2 ) - 6.8 * Math.pow( percentEaten, 3 ) );
+
+        // Multiplied by the introduction grow-in.
+        double percentGrown = (double) creationTime / TOTAL_CREATION_TIME;
+        double rampedPercentGrown = 2 * percentGrown - Math.pow( percentGrown, 2 );
+        return rampedPercentEaten * rampedPercentGrown;
+    }
+
     /**
      * Returns whether we should attract <code>victim</code>.
      * Normally true, except for things like invincible ships and other black holes.
      */
     private boolean isPrey( GameObject victim )
     {
-        return !( victim instanceof Ship && ( (Ship) victim ).cannotDie() ||
+        return !( victim == this || victim instanceof Ship && ( (Ship) victim ).cannotDie() ||
                 victim instanceof BlackHole );
     }
 
     public void draw( Graphics g )
     {
-        MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY(), imageAngle, 1.0 );
+        if ( getSizeMultiplier() > 0 )
+            MainWindow.frame().drawImage( g, ImageLibrary.getBlackHole(), (int) getX(), (int) getY(), imageAngle, getSizeMultiplier() );
         // I think generating a black hole is much cooler
     }
 

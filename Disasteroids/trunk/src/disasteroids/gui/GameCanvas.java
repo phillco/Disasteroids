@@ -187,7 +187,7 @@ public class GameCanvas extends Canvas
         if ( background == null )
             background = new Background( Game.getInstance().GAME_WIDTH, Game.getInstance().GAME_HEIGHT );
         else
-            g.drawImage( background.render(), 0, 0, this );
+            background.render(g);
 
         // Draw stuff in order of importance, from least to most.        
         ParticleManager.draw( g );

@@ -128,7 +128,7 @@ public class MainWindow extends Frame
 
     public static void addNotificationMessage( String message, int life )
     {
-        if ( frame() != null )
+        if ( !message.isEmpty() && frame() != null )
             frame().gameCanvas.addNotificationMessage( message, life );
     }
 
@@ -396,20 +396,6 @@ public class MainWindow extends Frame
     {
         g.drawImage( img, RelativeGraphics.translateX( x ) - img.getWidth( null ) / 2,
                 RelativeGraphics.translateY( y ) - img.getHeight( null ) / 2, null );
-    }
-
-    /**
-     * Adds a new message to the on-screen list.
-     * These messages should be relevant to the local player.
-     * 
-     * @param message   the message text
-     */
-    public static void addNotificationMessage( String message )
-    {
-        if ( message.equals( "" ) )
-            return;
-
-        addNotificationMessage( message, 250 );
     }
 
     /**

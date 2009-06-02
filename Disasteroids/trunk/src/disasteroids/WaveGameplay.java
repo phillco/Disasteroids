@@ -138,6 +138,6 @@ public class WaveGameplay implements GameMode
         Game.getInstance().getObjectManager().clearObstacles();
         currentWave++;
         wavePoints = getWavePoints( currentWave );
-        System.out.println( "Welcome to wave " + currentWave + "." );
+        Main.log( "Welcome to wave " + currentWave + "." );
     }
 }

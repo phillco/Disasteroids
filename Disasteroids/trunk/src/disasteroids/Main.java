@@ -11,12 +11,12 @@ import disasteroids.gui.MainMenu;
 import disasteroids.gui.MenuOption;
 import disasteroids.networking.*;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileWriter;
-import java.io.IOError;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JOptionPane;
 
 /**
@@ -49,8 +49,16 @@ public class Main
         // Create the log file.
         try
         {
-            logFileStream = new BufferedWriter( new FileWriter( "runLog.log" ) );
-            logFileStream.write( "DISASTEROIDS logging started!\n" );
+            String fileName = "";
+
+            // Use/create the "logs" folder.
+            File logsFolder = new File( "logs" );
+            if ( logsFolder.isDirectory() || logsFolder.mkdir() )
+                fileName = "logs\\";
+            
+            fileName += "disasteroids_" + new SimpleDateFormat( "yyyy-MM-dd__HH-mm-ss" ).format( new Date() ) + ".log";
+            logFileStream = new BufferedWriter( new FileWriter( fileName ) );
+            logFileStream.write( "DISASTEROIDS started!\n" );
         }
         catch ( IOException ex )
         {
@@ -114,7 +122,8 @@ public class Main
 
             // Daisy.....daisy....
             log( finalMessage );
-            logFileStream.close();
+            if ( logFileStream != null )
+                logFileStream.close();
             System.exit( 0 );
 
         }

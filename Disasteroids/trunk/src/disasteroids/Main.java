@@ -4,15 +4,19 @@
  */
 package disasteroids;
 
-import disasteroids.gui.MenuOption;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.Local;
 import disasteroids.gui.MainMenu;
 import disasteroids.gui.MenuOption;
 import disasteroids.networking.*;
-import disasteroids.sound.Sound;
-import java.net.UnknownHostException;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOError;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -21,7 +25,6 @@ import javax.swing.JOptionPane;
  */
 public class Main
 {
-
     /**
      * Small counters that are incremented each time <code>warning</code> or <code>fatalError</code> is called.
      * Shown when Disasteroids shuts down.
@@ -30,7 +33,7 @@ public class Main
      */
     private static int errorCount = 0, warningCount = 0;
 
-    public static boolean isRunningFromJar = false;
+    private static BufferedWriter logFileStream = null;
 
     /**
      * The application entry point. Loads user settings and runs the menu.
@@ -42,6 +45,16 @@ public class Main
     public static void main( String[] args )
     {
         System.out.println( "DISASTEROIDS started!" );
+
+        // Create the log file.
+        try
+        {
+            logFileStream = new BufferedWriter( new FileWriter( "runLog.log" ) );
+            logFileStream.write( "DISASTEROIDS logging started!\n" );
+        }
+        catch ( IOException ex )
+        {
+        }
 
         // Load external images.
         ImageLibrary.init();
@@ -79,7 +92,7 @@ public class Main
         try
         {
             GameLoop.stopLoop();
-            System.out.println( "\nShutting down nicely..." );
+            log( "\nShutting down nicely..." );
 
             // Tell server or clients that we're quitting.
             if ( Client.is() )
@@ -91,16 +104,17 @@ public class Main
             Settings.saveToStorage();
 
             // Show warning / error count.
-            System.out.print( "Disasteroids concluded." );
+            String finalMessage = "Disasteroids concluded.";
 
             if ( errorCount > 0 )
-                System.out.print( " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." ) );
+                finalMessage += " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." );
 
             if ( warningCount > 0 )
-                System.out.print( " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." ) );
+                finalMessage += " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." );
 
             // Daisy.....daisy....
-            System.out.println( );
+            log( finalMessage );
+            logFileStream.close();
             System.exit( 0 );
 
         }
@@ -198,9 +212,7 @@ public class Main
      */
     public static void log( String message )
     {
-        System.out.println( message );
-        if ( MainWindow.frame() != null )
-            MainWindow.addNotificationMessage( message );
+        log( message, 250 );
     }
 
     /**
@@ -213,8 +225,22 @@ public class Main
     public static void log( String message, int life )
     {
         System.out.println( message );
-        if ( MainWindow.frame() != null )
-            MainWindow.addNotificationMessage( message, life );
+
+        // Log to file.
+        if ( logFileStream != null )
+        {
+            try
+            {
+                logFileStream.write( message + "\n" );
+                logFileStream.flush();
+            }
+            catch ( IOException ex )
+            {
+            }
+        }
+
+        // Log to screen.
+        MainWindow.addNotificationMessage( message, life );
     }
 
     /**

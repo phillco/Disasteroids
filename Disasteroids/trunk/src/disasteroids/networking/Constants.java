@@ -82,7 +82,7 @@ public class Constants
      */
     public static enum WeaponUnitTID
     {
-        MISSILE;
+        MISSILE, BIGNUKE, BIGNUKE_CHARGE;
 
     }
 
@@ -90,6 +90,10 @@ public class Constants
     {
         if ( u instanceof Missile )
             return WeaponUnitTID.MISSILE;
+        else if ( u instanceof BigNuke )
+            return WeaponUnitTID.BIGNUKE;
+        else if ( u instanceof BigNukeCharge )
+            return WeaponUnitTID.BIGNUKE_CHARGE;
         else
             return null;
     }
@@ -100,6 +104,10 @@ public class Constants
         {
             case MISSILE:
                 return new Missile( stream, (MissileManager) w );
+            case BIGNUKE:
+                return new BigNuke( stream, (BigNukeLauncher) w );
+            case BIGNUKE_CHARGE:
+                return new BigNukeCharge( stream, (BigNukeLauncher) w );
         }
 
         return null;

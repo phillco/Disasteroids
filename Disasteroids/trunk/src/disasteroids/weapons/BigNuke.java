@@ -37,7 +37,6 @@ public class BigNuke extends Unit
     {
         super( color, x, y, dx + 6 * Math.cos( angle ), dy - 6 * Math.sin( angle ) );
         this.parent = parent;
-        // TODO: Sync, or use syncedRandom()
         ax = Util.getGameplayRandomGenerator().nextDouble() / 8 - 1 / 16.0;
         ay = Util.getGameplayRandomGenerator().nextDouble() / 8 - 1 / 16.0;
     }

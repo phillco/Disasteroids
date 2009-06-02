@@ -51,7 +51,6 @@ public class BigNukeCharge extends Unit
         this.explosionAge = explosionAge;
         contractionAge = (int) ( explosionAge * ( 1.2 + Util.getGameplayRandomGenerator().nextDouble() * 0.3 ) );
         numChainReactionCharges = (int) ( 0.114 * ( parent.getBonusValue( parent.BONUS_CHAINREACTIONCHANCE ).getValue() + Util.getGameplayRandomGenerator().nextInt( 10 ) ) );
-        System.out.println( numChainReactionCharges );
     }
 
     @Override
@@ -59,7 +58,7 @@ public class BigNukeCharge extends Unit
     {
         super.act();
 
-        // Emit a few particles.
+      /*  // Emit a few particles.
         if ( Util.getGameplayRandomGenerator().nextInt( 3 ) == 0 )
             ParticleManager.addParticle( new Particle(
                     getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
@@ -68,7 +67,7 @@ public class BigNukeCharge extends Unit
                     color,
                     Util.getGameplayRandomGenerator().nextDouble(),
                     Util.getGameplayRandomGenerator().nextAngle(),
-                    20, 1 ) );
+                    20, 1 ) );*/
 
         // Waning.
         if ( isReducing )
@@ -148,6 +147,8 @@ public class BigNukeCharge extends Unit
         stream.writeDouble( ax );
         stream.writeDouble( ay );
         stream.writeInt( explosionAge );
+        stream.writeInt( contractionAge );
+        stream.writeInt( numChainReactionCharges );
         stream.writeInt( explosionSize );
         stream.writeBoolean( isReducing );
     }
@@ -161,6 +162,8 @@ public class BigNukeCharge extends Unit
         ax = stream.readDouble();
         ay = stream.readDouble();
         explosionAge = stream.readInt();
+        contractionAge = stream.readInt();
+        numChainReactionCharges = stream.readInt();
         explosionSize = stream.readInt();
         isReducing = stream.readBoolean();
 

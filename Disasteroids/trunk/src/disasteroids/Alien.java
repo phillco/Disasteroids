@@ -10,6 +10,7 @@ import disasteroids.weapons.MissileManager;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.ParticleManager;
+import disasteroids.networking.*;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import disasteroids.weapons.Unit;
@@ -18,7 +19,6 @@ import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Little UFOs that fire at players.
@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Alien extends ShootingObject
 {
-
     /**
      * The color of this <code>Alien</code>
      */
@@ -61,12 +60,6 @@ public class Alien extends ShootingObject
 
     /**
      * Creates a new <code>Alien</code>
-     * 
-     * @param x X coordinate
-     * @param y Y coordinate
-     * @param dx X velocity
-     * @param dy Y velocity
-     * @see GameObject#GameObject(double, double, double, double)
      */
     public Alien( double x, double y, double dx, double dy )
     {
@@ -90,8 +83,10 @@ public class Alien extends ShootingObject
         ax *= 0.94;
         ay *= 0.94;
 
+        double oldAx = ax, oldAy = ay;
         if ( Math.abs( ax ) <= 0.01 || Util.getGameplayRandomGenerator().nextInt( 60 ) == 0 )
             ax = Util.getGameplayRandomGenerator().nextDouble() * 0.12 - 0.06;
+
         if ( Math.abs( ay ) <= 0.01 || Util.getGameplayRandomGenerator().nextInt( 60 ) == 0 )
             ay = Util.getGameplayRandomGenerator().nextDouble() * 0.12 - 0.06;
         if ( Util.getGameplayRandomGenerator().nextInt( 90 ) == 0 && ( Math.abs( ax ) == ax ) == ( Math.abs( getDx() ) == getDx() ) )
@@ -99,7 +94,10 @@ public class Alien extends ShootingObject
             ax *= -1.8;
             ay *= -1.8;
         }
-        // TODO: Sync like Bonus
+
+        // Sync this movement change.
+        if ( ( ax != oldAx || ay != oldAy ) && Server.is() )
+            ServerCommands.updateObjectVelocity( this );
 
         // Find players within our range.        
         int range = 300;
@@ -196,7 +194,7 @@ public class Alien extends ShootingObject
                         m.explode();
                         life -= m.getDamage();
                         if ( life < 0 && s instanceof Ship )
-                            ( ( Ship ) s ).increaseScore( 1000 );
+                            ( (Ship) s ).increaseScore( 1000 );
                     }
                 }
             }
@@ -267,10 +265,26 @@ public class Alien extends ShootingObject
         super.draw( g );
         if ( explosionTime > 0 )
         {
-            MainWindow.frame().fillCircle( g, color.darker().darker(), ( int ) getX(), ( int ) getY(), ( int ) ( size * 0.1 * ( explosionTime - 1 ) ) );
+            MainWindow.frame().fillCircle( g, color.darker().darker(), (int) getX(), (int) getY(), (int) ( size * 0.1 * ( explosionTime - 1 ) ) );
             return;
         }
-        MainWindow.frame().drawImage( g, ImageLibrary.getAlien(), ( int ) getX() + size / 2, ( int ) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
+        MainWindow.frame().drawImage( g, ImageLibrary.getAlien(), (int) getX() + size / 2, (int) getY() + size / 3, angle, ( size * 1.6 ) / ImageLibrary.getAlien().getWidth( null ) );
+    }
+
+    @Override
+    public void flattenPosition( DataOutputStream stream ) throws IOException
+    {
+        super.flattenPosition( stream );
+        stream.writeDouble( ax );
+        stream.writeDouble( ay );
+    }
+
+    @Override
+    public void restorePosition( DataInputStream stream ) throws IOException
+    {
+        super.restorePosition( stream );
+        ax = stream.readDouble();
+        ay = stream.readDouble();
     }
 
     /**
@@ -285,8 +299,7 @@ public class Alien extends ShootingObject
     {
         super.flatten( stream );
         stream.writeDouble( angle );
-        stream.writeDouble( ax );
-        stream.writeDouble( ay );
+
         stream.writeInt( color.getRGB() );
         stream.writeInt( explosionTime );
         stream.writeInt( life );
@@ -305,8 +318,7 @@ public class Alien extends ShootingObject
     {
         super( stream, 1 );
         angle = stream.readDouble();
-        ax = stream.readDouble();
-        ay = stream.readDouble();
+
         color = new Color( stream.readInt() );
         explosionTime = stream.readInt();
         life = stream.readInt();
@@ -319,7 +331,6 @@ public class Alien extends ShootingObject
      */
     public class AlienMissileManager extends MissileManager
     {
-
         /**
          * keeps track of the angle to draw the lines coming radially out of the unit
          */
@@ -333,7 +344,7 @@ public class Alien extends ShootingObject
         {
             super( parent );
             bonusValues.get( BONUS_POPPINGQUANTITY ).override( 0 );
-            setLife( ( int ) ( life * 1.2 ) );
+            setLife( (int) ( life * 1.2 ) );
         }
 
         @Override
@@ -346,7 +357,7 @@ public class Alien extends ShootingObject
             for ( Unit u : units )
             {
                 stream.writeBoolean( u instanceof AlienBomb );
-                ( ( Missile ) u ).flatten( stream );
+                ( (Missile) u ).flatten( stream );
             }
         }
 
@@ -388,7 +399,6 @@ public class Alien extends ShootingObject
          */
         private class AlienMissile extends Missile
         {
-
             public AlienMissile( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
                 super( parent, color, x, y, dx, dy, angle, 0 );
@@ -411,7 +421,6 @@ public class Alien extends ShootingObject
          */
         private class AlienBomb extends Missile
         {
-
             public AlienBomb( AlienMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
             {
                 super( parent, color, x, y, dx, dy, angle, 0 );
@@ -451,10 +460,10 @@ public class Alien extends ShootingObject
             @Override
             public void draw( Graphics g )
             {
-                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * finRotation );
-                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
-                MainWindow.frame().drawLine( g, color, ( int ) getX(), ( int ) getY(), ( int ) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
-                MainWindow.frame().fillCircle( g, color, ( int ) getX(), ( int ) getY(), ( int ) getRadius() );
+                MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * finRotation );
+                MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 0.6 ) );
+                MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), (int) ( getRadius() * 1.7 ), Math.PI * ( finRotation + 1.2 ) );
+                MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), (int) getRadius() );
             }
         }
     }

@@ -95,7 +95,7 @@ public class ObjectManager implements GameElement
     {
         if ( !fromServer )
         {
-            if ( go instanceof Bonus )
+            if ( go instanceof Bonus || go instanceof Alien )
             {
                 if ( Server.is() )
                     ServerCommands.objectCreatedOrDestroyed( go, true );

@@ -160,7 +160,12 @@ public class Main
      */
     public static void startGame( MenuOption option )
     {
-        if ( option == MenuOption.CONNECT )
+        if ( option == MenuOption.EXIT)
+        {
+            Main.quit();
+            return;
+        }
+        else if ( option == MenuOption.CONNECT )
         {
             new Client();
             return;
@@ -203,10 +208,6 @@ public class Main
             case TUTORIAL:
                 MainWindow.frame().showStartMessage( "Press any key to start the tutorial." );
                 break;
-            default:
-                Main.fatalError( "Unexpected menu selection." );
-            case EXIT:
-                Main.quit();
         }
 
         if ( option == MenuOption.START_SERVER )

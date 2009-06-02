@@ -15,6 +15,7 @@ import java.io.IOException;
  */
 public class ServerCommands
 {
+
     /**
      * Headers of the messages that we send to the client.
      */
@@ -23,6 +24,7 @@ public class ServerCommands
         //====================
         // GENERAL NETWORKING
         //====================
+
         MULTI_PACKET,
         CONNECT_ERROR_OLDNETCODE,
         PONG,
@@ -52,7 +54,6 @@ public class ServerCommands
     //=========================//=====================================//=========================//
     //                         //      DANGER: COPYPASTA              //                         //
     //=========================//=====================================//=========================//
-
     /**
      * Notifies all players as to whether the game is paused.     
      */
@@ -152,6 +153,9 @@ public class ServerCommands
      */
     public static void objectCreatedOrDestroyed( GameObject go, boolean created )
     {
+        if ( go instanceof Ship )
+            return;
+
         try
         {
             ByteOutputStream out = new ByteOutputStream();

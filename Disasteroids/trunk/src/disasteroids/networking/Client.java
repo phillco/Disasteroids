@@ -183,11 +183,16 @@ public class Client extends DatagramListener
                         break;
                     case PLAYER_QUIT:
                         String quitReason = in.readBoolean() ? " timed out." : " quit.";
-                        Game.getInstance().removePlayer( (Ship) Game.getInstance().getObjectManager().getObject( in.readLong() ), quitReason );
+                         id = in.readLong();
+                        GameObject go = Game.getInstance().getObjectManager().getObject( id );
+                        if ( go == null )
+                            Main.warning( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it)." );
+                        else
+                            Game.getInstance().removePlayer( (Ship) go, quitReason );
                         break;
                     case OBJECT_UPDATE_VELOCITY:
                         id = in.readLong();
-                        GameObject go = Game.getInstance().getObjectManager().getObject( id );
+                         go = Game.getInstance().getObjectManager().getObject( id );
                         if ( go == null )
                             Main.warning( "NETWORK DESYNC! :(\nUpdate velocity: Object #" + id + " doesn't exist.\nPlease tell Phillip about this bug (and how to reproduce it)." );
                         else

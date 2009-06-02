@@ -25,7 +25,7 @@ public class BigNukeCharge extends Unit
     /**
      * Random acceleration vectors.
      */
-    private double ax,  ay;
+    private double ax, ay;
 
     /**
      * Size of the explosion. If 0, we've yet to explode.
@@ -35,7 +35,7 @@ public class BigNukeCharge extends Unit
     /**
      * The age at which we'll explode.
      */
-    private int explosionAge;
+    private int explosionAge, contractionAge, numChainReactionCharges;
 
     /**
      * Whether we've begun to shrink.
@@ -44,12 +44,14 @@ public class BigNukeCharge extends Unit
 
     public BigNukeCharge( BigNukeLauncher parent, Color color, double x, double y, double dx, double dy, double angle, int explosionAge )
     {
-        // TODO: Sync unit creation
         super( color, x, y, dx + Util.getGameplayRandomGenerator().nextDouble() * 14 * Math.cos( angle ), dy - Util.getGameplayRandomGenerator().nextDouble() * 14 * Math.sin( angle ) );
         this.parent = parent;
         ax = Util.getGameplayRandomGenerator().nextDouble() * 0.1 - 0.05;
         ay = Util.getGameplayRandomGenerator().nextDouble() * 0.1 - 0.05;
         this.explosionAge = explosionAge;
+        contractionAge = (int) ( explosionAge * ( 1.2 + Util.getGameplayRandomGenerator().nextDouble() * 0.3 ) );
+        numChainReactionCharges = (int) ( 0.114 * ( parent.getBonusValue( parent.BONUS_CHAINREACTIONCHANCE ).getValue() + Util.getGameplayRandomGenerator().nextInt( 10 ) ) );
+        System.out.println( numChainReactionCharges );
     }
 
     @Override
@@ -60,13 +62,13 @@ public class BigNukeCharge extends Unit
         // Emit a few particles.
         if ( Util.getGameplayRandomGenerator().nextInt( 3 ) == 0 )
             ParticleManager.addParticle( new Particle(
-                                         getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
-                                         getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
-                                         Util.getGameplayRandomGenerator().nextInt( 4 ),
-                                         color,
-                                         Util.getGameplayRandomGenerator().nextDouble(),
-                                         Util.getGameplayRandomGenerator().nextAngle(),
-                                         20, 1 ) );
+                    getX() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    getY() + Util.getGameplayRandomGenerator().nextInt( 8 ) - 4,
+                    Util.getGameplayRandomGenerator().nextInt( 4 ),
+                    color,
+                    Util.getGameplayRandomGenerator().nextDouble(),
+                    Util.getGameplayRandomGenerator().nextAngle(),
+                    20, 1 ) );
 
         // Waning.
         if ( isReducing )
@@ -74,16 +76,16 @@ public class BigNukeCharge extends Unit
             explosionSize -= 8;
 
             // Chain reaction.
-            if ( Util.getGameplayRandomGenerator().nextInt( parent.getBonusValue( parent.BONUS_CHAINREACTIONCHANCE ).getValue() ) == 0 )
+            if ( numChainReactionCharges > 0 )
             {
-                // TODO: Sync chain reaction
-                parent.addUnit( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getGameplayRandomGenerator().nextAngle(), (int)(explosionAge * 1.5 )));
+                numChainReactionCharges--;
+                parent.addUnit( new BigNukeCharge( parent, color, getX(), getY(), getDx(), getDy(), Util.getGameplayRandomGenerator().nextAngle(), (int) ( explosionAge * 0.7 ) ) );
             }
         }
         // Waxing.
         else if ( age > explosionAge )
         {
-            if ( age > explosionAge + 3 && Util.getGameplayRandomGenerator().nextInt( 5 ) == 0 )
+            if ( age > contractionAge )
                 isReducing = true;
             explosionSize += 5;
         }
@@ -106,7 +108,7 @@ public class BigNukeCharge extends Unit
         setVelocity( getDx() + ax, getDy() + ay );
         ax *= 0.99;
         ay *= 0.99;
-        decelerate(.94);
+        decelerate( .94 );
     }
 
     @Override

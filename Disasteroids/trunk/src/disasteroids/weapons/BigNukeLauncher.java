@@ -29,8 +29,9 @@ public class BigNukeLauncher extends Weapon
     protected void genericInit()
     {
         super.genericInit();
+        ammo = -1;
         BONUS_CHAINREACTIONCHANCE = getNewBonusID();
-        bonusValues.put( BONUS_CHAINREACTIONCHANCE, new BonusValue( 30, 20, "Bigger chain reactions!" ) );
+        bonusValues.put( BONUS_CHAINREACTIONCHANCE, new BonusValue( 0, 2, "Bigger chain reactions!" ) );
     }
 
     @Override

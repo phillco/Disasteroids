@@ -128,7 +128,7 @@ public class MainWindow extends Frame
 
     public static void addNotificationMessage( String message, int life )
     {
-        if ( !message.isEmpty() && frame() != null )
+        if ( message.length() > 0 && frame() != null )
             frame().gameCanvas.addNotificationMessage( message, life );
     }
 

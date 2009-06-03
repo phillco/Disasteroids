@@ -287,7 +287,9 @@ public class Main
      */
     public static void fatalError( String message )
     {
-        JOptionPane.showMessageDialog( null, message, "Disasteroids: Very Fatal Error", JOptionPane.ERROR_MESSAGE );
+        GameLoop.stopLoop();
+        MainWindow.frame().dispose();
+        JOptionPane.showMessageDialog( null, message +"\n\nShutting down...", "Disasteroids: Very Fatal Error", JOptionPane.ERROR_MESSAGE );
         System.out.println( "FATAL ERROR: " + message );
         errorCount++;
         Main.quit();

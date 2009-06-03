@@ -174,7 +174,7 @@ public class KeystrokeManager implements KeyListener
                     MainWindow.frame().getPanel().warpDialog();
                 break;
             case TOGGLE_ANTIALIASING:
-                MainWindow.frame().getPanel().toggleReneringQuality();
+                MainWindow.frame().getPanel().toggleRenderingQuality();
                 break;
             case TOGGLE_SCOREBOARD:
                 MainWindow.frame().getPanel().toggleScoreboard();

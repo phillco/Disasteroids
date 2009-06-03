@@ -145,7 +145,7 @@ public class GameCanvas extends Canvas
                 if ( benchmarkFPS != null )
                 {
                     benchmarkFPS.addLast( lastFPS );
-                    if ( benchmarkFPS.size() > 60 )
+                    if ( benchmarkFPS.size() > 100 )
                         benchmarkFPS.removeFirst();
 
                     int total = 0;
@@ -574,10 +574,11 @@ public class GameCanvas extends Canvas
      * 
      * @since December 15, 2007
      */
-    public void toggleReneringQuality()
+    public void toggleRenderingQuality()
     {
         Settings.setQualityRendering( !Settings.isQualityRendering() );
         Main.log( ( Settings.isQualityRendering() ? "Quality rendering." : "Speed rendering." ) );
+        benchmarkFPS.clear();
     }
 
     public void toggleTracker()

@@ -89,7 +89,7 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_F1, ActionType.TOGGLE_HELP );
         
         keyboardLayout.put( KeyEvent.VK_F9, ActionType.DEVKEY_DEBUG );
-        keyboardLayout.put( KeyEvent.VK_F10, ActionType.DEVKEY_ENEMY );
+        keyboardLayout.put( KeyEvent.VK_F12, ActionType.DEVKEY_ENEMY );
         keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY_BONUS );
         
         keyboardLayout.put( KeyEvent.VK_EQUALS, ActionType.VOLUME_UP );

@@ -189,6 +189,12 @@ public class Asteroid extends GameObject implements GameElement
 
     }
 
+    public int getRadius()
+    {
+        return radius;
+    }
+    
+
     /**
      * Generates and returns a <code>String</code> representation of <code>this</code>
      * It will have the form "[Asteroid@(#,#), radius #]".

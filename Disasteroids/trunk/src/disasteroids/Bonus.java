@@ -210,7 +210,7 @@ public class Bonus extends GameObject
                         player.addLife();
                         break;
                     case 1:
-                        message = player.giveShield();
+                        message = player.giveShield( 100 );
                         break;
                 }
                 break;

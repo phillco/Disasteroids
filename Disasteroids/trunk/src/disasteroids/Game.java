@@ -96,7 +96,7 @@ public class Game
 
         // Update the GUI.
         if ( MainWindow.frame() != null )
-            MainWindow.frame().resetGame();        
+            MainWindow.frame().resetGame();
     }
 
     /**
@@ -213,7 +213,7 @@ public class Game
      */
     public void addPlayer( Ship newPlayer )
     {
-        objectManager.addObject( newPlayer , false);
+        objectManager.addObject( newPlayer, false );
         Main.log( newPlayer.getName() + " entered the game.", 800 );
     }
 
@@ -398,18 +398,25 @@ public class Game
                     GameLoop.startLoop();
                 }
                 break;
-
             case DEVKEY_BONUS:
-                if ( !Client.is() )
-                {
-                    // Spawns bonus
-                    objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ) , false);
-                }
+                if ( canUseDevKey() )
+                    objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ), false );
                 break;
-
-            case DEVKEY_ENEMY:
-                if ( !Client.is() )
-                    objectManager.addObject( new BlackHole( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 30, 50 ), false);
+            case DEVKEY_SPAWN_STATION:
+                if ( canUseDevKey() )
+                    objectManager.addObject( new Station( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ), false );
+                break;
+            case DEVKEY_SPAWN_ALIEN:
+                if ( canUseDevKey() )
+                    objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ), false );
+                break;
+            case DEVKEY_SPAWN_BLACKHOLE:
+                if ( canUseDevKey() )
+                    objectManager.addObject( new BlackHole( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250 ), false );
+                break;
+            case DEVKEY_SHIELD:
+                if ( canUseDevKey() )
+                    Local.getLocalPlayer().giveShield( 20 );
                 break;
             case DEVKEY_DEBUG:
                 getObjectManager().printDebugInfo();
@@ -420,6 +427,11 @@ public class Game
 
         if ( Server.is() )
             ServerCommands.updateObjectVelocity( actor );
+    }
+
+    private boolean canUseDevKey()
+    {
+        return ( !Client.is() );
     }
 
     /**
@@ -480,7 +492,7 @@ public class Game
 
     public void createBonus( GameObject parent )
     {
-        objectManager.addObject( new Bonus( parent.getX(), parent.getY() ) , false);
+        objectManager.addObject( new Bonus( parent.getX(), parent.getY() ), false );
     }
 
     public ObjectManager getObjectManager()

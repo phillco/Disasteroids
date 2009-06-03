@@ -6,15 +6,13 @@ package disasteroids;
 
 import disasteroids.weapons.*;
 import disasteroids.gui.*;
+import disasteroids.gui.ImageLibrary;
 import disasteroids.sound.*;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A satellite that shoots missiles at passing ships.
@@ -22,7 +20,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Station extends ShootingObject
 {
-
     /**
      * The angle we're facing.
      */
@@ -31,7 +28,7 @@ public class Station extends ShootingObject
     /**
      * Width/height of the station.
      */
-    int size = 35;
+    int size = 37;
 
     /**
      * Timer to show the clock easter egg. If 0, the egg should be hidden.
@@ -45,7 +42,9 @@ public class Station extends ShootingObject
      */
     private double desiredAngle = 0.0;
 
-    final double SWEEP_SPEED = 0.05;
+    private final double SWEEP_SPEED = 0.05;
+
+    private final double TURRET_LENGTH = 30;
 
     /**
      * Creates the station at the given position and random floating speed.
@@ -57,11 +56,12 @@ public class Station extends ShootingObject
     {
         super( x, y, dx, dy, 1 );
         angle = 0;
-        
+
         // Set up missile launcher.
         MissileManager manager = new MissileManager( this );
         manager.getBonusValue( manager.BONUS_POPPINGQUANTITY ).override( 0 );
         manager.setLife( 50 );
+        manager.getBonusValue( manager.BONUS_INTERVALSHOOT ).override( 55 );
         weapons[0] = manager;
     }
 
@@ -70,6 +70,7 @@ public class Station extends ShootingObject
      * 
      * @since January 6, 2008
      */
+    @Override
     public void act()
     {
         super.act();
@@ -131,12 +132,9 @@ public class Station extends ShootingObject
                 {
                     getActiveWeapon().shoot( this, Color.white, 0 - angle );
                     Sound.playInternal( SoundLibrary.STATION_SHOOT );  // Play a custom sound.
-
                 }
             }
         }
-        else
-            angle += 0.01;
     }
 
     public boolean isDisabled()
@@ -174,9 +172,9 @@ public class Station extends ShootingObject
                         {
                             destroy();
                             if ( s instanceof Ship )
-                                ( ( Ship ) s ).increaseScore( 2500 );
-                                return;
-                            }
+                                ( (Ship) s ).increaseScore( 2500 );
+                            return;
+                        }
                     }
                 }
             }
@@ -185,7 +183,7 @@ public class Station extends ShootingObject
         if ( isDisabled() )
             return;
 
-        // Check for ship collision.  
+        // Check for ship collision.
         for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
         {
             // Were we hit by the ship's body?
@@ -211,73 +209,8 @@ public class Station extends ShootingObject
         if ( isDisabled() && Util.getGlobalFlash() )
             return;
 
-        int rX = RelativeGraphics.translateX( getX() );
-        int rY = RelativeGraphics.translateY( getY() );
-
-        int cX = RelativeGraphics.translateX( centerX() );
-        int cY = RelativeGraphics.translateY( centerY() );
-
-        // Draw the base.
-        g.setColor( Color.darkGray );
-        g.fillRect( rX, rY, size, size );
-        g.setColor( new Color( 20, 20, 20 ) );
-        g.drawRect( rX, rY, size, size );
-
-        // Draw the corners.
-        g.setColor( new Color( 20, 20, 20 ) );
-        g.fillRect( rX - 2, rY - 2, 10, 10 );
-        g.fillRect( rX + 27, rY, 10, 10 );
-        g.fillRect( rX + 27, rY + 27, 10, 10 );
-        g.fillRect( rX, rY + 27, 10, 10 );
-
-//        g.setFont( new Font( "Tahoma", Font.PLAIN, 12 ) );
-//        g.setColor( Color.white );
-//        g.drawString( new DecimalFormat( "0.00" ).format( angle / Math.PI ), rX, rY - 9 );
-//        g.drawString( new DecimalFormat( "0.00" ).format( desiredAngle / Math.PI ), rX + size, rY - 9 );
-
-        // Draw the easter egg clock.
-        if ( easterEggCounter > 0 )
-        {
-            g.setFont( new Font( "Tahoma", Font.PLAIN, 8 ) );
-
-            // Numbers.
-            g.setColor( Color.white );
-            g.drawString( "12", cX - 3, rY + 10 );
-            g.drawString( "3", rX + size - 7, cY + 5 );
-            g.drawString( "6", cX - 1, rY + size - 4 );
-            g.drawString( "9", rX + 4, cY + 5 );
-
-            // Hour hand.
-            double hourAngle = ( ( Calendar.getInstance().get( Calendar.HOUR ) / 12.0 ) * 2 - 0.5 ) * Math.PI;
-            int eX = ( int ) ( cX + 5 * Math.cos( hourAngle ) );
-            int eY = ( int ) ( cY + 5 * Math.sin( hourAngle ) );
-            g.drawLine( cX, cY, eX, eY );
-            g.drawLine( cX, cY + 1, eX, eY + 1 );
-            g.drawLine( cX + 1, cY, eX + 1, eY );
-
-            // Minute hand.
-            double minuteAngle = ( ( Calendar.getInstance().get( Calendar.MINUTE ) / 60.0 ) * 2 - 0.5 ) * Math.PI;
-            eX = ( int ) ( cX + 10 * Math.cos( minuteAngle ) );
-            eY = ( int ) ( cY + 10 * Math.sin( minuteAngle ) );
-            g.drawLine( cX, cY, eX, eY );
-            g.drawLine( cX, cY + 1, eX, eY + 1 );
-
-            // Second hand.
-            double secondAngle = ( ( Calendar.getInstance().get( Calendar.SECOND ) / 60.0 ) * 2 - 0.5 ) * Math.PI;
-            eX = ( int ) ( cX + 15 * Math.cos( secondAngle ) );
-            eY = ( int ) ( cY + 15 * Math.sin( secondAngle ) );
-            g.drawLine( cX, cY, eX, eY );
-        }
-        else
-        {
-            // Draw the turret.
-            g.setColor( Color.white );
-            int eX = ( int ) ( cX + 15 * Math.cos( angle ) );
-            int eY = ( int ) ( cY + 15 * Math.sin( angle ) );
-            g.drawLine( cX, cY, eX, eY );
-            g.drawLine( cX, cY + 1, eX, eY + 1 );
-            g.drawLine( cX + 1, cY, eX + 1, eY );
-        }
+        MainWindow.frame().drawImage( g, ImageLibrary.getStation(), (int) getX() + size / 2 - 1, (int) getY() + size / 2 + 1, 0.0, 1.0 );
+        MainWindow.frame().drawImage( g, ImageLibrary.getStationTurret(), (int) getX() + size / 2 + 1, (int) getY() + size / 2 + 1, angle, 1.0 );
 
         super.draw( g );
     }
@@ -287,7 +220,7 @@ public class Station extends ShootingObject
      */
     int centerX()
     {
-        return ( int ) ( getX() + size / 2 );
+        return (int) ( getX() + size / 2 );
     }
 
     /**
@@ -295,19 +228,19 @@ public class Station extends ShootingObject
      */
     int centerY()
     {
-        return ( int ) ( getY() + size / 2 );
+        return (int) ( getY() + size / 2 );
     }
 
     @Override
     public double getFiringOriginX()
     {
-        return centerX() + 25 * Math.cos( 0 - angle );
+        return centerX() + ( TURRET_LENGTH * 1.2 ) * Math.cos( 0 - angle );
     }
 
     @Override
     public double getFiringOriginY()
     {
-        return centerY() - 25 * Math.sin( 0 - angle );
+        return centerY() - ( TURRET_LENGTH * 1.2 ) * Math.sin( 0 - angle );
     }
 
     /**

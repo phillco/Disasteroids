@@ -395,9 +395,9 @@ public class Ship extends ShootingObject
         drawWeaponNameTimer = 50;
     }
 
-    public String giveShield()
+    public String giveShield( int amount )
     {
-        shielded += 100;
+        shielded += amount;
         return "Shield";
     }
 

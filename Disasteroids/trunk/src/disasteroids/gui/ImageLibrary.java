@@ -20,7 +20,7 @@ public class ImageLibrary
     /**
      * External images that game objects use.
      */
-    private static Image asteroid,  bonusAsteroid,  alien,  blackHole;
+    private static Image asteroid,  bonusAsteroid,  alien,  blackHole, station, stationTurret;
 
     /**
      * Imports all of the resources.
@@ -31,6 +31,8 @@ public class ImageLibrary
         bonusAsteroid = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/bonusAsteroid.png" ) );
         alien = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/alien.png" ) );
         blackHole = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/blackHole.png" ) );
+        station = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/station.png" ) );
+        stationTurret = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/stationTurret.png" ) );
     }
 
     public static Image getAsteroid()
@@ -52,6 +54,18 @@ public class ImageLibrary
     {
         return blackHole;
     }
+
+    public static Image getStation()
+    {
+        return station;
+    }
+
+    public static Image getStationTurret()
+    {
+        return stationTurret;
+    }
+
+    
 
     public static Image hueShift( BufferedImage img, Color target )
     {

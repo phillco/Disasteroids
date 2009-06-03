@@ -22,10 +22,8 @@ import java.util.HashMap;
  */
 public class KeystrokeManager implements KeyListener
 {
-
     public enum ActionType
     {
-
         UNKNOWN, QUIT, TOGGLE_MUSIC, TOGGLE_SOUND, TOGGLE_FULL_SCREEN,
         SET_EASTER_EGG, WARP, TOGGLE_ANTIALIASING, TOGGLE_SCOREBOARD, TOGGLE_TRACKER,
         START_SHOOT, STOP_SHOOT, LEFT, RIGHT, FORWARDS, BACKWARDS, UN_LEFT, UN_RIGHT,
@@ -33,7 +31,7 @@ public class KeystrokeManager implements KeyListener
         STRAFE_LEFT, EXPLODE_ALL, ROTATE_WEAPONS, SET_WEAPON_1, SET_WEAPON_2,
         SET_WEAPON_3, SET_WEAPON_4, SET_WEAPON_5, SET_WEAPON_6, SET_WEAPON_7,
         SET_WEAPON_8, SET_WEAPON_9, PAUSE, SAVE, LOAD, BENCHMARK_FPS, TOGGLE_HELP,
-        DEVKEY_DEBUG, DEVKEY_BONUS, DEVKEY_ENEMY, VOLUME_UP, VOLUME_DOWN, ROTATE_RADAR
+        DEVKEY_DEBUG, DEVKEY_BONUS, DEVKEY_SHIELD, DEVKEY_SPAWN_STATION, DEVKEY_SPAWN_ALIEN, DEVKEY_SPAWN_BLACKHOLE, VOLUME_UP, VOLUME_DOWN, ROTATE_RADAR
 
     };
     private HashMap<Integer, ActionType> keyboardLayout = new HashMap<Integer, ActionType>();
@@ -87,11 +85,15 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_T, ActionType.SAVE );
         keyboardLayout.put( KeyEvent.VK_Y, ActionType.LOAD );
         keyboardLayout.put( KeyEvent.VK_F1, ActionType.TOGGLE_HELP );
-        
-        keyboardLayout.put( KeyEvent.VK_F9, ActionType.DEVKEY_DEBUG );
-        keyboardLayout.put( KeyEvent.VK_F12, ActionType.DEVKEY_ENEMY );
+
+        keyboardLayout.put( KeyEvent.VK_F5, ActionType.DEVKEY_SPAWN_STATION );
+        keyboardLayout.put( KeyEvent.VK_F6, ActionType.DEVKEY_SPAWN_ALIEN );
+        keyboardLayout.put( KeyEvent.VK_F7, ActionType.DEVKEY_SPAWN_BLACKHOLE );
+
+        keyboardLayout.put( KeyEvent.VK_F9, ActionType.DEVKEY_DEBUG );        
         keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY_BONUS );
-        
+        keyboardLayout.put( KeyEvent.VK_F12, ActionType.DEVKEY_SHIELD );
+
         keyboardLayout.put( KeyEvent.VK_EQUALS, ActionType.VOLUME_UP );
         keyboardLayout.put( KeyEvent.VK_MINUS, ActionType.VOLUME_DOWN );
 
@@ -167,7 +169,7 @@ public class KeystrokeManager implements KeyListener
             case SET_EASTER_EGG:
                 for ( GameObject go : Game.getInstance().getObjectManager().getBaddies() )
                     if ( go instanceof Station )
-                        ( ( Station ) go ).setEasterEgg();
+                        ( (Station) go ).setEasterEgg();
                 break;
             case WARP:
                 if ( !Client.is() )

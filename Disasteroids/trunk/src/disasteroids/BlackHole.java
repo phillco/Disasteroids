@@ -49,8 +49,7 @@ public class BlackHole extends GameObject
 
     public BlackHole( double x, double y )
     {
-        // TODO: Sync creation
-        super( x, y, Util.getGameplayRandomGenerator().nextInt( 9 ) + 8, 30 );
+        this( x, y, Util.getGameplayRandomGenerator().nextInt( 26 ) + 8, 50 );
     }
 
     public BlackHole( double x, double y, int power, int numToEat )
@@ -167,6 +166,8 @@ public class BlackHole extends GameObject
     {
         super.flatten( stream );
         stream.writeInt( numLeftToEat );
+        stream.writeInt( totalToEat );
+        stream.writeInt( creationTime );
         stream.writeInt( power );
     }
 
@@ -177,6 +178,8 @@ public class BlackHole extends GameObject
     {
         super( stream );
         numLeftToEat = stream.readInt();
+        totalToEat = stream.readInt();
+        creationTime = stream.readInt();
         power = stream.readInt();
     }
 }

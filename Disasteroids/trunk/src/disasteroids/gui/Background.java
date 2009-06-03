@@ -25,7 +25,7 @@ public class Background
      * Dimensions of the background.
      * @since December 23, 2007
      */
-    private int width,  height;
+    private int width, height;
 
     /**
      * The array of <code>Star</code>s that are always drawn.
@@ -72,7 +72,7 @@ public class Background
     {
         // Create the array of stars.
         Random rand = Util.getGraphicsRandomGenerator();
-        this.theStars = new Star[( width * height / ( rand.nextInt( 600 ) + 750 ) )];
+        this.theStars = new Star[ ( width * height / ( rand.nextInt( 600 ) + 750 ) ) ];
         for ( int star = 0; star < theStars.length; star++ )
         {
             Color col = Color.getHSBColor( rand.nextFloat(), rand.nextFloat() / 3f, .1f + .9f * rand.nextFloat() );
@@ -87,59 +87,37 @@ public class Background
      * @return  the rendered background
      * @since Classic
      */
-      public void render( Graphics g )
+    public void render( Graphics g )
     {
         // Fill with black.  Fill way past the screen, just to be safe
         g.setColor( Color.black );
-        g.fillRect( 0, 0, MainWindow.frame().getWidth(), MainWindow.frame().getHeight());
+        g.fillRect( 0, 0, MainWindow.frame().getWidth(), MainWindow.frame().getHeight() );
 
         // Draw stars.
         try
         {
-            if(Settings.isQualityRendering())
-            {
-                Graphics2D g2d = (Graphics2D)g;
-                g2d.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED );
-                g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF );
-                g2d.setRenderingHint( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED );
-                g2d.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE );
-                g2d.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF );
-                g2d.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR );
-                g2d.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED );
-                g2d.setRenderingHint( RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_DEFAULT );
-                g2d.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF );
-            }
+            GameCanvas.updateQualityRendering( g, false );
             int count = 0;
             for ( Star star : this.theStars )
-                synchronized (this)
+            {
+                synchronized ( this )
                 {
                     //Skip every 3rd star in speed rendering, don't draw null stars, and make sure nothing else is null
                     if ( ( !Settings.isQualityRendering() && ++count % 3 == 0 ) || star == null || MainWindow.frame() == null || Local.getLocalPlayer() == null )
                         continue;
-                    double x = RelativeGraphics.translateX(star.x), y = RelativeGraphics.translateY(star.y);
-                    if( x > 0 && y > 0 && x < MainWindow.frame().getWidth() && y < MainWindow.frame().getHeight())
+                    double x = RelativeGraphics.translateX( star.x ), y = RelativeGraphics.translateY( star.y );
+                    if ( x > 0 && y > 0 && x < MainWindow.frame().getWidth() && y < MainWindow.frame().getHeight() )
                     {
-                        g.setColor(star.getColor());
-                        g.drawRect((int)x, (int)y, 0, 0);
+                        g.setColor( star.getColor() );
+                        g.drawRect( (int) x, (int) y, 0, 0 );
                     }
                 }
-            if(Settings.isQualityRendering())
-            {
-                Graphics2D g2d = (Graphics2D)g;
-                g2d.setRenderingHint( RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY );
-                g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-                g2d.setRenderingHint( RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY );
-                g2d.setRenderingHint( RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE );
-                g2d.setRenderingHint( RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON );
-                g2d.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC );
-                g2d.setRenderingHint( RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY );
-                g2d.setRenderingHint( RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE );
-                g2d.setRenderingHint( RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON );
             }
+            GameCanvas.updateQualityRendering( g, Settings.isQualityRendering() );
         }
         catch ( NullPointerException e )
         {
-            Main.warning( "Star Null Pointer :(" );
+            Main.warning( "Star Null Pointer :(", e );
         }
 
         // Draw background messages.
@@ -195,9 +173,9 @@ public class Background
      */
     private static class Star
     {
-        public double x,  y;
+        public double x, y;
 
-        public double dx,  dy;
+        public double dx, dy;
 
         private Color color;
 
@@ -262,7 +240,7 @@ public class Background
      */
     private class BackgroundMessage
     {
-        public double x,  y;
+        public double x, y;
 
         public double dy;
 
@@ -270,7 +248,7 @@ public class Background
 
         public Color col;
 
-        public int life,  lifeMax;
+        public int life, lifeMax;
 
         public Font font;
 
@@ -302,8 +280,8 @@ public class Background
             y += dy;
 
             Color c = new Color( col.getRed() * life / lifeMax,
-                                 col.getGreen() * life / lifeMax,
-                                 col.getBlue() * life / lifeMax );
+                    col.getGreen() * life / lifeMax,
+                    col.getBlue() * life / lifeMax );
 
             gBack.setFont( font );
             MainWindow.frame().drawString( gBack, (int) ( dy == 0 ? x : x + 3 * Math.cos( life / 5.0 ) ), (int) y, message, c );

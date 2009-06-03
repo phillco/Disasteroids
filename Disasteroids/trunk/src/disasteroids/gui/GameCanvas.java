@@ -606,7 +606,7 @@ public class GameCanvas extends Canvas
      * @param qualityRendering   whether to use higher-quality rendering
      * @since December 15, 2007
      */
-    private void updateQualityRendering( Graphics g, boolean qualityRendering )
+    public static void updateQualityRendering( Graphics g, boolean qualityRendering )
     {
         Graphics2D g2d = ( Graphics2D ) g;
 

@@ -373,12 +373,14 @@ public class MainWindow extends Frame
         if ( scale < 0 )
             return;
 
+        GameCanvas.updateQualityRendering( g, false );
         AffineTransform af = new AffineTransform();
         af.translate( RelativeGraphics.translateX( x ), RelativeGraphics.translateY( y ) );
         af.scale( scale, scale );
         af.rotate( angle );
         af.translate( -img.getWidth( null ) / 2, -img.getHeight( null ) / 2 );
         ( ( Graphics2D ) g ).drawImage( img, af, null );
+        GameCanvas.updateQualityRendering( g, Settings.isQualityRendering() );
     }
 
     /**
@@ -394,8 +396,10 @@ public class MainWindow extends Frame
      */
     public void drawImage( Graphics g, Image img, int x, int y )
     {
+        GameCanvas.updateQualityRendering( g, false );
         g.drawImage( img, RelativeGraphics.translateX( x ) - img.getWidth( null ) / 2,
                 RelativeGraphics.translateY( y ) - img.getHeight( null ) / 2, null );
+        GameCanvas.updateQualityRendering( g, Settings.isQualityRendering() );
     }
 
     /**

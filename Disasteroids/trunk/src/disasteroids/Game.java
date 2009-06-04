@@ -7,7 +7,6 @@ package disasteroids;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.KeystrokeManager;
 import disasteroids.gui.Local;
-import disasteroids.gui.MainMenu;
 import disasteroids.gui.ParticleManager;
 import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
@@ -398,7 +397,7 @@ public class Game
                     GameLoop.startLoop();
                 }
                 break;
-            case DEVKEY_BONUS:
+            case DEVKEY_SPAWN_BONUS:
                 if ( canUseDevKey() )
                     objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ), false );
                 break;
@@ -413,6 +412,14 @@ public class Game
             case DEVKEY_SPAWN_BLACKHOLE:
                 if ( canUseDevKey() )
                     objectManager.addObject( new BlackHole( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250 ), false );
+                break;
+            case DEVKEY_INFINITE_AMMO:
+                if ( canUseDevKey() )
+                {
+                    for ( Weapon w : Local.getLocalPlayer().getWeapons() )
+                        w.setInfiniteAmmo();
+                    Main.log( "Cheat: infinite ammo for all weapons!" );
+                }
                 break;
             case DEVKEY_SHIELD:
                 if ( canUseDevKey() )

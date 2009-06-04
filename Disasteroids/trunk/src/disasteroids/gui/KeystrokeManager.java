@@ -31,7 +31,8 @@ public class KeystrokeManager implements KeyListener
         STRAFE_LEFT, EXPLODE_ALL, ROTATE_WEAPONS, SET_WEAPON_1, SET_WEAPON_2,
         SET_WEAPON_3, SET_WEAPON_4, SET_WEAPON_5, SET_WEAPON_6, SET_WEAPON_7,
         SET_WEAPON_8, SET_WEAPON_9, PAUSE, SAVE, LOAD, BENCHMARK_FPS, TOGGLE_HELP,
-        DEVKEY_DEBUG, DEVKEY_BONUS, DEVKEY_SHIELD, DEVKEY_SPAWN_STATION, DEVKEY_SPAWN_ALIEN, DEVKEY_SPAWN_BLACKHOLE, VOLUME_UP, VOLUME_DOWN, ROTATE_RADAR
+        DEVKEY_DEBUG, DEVKEY_INFINITE_AMMO, DEVKEY_SPAWN_BONUS, DEVKEY_SHIELD, DEVKEY_SPAWN_STATION, DEVKEY_SPAWN_ALIEN, DEVKEY_SPAWN_BLACKHOLE,
+        VOLUME_UP, VOLUME_DOWN, ROTATE_RADAR
 
     };
     private HashMap<Integer, ActionType> keyboardLayout = new HashMap<Integer, ActionType>();
@@ -89,9 +90,10 @@ public class KeystrokeManager implements KeyListener
         keyboardLayout.put( KeyEvent.VK_F5, ActionType.DEVKEY_SPAWN_STATION );
         keyboardLayout.put( KeyEvent.VK_F6, ActionType.DEVKEY_SPAWN_ALIEN );
         keyboardLayout.put( KeyEvent.VK_F7, ActionType.DEVKEY_SPAWN_BLACKHOLE );
+        keyboardLayout.put( KeyEvent.VK_F8, ActionType.DEVKEY_SPAWN_BONUS );
 
         keyboardLayout.put( KeyEvent.VK_F9, ActionType.DEVKEY_DEBUG );        
-        keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY_BONUS );
+        keyboardLayout.put( KeyEvent.VK_F11, ActionType.DEVKEY_INFINITE_AMMO );
         keyboardLayout.put( KeyEvent.VK_F12, ActionType.DEVKEY_SHIELD );
 
         keyboardLayout.put( KeyEvent.VK_EQUALS, ActionType.VOLUME_UP );

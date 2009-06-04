@@ -175,7 +175,7 @@ public abstract class Weapon implements GameElement
             else if ( Client.is() )
                 return;
         }
-        
+
         units.add( u );
     }
 
@@ -250,6 +250,11 @@ public abstract class Weapon implements GameElement
     public void giveAmmo()
     {
         ammo += getEntryAmmo();
+    }
+
+    public void setInfiniteAmmo()
+    {
+        ammo = -1;
     }
 
     /**

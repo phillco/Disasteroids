@@ -62,7 +62,7 @@ public class SoundLibrary
     //:)
     private static SoundClip mineArm()
     {
-        Tone[] temp = new Tone[10];
+        Tone[] temp = new Tone[ 10 ];
         int idx = 0;
         for ( int i = 40; i < 130; i += 20 )
             temp[idx++] = new Tone( i, 60, 0 );
@@ -73,7 +73,7 @@ public class SoundLibrary
     //:)
     private static SoundClip alienDie()
     {
-        byte[] temp = new byte[3000];
+        byte[] temp = new byte[ 3000 ];
         int phase = 0;
         int freqPhase = 0;
         int frequency = 440;
@@ -101,7 +101,7 @@ public class SoundLibrary
     //:)
     private static SoundClip shipHit()
     {
-        byte[] temp = new byte[2000];
+        byte[] temp = new byte[ 2000 ];
         int index = 0;
         for ( int i = 1200; i > 800; i-- )
             temp[index++] = (byte) ( Math.sin( 80f * Math.pow( i, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - i ) );
@@ -110,7 +110,7 @@ public class SoundLibrary
 
     private static SoundClip shipDie()
     {
-        byte[] temp = new byte[8000];
+        byte[] temp = new byte[ 8000 ];
         for ( int index = 0; index < 8000; index++ )
             temp[index] = (byte) ( Math.sin( 880f * Math.pow( index, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - index ) );
         return new SoundClip( temp );
@@ -118,7 +118,7 @@ public class SoundLibrary
 
     private static SoundClip stationDisabled()
     {
-        Tone[] temp = new Tone[11];
+        Tone[] temp = new Tone[ 11 ];
         int idx = 0;
         for ( float i = 0; i <= 1; i += .1 )
             temp[idx++] = new Tone( (int) ( 220 - 70 * i ), 25 );
@@ -127,24 +127,26 @@ public class SoundLibrary
 
     private static SoundClip stationDie()
     {
-        byte[] temp = new byte[8000];
+        byte[] temp = new byte[ 8000 ];
         for ( int index = 0; index < 8000; index++ )
             temp[index] = (byte) ( Math.sin( 280f * Math.pow( index, .8 ) / 8000.0 * 6.28 ) * 127 * 8000 / ( 8100 - index ) );
         return new SoundClip( temp );
     }
 
-
     //:)
     private static SoundClip stationShoot()
     {
-        Tone[] temp = { new Tone( 150, 20, 2 ), new Tone( 150, 20, 2 ), new Tone( 250, 30, 2 ) };
+        Tone[] temp =
+        {
+            new Tone( 150, 20, 2 ), new Tone( 150, 20, 2 ), new Tone( 250, 30, 2 )
+        };
         return new SoundClip( Tone.toByteArray( temp ) );
     }
 
     //:)
     private static SoundClip berserkSound()
     {
-        Tone[] temp = new Tone[15];
+        Tone[] temp = new Tone[ 15 ];
         int idx = 0;
         for ( int i = 0; i < 1400; i += 100 )
             temp[idx++] = new Tone( i, 15 );
@@ -154,7 +156,7 @@ public class SoundLibrary
     //:)
     private static SoundClip gameOver()
     {
-        byte[] temp = new byte[28000];
+        byte[] temp = new byte[ 28000 ];
         for ( int index = 0; index < 28000; index++ )
             temp[index] = (byte) ( Math.tan( 880f * Math.pow( index, .85 ) / 4000.0 * 6.28 ) * 127 * 28000 / ( 28100 - index ) );
         return new SoundClip( temp );
@@ -162,7 +164,7 @@ public class SoundLibrary
 
     private static SoundClip getBonus()
     {
-        byte[] temp = new byte[3000];
+        byte[] temp = new byte[ 3000 ];
         int phase = 0;
         int freqPhase = 0;
         int frequency = 440;
@@ -183,7 +185,7 @@ public class SoundLibrary
      */
     private static SoundClip bonusSpawn()
     {
-        byte[] temp = new byte[3000];
+        byte[] temp = new byte[ 3000 ];
         int phase = 0;
         int freqPhase = 5;
         int frequency = 440;
@@ -199,7 +201,7 @@ public class SoundLibrary
 
     private static SoundClip bonusFizzle()
     {
-        byte[] temp = new byte[3000];
+        byte[] temp = new byte[ 3000 ];
         int frequency = 20000;
         double phase = 0;
         for ( int index = 0; index < 2000; index++ )
@@ -213,7 +215,7 @@ public class SoundLibrary
 
     private static SoundClip sniperShoot()
     {
-        byte[] temp = new byte[2000];// 1/4 second
+        byte[] temp = new byte[ 2000 ];// 1/4 second
         int frequency = 20000;
         double phase = 0;
         for ( int index = 0; index < 2000; index++ )

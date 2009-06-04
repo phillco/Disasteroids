@@ -17,7 +17,7 @@ public class Sound
      * The player that plays the midis
      */
     private static MusicPlayer musicPlayer;
-    
+
     /**
      * Ensures that the music is being played if it should.
      */
@@ -94,8 +94,8 @@ public class Sound
      */
     public static void playInternal( LayeredSound.SoundClip s )
     {
-        if( Settings.isSoundOn() )
-            new SpeakerThread(s).start();
+        if ( Settings.isSoundOn() )
+            new SpeakerThread( s ).start();
     }
 
     private static class SpeakerThread extends Thread
@@ -105,12 +105,11 @@ public class Sound
          * @since Classic
          */
         private LayeredSound.SoundClip sound;
-        
-        
+
         /**
          * The ID number of the next thread created
          */
-        private static int ID=0;
+        private static int ID = 0;
 
         /**
          * Constructs a new <code>SpeakerThread</code> to ensure that a given sound is played
@@ -119,20 +118,19 @@ public class Sound
         public SpeakerThread( LayeredSound.SoundClip s )
         {
             super( "Speaker Thread #" + ID++ );
-            this.sound=new LayeredSound.SoundClip(s);
+            this.sound = new LayeredSound.SoundClip( s );
             setPriority( MIN_PRIORITY );
         }
-
 
         /**
          * Starts <code>this Thread</code> and either exits quickly (if there are
          * already sounds playing), or lasts indefinitely, playing each sound passed
          * to it until no other sound is left to play, at which point it terminates normally.
          */
-         @Override
-         public void run()
+        @Override
+        public void run()
         {
-            LayeredSound.getInstance().add(sound);
+            LayeredSound.getInstance().add( sound );
         }
     }
 }

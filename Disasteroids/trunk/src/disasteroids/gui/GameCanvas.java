@@ -124,10 +124,8 @@ public class GameCanvas extends Canvas
         }
         isDrawing = true;
 
-        // Adjust the thread's priority if it's in the foreground/background.
-        if ( parent.isActive() && Thread.currentThread().getPriority() != Thread.NORM_PRIORITY )
-            Thread.currentThread().setPriority( Thread.NORM_PRIORITY );
-        else if ( Thread.currentThread().getPriority() != Thread.MIN_PRIORITY )
+        // Adjust the thread's priority.
+        if ( Thread.currentThread().getPriority() != Thread.MIN_PRIORITY )
             Thread.currentThread().setPriority( Thread.MIN_PRIORITY );
 
         // Anti-alias, if the user wants it.

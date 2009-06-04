@@ -72,6 +72,9 @@ public class LayeredSound {
      */
     private void play()
     {
+         if ( Thread.currentThread().getPriority() != Thread.MIN_PRIORITY )
+            Thread.currentThread().setPriority( Thread.MIN_PRIORITY );
+
         try{
             AudioFormat af = new AudioFormat(8000f, 8, 1, true, false);
             SourceDataLine sdl = AudioSystem.getSourceDataLine(af);

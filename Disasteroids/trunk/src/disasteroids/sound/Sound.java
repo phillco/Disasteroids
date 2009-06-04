@@ -120,7 +120,7 @@ public class Sound
         {
             super( "Speaker Thread #" + ID++ );
             this.sound=new LayeredSound.SoundClip(s);
-            
+            setPriority( MIN_PRIORITY );
         }
 
 

@@ -116,7 +116,7 @@ public class Station extends ShootingObject
             {
                 if ( getActiveWeapon().canShoot() )
                 {
-                    getActiveWeapon().shoot( this, Color.white, 0 - angle );
+                    getActiveWeapon().shoot( Color.white, 0 - angle );
                     Sound.playInternal( SoundLibrary.STATION_SHOOT );  // Play a custom sound.
                 }
             }

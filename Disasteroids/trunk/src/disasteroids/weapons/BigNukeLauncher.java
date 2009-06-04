@@ -35,7 +35,7 @@ public class BigNukeLauncher extends Weapon
     }
 
     @Override
-    public void shoot( GameObject parent, Color color, double angle )
+    public void shoot( Color color, double angle )
     {
         if ( !canShoot() )
             return;
@@ -52,7 +52,7 @@ public class BigNukeLauncher extends Weapon
      * Shoots up to 8 bullets in a perfect circle to form one big explosion.
      */
     @Override
-    public void berserk( GameObject parent, Color color )
+    public void berserk( Color color )
     {
         if ( !canBerserk() )
             return;

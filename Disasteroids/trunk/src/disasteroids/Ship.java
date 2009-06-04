@@ -541,7 +541,7 @@ public class Ship extends ShootingObject
     {
         if ( livesLeft < 0 )
             return;
-        getActiveWeapon().shoot( this, myColor, angle );
+        getActiveWeapon().shoot( myColor, angle );
     }
 
     public boolean canShoot()
@@ -710,7 +710,7 @@ public class Ship extends ShootingObject
         }
         if ( Server.is() )
             ServerCommands.berserk( getId() );
-        getActiveWeapon().berserk( this, myColor );
+        getActiveWeapon().berserk( myColor );
     }
 
     /**

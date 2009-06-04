@@ -35,7 +35,7 @@ public abstract class Weapon implements GameElement
     /**
      * The owner of this weapon.
      */
-    private ShootingObject parent;
+    protected ShootingObject parent;
 
     protected Map<Integer, BonusValue> bonusValues = new HashMap<Integer, BonusValue>();
 
@@ -125,12 +125,12 @@ public abstract class Weapon implements GameElement
     /**
      * Shoots from the given origin.
      */
-    public abstract void shoot( GameObject parent, Color color, double angle );
+    public abstract void shoot( Color color, double angle );
 
     /**
      * Fires a powerful blast from the given origin, typically in a circular pattern. The weapon must charge up first.
      */
-    public abstract void berserk( GameObject parent, Color color );
+    public abstract void berserk( Color color );
 
     /**
      * Returns whether we can fire. Factors include ammo, max units, and the shooting timer.

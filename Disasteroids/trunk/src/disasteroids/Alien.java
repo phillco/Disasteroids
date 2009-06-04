@@ -120,7 +120,7 @@ public class Alien extends ShootingObject
         if ( closestShip != null )
         {
             double mAngle = calculateAngle( closestShip );
-            getActiveWeapon().shoot( this, color, mAngle );
+            getActiveWeapon().shoot( color, mAngle );
         }
 
         angle += size / 560.0 + 0.015;
@@ -388,7 +388,7 @@ public class Alien extends ShootingObject
         }
 
         @Override
-        public void shoot( GameObject parent, Color color, double angle )
+        public void shoot( Color color, double angle )
         {
             if ( !canShoot() )
                 return;

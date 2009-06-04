@@ -33,7 +33,7 @@ public class FlechetteManager extends Weapon
     }
 
     @Override
-    public void shoot( GameObject parent, Color color, double angle )
+    public void shoot( Color color, double angle )
     {
         if ( !canShoot() )
             return;
@@ -54,7 +54,7 @@ public class FlechetteManager extends Weapon
     }
 
     @Override
-    public void berserk( GameObject parent, Color color )
+    public void berserk( Color color )
     {
         int firedShots = 0;
         for ( int i = 0; i < 43; i++ )

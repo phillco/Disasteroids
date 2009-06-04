@@ -47,7 +47,7 @@ public class LaserManager extends Weapon
     }
 
     @Override
-    public void shoot( GameObject parent, Color color, double angle )
+    public void shoot( Color color, double angle )
     {
         if ( !canShoot() )
             return;
@@ -82,7 +82,7 @@ public class LaserManager extends Weapon
     }
 
     @Override
-    public void berserk( GameObject parent, Color color )
+    public void berserk( Color color )
     {
         int firedShots = 0;
         for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 4 )

@@ -81,10 +81,12 @@ public class Util
      */
     public static double getDeltaX( GameObject one, GameObject two )
     {
+        /*
         double deltaX = ( one.getX() - two.getX() + Game.getInstance().GAME_WIDTH * 2 ) % Game.getInstance().GAME_WIDTH;
         if ( Math.abs( deltaX - Game.getInstance().GAME_WIDTH ) < Math.abs( deltaX ) )
             return deltaX - Game.getInstance().GAME_WIDTH;
-        return deltaX;
+        return deltaX;*/
+        return getDeltaX( one.getX(), two.getX() );
     }
 
     /**
@@ -98,10 +100,36 @@ public class Util
      */
     public static double getDeltaY( GameObject one, GameObject two )
     {
-        double deltaY = ( one.getY() - two.getY() + Game.getInstance().GAME_HEIGHT * 2 ) % Game.getInstance().GAME_HEIGHT;
+        /*double deltaY = ( one.getY() - two.getY() + Game.getInstance().GAME_HEIGHT * 2 ) % Game.getInstance().GAME_HEIGHT;
         if ( Math.abs( deltaY - Game.getInstance().GAME_HEIGHT ) < Math.abs( deltaY ) )
             return deltaY - Game.getInstance().GAME_HEIGHT;
-        return deltaY;
+        return deltaY;*/
+        return getDeltaY( one.getY(), two.getY() );
+    }
+    
+    
+    public static double getDeltaX( double x1, double x2)
+    {
+        double deltaX = x1 - x2;//the most common case
+        if ( Math.abs(deltaX) > Game.getInstance().GAME_WIDTH / 2 )//it's shorter to go around the world
+            if(deltaX<0)//on the finite plane we're below
+                return deltaX + Game.getInstance().GAME_WIDTH;//in the real world we're above
+            else//on the finite plane we're above
+                return deltaX - Game.getInstance().GAME_WIDTH;//in the real world we're below
+        else
+            return deltaX;//no adjustment needed
+    }
+    
+    public static double getDeltaY( double y1, double y2 )
+    {
+        double deltaY = y1 - y2;//the most common case
+        if ( Math.abs(deltaY) > Game.getInstance().GAME_HEIGHT / 2 )//it's shorter to go around the world
+            if(deltaY<0)//on the finite plane we're below
+                return deltaY + Game.getInstance().GAME_HEIGHT;//in the real world we're above
+            else//on the finite plane we're above
+                return deltaY - Game.getInstance().GAME_HEIGHT;//in the real world we're below
+        else
+            return deltaY;//no adjustment needed
     }
 
     /**
@@ -114,7 +142,13 @@ public class Util
      */
     public static double getAngle( GameObject one, GameObject two )
     {
-        return Math.atan2( getDeltaY( one, two ), +getDeltaX( one, two ) );
+        return Math.atan2( getDeltaY( one, two ), -getDeltaX( one, two ) );
+    }
+    
+    
+    public static double getAngle( GameObject one, double x, double y)
+    {
+        return Math.atan2( getDeltaY(one.getY(), y), -getDeltaX(one.getX(), x));
     }
 
     /**

@@ -76,10 +76,10 @@ public class BlackHole extends GameObject
         // Pull each one towards us.
         for ( GameObject go : victims )
         {
-            double angle = Util.getAngle( this, go );
+            double angle = Util.getAngle( go, this );
 
             double magnitude = getSizeMultiplier() * Math.min( Math.pow( power, 1.9 ) / Math.pow( Util.getDistance( this, go ), 1.7 ), 1 );
-            go.setVelocity( go.getDx() + magnitude * Math.cos( angle ), go.getDy() + magnitude * Math.sin( angle ) );
+            go.setVelocity( go.getDx() + magnitude * Math.cos( angle ), go.getDy() - magnitude * Math.sin( angle ) );
 
             // Too close to the center! Destroy him!
             if ( isPrey( go ) && Util.getDistance( this, go ) < 35 )

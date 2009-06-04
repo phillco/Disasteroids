@@ -93,32 +93,18 @@ public class Station extends ShootingObject
 
             // Smoke and spin the turret.
             angle += 0.07 + Util.getGameplayRandomGenerator().nextDouble() / 7;
-            ParticleManager.createSmoke( getX() + Util.getGameplayRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 20 - health ) / 5 ) );
+            ParticleManager.createSmoke( getX() + Util.getGameplayRandomGenerator().nextInt( size ), getY(), Math.max( 0, ( 20 - health ) / 5 ) );
 
             // If about to die, set fire.
-            ParticleManager.createFlames( getX() + Util.getGameplayRandomGenerator().nextInt( size ), centerY(), Math.max( 0, ( 10 - health ) / 5 ) );
+            ParticleManager.createFlames( getX() + Util.getGameplayRandomGenerator().nextInt( size ), getY(), Math.max( 0, ( 10 - health ) / 5 ) );
 
             return;
         }
 
         // Find players within our range.        
         int range = 300;
-        Ship closestShip = null;
-        {
-            Ship closestInvincible = null;
-            for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
-            {
-                if ( Util.getDistance( this, s ) < range )
-                {
-                    if ( closestShip == null || Util.getDistance( this, s ) > Util.getDistance( this, closestShip ) )
-                        closestShip = s;
-                    if ( closestInvincible == null || Util.getDistance( this, s ) > Util.getDistance( this, closestInvincible ) )
-                        closestInvincible = s;
-                }
-            }
-            if ( closestShip == null && closestInvincible != null )
-                closestShip = closestInvincible;
-        }
+        Ship closestShip = findClosestShip(range);
+        
 
         // Aim towards closest ship.
         if ( closestShip != null )
@@ -162,8 +148,8 @@ public class Station extends ShootingObject
                 for ( Unit m : wm.getUnits() )
                 {
                     // Were we hit by a bullet?
-                    if ( ( m.getX() + m.getRadius() > getX() && m.getX() - m.getRadius() < getX() + size ) &&
-                            ( m.getY() + m.getRadius() > getY() && m.getY() - m.getRadius() < getY() + size ) )
+                    if ( ( m.getX() + m.getRadius() > getX()-size / 2 && m.getX() - m.getRadius() < getX() + size / 2 ) &&
+                            ( m.getY() + m.getRadius() > getY() - size / 2 && m.getY() - m.getRadius() < getY() + size / 2 ) )
                     {
                         health -= m.getDamage();
                         m.explode();
@@ -189,8 +175,8 @@ public class Station extends ShootingObject
             // Were we hit by the ship's body?
             if ( s.livesLeft() >= 0 )
             {
-                if ( ( s.getX() + s.getRadius() > getX() && s.getX() - s.getRadius() < getX() + size ) &&
-                        ( s.getY() + s.getRadius() > getY() && s.getY() - s.getRadius() < getY() + size ) )
+                if ( ( s.getX() + s.getRadius() > getX() - size / 2 && s.getX() - s.getRadius() < getX() + size / 2 ) &&
+                        ( s.getY() + s.getRadius() > getY() - size / 2 && s.getY() - s.getRadius() < getY() + size / 2 ) )
                 {
                     if ( s.damage( 60, s.getName() + " learns to steer." ) )
                         return;
@@ -209,38 +195,22 @@ public class Station extends ShootingObject
         if ( isDisabled() && Util.getGlobalFlash() )
             return;
 
-        MainWindow.frame().drawImage( g, ImageLibrary.getStation(), (int) getX() + size / 2 - 1, (int) getY() + size / 2 + 1, 0.0, 1.0 );
-        MainWindow.frame().drawImage( g, ImageLibrary.getStationTurret(), (int) getX() + size / 2 + 1, (int) getY() + size / 2 + 1, angle, 1.0 );
+        MainWindow.frame().drawImage( g, ImageLibrary.getStation(), (int) getX(), (int) getY(), 0.0, 1.0 );
+        MainWindow.frame().drawImage( g, ImageLibrary.getStationTurret(), (int) getX(), (int) getY(), angle, 1.0 );
 
         super.draw( g );
-    }
-
-    /**
-     * Returns the center x coordinate of the station.
-     */
-    int centerX()
-    {
-        return (int) ( getX() + size / 2 );
-    }
-
-    /**
-     * Returns the center y coordinate of the station.
-     */
-    int centerY()
-    {
-        return (int) ( getY() + size / 2 );
     }
 
     @Override
     public double getFiringOriginX()
     {
-        return centerX() + ( TURRET_LENGTH * 1.2 ) * Math.cos( 0 - angle );
+        return getX() + ( TURRET_LENGTH * 1.2 ) * Math.cos( 0 - angle );
     }
 
     @Override
     public double getFiringOriginY()
     {
-        return centerY() - ( TURRET_LENGTH * 1.2 ) * Math.sin( 0 - angle );
+        return getY() - ( TURRET_LENGTH * 1.2 ) * Math.sin( 0 - angle );
     }
 
     /**
@@ -257,8 +227,8 @@ public class Station extends ShootingObject
     {
         Game.getInstance().getObjectManager().removeObject( this );
 
-        ParticleManager.createSmoke( getX() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, centerY() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, 100 );
-        ParticleManager.createFlames( getX() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, centerY() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, 250 );
+        ParticleManager.createSmoke( getX() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, getY() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, 100 );
+        ParticleManager.createFlames( getX() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, getY() + Util.getGameplayRandomGenerator().nextInt( size ) / 2, 250 );
 
         if ( Util.getGameplayRandomGenerator().nextInt( 4 ) == 0 )
             Game.getInstance().createBonus( this );
@@ -276,15 +246,11 @@ public class Station extends ShootingObject
     {
         double distance = Util.getDistance( this, target );
         // TODO: Sync
-        double time = Math.log( distance ) * ( 5 + Util.getGameplayRandomGenerator().nextInt( 2 ) );
+        double time =  Math.log( distance ) * ( 5 + Util.getGameplayRandomGenerator().nextInt( 2 ) );
         double projectedX = target.getX() + time * target.getDx();
         double projectedY = target.getY() + time * target.getDy();
 
-        desiredAngle = Math.atan( ( projectedY - centerY() ) / ( projectedX - centerX() ) );
-        if ( projectedX - ( centerX() ) < 0 )
-            desiredAngle += Math.PI;
-
-
+        desiredAngle = -Util.getAngle(this, projectedX, projectedY);//Math.atan( ( projectedY - centerY() ) / ( projectedX - centerX() ) );
         if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI ) < Math.PI )
         {
             if ( Math.abs( desiredAngle - angle ) < SWEEP_SPEED )
@@ -337,4 +303,24 @@ public class Station extends ShootingObject
         size = stream.readInt();
         weapons[0] = new MissileManager( stream, this );
     }
+
+    private Ship findClosestShip(int range) 
+    {
+        Ship closestShip = null;
+        Ship closestInvincible = null;
+        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
+        {
+            if ( Util.getDistance( this, s ) < range )
+            {
+                if ( closestShip == null || Util.getDistance( this, s ) > Util.getDistance( this, closestShip ) )
+                    closestShip = s;
+                if ( closestInvincible == null || Util.getDistance( this, s ) > Util.getDistance( this, closestInvincible ) )
+                    closestInvincible = s;
+            }
+        }
+        if ( closestShip == null && closestInvincible != null )
+            closestShip = closestInvincible;
+        return closestShip;
+    }
+    
 }

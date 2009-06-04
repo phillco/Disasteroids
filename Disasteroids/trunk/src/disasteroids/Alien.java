@@ -174,6 +174,11 @@ public class Alien extends ShootingObject
     {
         if ( explosionTime > 0 )
             return;
+        if ( life < 0 )
+        {
+            explosionTime = 20;
+            return;
+        }
 
         // Check for missile collision.
         for ( ShootingObject s : Game.getInstance().getObjectManager().getShootingObjects() )
@@ -196,8 +201,14 @@ public class Alien extends ShootingObject
                         if ( life < 0 && s instanceof Ship )
                             ( (Ship) s ).increaseScore( 1000 );
                     }
+                    if(life < 0 )
+                        break;
                 }
+                if(life < 0 )
+                    break;
             }
+            if(life <  0 )
+                break;
         }
 
         // Check for ship collision.  

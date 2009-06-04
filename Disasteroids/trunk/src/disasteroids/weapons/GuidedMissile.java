@@ -90,12 +90,13 @@ public class GuidedMissile extends Unit
         double smallestDistance = 100000;
         GameObject closestObject = null;
 
+        int time = 30;
         switch (highestPriority)
         {
             case 0:
                 for (Asteroid a : objManager.getAsteroids())
                 {
-                    double distance = Util.getDistance(this, a);
+                    double distance = Util.getDistance(a, projectX(time), projectY(time));
 
                     if (distance < smallestDistance)
                     {
@@ -107,7 +108,7 @@ public class GuidedMissile extends Unit
             case 1:
                 for (Asteroid a : objManager.getAsteroids())
                 {
-                    double distance = Util.getDistance(this, a);
+                    double distance = Util.getDistance( a, projectX(time), projectY(time));
 
                     if (distance < smallestDistance)
                     {
@@ -119,7 +120,7 @@ public class GuidedMissile extends Unit
             case 2:
                 for (GameObject a : objManager.getBaddies())
                 {
-                    double distance = Util.getDistance(this, a);
+                    double distance = Util.getDistance(a, projectX(time), projectY(time));
 
                     if (distance < smallestDistance)
                     {
@@ -131,7 +132,7 @@ public class GuidedMissile extends Unit
             case 3:
                 for (Ship a : objManager.getPlayers())
                 {
-                    double distance = Util.getDistance(this, a);
+                    double distance = Util.getDistance(a, projectX(time), projectY(time));
 
                     if (distance < smallestDistance)
                     {

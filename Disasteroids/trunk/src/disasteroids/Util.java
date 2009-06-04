@@ -70,6 +70,13 @@ public class Util
         return Math.sqrt( deltaX * deltaX + deltaY * deltaY );
     }
 
+    public static double getDistance( GameObject one, double x2, double y2 )
+    {
+        double deltaX = getDeltaX(one.getX(), x2);
+        double deltaY = getDeltaY(one.getY(), y2);
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY );
+    }
+
     /**
      * Returns the x distance between two <code>GameObject</code>s.  Always a number between 
      * -GAME_WIDTH/2 and GAME_WIDTH/2.

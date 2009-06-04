@@ -117,6 +117,26 @@ public abstract class GameObject implements GameElement
         return x;
     }
 
+    /**
+     * Projects where this game object will be in the future, if it goes this speed
+     * @param time how long in the future to look
+     * @return the x coordinate of the future position
+     */
+    public double projectX(int time)
+    {
+        return getX() + time * getDx();
+    }
+
+    /**
+     * Projects where this game object will be in the future, if it goes this speed
+     * @param time how long in the future to look
+     * @return the x coordinate of the future position
+     */
+    public double projectY(int time)
+    {
+        return getY() + time * getDy();
+    }
+
     public void setX( double x )
     {
         this.x = ( x + Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH;

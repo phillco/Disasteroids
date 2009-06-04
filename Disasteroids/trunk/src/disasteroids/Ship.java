@@ -15,7 +15,9 @@ import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import disasteroids.weapons.BigNukeLauncher;
 import disasteroids.weapons.BulletManager;
+import disasteroids.weapons.GuidedMissileManager;
 import disasteroids.weapons.LaserManager;
+import disasteroids.weapons.LittleDoctorManager;
 import disasteroids.weapons.MineManager;
 import disasteroids.weapons.MissileManager;
 import disasteroids.weapons.SniperManager;
@@ -168,7 +170,7 @@ public class Ship extends ShootingObject
     // ***************************************************** Standard API **
     public Ship( double x, double y, Color c, int lives, String name )
     {
-        super( x, y, 0, 0, 6 );
+        super( x, y, 0, 0, 7 );
         this.myColor = c;
         this.livesLeft = lives;
         this.name = name;
@@ -179,6 +181,7 @@ public class Ship extends ShootingObject
         weapons[3] = new LaserManager( this );
         weapons[4] = new FlechetteManager( this );
         weapons[5] = new BigNukeLauncher( this );
+        weapons[6] = new LittleDoctorManager( this );
         sniperManager = new SniperManager( this );
 
         // Colors.        
@@ -818,6 +821,7 @@ public class Ship extends ShootingObject
         weapons[3] = new LaserManager( stream, this );
         weapons[4] = new FlechetteManager( stream, this );
         weapons[5] = new BigNukeLauncher( stream, this );
+        weapons[6] = new LittleDoctorManager( stream, this );
         sniperManager = new SniperManager( stream, this );
 
         int check = stream.readInt();

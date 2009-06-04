@@ -167,6 +167,12 @@ public class Ship extends ShootingObject
 
     private double healthMax = 100, health = healthMax;
 
+    private int inBlackHoleTimer = 0;
+
+    private boolean hasBeenWarped = false;
+
+    private final int INBLACKHOLE_TIMER_MAX = 150;
+
     // ***************************************************** Standard API **
     public Ship( double x, double y, Color c, int lives, String name )
     {
@@ -196,6 +202,20 @@ public class Ship extends ShootingObject
     @Override
     public void act()
     {
+        if ( inBlackHoleTimer > 0 )
+        {
+            inBlackHoleTimer--;
+            if ( getInBlackHoleAlpha() >= 1.0 && !hasBeenWarped )
+            {
+                setLocation( Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ) );
+
+                hasBeenWarped = true;
+                if ( Server.is() )
+                    ServerCommands.updateObjectVelocity( this );
+            }
+            return;
+        }
+
         super.act();
         if ( livesLeft >= 0 )
         {
@@ -700,6 +720,18 @@ public class Ship extends ShootingObject
         return name;
     }
 
+    public boolean isInBlackHole()
+    {
+        return getInBlackHoleAlpha() > 0;
+    }
+
+    public float getInBlackHoleAlpha()
+    {
+        float percent = (float) inBlackHoleTimer / INBLACKHOLE_TIMER_MAX;
+        float alpha = (float) Math.min( 4 * ( percent - Math.pow( percent, 2 ) ), 1f );
+        return alpha;
+    }
+
     /**
      * Returns the statistic of <code>Asteroid</code>s killed on this level.
      * An <code>Asteroid</code> is "killed" when it splits, so both bullets and collisions will affect this counter.
@@ -940,8 +972,14 @@ public class Ship extends ShootingObject
     @Override
     public void inBlackHole()
     {
-        damage( 150, getName() + " was sucked into a black hole." );
-        strafeSpeed = 16;
+        if ( inBlackHoleTimer == 0 )
+        {
+            damage( 150, getName() + " was sucked into a black hole." );
+            inBlackHoleTimer = INBLACKHOLE_TIMER_MAX;
+            hasBeenWarped = false;
+            setInvincibilityCount( INBLACKHOLE_TIMER_MAX );
+        }        
+        // strafeSpeed = 16;
     }
 
     public void setHealth( double health )

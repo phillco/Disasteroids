@@ -385,12 +385,11 @@ public class Game
                 {
                     instance.getActionManager().removeAll( KeystrokeManager.ActionType.SAVE );
                     Game.saveToFile();
-
                 }
                 break;
 
             case LOAD:
-                if ( !Client.is() )
+                if ( !Client.is() && !Server.is() )
                 {
                     Local.loadGame();
                     Game.getInstance().setPaused( false, false );
@@ -398,23 +397,23 @@ public class Game
                 }
                 break;
             case DEVKEY_SPAWN_BONUS:
-                if ( canUseDevKey() )
+                if ( canUseDevKey( true ) )
                     objectManager.addObject( new Bonus( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 50 ), false );
                 break;
             case DEVKEY_SPAWN_STATION:
-                if ( canUseDevKey() )
+                if ( canUseDevKey( false ) )
                     objectManager.addObject( new Station( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ), false );
                 break;
             case DEVKEY_SPAWN_ALIEN:
-                if ( canUseDevKey() )
+                if ( canUseDevKey( true ) )
                     objectManager.addObject( new Alien( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250, 0, 0 ), false );
                 break;
             case DEVKEY_SPAWN_BLACKHOLE:
-                if ( canUseDevKey() )
+                if ( canUseDevKey( true ) )
                     objectManager.addObject( new BlackHole( Local.getLocalPlayer().getX(), Local.getLocalPlayer().getY() - 250 ), false );
                 break;
             case DEVKEY_INFINITE_AMMO:
-                if ( canUseDevKey() )
+                if ( canUseDevKey( false ) )
                 {
                     for ( Weapon w : Local.getLocalPlayer().getWeapons() )
                         w.setInfiniteAmmo();
@@ -422,7 +421,7 @@ public class Game
                 }
                 break;
             case DEVKEY_SHIELD:
-                if ( canUseDevKey() )
+                if ( canUseDevKey( false ) )
                     Local.getLocalPlayer().giveShield( 20 );
                 break;
             case DEVKEY_DEBUG:
@@ -436,9 +435,12 @@ public class Game
             ServerCommands.updateObjectVelocity( actor );
     }
 
-    private boolean canUseDevKey()
+    private boolean canUseDevKey( boolean synchedAction )
     {
-        return ( !Client.is() );
+        if ( synchedAction )
+            return ( !Client.is() );
+        else
+            return ( !Client.is() && ( !Server.is() || Game.getInstance().getObjectManager().getPlayers().size() < 2 ) ); // Action not synched, so it can only be done when alone.
     }
 
     /**

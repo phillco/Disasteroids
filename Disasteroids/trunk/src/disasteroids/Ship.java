@@ -176,7 +176,7 @@ public class Ship extends ShootingObject
     // ***************************************************** Standard API **
     public Ship( double x, double y, Color c, int lives, String name )
     {
-        super( x, y, 0, 0, 7 );
+        super( x, y, 0, 0, 8 );
         this.myColor = c;
         this.livesLeft = lives;
         this.name = name;
@@ -188,6 +188,7 @@ public class Ship extends ShootingObject
         weapons[4] = new FlechetteManager( this );
         weapons[5] = new BigNukeLauncher( this );
         weapons[6] = new LittleDoctorManager( this );
+        weapons[7] = new GuidedMissileManager( this );
         sniperManager = new SniperManager( this );
 
         // Colors.        

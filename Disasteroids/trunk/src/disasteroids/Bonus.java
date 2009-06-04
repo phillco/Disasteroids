@@ -33,7 +33,7 @@ public class Bonus extends GameObject
 {
     static enum Class
     {
-        WEAPON( 5 ), WEAPON_POWERUP( 9 ), SHIP_POWERUP( 2 );
+        WEAPON( 6 ), WEAPON_POWERUP( 9 ), SHIP_POWERUP( 2 );
 
         final int types;
 

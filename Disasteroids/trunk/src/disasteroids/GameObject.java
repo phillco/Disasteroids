@@ -118,6 +118,22 @@ public abstract class GameObject implements GameElement
     }
 
     /**
+     * Conserves the speed of <code>this</code> while rotating the velocity vector
+     * counterclockwise (to the left) by <code>angle</code> radians
+     * @param angle The angle to rotate through, to the left (counterclockwise)
+     */
+    public void turn(double angle)
+    {
+        /*If we take the velocity as a column vector we just multiply by the rotation matrix:
+         * [dx  *  [cos(angle), sin(angle)     =   [dx *  cos(angle) + dy * sin(angle)
+         *  dy]    -sin(angle), cos(angle)]         dx * -sin(angle) + dy * cos(angle)]
+         */
+        double oldDx = getDx(), oldDy = getDy();//store a temporary value
+        setDx( oldDx * Math.cos(angle) + oldDy * Math.sin(angle) );
+        setDy( oldDy * Math.cos(angle) - oldDx * Math.sin(angle) );
+    }
+
+    /**
      * Projects where this game object will be in the future, if it goes this speed
      * @param time how long in the future to look
      * @return the x coordinate of the future position

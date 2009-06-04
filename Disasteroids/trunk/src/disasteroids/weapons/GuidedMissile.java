@@ -48,20 +48,21 @@ public class GuidedMissile extends Unit
     {   
         super.move();
 
-        if (age > 30)
+        if (age > 20)
         {
             if (objectToFollow == null && !foundObject)
             {
                 findObjectToFollow();
-                foundObject = true;
+                
             }
             
-            if (objectToFollow != null)
-                angle = Util.getAngle(this, objectToFollow);
+            //if (objectToFollow != null)
+            //    angle = Util.getAngle(this, objectToFollow);
         }
 
-        setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
-        setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
+        //setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
+       // setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
+        track();
     }
 
     public void findObjectToFollow()
@@ -69,8 +70,29 @@ public class GuidedMissile extends Unit
         ObjectManager objManager = Game.getInstance().getObjectManager();
         objectToFollow = objManager.getObject(0);
 
+        GameObject target = null;
+
+        for (long l : objManager.getAllIds())
+        {
+            GameObject obj = objManager.getObject(l);
+            if(!isValidTarget(obj))
+                continue;
+            if( target == null )//we haven't found anything, yet.
+            {
+                target = obj;
+                continue;
+            }
+            //We have two possible targets here, choose the best one.
+            target = getBetterTarget(target, obj);
+        }
+
+        if(target!=null)
+        {
+            objectToFollow = target;
+            foundObject = true;
+        }
         //0 asteroid, 1 station, 2 alien, 3 ship
-        int highestPriority = -1;
+        /*int highestPriority = -1;
 
         for (long l : objManager.getAllIds())
         {
@@ -143,7 +165,7 @@ public class GuidedMissile extends Unit
                 break;
         }
 
-        objectToFollow = closestObject;
+        objectToFollow = closestObject;*/
     }
 
     @Override
@@ -189,6 +211,10 @@ public class GuidedMissile extends Unit
         MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, angle + Math.PI );
         MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), (int) radius );
 
+  //      if( objectToFollow!=null)
+   //         MainWindow.frame().drawLine(g, Color.WHITE, (int)getX(),(int)getY() ,(int)objectToFollow.getX(), (int)objectToFollow.getY());
+      //  MainWindow.frame().drawLine(g, Color.GREEN, (int)getX(), (int)getY(), (int)projectX(40), (int)projectY(40));
+      //  MainWindow.frame().drawCircle(g, Color.green,(int) projectX(40), (int)projectY(40), 200);
         // Draw the explosion.
         Color col = color;
         switch ( explosionStage )
@@ -282,6 +308,105 @@ public class GuidedMissile extends Unit
                 default:
                     parent.remove( this );
             }
+        }
+    }
+
+    /**
+     * Determines and returns whichever parameter is the better target to chase,
+     * based on object types and locations
+     * @param one The first object to consider
+     * @param two The second object to consider
+     * @return The better of the two targets
+     * @pre both one and two are valid targets and are both non-null
+     */
+    private GameObject getBetterTarget(GameObject one, GameObject two)
+    {
+        int time = 40;//how long in the future to look;
+        double distanceOne = Util.getDistance(one, projectX(time), projectY(time));
+        double distanceTwo = Util.getDistance(two, projectX(time), projectY(time));
+
+        if((distanceOne > 400)^(distanceTwo > 400))//one or the other is far away.  Finally got to use an XOR :)
+        {
+            if(distanceOne < 400)//one is far away
+                return two;
+            return one;//two is far away
+        }
+
+        //either both are far away or both are close, see if one is a better target in general
+        int priorityOne = priority(one), priorityTwo = priority(two);
+        if(priorityOne != priorityTwo)
+        {
+            if(priorityOne > priorityTwo)
+                return one;
+            return two;
+        }
+
+        //either both are close or both are far away; both are the same type of object
+        if(distanceOne < distanceTwo)
+            return one;//get the closer one
+        return two;
+    }
+
+    /**
+     * Makes sure the given object is a vaild target.  Only shoots at Asteroids,
+     * Aliens, Stations, and other Ships
+     * @param obj The target in question
+     * @return Whether the target is vaild or not
+     */
+    private boolean isValidTarget(GameObject obj)
+    {
+        if(obj == null)
+            return false;//don't chase nothing
+        if(obj == parent.getParent())//don't shoot yourself
+            return false;
+        if(Util.getDistance(this,obj)>searchRadius)
+            return false;//too far away
+
+        return (obj instanceof Asteroid) ||
+               (obj instanceof Alien) ||
+               (obj instanceof Station) ||
+               (obj instanceof Ship);
+
+        //return true;//no objections
+    }
+
+    private int priority(GameObject obj) 
+    {
+        if(obj instanceof Asteroid)
+            return 1;
+        if(obj instanceof Alien)
+            return 2;
+        if(obj instanceof Station)
+            return 3;
+        if(obj instanceof Ship)
+            return 4;
+        return 0;
+    }
+
+    private void track() 
+    {
+        //basic acceleration of a missile
+        setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
+        setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
+        if(objectToFollow==null)
+            return;//nothing to chase
+
+        double angleToTarget = Util.getAngle(this,objectToFollow);
+        double turnRate = Math.PI/64;
+        if(Math.abs((angle - angleToTarget + 4 * Math.PI) % ( 2 * Math.PI))<turnRate)//we're close enough, just point the right direction
+        {
+            turn(angleToTarget - angle);
+            angle = angleToTarget;
+        }
+        if((angleToTarget - angle + 4 * Math.PI ) % (2 * Math.PI) < Math.PI)
+        {
+            turn(turnRate);
+            angle += turnRate;
+        }
+        else
+        {
+            turn(-turnRate);
+            angle -= turnRate;
         }
     }
 }

@@ -833,7 +833,7 @@ public class Ship extends ShootingObject
      */
     public Ship( DataInputStream stream ) throws IOException
     {
-        super( stream, 6 );
+        super( stream, 7 );
         invincibilityCount = stream.readInt();
         myColor = new Color( stream.readInt() );
 

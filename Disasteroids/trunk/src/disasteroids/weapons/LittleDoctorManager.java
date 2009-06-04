@@ -178,10 +178,9 @@ public class LittleDoctorManager extends Weapon
         stream.writeDouble( speed );
 
         // Flatten all of the units.
-
         stream.writeInt( units.size() );
         for ( Unit u : units )
-            ( (Missile) u ).flatten( stream );
+            ( (LittleDoctor) u ).flatten( stream );
         
     }
 

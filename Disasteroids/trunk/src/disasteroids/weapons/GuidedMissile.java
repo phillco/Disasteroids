@@ -4,7 +4,6 @@ package disasteroids.weapons;
 import disasteroids.Alien;
 import disasteroids.Asteroid;
 import disasteroids.Game;
-import disasteroids.GameLoop;
 import disasteroids.GameObject;
 import disasteroids.ObjectManager;
 import disasteroids.Ship;
@@ -27,10 +26,14 @@ public class GuidedMissile extends Unit
     private GameObject objectToFollow;
     private GuidedMissileManager parent;
 
+    private boolean foundObject = false;
+
     private double angle;
     private int explosionStage = 0;
 
     private int radius = 3;
+
+    private final int searchRadius = 1000;
 
     public GuidedMissile(GuidedMissileManager parent, Color color, double x, double y, double dx, double dy, double angle)
     {
@@ -38,21 +41,49 @@ public class GuidedMissile extends Unit
 
         this.parent = parent;
         this.angle = angle;
+    }
 
+    @Override
+    public void move()
+    {   
+        super.move();
 
+        if (age > 30)
+        {
+            if (objectToFollow == null && !foundObject)
+            {
+                findObjectToFollow();
+                foundObject = true;
+            }
+            
+            if (objectToFollow != null)
+                angle = Util.getAngle(this, objectToFollow);
+        }
+
+        setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
+        setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
+    }
+
+    public void findObjectToFollow()
+    {
         ObjectManager objManager = Game.getInstance().getObjectManager();
         objectToFollow = objManager.getObject(0);
 
         //0 asteroid, 1 station, 2 alien, 3 ship
-        int highestPriority = 0;
-        
+        int highestPriority = -1;
+
         for (long l : objManager.getAllIds())
         {
+            if (Util.getDistance(parent.getParent(), objManager.getObject(l)) > searchRadius)
+                continue;
+
+            if (objManager.getObject(l) instanceof Asteroid && highestPriority < 0)
+                highestPriority = 0;
             if (objManager.getObject(l) instanceof Station && highestPriority < 1)
                 highestPriority = 1;
             if (objManager.getObject(l) instanceof Alien && highestPriority < 2)
                 highestPriority = 2;
-            if (objManager.getObject(l) instanceof Ship && highestPriority < 3)
+            if (objManager.getObject(l) instanceof Ship && highestPriority < 3 && objManager.getObject(l) != parent.getParent())
                 highestPriority = 3;
         }
 
@@ -112,22 +143,6 @@ public class GuidedMissile extends Unit
         }
 
         objectToFollow = closestObject;
-    }
-
-    @Override
-    public void move()
-    {   
-        super.move();
-
-        if (objectToFollow == null)
-            System.out.println("No object to follow");
-        else
-            angle = Util.getAngle(this, objectToFollow);
-
-        System.out.println(angle);
-
-        setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
-        setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
     }
 
     @Override

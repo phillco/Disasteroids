@@ -64,23 +64,19 @@ public class GameLoop extends Thread
      * Starts an infinite loop which acts the game, sleeps, and repeats.
      * 
      * The amount of time to sleep is set by <code>period></code>.
-     * If the game is running behind, it uses this sleep time as a cushion.
      */
     @Override
     public void run()
     {
-        long timeOfLast = System.currentTimeMillis();
         while ( enabled )
         {
             try
             {
-                timeOfLast = System.currentTimeMillis();
-
                 if ( shouldRun() )
                     Game.getInstance().act();
 
-                while ( enabled && System.currentTimeMillis() - timeOfLast < PERIOD )
-                    Thread.sleep( PERIOD / 2 );
+                if ( enabled )
+                    Thread.sleep( PERIOD  );
 
             }
             catch ( InterruptedException ex )

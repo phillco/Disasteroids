@@ -17,6 +17,8 @@ public interface Level
 
     public void drawHUD( Graphics g );
 
+    public String getName();
+
     public void flatten( DataOutputStream stream ) throws IOException;
 
     public void optionsKey();

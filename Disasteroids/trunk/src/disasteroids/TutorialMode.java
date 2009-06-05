@@ -68,8 +68,8 @@ public class TutorialMode implements Level
             nextStage();
             for ( int i = 0; i < 8; i++ )
                 Game.getInstance().getObjectManager().addObject( new Asteroid( Local.getLocalPlayer().getX() + Util.getGameplayRandomGenerator().nextInt( 900 ) - 450,
-                                                                               Local.getLocalPlayer().getY() - 700 + Util.getGameplayRandomGenerator().nextInt( 80 ) - 40,
-                                                                               Util.getGameplayRandomGenerator().nextMidpointDouble( 2 ), Util.getGameplayRandomGenerator().nextDouble() * 2, Util.getGameplayRandomGenerator().nextInt( 50 ) + 60, 50 ), true );
+                        Local.getLocalPlayer().getY() - 700 + Util.getGameplayRandomGenerator().nextInt( 80 ) - 40,
+                        Util.getGameplayRandomGenerator().nextMidpointDouble( 2 ), Util.getGameplayRandomGenerator().nextDouble() * 2, Util.getGameplayRandomGenerator().nextInt( 50 ) + 60, 50 ), true );
         }
 
         // Take it out!
@@ -94,8 +94,8 @@ public class TutorialMode implements Level
             nextStage();
             for ( int i = 0; i < 4; i++ )
                 Game.getInstance().getObjectManager().addObject( new Alien( Local.getLocalPlayer().getX() + Util.getGameplayRandomGenerator().nextInt( 900 ) - 450,
-                                                                            Local.getLocalPlayer().getY() - 700 + Util.getGameplayRandomGenerator().nextInt( 80 ) - 40,
-                                                                            Util.getGameplayRandomGenerator().nextMidpointDouble( 2 ), Util.getGameplayRandomGenerator().nextDouble() * 2 ), true );
+                        Local.getLocalPlayer().getY() - 700 + Util.getGameplayRandomGenerator().nextInt( 80 ) - 40,
+                        Util.getGameplayRandomGenerator().nextMidpointDouble( 2 ), Util.getGameplayRandomGenerator().nextDouble() * 2 ), true );
         }
 
         // Here they come!
@@ -114,6 +114,11 @@ public class TutorialMode implements Level
             nextStage();
     }
 
+    public String getName()
+    {
+        return "Tutorial";
+    }
+
     private void nextStage()
     {
         counter = 0;
@@ -126,7 +131,7 @@ public class TutorialMode implements Level
         Font title = new Font( "Tahoma", Font.BOLD, 24 );
         Font textFont = new Font( "Tahoma", Font.BOLD, 12 );
         g.setFont( textFont );
-        int x = 0,  y = MainWindow.frame().getPanel().getHeight() / 4;
+        int x = 0, y = MainWindow.frame().getPanel().getHeight() / 4;
         String text = "";
         g.setColor( Local.getLocalPlayer().getColor() );
         switch ( stage )

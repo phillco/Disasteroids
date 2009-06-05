@@ -4,11 +4,11 @@
  */
 package disasteroids.gui;
 
-import disasteroids.LinearGameplay;
+import disasteroids.Classic;
 import disasteroids.Main;
 import disasteroids.Settings;
 import disasteroids.WaveGameplay;
-import disasteroids.Deathmatch;
+import disasteroids.EmptyLevel;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -169,9 +169,9 @@ public class MainMenu extends AsteroidsMenu implements KeyListener, MouseMotionL
             drawSetting( ( (Graphics2D) g ), ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" ), 'F', getWidth(), ( WINDOW_HEIGHT - height ), normal, false );
             drawSetting( ( (Graphics2D) g ), ( Settings.isQualityRendering() ? "Quality" : "Speed" ), 'A', getWidth(), ( WINDOW_HEIGHT - height * 2 ), normal, false );
             String mode = "Wave";
-            if ( Settings.getLastLevel() == Deathmatch.class )
+            if ( Settings.getLastLevel() == EmptyLevel.class )
                 mode = "Deathmatch";
-            else if ( Settings.getLastLevel() == LinearGameplay.class )
+            else if ( Settings.getLastLevel() == Classic.class )
                 mode = "Linear";
             drawSetting( ( (Graphics2D) g ), "Game mode: " + mode, 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
 
@@ -294,9 +294,9 @@ public class MainMenu extends AsteroidsMenu implements KeyListener, MouseMotionL
                 break;
             case KeyEvent.VK_G:
                 if ( Settings.getLastLevel() == WaveGameplay.class )
-                    Settings.setLastLevel( Deathmatch.class );
-                else if ( Settings.getLastLevel() == Deathmatch.class )
-                    Settings.setLastLevel( LinearGameplay.class );
+                    Settings.setLastLevel( EmptyLevel.class );
+                else if ( Settings.getLastLevel() == EmptyLevel.class )
+                    Settings.setLastLevel( Classic.class );
                 else
                     Settings.setLastLevel( WaveGameplay.class );
                 break;

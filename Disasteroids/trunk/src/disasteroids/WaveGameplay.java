@@ -13,7 +13,6 @@ import java.awt.Graphics2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import javax.swing.JOptionPane;
 
 /**
  * A level where players fend off waves of asteroids.
@@ -58,31 +57,31 @@ public class WaveGameplay implements Level
             // Make it a bonus asteroid.
             if ( Util.getGameplayRandomGenerator().nextDouble() * 8 * spawnRate <= 0.3 )
                 Game.getInstance().getObjectManager().addObject( new BonusAsteroid( x, y, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3,
-                        Util.getGameplayRandomGenerator().nextInt( 60 ) + 80, 15 ) , false);
+                        Util.getGameplayRandomGenerator().nextInt( 60 ) + 80, 15 ), false );
             else
                 Game.getInstance().getObjectManager().addObject( new Asteroid( x, y, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3, Util.getGameplayRandomGenerator().nextInt( 6 ) - 3,
-                        Util.getGameplayRandomGenerator().nextInt( 70 ) + 30, 15 ) , false);
+                        Util.getGameplayRandomGenerator().nextInt( 70 ) + 30, 15 ), false );
         }
 
         // Spawn an alien.
         if ( wavePoints >= 100 && Util.getGameplayRandomGenerator().nextDouble() * 30 * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
-            Game.getInstance().getObjectManager().addObject( new Alien( x, y, Util.getGameplayRandomGenerator().nextDouble() * 8 - 4, Util.getGameplayRandomGenerator().nextDouble() * 8 - 4 ) , false);
+            Game.getInstance().getObjectManager().addObject( new Alien( x, y, Util.getGameplayRandomGenerator().nextDouble() * 8 - 4, Util.getGameplayRandomGenerator().nextDouble() * 8 - 4 ), false );
         }
 
         // Spawn a station.
         if ( wavePoints >= 150 && Util.getGameplayRandomGenerator().nextDouble() * 25 * spawnRate <= 0.3 )
         {
             wavePoints -= 150;
-            Game.getInstance().getObjectManager().addObject( new Station( x, y, Util.getGameplayRandomGenerator().nextInt( 4 ) - 2, Util.getGameplayRandomGenerator().nextInt( 4 ) - 2 ) , false);
+            Game.getInstance().getObjectManager().addObject( new Station( x, y, Util.getGameplayRandomGenerator().nextInt( 4 ) - 2, Util.getGameplayRandomGenerator().nextInt( 4 ) - 2 ), false );
         }
 
         // Create a black hole.
         if ( wavePoints >= 100 && Util.getGameplayRandomGenerator().nextDouble() * 40 * Math.pow( Game.getInstance().getObjectManager().getBlackHoles().size() + 1, 3 ) * spawnRate <= 0.3 )
         {
             wavePoints -= 100;
-            Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ), 30 , 50 ) , false);
+            Game.getInstance().getObjectManager().addObject( new BlackHole( Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_WIDTH ), Util.getGameplayRandomGenerator().nextInt( Game.getInstance().GAME_HEIGHT ), 30, 50 ), false );
         }
     }
 
@@ -114,6 +113,11 @@ public class WaveGameplay implements Level
         int width = (int) ( 100 * ( 1 - (double) wavePoints / getWavePoints( currentWave ) ) );
         g.setColor( Color.lightGray );
         g.fillRect( x, y, width, 10 );
+    }
+
+    public String getName()
+    {
+        return "Wave onslaught";
     }
 
     int getWavePoints( int wave )

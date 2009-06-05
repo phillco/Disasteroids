@@ -176,7 +176,7 @@ public class Main
             Game.GameType gameType = Game.GameType.COOPERATIVE;
             if ( option == MenuOption.START_SERVER )
             {
-                level = Deathmatch.class;
+                level = EmptyLevel.class;
                 gameType = Game.GameType.DEATHMATCH;
             }
             else if ( option == MenuOption.TUTORIAL )

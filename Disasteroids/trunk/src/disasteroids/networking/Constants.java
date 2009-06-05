@@ -61,7 +61,7 @@ public class Constants
 
     public static enum LevelTID
     {
-        LINEAR( LinearGameplay.class ), WAVE( WaveGameplay.class ), DEATHMATCH( Deathmatch.class );
+        CLASSIC( Classic.class ), WAVE( WaveGameplay.class ), EMPTY( EmptyLevel.class );
 
         final Class myClass;
 
@@ -115,12 +115,12 @@ public class Constants
 
     public static int parseLevel( Level m )
     {
-        if ( m instanceof LinearGameplay )
-            return LevelTID.LINEAR.ordinal();
+        if ( m instanceof Classic )
+            return LevelTID.CLASSIC.ordinal();
         else if ( m instanceof WaveGameplay )
             return LevelTID.WAVE.ordinal();
-        else if ( m instanceof Deathmatch )
-            return LevelTID.DEATHMATCH.ordinal();
+        else if ( m instanceof EmptyLevel )
+            return LevelTID.EMPTY.ordinal();
         else
             throw new IllegalArgumentException( "Unknown level: " + m + "." );
     }
@@ -129,12 +129,12 @@ public class Constants
     {
         switch ( LevelTID.values()[type] )
         {
-            case LINEAR:
-                return new LinearGameplay( stream );
+            case CLASSIC:
+                return new Classic( stream );
             case WAVE:
                 return new WaveGameplay( stream );
-            case DEATHMATCH:
-                return new Deathmatch( stream );
+            case EMPTY:
+                return new EmptyLevel( stream );
             default:
                 throw new IllegalArgumentException( "Unknown level: " + type + "." );
         }

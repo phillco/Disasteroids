@@ -1,6 +1,6 @@
 /*
  * DISASTEROIDS
- * LinearGameplay.java
+ * Classic.java
  */
 package disasteroids;
 
@@ -16,22 +16,24 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**
- * The classic level of level-based gameplay.
- * @author Phillip Cohen
- * @since February 28, 2008
+ * The classic, level-based gameplay.
  */
-public class LinearGameplay implements Level
+public class Classic implements Level
 {
     /**
      * The current level of the game.
-     * @since Classic
      */
-    int level;
+    private int level;
 
-    public LinearGameplay()
+    public Classic()
     {
         level = 1;
         setUpAsteroidField( level );
+    }
+
+    public String getName()
+    {
+        return "Classic";
     }
 
     void setUpAsteroidField( int level )
@@ -43,11 +45,11 @@ public class LinearGameplay implements Level
         for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
         {
             Game.getInstance().getObjectManager().addObject( new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
-                                                                           rand.nextInt( Game.getInstance().GAME_HEIGHT ),
-                                                                           rand.nextDouble() * 6 - 3,
-                                                                           rand.nextDouble() * 6 - 3,
-                                                                           rand.nextInt( 150 ) + 25,
-                                                                           rand.nextInt( level * 10 + 10 ) - 9 ) , false);
+                    rand.nextInt( Game.getInstance().GAME_HEIGHT ),
+                    rand.nextDouble() * 6 - 3,
+                    rand.nextDouble() * 6 - 3,
+                    rand.nextInt( 150 ) + 25,
+                    rand.nextInt( level * 10 + 10 ) - 9 ), false );
             if ( rand.nextInt( 10 ) == 1 )
             {
                 numBonuses++;
@@ -58,11 +60,11 @@ public class LinearGameplay implements Level
         for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
         {
             Game.getInstance().getObjectManager().addObject( new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
-                                                                                rand.nextInt( Game.getInstance().GAME_HEIGHT ),
-                                                                                rand.nextDouble() * 6 - 3,
-                                                                                rand.nextDouble() * 6 - 3,
-                                                                                rand.nextInt( 150 ) + 25,
-                                                                                rand.nextInt( level * 10 + 10 ) - 9 ) , false);
+                    rand.nextInt( Game.getInstance().GAME_HEIGHT ),
+                    rand.nextDouble() * 6 - 3,
+                    rand.nextDouble() * 6 - 3,
+                    rand.nextInt( 150 ) + 25,
+                    rand.nextInt( level * 10 + 10 ) - 9 ), false );
 
         }
     }
@@ -157,7 +159,7 @@ public class LinearGameplay implements Level
         stream.writeInt( level );
     }
 
-    public LinearGameplay( DataInputStream stream ) throws IOException
+    public Classic( DataInputStream stream ) throws IOException
     {
         this.level = stream.readInt();
     }

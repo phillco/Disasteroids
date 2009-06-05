@@ -217,7 +217,7 @@ public class Settings
     {
         if ( aMode == WaveGameplay.class )
             userSettings.put( "lastLevel", "wave" );
-        else if ( aMode == Deathmatch.class )
+        else if ( aMode == EmptyLevel.class )
             userSettings.put( "lastLevel", "deathmatch" );
         else
             userSettings.put( "lastLevel", "linear" );
@@ -232,9 +232,9 @@ public class Settings
         if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "wave" ) )
             return WaveGameplay.class;
         else if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "deathmatch" ) )
-            return Deathmatch.class;
+            return EmptyLevel.class;
         else
-            return LinearGameplay.class;
+            return Classic.class;
     }
 
     /**

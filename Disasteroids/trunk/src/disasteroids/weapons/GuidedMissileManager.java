@@ -1,7 +1,7 @@
 package disasteroids.weapons;
 
-import disasteroids.GameObject;
-import disasteroids.ShootingObject;
+import disasteroids.gameobjects.GameObject;
+import disasteroids.gameobjects.ShootingObject;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;
 import java.awt.Color;

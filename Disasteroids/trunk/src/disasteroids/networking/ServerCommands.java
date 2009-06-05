@@ -4,6 +4,8 @@
  */
 package disasteroids.networking;
 
+import disasteroids.gameobjects.GameObject;
+import disasteroids.gameobjects.Ship;
 import disasteroids.*;
 import disasteroids.networking.DatagramListener.ByteOutputStream;
 import disasteroids.weapons.Unit;

@@ -1,13 +1,13 @@
 
 package disasteroids.weapons;
 
-import disasteroids.Alien;
-import disasteroids.Asteroid;
+import disasteroids.gameobjects.Alien;
+import disasteroids.gameobjects.Asteroid;
 import disasteroids.Game;
-import disasteroids.GameObject;
+import disasteroids.gameobjects.GameObject;
 import disasteroids.ObjectManager;
-import disasteroids.Ship;
-import disasteroids.Station;
+import disasteroids.gameobjects.Ship;
+import disasteroids.gameobjects.Station;
 import disasteroids.Util;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.Particle;

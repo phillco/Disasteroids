@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * GameObject.java
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.networking.Client;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

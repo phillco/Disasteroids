@@ -4,6 +4,14 @@
  */
 package disasteroids.networking;
 
+import disasteroids.gameobjects.Alien;
+import disasteroids.gameobjects.Asteroid;
+import disasteroids.gameobjects.BonusAsteroid;
+import disasteroids.gameobjects.Station;
+import disasteroids.gameobjects.Bonus;
+import disasteroids.gameobjects.GameObject;
+import disasteroids.gameobjects.Ship;
+import disasteroids.gameobjects.BlackHole;
 import disasteroids.*;
 import disasteroids.weapons.*;
 import java.io.DataInputStream;

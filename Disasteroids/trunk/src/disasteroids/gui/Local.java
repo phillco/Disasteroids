@@ -5,7 +5,7 @@
 package disasteroids.gui;
 
 import disasteroids.Game;
-import disasteroids.Ship;
+import disasteroids.gameobjects.*;
 import disasteroids.sound.Sound;
 
 /**

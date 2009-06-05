@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Asteroid.java
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.weapons.Weapon;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;

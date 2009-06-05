@@ -4,15 +4,15 @@
  */
 package disasteroids.gui;
 
-import disasteroids.Alien;
-import disasteroids.Asteroid;
-import disasteroids.BlackHole;
-import disasteroids.BonusAsteroid;
+import disasteroids.gameobjects.Alien;
+import disasteroids.gameobjects.Asteroid;
+import disasteroids.gameobjects.BlackHole;
+import disasteroids.gameobjects.BonusAsteroid;
 import disasteroids.Game;
-import disasteroids.GameObject;
-import disasteroids.Ship;
-import disasteroids.ShootingObject;
-import disasteroids.Station;
+import disasteroids.gameobjects.GameObject;
+import disasteroids.gameobjects.Ship;
+import disasteroids.gameobjects.ShootingObject;
+import disasteroids.gameobjects.Station;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Polygon;

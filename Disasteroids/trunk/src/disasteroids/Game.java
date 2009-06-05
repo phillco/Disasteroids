@@ -4,6 +4,12 @@
  */
 package disasteroids;
 
+import disasteroids.gameobjects.BlackHole;
+import disasteroids.gameobjects.GameObject;
+import disasteroids.gameobjects.Bonus;
+import disasteroids.gameobjects.Alien;
+import disasteroids.gameobjects.Ship;
+import disasteroids.gameobjects.Station;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.KeystrokeManager;
 import disasteroids.gui.Local;

@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * BlackHole.java
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.weapons.Unit;

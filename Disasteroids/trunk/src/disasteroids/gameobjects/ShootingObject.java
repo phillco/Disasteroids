@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * ShootingObject.java
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.weapons.Weapon;
 import java.awt.Graphics;
 import java.io.DataInputStream;

@@ -8,7 +8,7 @@ import disasteroids.Game;
 import disasteroids.GameLoop;
 import disasteroids.Main;
 import disasteroids.Settings;
-import disasteroids.Ship;
+import disasteroids.gameobjects.Ship;
 import disasteroids.networking.Client;
 import disasteroids.networking.Server;
 import disasteroids.sound.Sound;

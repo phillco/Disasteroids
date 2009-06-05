@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Bonus.javs
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;
 import disasteroids.gui.Particle;

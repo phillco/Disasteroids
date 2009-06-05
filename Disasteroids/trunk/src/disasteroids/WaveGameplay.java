@@ -4,6 +4,11 @@
  */
 package disasteroids;
 
+import disasteroids.gameobjects.Asteroid;
+import disasteroids.gameobjects.Alien;
+import disasteroids.gameobjects.BonusAsteroid;
+import disasteroids.gameobjects.BlackHole;
+import disasteroids.gameobjects.Station;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.RelativeGraphics;
 import java.awt.Color;

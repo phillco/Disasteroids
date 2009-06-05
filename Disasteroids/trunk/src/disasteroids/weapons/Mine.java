@@ -4,6 +4,10 @@
  */
 package disasteroids.weapons;
 
+import disasteroids.gameobjects.GameObject;
+import disasteroids.gameobjects.BlackHole;
+import disasteroids.gameobjects.Bonus;
+import disasteroids.gameobjects.Ship;
 import disasteroids.*;
 import disasteroids.gui.MainWindow;
 import java.awt.Color;

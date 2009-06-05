@@ -4,6 +4,15 @@
  */
 package disasteroids;
 
+import disasteroids.gameobjects.Bonus;
+import disasteroids.gameobjects.Station;
+import disasteroids.gameobjects.BlackHole;
+import disasteroids.gameobjects.ShootingObject;
+import disasteroids.gameobjects.Ship;
+import disasteroids.gameobjects.GameObject;
+import disasteroids.gameobjects.Asteroid;
+import disasteroids.gameobjects.Alien;
+import disasteroids.gameobjects.BonusAsteroid;
 import disasteroids.networking.Client;
 import disasteroids.networking.Constants;
 import disasteroids.networking.Server;

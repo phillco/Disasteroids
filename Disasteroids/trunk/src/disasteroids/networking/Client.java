@@ -4,6 +4,9 @@
  */
 package disasteroids.networking;
 
+import disasteroids.gameobjects.Ship;
+import disasteroids.gameobjects.ShootingObject;
+import disasteroids.gameobjects.GameObject;
 import disasteroids.gui.*;
 import disasteroids.*;
 import disasteroids.weapons.*;

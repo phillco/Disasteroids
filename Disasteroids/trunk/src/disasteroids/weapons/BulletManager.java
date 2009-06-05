@@ -4,6 +4,7 @@
  */
 package disasteroids.weapons;
 
+import disasteroids.gameobjects.ShootingObject;
 import disasteroids.*;
 import disasteroids.sound.Sound;
 import disasteroids.sound.SoundLibrary;

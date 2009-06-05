@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.gameobjects.Ship;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;

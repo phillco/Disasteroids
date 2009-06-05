@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Ship.java
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.weapons.FlechetteManager;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;

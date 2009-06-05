@@ -4,6 +4,9 @@
  */
 package disasteroids;
 
+import disasteroids.gameobjects.BonusAsteroid;
+import disasteroids.gameobjects.Asteroid;
+import disasteroids.gameobjects.Ship;
 import disasteroids.gui.MainWindow;
 import java.awt.Color;
 import java.awt.Font;

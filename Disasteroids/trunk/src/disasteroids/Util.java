@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.gameobjects.GameObject;
 import java.text.DecimalFormat;
 import java.util.Random;
 

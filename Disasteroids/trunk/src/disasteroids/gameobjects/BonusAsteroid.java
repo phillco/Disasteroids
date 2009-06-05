@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * BonusAsteroid.java
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import java.awt.Graphics;

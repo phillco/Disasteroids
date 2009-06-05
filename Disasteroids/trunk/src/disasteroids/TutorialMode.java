@@ -4,6 +4,8 @@
  */
 package disasteroids;
 
+import disasteroids.gameobjects.Asteroid;
+import disasteroids.gameobjects.Alien;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;
 import disasteroids.weapons.BulletManager;

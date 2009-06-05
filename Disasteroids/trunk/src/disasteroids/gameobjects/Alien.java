@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Alien.java
  */
-package disasteroids;
+package disasteroids.gameobjects;
 
+import disasteroids.*;
 import disasteroids.weapons.Missile;
 import disasteroids.weapons.Weapon;
 import disasteroids.weapons.MissileManager;

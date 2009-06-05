@@ -4,6 +4,8 @@
  */
 package disasteroids.weapons;
 
+import disasteroids.gameobjects.ShootingObject;
+import disasteroids.gameobjects.Ship;
 import disasteroids.*;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.Local;

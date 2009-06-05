@@ -4,7 +4,7 @@
  */
 package disasteroids.weapons;
 
-import disasteroids.GameObject;
+import disasteroids.gameobjects.GameObject;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -4,11 +4,11 @@
  */
 package disasteroids.gui;
 
-import disasteroids.Classic;
+import disasteroids.levels.Classic;
 import disasteroids.Main;
 import disasteroids.Settings;
-import disasteroids.WaveGameplay;
-import disasteroids.EmptyLevel;
+import disasteroids.levels.WaveGameplay;
+import disasteroids.levels.EmptyLevel;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;

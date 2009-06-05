@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.levels.Level;
 import disasteroids.gameobjects.BlackHole;
 import disasteroids.gameobjects.GameObject;
 import disasteroids.gameobjects.Bonus;

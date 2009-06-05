@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * EmptyLevel.java
  */
-package disasteroids;
+package disasteroids.levels;
 
 import java.awt.Graphics;
 import java.io.DataInputStream;

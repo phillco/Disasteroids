@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * TutorialMode.java
  */
-package disasteroids;
+package disasteroids.levels;
 
+import disasteroids.*;
 import disasteroids.gameobjects.Asteroid;
 import disasteroids.gameobjects.Alien;
 import disasteroids.gui.MainWindow;

@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Classic.java
  */
-package disasteroids;
+package disasteroids.levels;
 
+import disasteroids.*;
 import disasteroids.gameobjects.BonusAsteroid;
 import disasteroids.gameobjects.Asteroid;
 import disasteroids.gameobjects.Ship;
@@ -148,7 +149,6 @@ public class Classic implements Level
         }
 
         Game.getInstance().getObjectManager().clearObstacles();
-        Game.getInstance().actionManager.clear();
 
         if ( MainWindow.frame() != null )
             MainWindow.frame().nextLevel();

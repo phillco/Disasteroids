@@ -4,6 +4,10 @@
  */
 package disasteroids.networking;
 
+import disasteroids.levels.Level;
+import disasteroids.levels.Classic;
+import disasteroids.levels.EmptyLevel;
+import disasteroids.levels.WaveGameplay;
 import disasteroids.gameobjects.Alien;
 import disasteroids.gameobjects.Asteroid;
 import disasteroids.gameobjects.BonusAsteroid;

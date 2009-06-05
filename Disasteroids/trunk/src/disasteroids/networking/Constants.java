@@ -59,13 +59,13 @@ public class Constants
      */
     public static final int MULTIPACKET_DATA_SIZE = MAX_PACKET_SIZE - MULTIPACKET_HEADER_SIZE;
 
-    public static enum GameModeTIDs
+    public static enum LevelTID
     {
         LINEAR( LinearGameplay.class ), WAVE( WaveGameplay.class ), DEATHMATCH( Deathmatch.class );
 
         final Class myClass;
 
-        private GameModeTIDs( Class myClass )
+        private LevelTID( Class myClass )
         {
             this.myClass = myClass;
         }
@@ -113,21 +113,21 @@ public class Constants
         return null;
     }
 
-    public static int parseGameMode( GameMode m )
+    public static int parseLevel( Level m )
     {
         if ( m instanceof LinearGameplay )
-            return GameModeTIDs.LINEAR.ordinal();
+            return LevelTID.LINEAR.ordinal();
         else if ( m instanceof WaveGameplay )
-            return GameModeTIDs.WAVE.ordinal();
+            return LevelTID.WAVE.ordinal();
         else if ( m instanceof Deathmatch )
-            return GameModeTIDs.DEATHMATCH.ordinal();
+            return LevelTID.DEATHMATCH.ordinal();
         else
-            throw new IllegalArgumentException( "Unknown game mode: " + m + "." );
+            throw new IllegalArgumentException( "Unknown level: " + m + "." );
     }
 
-    public static GameMode parseGameMode( int type, DataInputStream stream ) throws IOException
+    public static Level parseLevel( int type, DataInputStream stream ) throws IOException
     {
-        switch ( GameModeTIDs.values()[type] )
+        switch ( LevelTID.values()[type] )
         {
             case LINEAR:
                 return new LinearGameplay( stream );
@@ -136,7 +136,7 @@ public class Constants
             case DEATHMATCH:
                 return new Deathmatch( stream );
             default:
-                throw new IllegalArgumentException( "Unknown game mode: " + type + "." );
+                throw new IllegalArgumentException( "Unknown level: " + type + "." );
         }
     }
 

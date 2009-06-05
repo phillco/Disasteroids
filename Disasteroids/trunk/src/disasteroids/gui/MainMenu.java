@@ -169,9 +169,9 @@ public class MainMenu extends AsteroidsMenu implements KeyListener, MouseMotionL
             drawSetting( ( (Graphics2D) g ), ( Settings.isUseFullscreen() ? "Fullscreen" : "Windowed" ), 'F', getWidth(), ( WINDOW_HEIGHT - height ), normal, false );
             drawSetting( ( (Graphics2D) g ), ( Settings.isQualityRendering() ? "Quality" : "Speed" ), 'A', getWidth(), ( WINDOW_HEIGHT - height * 2 ), normal, false );
             String mode = "Wave";
-            if ( Settings.getLastGameMode() == Deathmatch.class )
+            if ( Settings.getLastLevel() == Deathmatch.class )
                 mode = "Deathmatch";
-            else if ( Settings.getLastGameMode() == LinearGameplay.class )
+            else if ( Settings.getLastLevel() == LinearGameplay.class )
                 mode = "Linear";
             drawSetting( ( (Graphics2D) g ), "Game mode: " + mode, 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
 
@@ -293,12 +293,12 @@ public class MainMenu extends AsteroidsMenu implements KeyListener, MouseMotionL
                 Settings.setQualityRendering( !Settings.isQualityRendering() );
                 break;
             case KeyEvent.VK_G:
-                if ( Settings.getLastGameMode() == WaveGameplay.class )
-                    Settings.setLastGameMode( Deathmatch.class );
-                else if ( Settings.getLastGameMode() == Deathmatch.class )
-                    Settings.setLastGameMode( LinearGameplay.class );
+                if ( Settings.getLastLevel() == WaveGameplay.class )
+                    Settings.setLastLevel( Deathmatch.class );
+                else if ( Settings.getLastLevel() == Deathmatch.class )
+                    Settings.setLastLevel( LinearGameplay.class );
                 else
-                    Settings.setLastGameMode( WaveGameplay.class );
+                    Settings.setLastLevel( WaveGameplay.class );
                 break;
 
             // Scrolling?

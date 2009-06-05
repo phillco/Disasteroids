@@ -170,19 +170,19 @@ public class Main
             new Client();
             return;
         }
-        // Decide which game mode to use (yuck!).
+        // Decide which level to use (yuck!).
         {
-            Class gameMode = Settings.getLastGameMode();
+            Class level = Settings.getLastLevel();
             Game.GameType gameType = Game.GameType.COOPERATIVE;
             if ( option == MenuOption.START_SERVER )
             {
-                gameMode = Deathmatch.class;
+                level = Deathmatch.class;
                 gameType = Game.GameType.DEATHMATCH;
             }
             else if ( option == MenuOption.TUTORIAL )
-                gameMode = TutorialMode.class;
+                level = TutorialMode.class;
 
-            new Game( gameMode, gameType );
+            new Game( level, gameType );
         }
 
         // Create the local player and window. Start the game.

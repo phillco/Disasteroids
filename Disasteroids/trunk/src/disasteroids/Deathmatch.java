@@ -13,10 +13,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * A game mode where players fend off waves of asteroids.
+ * A level where players fend off waves of asteroids.
  * @author Phillip Cohen
  */
-public class Deathmatch implements GameMode
+public class Deathmatch implements Level
 {
 
     public Deathmatch()
@@ -51,7 +51,7 @@ public class Deathmatch implements GameMode
         }
     }
 
-    public void draw( Graphics g )
+    public void drawHUD( Graphics g )
     {
     }
 

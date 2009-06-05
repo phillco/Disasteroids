@@ -16,11 +16,11 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 
 /**
- * The classic game mode of level-based gameplay.
+ * The classic level of level-based gameplay.
  * @author Phillip Cohen
  * @since February 28, 2008
  */
-public class LinearGameplay implements GameMode
+public class LinearGameplay implements Level
 {
     /**
      * The current level of the game.
@@ -77,7 +77,7 @@ public class LinearGameplay implements GameMode
         }
     }
 
-    public void draw( Graphics g )
+    public void drawHUD( Graphics g )
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";

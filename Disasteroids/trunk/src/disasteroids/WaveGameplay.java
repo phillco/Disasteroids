@@ -16,10 +16,10 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 /**
- * A game mode where players fend off waves of asteroids.
+ * A level where players fend off waves of asteroids.
  * @author Phillip Cohen
  */
-public class WaveGameplay implements GameMode
+public class WaveGameplay implements Level
 {
     private int currentWave;
 
@@ -86,7 +86,7 @@ public class WaveGameplay implements GameMode
         }
     }
 
-    public void draw( Graphics g )
+    public void drawHUD( Graphics g )
     {
         Graphics2D g2d = (Graphics2D) g;
         String text = "";

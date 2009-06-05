@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
  * A short tutorial for players.
  * @author Phillip Cohen
  */
-public class TutorialMode implements GameMode
+public class TutorialMode implements Level
 {
     int stage = 0, counter = 0;
 
@@ -120,7 +120,7 @@ public class TutorialMode implements GameMode
         ++stage;
     }
 
-    public void draw( Graphics g )
+    public void drawHUD( Graphics g )
     {
         Graphics2D g2d = (Graphics2D) g;
         Font title = new Font( "Tahoma", Font.BOLD, 24 );

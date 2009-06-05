@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * The screen-sized canvas where we draw everything.
+ * The screen-sized canvas where we drawHUD everything.
  */
 public class GameCanvas extends Canvas
 {
@@ -90,7 +90,7 @@ public class GameCanvas extends Canvas
     MainWindow parent;
 
     /**
-     * Whether we're in the draw() loop.
+     * Whether we're in the drawHUD() loop.
      */
     private boolean isDrawing = false;
 
@@ -241,7 +241,7 @@ public class GameCanvas extends Canvas
 
         if ( showWarpDialog )
         {
-            Game.getInstance().getGameMode().optionsKey();
+            Game.getInstance().getLevel().optionsKey();
             showWarpDialog = false;
         }
 
@@ -276,8 +276,8 @@ public class GameCanvas extends Canvas
         String text = "";
         int x = 0, y = 0;
 
-        // Draw game mode status.
-        Game.getInstance().getGameMode().draw( g );
+        // Draw level status.
+        Game.getInstance().getLevel().drawHUD( g );
 
         if ( showHelp )
         {
@@ -464,7 +464,7 @@ public class GameCanvas extends Canvas
     /**
      * Draws the full scoreboard of all players.
      * 
-     * @param g <code>Graphics</code> context to draw on
+     * @param g <code>Graphics</code> context to drawHUD on
      * @since December 15, 2007
      */
     private void drawScoreboard( Graphics g )
@@ -746,7 +746,7 @@ public class GameCanvas extends Canvas
     /**
      * Returns whether the panel is drawing game elements.
      * 
-     * Should be used with <code>GameLoop.stopLoop()</code> to change the game's structure without the panel trying to draw it and getting NullPointers.
+     * Should be used with <code>GameLoop.stopLoop()</code> to change the game's structure without the panel trying to drawHUD it and getting NullPointers.
      * @see GameLoop#stopLoop()
      */
     public boolean isDrawing()

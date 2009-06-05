@@ -58,9 +58,9 @@ public class Game
     private GameType gameType;
 
     /**
-     * The game mode that we're playing.
+     * The level that we're playing.
      */
-    private GameMode gameMode;
+    private Level level;
 
     /**
      * Reference to the currently running Game instance.
@@ -70,7 +70,7 @@ public class Game
     /**
      * Creates the game.
      */
-    public Game( Class gameMode, GameType gameType )
+    public Game( Class level, GameType gameType )
     {
         Game.instance = this;
         timeStep = 0;
@@ -81,16 +81,16 @@ public class Game
 
         try
         {
-            // Set the game mode.
-            this.gameMode = (GameMode) gameMode.newInstance();
+            // Set the level.
+            this.level = (Level) level.newInstance();
         }
         catch ( InstantiationException ex )
         {
-            Main.fatalError( "Couldn't create game mode.", ex );
+            Main.fatalError( "Couldn't create level.", ex );
         }
         catch ( IllegalAccessException ex )
         {
-            Main.fatalError( "Couldn't create game mode.", ex );
+            Main.fatalError( "Couldn't create level.", ex );
         }
 
         // Update the GUI.
@@ -255,8 +255,8 @@ public class Game
      */
     void act()
     {
-        // Update the game mode.
-        gameMode.act();
+        // Update the level.
+        level.act();
 
         if ( !Local.isStuffNull() && MainWindow.frame().getPanel().getStarBackground() != null )
             MainWindow.frame().getPanel().getStarBackground().act();
@@ -448,8 +448,8 @@ public class Game
      */
     public void flatten( DataOutputStream stream ) throws IOException
     {
-        stream.writeInt( Constants.parseGameMode( gameMode ) );
-        gameMode.flatten( stream );
+        stream.writeInt( Constants.parseLevel( level ) );
+        level.flatten( stream );
         stream.writeLong( timeStep );
         objectManager.flatten( stream );
         actionManager.flatten( stream );
@@ -463,7 +463,7 @@ public class Game
     {
         instance = this;
 
-        gameMode = Constants.parseGameMode( stream.readInt(), stream );
+        level = Constants.parseLevel( stream.readInt(), stream );
         this.timeStep = stream.readLong();
         objectManager = new ObjectManager( stream );
         actionManager = new ActionManager( stream );
@@ -494,9 +494,9 @@ public class Game
             ServerCommands.updatePause( paused );
     }
 
-    public GameMode getGameMode()
+    public Level getLevel()
     {
-        return gameMode;
+        return level;
     }
 
     public void createBonus( GameObject parent )

@@ -60,7 +60,7 @@ public class Settings
                 defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
                 defaultSettings.put( "qualityRendering", String.valueOf( true ) );
                 defaultSettings.put( "lastConnectionIP", "localhost" );
-                defaultSettings.put( "lastGameMode", "wave" );
+                defaultSettings.put( "lastLevel", "wave" );
                 defaultSettings.put( "highScore", String.valueOf( 2000 ) );
                 defaultSettings.put( "highScorer", "Phillip & Andy" );
 //                defaultSettings.put( "lowScore", String.valueOf( -2000 ) );
@@ -210,28 +210,28 @@ public class Settings
     }
 
     /**
-     * Saves the last used game mode.
+     * Saves the last used level.
      * @since April 17, 2008
      */
-    public static void setLastGameMode( Class aMode )
+    public static void setLastLevel( Class aMode )
     {
         if ( aMode == WaveGameplay.class )
-            userSettings.put( "lastGameMode", "wave" );
+            userSettings.put( "lastLevel", "wave" );
         else if ( aMode == Deathmatch.class )
-            userSettings.put( "lastGameMode", "deathmatch" );
+            userSettings.put( "lastLevel", "deathmatch" );
         else
-            userSettings.put( "lastGameMode", "linear" );
+            userSettings.put( "lastLevel", "linear" );
     }
 
     /**
-     * Gets the last used game mode.
+     * Gets the last used level.
      * @since April 17, 2008
      */
-    public static Class getLastGameMode()
+    public static Class getLastLevel()
     {
-        if ( userSettings.getProperty( "lastGameMode" ).equalsIgnoreCase( "wave" ) )
+        if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "wave" ) )
             return WaveGameplay.class;
-        else if ( userSettings.getProperty( "lastGameMode" ).equalsIgnoreCase( "deathmatch" ) )
+        else if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "deathmatch" ) )
             return Deathmatch.class;
         else
             return LinearGameplay.class;

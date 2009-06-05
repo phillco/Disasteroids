@@ -4,6 +4,7 @@
  */
 package disasteroids.gui;
 
+import disasteroids.game.Game;
 import disasteroids.*;
 import java.awt.Color;
 import java.awt.Font;

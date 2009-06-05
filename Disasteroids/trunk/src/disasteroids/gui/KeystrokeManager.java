@@ -4,9 +4,9 @@
  */
 package disasteroids.gui;
 
-import disasteroids.Action;
-import disasteroids.Game;
-import disasteroids.GameLoop;
+import disasteroids.game.Action;
+import disasteroids.game.Game;
+import disasteroids.game.GameLoop;
 import disasteroids.gameobjects.GameObject;
 import disasteroids.Main;
 import disasteroids.gameobjects.Station;

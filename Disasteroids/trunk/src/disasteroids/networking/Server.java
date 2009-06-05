@@ -4,8 +4,8 @@
  */
 package disasteroids.networking;
 
-import disasteroids.Action;
-import disasteroids.Game;
+import disasteroids.game.Action;
+import disasteroids.game.Game;
 import disasteroids.Main;
 import disasteroids.gameobjects.Ship;
 import java.awt.Color;

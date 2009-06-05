@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * GameElement.java
  */
-package disasteroids;
+package disasteroids.game;
 
 import java.awt.Graphics;
 

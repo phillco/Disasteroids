@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * Game.java
  */
-package disasteroids;
+package disasteroids.game;
 
+import disasteroids.*;
 import disasteroids.levels.Level;
 import disasteroids.gameobjects.BlackHole;
 import disasteroids.gameobjects.GameObject;

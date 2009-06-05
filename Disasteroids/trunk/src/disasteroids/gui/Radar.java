@@ -8,7 +8,7 @@ import disasteroids.gameobjects.Alien;
 import disasteroids.gameobjects.Asteroid;
 import disasteroids.gameobjects.BlackHole;
 import disasteroids.gameobjects.BonusAsteroid;
-import disasteroids.Game;
+import disasteroids.game.Game;
 import disasteroids.gameobjects.GameObject;
 import disasteroids.gameobjects.Ship;
 import disasteroids.gameobjects.ShootingObject;

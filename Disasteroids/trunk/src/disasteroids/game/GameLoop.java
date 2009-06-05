@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * GameLoop.java
  */
-package disasteroids;
+package disasteroids.game;
 
+import disasteroids.*;
 import disasteroids.networking.Client;
 
 /**

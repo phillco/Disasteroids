@@ -4,6 +4,8 @@
  */
 package disasteroids;
 
+import disasteroids.game.Game;
+import disasteroids.game.GameLoop;
 import disasteroids.levels.TutorialMode;
 import disasteroids.levels.EmptyLevel;
 import disasteroids.gui.MainWindow;

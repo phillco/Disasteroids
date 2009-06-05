@@ -5,7 +5,7 @@
 package disasteroids.gui;
 
 
-import disasteroids.GameElement;
+import disasteroids.game.*;
 import disasteroids.Settings;
 import disasteroids.Util;
 import java.awt.Color;

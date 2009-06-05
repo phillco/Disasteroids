@@ -2,7 +2,7 @@
  * DISASTEROIDS
  * Action.java
  */
-package disasteroids;
+package disasteroids.game;
 
 import disasteroids.gameobjects.Ship;
 import java.io.DataInputStream;

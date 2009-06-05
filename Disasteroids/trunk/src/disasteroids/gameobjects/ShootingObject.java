@@ -4,6 +4,7 @@
  */
 package disasteroids.gameobjects;
 
+import disasteroids.game.GameElement;
 import disasteroids.*;
 import disasteroids.weapons.Weapon;
 import java.awt.Graphics;

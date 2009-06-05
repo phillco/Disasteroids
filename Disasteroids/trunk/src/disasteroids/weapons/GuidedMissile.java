@@ -3,9 +3,9 @@ package disasteroids.weapons;
 
 import disasteroids.gameobjects.Alien;
 import disasteroids.gameobjects.Asteroid;
-import disasteroids.Game;
+import disasteroids.game.Game;
 import disasteroids.gameobjects.GameObject;
-import disasteroids.ObjectManager;
+import disasteroids.game.ObjectManager;
 import disasteroids.gameobjects.Ship;
 import disasteroids.gameobjects.Station;
 import disasteroids.Util;

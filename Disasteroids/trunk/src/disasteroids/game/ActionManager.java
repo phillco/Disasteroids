@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * ActionManager.java
  */
-package disasteroids;
+package disasteroids.game;
 
+import disasteroids.*;
 import disasteroids.gui.KeystrokeManager;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

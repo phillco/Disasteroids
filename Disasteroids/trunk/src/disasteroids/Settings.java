@@ -4,6 +4,7 @@
  */
 package disasteroids;
 
+import disasteroids.game.Game;
 import disasteroids.levels.EmptyLevel;
 import disasteroids.levels.Classic;
 import disasteroids.levels.WaveGameplay;

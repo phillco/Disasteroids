@@ -4,6 +4,7 @@
  */
 package disasteroids.gameobjects;
 
+import disasteroids.game.Game;
 import disasteroids.*;
 import disasteroids.weapons.Missile;
 import disasteroids.weapons.Weapon;

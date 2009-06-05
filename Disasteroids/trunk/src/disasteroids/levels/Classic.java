@@ -4,6 +4,7 @@
  */
 package disasteroids.levels;
 
+import disasteroids.game.Game;
 import disasteroids.*;
 import disasteroids.gameobjects.BonusAsteroid;
 import disasteroids.gameobjects.Asteroid;

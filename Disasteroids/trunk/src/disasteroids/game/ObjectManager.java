@@ -2,8 +2,9 @@
  * DISASTEROIDS
  * ObjectManager.java
  */
-package disasteroids;
+package disasteroids.game;
 
+import disasteroids.*;
 import disasteroids.gameobjects.Bonus;
 import disasteroids.gameobjects.Station;
 import disasteroids.gameobjects.BlackHole;

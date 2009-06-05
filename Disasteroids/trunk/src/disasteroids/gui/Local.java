@@ -4,7 +4,7 @@
  */
 package disasteroids.gui;
 
-import disasteroids.Game;
+import disasteroids.game.Game;
 import disasteroids.gameobjects.*;
 import disasteroids.sound.Sound;
 

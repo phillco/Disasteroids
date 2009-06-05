@@ -5,6 +5,7 @@
 package disasteroids.game;
 
 import disasteroids.*;
+import disasteroids.game.gamemodes.GameMode;
 import disasteroids.levels.Level;
 import disasteroids.gameobjects.BlackHole;
 import disasteroids.gameobjects.GameObject;
@@ -58,12 +59,7 @@ public class Game
 
     ObjectManager objectManager;
 
-    public enum GameType
-    {
-        COOPERATIVE, DEATHMATCH
-
-    };
-    private GameType gameType;
+    private GameMode gameMode;
 
     /**
      * The level that we're playing.
@@ -78,19 +74,19 @@ public class Game
     /**
      * Creates the game.
      */
-    public Game( Class level, GameType gameType )
+    public Game( Class level, Class gameMode )
     {
         Game.instance = this;
         timeStep = 0;
 
         actionManager = new ActionManager();
         objectManager = new ObjectManager();
-        this.gameType = gameType;
 
         try
         {
-            // Set the level.
+            // Set the level and game mode.
             this.level = (Level) level.newInstance();
+            this.gameMode = (GameMode) gameMode.newInstance();
         }
         catch ( InstantiationException ex )
         {
@@ -517,8 +513,10 @@ public class Game
         return objectManager;
     }
 
-    public GameType getGameType()
+    public GameMode getGameMode()
     {
-        return gameType;
+        return gameMode;
     }
+
+    
 }

@@ -6,6 +6,7 @@ package disasteroids;
 
 import disasteroids.game.Game;
 import disasteroids.game.GameLoop;
+import disasteroids.game.gamemodes.Cooperative;
 import disasteroids.levels.TutorialMode;
 import disasteroids.levels.EmptyLevel;
 import disasteroids.gui.MainWindow;
@@ -177,16 +178,13 @@ public class Main
         // Decide which level to use (yuck!).
         {
             Class level = Settings.getLastLevel();
-            Game.GameType gameType = Game.GameType.COOPERATIVE;
-            if ( option == MenuOption.START_SERVER )
-            {
+            Class gameMode = Cooperative.class;
+            if ( option == MenuOption.START_SERVER )           
                 level = EmptyLevel.class;
-                gameType = Game.GameType.DEATHMATCH;
-            }
             else if ( option == MenuOption.TUTORIAL )
                 level = TutorialMode.class;
 
-            new Game( level, gameType );
+            new Game( level, gameMode );
         }
 
         // Create the local player and window. Start the game.

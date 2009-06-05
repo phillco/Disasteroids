@@ -8,6 +8,7 @@ import disasteroids.game.GameLoop;
 import disasteroids.game.Game;
 import disasteroids.gameobjects.Ship;
 import disasteroids.*;
+import disasteroids.game.gamemodes.GameMode;
 import disasteroids.networking.*;
 import disasteroids.sound.*;
 import java.awt.*;
@@ -497,20 +498,10 @@ public class GameCanvas extends Canvas
 
         // Create the columns.
         ScoreboardColumn[] columns = new ScoreboardColumn[ 4 ];
-        if ( Game.getInstance().getGameType() == Game.GameType.COOPERATIVE )
-        {
-            columns[0] = new ScoreboardColumn( getWidth() * 2 / 7, ScoreboardContent.NAME );
-            columns[1] = new ScoreboardColumn( getWidth() * 1 / 2, ScoreboardContent.SCORE );
-            columns[2] = new ScoreboardColumn( getWidth() * 3 / 5, ScoreboardContent.LIVES );
-            columns[3] = new ScoreboardColumn( getWidth() * 2 / 3, ScoreboardContent.ASTEROIDSDESTROYED );
-        }
-        else
-        {
-            columns[0] = new ScoreboardColumn( getWidth() * 2 / 7, ScoreboardContent.NAME );
-            columns[1] = new ScoreboardColumn( getWidth() * 1 / 2, ScoreboardContent.FRAGS );
-            columns[2] = new ScoreboardColumn( getWidth() * 3 / 5, ScoreboardContent.SCORE );
-            columns[3] = new ScoreboardColumn( getWidth() * 2 / 3, ScoreboardContent.ASTEROIDSDESTROYED );
-        }
+        columns[0] = new ScoreboardColumn( getWidth() * 2 / 7, ScoreboardContent.NAME );
+        columns[1] = new ScoreboardColumn( getWidth() * 1 / 2, Game.getInstance().getGameMode().hasFlag( GameMode.FLAG_PLAYERSEARNKILLS ) ? ScoreboardContent.FRAGS : ScoreboardContent.SCORE );
+        columns[2] = new ScoreboardColumn( getWidth() * 3 / 5, ScoreboardContent.LIVES );
+        columns[3] = new ScoreboardColumn( getWidth() * 2 / 3, ScoreboardContent.ASTEROIDSDESTROYED );
 
         // Draw the column headers.
         y += 15;

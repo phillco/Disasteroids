@@ -4,11 +4,11 @@
  */
 package disasteroids.networking;
 
-import disasteroids.gameobjects.GameObject;
-import disasteroids.gameobjects.Ship;
+import disasteroids.game.objects.GameObject;
+import disasteroids.game.objects.Ship;
 import disasteroids.*;
 import disasteroids.networking.DatagramListener.ByteOutputStream;
-import disasteroids.weapons.Unit;
+import disasteroids.game.weapons.Unit;
 import java.io.IOException;
 
 /**

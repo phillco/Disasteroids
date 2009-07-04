@@ -7,7 +7,7 @@ package disasteroids.networking;
 import disasteroids.game.Action;
 import disasteroids.game.Game;
 import disasteroids.Main;
-import disasteroids.gameobjects.Ship;
+import disasteroids.game.objects.Ship;
 import java.awt.Color;
 import java.io.IOException;
 import java.net.BindException;

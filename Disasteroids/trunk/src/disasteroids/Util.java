@@ -5,7 +5,7 @@
 package disasteroids;
 
 import disasteroids.game.Game;
-import disasteroids.gameobjects.GameObject;
+import disasteroids.game.objects.GameObject;
 import java.text.DecimalFormat;
 import java.util.Random;
 

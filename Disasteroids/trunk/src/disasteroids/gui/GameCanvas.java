@@ -6,9 +6,9 @@ package disasteroids.gui;
 
 import disasteroids.game.GameLoop;
 import disasteroids.game.Game;
-import disasteroids.gameobjects.Ship;
+import disasteroids.game.objects.Ship;
 import disasteroids.*;
-import disasteroids.game.gamemodes.GameMode;
+import disasteroids.game.modes.GameMode;
 import disasteroids.networking.*;
 import disasteroids.sound.*;
 import java.awt.*;

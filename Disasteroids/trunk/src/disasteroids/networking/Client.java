@@ -4,14 +4,11 @@
  */
 package disasteroids.networking;
 
-import disasteroids.game.Game;
-import disasteroids.game.GameLoop;
-import disasteroids.gameobjects.Ship;
-import disasteroids.gameobjects.ShootingObject;
-import disasteroids.gameobjects.GameObject;
-import disasteroids.gui.*;
+
 import disasteroids.*;
-import disasteroids.weapons.*;
+import disasteroids.game.*;
+import disasteroids.game.objects.*;
+import disasteroids.gui.*;
 import disasteroids.sound.*;
 import java.io.IOException;
 import java.net.DatagramPacket;

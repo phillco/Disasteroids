@@ -4,20 +4,20 @@
  */
 package disasteroids.networking;
 
-import disasteroids.levels.Level;
-import disasteroids.levels.Classic;
-import disasteroids.levels.EmptyLevel;
-import disasteroids.levels.WaveGameplay;
-import disasteroids.gameobjects.Alien;
-import disasteroids.gameobjects.Asteroid;
-import disasteroids.gameobjects.BonusAsteroid;
-import disasteroids.gameobjects.Station;
-import disasteroids.gameobjects.Bonus;
-import disasteroids.gameobjects.GameObject;
-import disasteroids.gameobjects.Ship;
-import disasteroids.gameobjects.BlackHole;
+import disasteroids.game.levels.Level;
+import disasteroids.game.levels.Classic;
+import disasteroids.game.levels.EmptyLevel;
+import disasteroids.game.levels.WaveGameplay;
+import disasteroids.game.objects.Alien;
+import disasteroids.game.objects.Asteroid;
+import disasteroids.game.objects.BonusAsteroid;
+import disasteroids.game.objects.Station;
+import disasteroids.game.objects.Bonus;
+import disasteroids.game.objects.GameObject;
+import disasteroids.game.objects.Ship;
+import disasteroids.game.objects.BlackHole;
 import disasteroids.*;
-import disasteroids.weapons.*;
+import disasteroids.game.weapons.*;
 import java.io.DataInputStream;
 import java.io.IOException;
 

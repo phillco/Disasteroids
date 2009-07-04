@@ -4,7 +4,7 @@
  */
 package disasteroids.game;
 
-import disasteroids.gameobjects.Ship;
+import disasteroids.game.objects.Ship;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

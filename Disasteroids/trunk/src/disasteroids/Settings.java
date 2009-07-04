@@ -5,10 +5,10 @@
 package disasteroids;
 
 import disasteroids.game.Game;
-import disasteroids.levels.EmptyLevel;
-import disasteroids.levels.Classic;
-import disasteroids.levels.WaveGameplay;
-import disasteroids.gameobjects.Ship;
+import disasteroids.game.levels.EmptyLevel;
+import disasteroids.game.levels.Classic;
+import disasteroids.game.levels.WaveGameplay;
+import disasteroids.game.objects.Ship;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;

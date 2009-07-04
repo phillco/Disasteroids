@@ -6,9 +6,9 @@ package disasteroids;
 
 import disasteroids.game.Game;
 import disasteroids.game.GameLoop;
-import disasteroids.game.gamemodes.Cooperative;
-import disasteroids.levels.TutorialMode;
-import disasteroids.levels.EmptyLevel;
+import disasteroids.game.modes.Cooperative;
+import disasteroids.game.levels.TutorialMode;
+import disasteroids.game.levels.EmptyLevel;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.ImageLibrary;
 import disasteroids.gui.Local;

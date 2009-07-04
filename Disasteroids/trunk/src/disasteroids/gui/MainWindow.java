@@ -37,7 +37,6 @@ import javax.swing.SwingUtilities;
  */
 public class MainWindow extends Frame
 {
-
     /**
      * Dimensions of the window (when not in fullscreen mode).
      */
@@ -49,8 +48,6 @@ public class MainWindow extends Frame
     {
         return gameCanvas;
     }
-
-
     private static MainWindow frame;
 
     public static MainWindow frame()
@@ -85,16 +82,15 @@ public class MainWindow extends Frame
         // Set our size - fullscreen or windowed.
         updateFullscreen();
         gameCanvas.setKeyListener();
-        
+
         // [PC] This trick gives the canvas focus, so it immediately can receive key events.
         SwingUtilities.invokeLater( new Runnable()
         {
-
             public void run()
             {
                 gameCanvas.requestFocusInWindow();
             }
-        } );      
+        } );
         GameLoop.startLoop();
     }
 
@@ -375,10 +371,19 @@ public class MainWindow extends Frame
 
         GameCanvas.updateQualityRendering( g, false );
         AffineTransform af = new AffineTransform();
-        af.translate( RelativeGraphics.translateX( x ), RelativeGraphics.translateY( y ) );
+        x = RelativeGraphics.translateX( x );
+        y = RelativeGraphics.translateY( y );
+
+        // [PC] Fixes a bug where black holes would disappear off the top-left corner.
+        if ( y + img.getHeight( null ) * scale >= Game.getInstance().GAME_HEIGHT )
+            y -= Game.getInstance().GAME_HEIGHT;
+        if ( x + img.getWidth( null ) * scale >= Game.getInstance().GAME_WIDTH )
+            x -= Game.getInstance().GAME_HEIGHT;
+        af.translate( x, y );
         af.scale( scale, scale );
         af.rotate( angle );
         af.translate( -img.getWidth( null ) / 2, -img.getHeight( null ) / 2 );
+
         ( ( Graphics2D ) g ).drawImage( img, af, null );
         GameCanvas.updateQualityRendering( g, Settings.isQualityRendering() );
     }
@@ -387,18 +392,14 @@ public class MainWindow extends Frame
      * Draws an <code>Image</code> at a specified location.  Equivalent to the call
      * of drawImage(g, img, x, y, 0.0, 1.0), but more efficient.
      * 
-     * @param g The <code>Graphics</code> context in which to draw
      * @param img The <code>Image</code> to draw
      * @param x The absolute x coordinate of the center of the <code>Image</code>
      * @param y The absolute y coordinate of the center of the <code>Image</code>
-     * 
-     * @since March 30,2008
      */
     public void drawImage( Graphics g, Image img, int x, int y )
     {
         GameCanvas.updateQualityRendering( g, false );
-        g.drawImage( img, RelativeGraphics.translateX( x ) - img.getWidth( null ) / 2,
-                RelativeGraphics.translateY( y ) - img.getHeight( null ) / 2, null );
+        g.drawImage( img, RelativeGraphics.translateX( x, img.getWidth( null ) ), RelativeGraphics.translateY( y, img.getHeight( null ) ), null );
         GameCanvas.updateQualityRendering( g, Settings.isQualityRendering() );
     }
 
@@ -421,7 +422,6 @@ public class MainWindow extends Frame
      */
     private static class AsteroidsFrameAdapter extends WindowAdapter implements ComponentListener
     {
-
         /**
          * Invoked when a window has been closed.
          * 

@@ -18,7 +18,7 @@ public abstract class RelativeGraphics
     {
         try
         {
-            return (int) Math.round( ( x - Local.getLocalPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH ) + MainWindow.frame().getRumbleX();
+            return ( int ) Math.round( ( x - Local.getLocalPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH ) + MainWindow.frame().getRumbleX();
 
         }
         catch ( NullPointerException nullPointerException )
@@ -29,18 +29,39 @@ public abstract class RelativeGraphics
 
     }
 
+    public static int translateX( double x, double width )
+    {
+        double newX = Math.round( ( x - Local.getLocalPlayer().getX() + MainWindow.frame().getWidth() / 2 + 4 * Game.getInstance().GAME_WIDTH ) % Game.getInstance().GAME_WIDTH + MainWindow.frame().getRumbleX() - width / 2 );
+
+        // Some large images (i.e, black holes) need to be wrapped.
+        if ( newX + width >= Game.getInstance().GAME_WIDTH )
+            newX -= Game.getInstance().GAME_HEIGHT;
+
+        return ( int ) newX;
+    }
+
     public static int translateY( double y )
     {
         try
         {
-            return (int) Math.round( ( y - Local.getLocalPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT ) + MainWindow.frame().getRumbleY();
-
+            return ( int ) Math.round( ( y - Local.getLocalPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT ) + MainWindow.frame().getRumbleY();
         }
         catch ( NullPointerException nullPointerException )
         {
             Main.warning( "Null Pointer Exception, translateY" );
             return -1;
         }
+    }
+
+    public static int translateY( double y, double height )
+    {
+        double newY = ( int ) Math.round( ( y - Local.getLocalPlayer().getY() + MainWindow.frame().getHeight() / 2 + 4 * Game.getInstance().GAME_HEIGHT ) % Game.getInstance().GAME_HEIGHT + MainWindow.frame().getRumbleY() - height / 2 );
+
+        // Some large images (i.e, black holes) need to be wrapped.
+        if ( newY + height >= Game.getInstance().GAME_HEIGHT )
+            newY -= Game.getInstance().GAME_HEIGHT;
+
+        return ( int ) newY;
     }
 
     /**
@@ -51,7 +72,7 @@ public abstract class RelativeGraphics
     {
         try
         {
-            return (int) ( ( Game.getInstance().getObjectManager().getPlayers().peek().getX() + Game.getInstance().GAME_WIDTH / 2 ) ) % Game.getInstance().GAME_WIDTH;
+            return ( int ) ( ( Game.getInstance().getObjectManager().getPlayers().peek().getX() + Game.getInstance().GAME_WIDTH / 2 ) ) % Game.getInstance().GAME_WIDTH;
 
         }
         catch ( Exception exception )
@@ -70,7 +91,7 @@ public abstract class RelativeGraphics
     {
         try
         {
-            return (int) ( Game.getInstance().getObjectManager().getPlayers().peek().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT;
+            return ( int ) ( Game.getInstance().getObjectManager().getPlayers().peek().getY() + Game.getInstance().GAME_HEIGHT / 2 ) % Game.getInstance().GAME_HEIGHT;
         }
         catch ( Exception exception )
         {

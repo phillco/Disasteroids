@@ -27,12 +27,12 @@ public class ImageLibrary
      */
     public static void init()
     {
-        asteroid = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/asteroid.gif" ) );
-        bonusAsteroid = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/bonusAsteroid.png" ) );
-        alien = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/alien.png" ) );
-        blackHole = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/blackHole.png" ) );
-        station = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/station.png" ) );
-        stationTurret = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "/stationTurret.png" ) );
+        asteroid = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "images/asteroid.gif" ) );
+        bonusAsteroid = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "images/bonusAsteroid.png" ) );
+        alien = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "images/alien.png" ) );
+        blackHole = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "images/blackHole.png" ) );
+        station = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "images/station.png" ) );
+        stationTurret = Toolkit.getDefaultToolkit().createImage( ImageLibrary.class.getResource( "images/stationTurret.png" ) );
     }
 
     public static Image getAsteroid()

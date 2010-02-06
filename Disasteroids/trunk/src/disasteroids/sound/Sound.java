@@ -72,7 +72,7 @@ public class Sound
     public static void startMusic()
     {
         if ( musicPlayer == null )
-            musicPlayer = new MusicPlayer( "/Music2.mid" );
+            musicPlayer = new MusicPlayer( "Music2.mid" );
         else
             musicPlayer.play();
     }

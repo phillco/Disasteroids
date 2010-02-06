@@ -4,11 +4,6 @@
  */
 package disasteroids;
 
-import disasteroids.game.Game;
-import disasteroids.game.levels.EmptyLevel;
-import disasteroids.game.levels.Classic;
-import disasteroids.game.levels.WaveGameplay;
-import disasteroids.game.objects.Ship;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,369 +11,375 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import disasteroids.game.Game;
+import disasteroids.game.levels.Classic;
+import disasteroids.game.levels.EmptyLevel;
+import disasteroids.game.levels.WaveGameplay;
+import disasteroids.game.objects.Ship;
+
 /**
  * Writes and retrieves the user's settings from a file.
  * @author Phillip Cohen
  */
 public class Settings
 {
-    /**
-     * First time startup?
-     */
-    private static boolean inSetup = false;
+	/**
+	 * First time startup?
+	 */
+	private static boolean inSetup = false;
 
-    /**
-     * The path to the settings file.
-     */
-    public static final String SETTINGS_FILE_PATH = "DisasteroidsSettings.props";
+	/**
+	 * The path to the settings file.
+	 */
+	public static final String SETTINGS_FILE_PATH = "DisasteroidsSettings.props";
 
-    /**
-     * The default settings.
-     */
-    private static Properties defaultSettings;
+	/**
+	 * The default settings.
+	 */
+	private static Properties defaultSettings;
 
-    /**
-     * The user's settings.
-     */
-    private static Properties userSettings;
+	/**
+	 * The user's settings.
+	 */
+	private static Properties userSettings;
 
-    private static String oldHighScorer;
+	private static String oldHighScorer;
 
-    private static double oldHighScore;
+	private static double oldHighScore;
 
-    /**
-     * Loads settings from <code>SETTINGS_FILE_PATH</code>, if it exists.
-     * 
-     * @return  whether settings were loaded
-     */
-    public static boolean loadFromStorage()
-    {
-        boolean bSuccess = true;
-        try
-        {
-            // Create the default settings.
-            //if ( defaultSettings == null )
-            {
-                defaultSettings = new Properties();
-                defaultSettings.put( "musicOn", String.valueOf( true ) );
-                defaultSettings.put( "soundOn", String.valueOf( true ) );
-                defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
-                defaultSettings.put( "qualityRendering", String.valueOf( true ) );
-                defaultSettings.put( "lastConnectionIP", "localhost" );
-                defaultSettings.put( "lastLevel", "wave" );
-                defaultSettings.put( "highScore", String.valueOf( 2000 ) );
-                defaultSettings.put( "highScorer", "Phillip & Andy" );
-//                defaultSettings.put( "lowScore", String.valueOf( -2000 ) );
-//                defaultSettings.put( "lowScorer", "Matt" );
-                defaultSettings.put( "playerName", "Player" );
-                defaultSettings.put( "playerColor", String.valueOf( Color.red.getRGB() ) );
-            }
+	/**
+	 * Loads settings from <code>SETTINGS_FILE_PATH</code>, if it exists.
+	 * 
+	 * @return whether settings were loaded
+	 */
+	public static boolean loadFromStorage()
+	{
+		boolean bSuccess = true;
+		try
+		{
+			// Create the default settings.
+			// if ( defaultSettings == null )
+			{
+				defaultSettings = new Properties();
+				defaultSettings.put( "musicOn", String.valueOf( true ) );
+				defaultSettings.put( "soundOn", String.valueOf( true ) );
+				defaultSettings.put( "fullscreenMode", String.valueOf( true ) );
+				defaultSettings.put( "qualityRendering", String.valueOf( true ) );
+				defaultSettings.put( "lastConnectionIP", "localhost" );
+				defaultSettings.put( "lastLevel", "wave" );
+				defaultSettings.put( "highScore", String.valueOf( 2000 ) );
+				defaultSettings.put( "highScorer", "Phillip & Andy" );
+				// defaultSettings.put( "lowScore", String.valueOf( -2000 ) );
+				// defaultSettings.put( "lowScorer", "Matt" );
+				defaultSettings.put( "playerName", "Player" );
+				defaultSettings.put( "playerColor", String.valueOf( Color.red.getRGB() ) );
+			}
 
-            // Create the user's settings with the defaults as a base.
-            userSettings = new Properties( defaultSettings );
+			// Create the user's settings with the defaults as a base.
+			userSettings = new Properties( defaultSettings );
 
-            // Load the settings file.
-            File settingsFile = new File( SETTINGS_FILE_PATH );
-            
-            if ( settingsFile.exists() )
-                userSettings.load( new FileInputStream( settingsFile ) );
-            else
-            {
-                setInSetup( true );
-                bSuccess = false;
-            }
-            
-            oldHighScore = getHighScore();
-            oldHighScorer = getHighScoreName();
-        }
-        catch ( IOException ex )
-        {
-            setInSetup( true );
-            return false;
-        }
+			// Load the settings file.
+			File settingsFile = new File( SETTINGS_FILE_PATH );
 
-        // Success!
-        return bSuccess;
-    }
+			if ( settingsFile.exists() )
+				userSettings.load( new FileInputStream( settingsFile ) );
+			else
+			{
+				setInSetup( true );
+				bSuccess = false;
+			}
 
-    /**
-     * Writes settings to <code>SETTINGS_FILE_PATH</code>.
-     * 
-     * @return  whether settings were saved
-     */
-    public static boolean saveToStorage()
-    {
-        try
-        {
-            // Update the high score.
-            if ( Game.getInstance() != null )
-            {
-                Ship highestScorer = Game.getInstance().getObjectManager().getPlayers().peek();
-                for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
-                {
-                    if ( s.getScore() > Settings.getHighScore() )
-                    {
-                        Settings.setHighScoreName( highestScorer.getName() );
-                        Settings.setHighScore( highestScorer.getScore() );
-                    }
-                }
-            }
+			oldHighScore = getHighScore();
+			oldHighScorer = getHighScoreName();
+		}
+		catch ( IOException ex )
+		{
+			setInSetup( true );
+			return false;
+		}
 
-            // Write the settings file.            
-            userSettings.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "You're reading the Disasteroids settings file! (v3)." );
-        }
-        catch ( IOException e )
-        {
-            Main.warning( "Failed to save settings.", e );
-            return false;
-        }
-        catch ( RuntimeException t )
-        {
-            Main.warning( "Failed to save settings.", t );
-            throw t;
-        }
+		// Success!
+		return bSuccess;
+	}
 
-        // Success!
-        return true;
-    }
+	/**
+	 * Writes settings to <code>SETTINGS_FILE_PATH</code>.
+	 * 
+	 * @return whether settings were saved
+	 */
+	public static boolean saveToStorage()
+	{
+		try
+		{
+			// Update the high score.
+			if ( Game.getInstance() != null )
+			{
+				Ship highestScorer = Game.getInstance().getObjectManager().getPlayers().peek();
+				for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
+				{
+					if ( s.getScore() > Settings.getHighScore() )
+					{
+						Settings.setHighScoreName( highestScorer.getName() );
+						Settings.setHighScore( highestScorer.getScore() );
+					}
+				}
+			}
 
-    /**
-     * Returns whether the user wants music to play.
-     * @since November 15, 2007
-     */
-    public static boolean isMusicOn()
-    {
-        return Boolean.parseBoolean( userSettings.getProperty( "musicOn" ) );
-    }
+			// Write the settings file.
+			userSettings.store( new FileOutputStream( Settings.SETTINGS_FILE_PATH ), "You're reading the Disasteroids settings file! (v3)." );
+		}
+		catch ( IOException e )
+		{
+			Main.warning( "Failed to save settings.", e );
+			return false;
+		}
+		catch ( RuntimeException t )
+		{
+			Main.warning( "Failed to save settings.", t );
+			throw t;
+		}
 
-    /**
-     * Sets whether the user wants music to play.
-     * @since November 15, 2007
-     */
-    public static void setMusicOn( boolean aMusicOn )
-    {
-        userSettings.put( "musicOn", String.valueOf( aMusicOn ) );
-    }
+		// Success!
+		return true;
+	}
 
-    /**
-     * Returns whether the user wants sound to play.
-     * @since November 15, 2007
-     */
-    public static boolean isSoundOn()
-    {
-        return Boolean.parseBoolean( userSettings.getProperty( "soundOn" ) );
-    }
+	/**
+	 * Returns whether the user wants music to play.
+	 * @since November 15, 2007
+	 */
+	public static boolean isMusicOn()
+	{
+		return Boolean.parseBoolean( userSettings.getProperty( "musicOn" ) );
+	}
 
-    /**
-     * Sets whether the user wants sound to play.
-     * @since November 15, 2007
-     */
-    public static void setSoundOn( boolean aSoundOn )
-    {
-        userSettings.put( "soundOn", String.valueOf( aSoundOn ) );
-    }
+	/**
+	 * Sets whether the user wants music to play.
+	 * @since November 15, 2007
+	 */
+	public static void setMusicOn( boolean aMusicOn )
+	{
+		userSettings.put( "musicOn", String.valueOf( aMusicOn ) );
+	}
 
-    /**
-     * Returns whether the user wants a fullscreen game (true) or a windowed one (false).
-     * @since December 7, 2007
-     */
-    public static boolean isUseFullscreen()
-    {
-        return Boolean.parseBoolean( userSettings.getProperty( "fullscreenMode" ) );
-    }
+	/**
+	 * Returns whether the user wants sound to play.
+	 * @since November 15, 2007
+	 */
+	public static boolean isSoundOn()
+	{
+		return Boolean.parseBoolean( userSettings.getProperty( "soundOn" ) );
+	}
 
-    /**
-     * Saves whether the user wants a fullscreen game (true) or a windowed one (false).
-     * @since December 7, 2007
-     */
-    public static void setUseFullscreen( boolean aUseFullscreen )
-    {
-        userSettings.put( "fullscreenMode", String.valueOf( aUseFullscreen ) );
-    }
+	/**
+	 * Sets whether the user wants sound to play.
+	 * @since November 15, 2007
+	 */
+	public static void setSoundOn( boolean aSoundOn )
+	{
+		userSettings.put( "soundOn", String.valueOf( aSoundOn ) );
+	}
 
-    /**
-     * Returns the last address the user entered in the "Select Server" dialog box.
-     * @since December 9, 2007
-     */
-    public static String getLastConnectionIP()
-    {
-        return userSettings.getProperty( "lastConnectionIP" );
-    }
+	/**
+	 * Returns whether the user wants a fullscreen game (true) or a windowed one (false).
+	 * @since December 7, 2007
+	 */
+	public static boolean isUseFullscreen()
+	{
+		return Boolean.parseBoolean( userSettings.getProperty( "fullscreenMode" ) );
+	}
 
-    /**
-     * Saves the last address the user entered in the "Select Server" dialog box.
-     * @since December 9, 2007
-     */
-    public static void setLastConnectionIP( String aLastConnectionIP )
-    {
-        userSettings.put( "lastConnectionIP", aLastConnectionIP );
-    }
+	/**
+	 * Saves whether the user wants a fullscreen game (true) or a windowed one (false).
+	 * @since December 7, 2007
+	 */
+	public static void setUseFullscreen( boolean aUseFullscreen )
+	{
+		userSettings.put( "fullscreenMode", String.valueOf( aUseFullscreen ) );
+	}
 
-    /**
-     * Saves the last used level.
-     * @since April 17, 2008
-     */
-    public static void setLastLevel( Class aMode )
-    {
-        if ( aMode == WaveGameplay.class )
-            userSettings.put( "lastLevel", "wave" );
-        else if ( aMode == EmptyLevel.class )
-            userSettings.put( "lastLevel", "deathmatch" );
-        else
-            userSettings.put( "lastLevel", "linear" );
-    }
+	/**
+	 * Returns the last address the user entered in the "Select Server" dialog box.
+	 * @since December 9, 2007
+	 */
+	public static String getLastConnectionIP()
+	{
+		return userSettings.getProperty( "lastConnectionIP" );
+	}
 
-    /**
-     * Gets the last used level.
-     * @since April 17, 2008
-     */
-    public static Class getLastLevel()
-    {
-        if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "wave" ) )
-            return WaveGameplay.class;
-        else if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "deathmatch" ) )
-            return EmptyLevel.class;
-        else
-            return Classic.class;
-    }
+	/**
+	 * Saves the last address the user entered in the "Select Server" dialog box.
+	 * @since December 9, 2007
+	 */
+	public static void setLastConnectionIP( String aLastConnectionIP )
+	{
+		userSettings.put( "lastConnectionIP", aLastConnectionIP );
+	}
 
-    /**
-     * Returns whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.
-     * @since December 15, 2007
-     */
-    public static boolean isQualityRendering()
-    {
-        return Boolean.parseBoolean( userSettings.getProperty( "qualityRendering" ) );
-    }
+	/**
+	 * Saves the last used level.
+	 * @since April 17, 2008
+	 */
+	public static void setLastLevel( Class aMode )
+	{
+		if ( aMode == WaveGameplay.class )
+			userSettings.put( "lastLevel", "wave" );
+		else if ( aMode == EmptyLevel.class )
+			userSettings.put( "lastLevel", "deathmatch" );
+		else
+			userSettings.put( "lastLevel", "linear" );
+	}
 
-    /**
-     * Sets whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.
-     * @since December 15, 2007
-     */
-    public static void setQualityRendering( boolean aQualityRendering )
-    {
-        userSettings.put( "qualityRendering", String.valueOf( aQualityRendering ) );
-    }
+	/**
+	 * Gets the last used level.
+	 * @since April 17, 2008
+	 */
+	public static Class getLastLevel()
+	{
+		if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "wave" ) )
+			return WaveGameplay.class;
+		else if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "deathmatch" ) )
+			return EmptyLevel.class;
+		else
+			return Classic.class;
+	}
 
-    /**
-     * Returns the highest score we've seen on this computer.
-     * @since December 18, 2007
-     */
-    public static double getHighScore()
-    {
-        return Double.parseDouble( userSettings.getProperty( "highScore" ) );
-    }
+	/**
+	 * Returns whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.
+	 * @since December 15, 2007
+	 */
+	public static boolean isQualityRendering()
+	{
+		return Boolean.parseBoolean( userSettings.getProperty( "qualityRendering" ) );
+	}
 
-    /**
-     * Updates the highest score we've seen on this computer.
-     * @since December 18, 2007
-     */
-    public static void setHighScore( double aHighScore )
-    {
-        userSettings.put( "highScore", String.valueOf( aHighScore ) );
-    }
-//
-//    /**
-//     * Returns the lowest score we've seen on this computer.
-//     */
-//    public static double getLowScore()
-//    {
-//        return Double.parseDouble( userSettings.getProperty( "lowScore" ) );
-//    }
-//
-//    /**
-//     * Updates the lowest score we've seen on this computer.
-//     */
-//    public static void setLowScore( double aLowScore )
-//    {
-//        userSettings.put( "lowScore", String.valueOf( aLowScore ) );
-//    }
+	/**
+	 * Sets whether the user wants quality rendering. This makes graphics look nicer, but at the expense of speed.
+	 * @since December 15, 2007
+	 */
+	public static void setQualityRendering( boolean aQualityRendering )
+	{
+		userSettings.put( "qualityRendering", String.valueOf( aQualityRendering ) );
+	}
 
-    /**
-     * Returns the name of the high scorer.
-     * @since December 18, 2007
-     */
-    public static String getHighScoreName()
-    {
-        return userSettings.getProperty( "highScorer" );
-    }
+	/**
+	 * Returns the highest score we've seen on this computer.
+	 * @since December 18, 2007
+	 */
+	public static double getHighScore()
+	{
+		return Double.parseDouble( userSettings.getProperty( "highScore" ) );
+	}
 
-    /**
-     * Sets the name of the high scorer.
-     * @since December 18, 2007
-     */
-    public static void setHighScoreName( String aHighScoreName )
-    {
-        userSettings.put( "highScorer", aHighScoreName );
-    }
+	/**
+	 * Updates the highest score we've seen on this computer.
+	 * @since December 18, 2007
+	 */
+	public static void setHighScore( double aHighScore )
+	{
+		userSettings.put( "highScore", String.valueOf( aHighScore ) );
+	}
 
-    /**
-     * Returns the user's in-game name, or "Player" if that's empty.
-     * @since December 20, 2007
-     */
-    public static String getPlayerName()
-    {
-        if ( userSettings.getProperty( "playerName" ).length() == 0 )
-            return "Player";
-        else
-            return userSettings.getProperty( "playerName" );
-    }
+	//
+	// /**
+	// * Returns the lowest score we've seen on this computer.
+	// */
+	// public static double getLowScore()
+	// {
+	// return Double.parseDouble( userSettings.getProperty( "lowScore" ) );
+	// }
+	//
+	// /**
+	// * Updates the lowest score we've seen on this computer.
+	// */
+	// public static void setLowScore( double aLowScore )
+	// {
+	// userSettings.put( "lowScore", String.valueOf( aLowScore ) );
+	// }
 
-    /**
-     * Sets the user's in-game name.
-     * @since December 20, 2007
-     */
-    public static void setPlayerName( String aPlayerName )
-    {
-        userSettings.put( "playerName", aPlayerName );
-    }
+	/**
+	 * Returns the name of the high scorer.
+	 * @since December 18, 2007
+	 */
+	public static String getHighScoreName()
+	{
+		return userSettings.getProperty( "highScorer" );
+	}
 
-    /**
-     * Returns the user's in-game ship color.
-     * @since April 9, 2008
-     */
-    public static Color getPlayerColor()
-    {
-        return new Color( Integer.parseInt( userSettings.getProperty( "playerColor" ) ) );
-    }
+	/**
+	 * Sets the name of the high scorer.
+	 * @since December 18, 2007
+	 */
+	public static void setHighScoreName( String aHighScoreName )
+	{
+		userSettings.put( "highScorer", aHighScoreName );
+	}
 
-    /**
-     * Sets the user's in-game ship color.
-     * @since April 9, 2008
-     */
-    public static void setPlayerColor( Color aPlayerColor )
-    {
-        if ( aPlayerColor != null )
-            userSettings.put( "playerColor", String.valueOf( aPlayerColor.getRGB() ) );
-    }
+	/**
+	 * Returns the user's in-game name, or "Player" if that's empty.
+	 * @since December 20, 2007
+	 */
+	public static String getPlayerName()
+	{
+		if ( userSettings.getProperty( "playerName" ).length() == 0 )
+			return "Player";
+		else
+			return userSettings.getProperty( "playerName" );
+	}
 
-    /**
-     * Returns if this is a first-time run, where the user has no personal settings.
-     * @since April 9, 2008
-     */
-    public static boolean isInSetup()
-    {
-        return inSetup;
-    }
+	/**
+	 * Sets the user's in-game name.
+	 * @since December 20, 2007
+	 */
+	public static void setPlayerName( String aPlayerName )
+	{
+		userSettings.put( "playerName", aPlayerName );
+	}
 
-    /**
-     * Sets whether this is a first-time, where the user has no personal settings.
-     * @since April 9, 2008
-     */
-    public static void setInSetup( boolean aInSetup )
-    {
-        inSetup = aInSetup;
-    }
+	/**
+	 * Returns the user's in-game ship color.
+	 * @since April 9, 2008
+	 */
+	public static Color getPlayerColor()
+	{
+		return new Color( Integer.parseInt( userSettings.getProperty( "playerColor" ) ) );
+	}
 
-    public static double getOldHighScore()
-    {
-        return oldHighScore;
-}
+	/**
+	 * Sets the user's in-game ship color.
+	 * @since April 9, 2008
+	 */
+	public static void setPlayerColor( Color aPlayerColor )
+	{
+		if ( aPlayerColor != null )
+			userSettings.put( "playerColor", String.valueOf( aPlayerColor.getRGB() ) );
+	}
 
-    public static String getOldHighScorer()
-    {
-        return oldHighScorer;
-    }
+	/**
+	 * Returns if this is a first-time run, where the user has no personal settings.
+	 * @since April 9, 2008
+	 */
+	public static boolean isInSetup()
+	{
+		return inSetup;
+	}
 
+	/**
+	 * Sets whether this is a first-time, where the user has no personal settings.
+	 * @since April 9, 2008
+	 */
+	public static void setInSetup( boolean aInSetup )
+	{
+		inSetup = aInSetup;
+	}
+
+	public static double getOldHighScore()
+	{
+		return oldHighScore;
+	}
+
+	public static String getOldHighScorer()
+	{
+		return oldHighScorer;
+	}
 
 }

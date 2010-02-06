@@ -4,12 +4,6 @@
  */
 package disasteroids.game.levels;
 
-import disasteroids.game.Game;
-import disasteroids.*;
-import disasteroids.game.objects.BonusAsteroid;
-import disasteroids.game.objects.Asteroid;
-import disasteroids.game.objects.Ship;
-import disasteroids.gui.MainWindow;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -18,166 +12,170 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
+
 import javax.swing.JOptionPane;
+
+import disasteroids.Main;
+import disasteroids.Util;
+import disasteroids.game.Game;
+import disasteroids.game.objects.Asteroid;
+import disasteroids.game.objects.BonusAsteroid;
+import disasteroids.game.objects.Ship;
+import disasteroids.gui.MainWindow;
 
 /**
  * The classic, level-based gameplay.
  */
 public class Classic implements Level
 {
-    /**
-     * The current level of the game.
-     */
-    private int level;
+	/**
+	 * The current level of the game.
+	 */
+	private int level;
 
-    public Classic()
-    {
-        level = 1;
-        setUpAsteroidField( level );
-    }
+	public Classic()
+	{
+		level = 1;
+		setUpAsteroidField( level );
+	}
 
-    public String getName()
-    {
-        return "Classic";
-    }
+	public String getName()
+	{
+		return "Classic";
+	}
 
-    void setUpAsteroidField( int level )
-    {
-        Random rand = Util.getGameplayRandomGenerator();
-        int numBonuses = 0;
+	void setUpAsteroidField( int level )
+	{
+		Random rand = Util.getGameplayRandomGenerator();
+		int numBonuses = 0;
 
-        // Create regular asteroids.
-        for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
-        {
-            Game.getInstance().getObjectManager().addObject( new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
-                    rand.nextInt( Game.getInstance().GAME_HEIGHT ),
-                    rand.nextDouble() * 6 - 3,
-                    rand.nextDouble() * 6 - 3,
-                    rand.nextInt( 150 ) + 25,
-                    rand.nextInt( level * 10 + 10 ) - 9 ), false );
-            if ( rand.nextInt( 10 ) == 1 )
-            {
-                numBonuses++;
-            }
-        }
+		// Create regular asteroids.
+		for ( int numAsteroids = 0; numAsteroids < ( level + 1 ) * 2; numAsteroids++ )
+		{
+			Game.getInstance().getObjectManager().addObject(
+					new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ), rand.nextInt( Game.getInstance().GAME_HEIGHT ), rand.nextDouble() * 6 - 3, rand.nextDouble() * 6 - 3, rand.nextInt( 150 ) + 25, rand.nextInt( level * 10 + 10 ) - 9 ),
+					false );
+			if ( rand.nextInt( 10 ) == 1 )
+			{
+				numBonuses++;
+			}
+		}
 
-        // Create bonus asteroids.
-        for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
-        {
-            Game.getInstance().getObjectManager().addObject( new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ),
-                    rand.nextInt( Game.getInstance().GAME_HEIGHT ),
-                    rand.nextDouble() * 6 - 3,
-                    rand.nextDouble() * 6 - 3,
-                    rand.nextInt( 150 ) + 25,
-                    rand.nextInt( level * 10 + 10 ) - 9 ), false );
+		// Create bonus asteroids.
+		for ( int numAsteroids = 0; numAsteroids < numBonuses; numAsteroids++ )
+		{
+			Game.getInstance().getObjectManager()
+					.addObject(
+							new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ), rand.nextInt( Game.getInstance().GAME_HEIGHT ), rand.nextDouble() * 6 - 3, rand.nextDouble() * 6 - 3, rand.nextInt( 150 ) + 25, rand
+									.nextInt( level * 10 + 10 ) - 9 ), false );
 
-        }
-    }
+		}
+	}
 
-    public void act()
-    {
-        // Advance to the next level if it's time.
-        if ( shouldExitLevel() )
-        {
-            nextLevel();
-            return;
-        }
-    }
+	public void act()
+	{
+		// Advance to the next level if it's time.
+		if ( shouldExitLevel() )
+		{
+			nextLevel();
+			return;
+		}
+	}
 
-    public void drawHUD( Graphics g )
-    {
-        Graphics2D g2d = (Graphics2D) g;
-        String text = "";
-        int x = MainWindow.frame().getPanel().getWidth(), y = MainWindow.frame().getPanel().getHeight() - 18;
+	public void drawHUD( Graphics g )
+	{
+		Graphics2D g2d = (Graphics2D) g;
+		String text = "";
+		int x = MainWindow.frame().getPanel().getWidth(), y = MainWindow.frame().getPanel().getHeight() - 18;
 
-        // Draw the level counter.
-        g2d.setColor( Color.lightGray );
-        g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
-        text = "" + level;
-        x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth();
-        g2d.drawString( text, x, y );
+		// Draw the level counter.
+		g2d.setColor( Color.lightGray );
+		g2d.setFont( new Font( "Tahoma", Font.BOLD, 16 ) );
+		text = "" + level;
+		x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth();
+		g2d.drawString( text, x, y );
 
-        // Draw the "level" string.
-        g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
-        text = "level";
-        x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() + 8;
-        g2d.drawString( text, x, y );
-    }
+		// Draw the "level" string.
+		g2d.setFont( new Font( "Tahoma", Font.ITALIC, 12 ) );
+		text = "level";
+		x -= (int) g2d.getFont().getStringBounds( text, g2d.getFontRenderContext() ).getWidth() + 8;
+		g2d.drawString( text, x, y );
+	}
 
-    /**
-     * Advances to the next level.
-     */
-    void nextLevel()
-    {
-        warp( level + 1 );
-    }
+	/**
+	 * Advances to the next level.
+	 */
+	void nextLevel()
+	{
+		warp( level + 1 );
+	}
 
-    /**
-     * Returns if the game is ready to advance levels.
-     * Checks if the <code>Asteroids</code> have been cleared and then if we're on the sandbox level.
-     * 
-     * @return  whether the game should advance to the next level
-     */
-    public boolean shouldExitLevel()
-    {
-        // Have the asteroids been cleared?
-        if ( Game.getInstance().getObjectManager().getAsteroids().size() > 0 )
-            return false;
+	/**
+	 * Returns if the game is ready to advance levels.
+	 * Checks if the <code>Asteroids</code> have been cleared and then if we're on the sandbox level.
+	 * 
+	 * @return whether the game should advance to the next level
+	 */
+	public boolean shouldExitLevel()
+	{
+		// Have the asteroids been cleared?
+		if ( Game.getInstance().getObjectManager().getAsteroids().size() > 0 )
+			return false;
 
-        // Level -999 is a sandbox and never exits.
-        if ( level == -999 )
-            return false;
+		// Level -999 is a sandbox and never exits.
+		if ( level == -999 )
+			return false;
 
-        // Ready to advance!
-        return true;
-    }
+		// Ready to advance!
+		return true;
+	}
 
-    /**
-     * Advances the game to a new level.
-     * 
-     * @param newLevel  the level to warp to
-     * @since November 15 2007
-     */
-    public void warp( int newLevel )
-    {
-        level = newLevel;
+	/**
+	 * Advances the game to a new level.
+	 * 
+	 * @param newLevel the level to warp to
+	 * @since November 15 2007
+	 */
+	public void warp( int newLevel )
+	{
+		level = newLevel;
 
-        // All players get invincibility.
-        for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
-        {
-            s.setInvincibilityCount( 100 );
-            s.increaseScore( 2500 );
-        }
+		// All players get invincibility.
+		for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
+		{
+			s.setInvincibilityCount( 100 );
+			s.increaseScore( 2500 );
+		}
 
-        Game.getInstance().getObjectManager().clearObstacles();
+		Game.getInstance().getObjectManager().clearObstacles();
 
-        if ( MainWindow.frame() != null )
-            MainWindow.frame().nextLevel();
+		if ( MainWindow.frame() != null )
+			MainWindow.frame().nextLevel();
 
-        setUpAsteroidField( level );
-        MainWindow.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
-    }
+		setUpAsteroidField( level );
+		MainWindow.addNotificationMessage( "Welcome to level " + newLevel + ".", 500 );
+	}
 
-    public void flatten( DataOutputStream stream ) throws IOException
-    {
-        stream.writeInt( level );
-    }
+	public void flatten( DataOutputStream stream ) throws IOException
+	{
+		stream.writeInt( level );
+	}
 
-    public Classic( DataInputStream stream ) throws IOException
-    {
-        this.level = stream.readInt();
-    }
+	public Classic( DataInputStream stream ) throws IOException
+	{
+		this.level = stream.readInt();
+	}
 
-    public void optionsKey()
-    {
-        try
-        {
-            warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", level ) ) );
-        }
-        catch ( NumberFormatException e )
-        {
-            // Do nothing with incorrect or cancelled input.
-            Main.log( "Invalid warp command.", 800 );
-        }
-    }
+	public void optionsKey()
+	{
+		try
+		{
+			warp( Integer.parseInt( JOptionPane.showInputDialog( null, "Enter the level number to warp to.", level ) ) );
+		}
+		catch ( NumberFormatException e )
+		{
+			// Do nothing with incorrect or cancelled input.
+			Main.log( "Invalid warp command.", 800 );
+		}
+	}
 }

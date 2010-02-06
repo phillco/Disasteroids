@@ -4,7 +4,6 @@
  */
 package disasteroids.gui;
 
-import disasteroids.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
@@ -15,6 +14,9 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import disasteroids.Main;
+import disasteroids.Settings;
+
 /**
  * A central class for menus.
  * @author Phillip Cohen
@@ -22,46 +24,46 @@ import java.awt.event.WindowEvent;
  */
 public class AsteroidsMenu extends BufferedFrame
 {
-    public static final int WINDOW_HEIGHT = 450;
+	public static final int WINDOW_HEIGHT = 450;
 
-    public static final int WINDOW_WIDTH = 550;
+	public static final int WINDOW_WIDTH = 550;
 
-    public AsteroidsMenu()
-    {
-        // Center on the screen.
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
-        setLocation( screenSize.width / 2 - getWidth() / 2, screenSize.height / 2 - getHeight() / 2 );
+	public AsteroidsMenu()
+	{
+		// Center on the screen.
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		setSize( WINDOW_WIDTH, WINDOW_HEIGHT );
+		setLocation( screenSize.width / 2 - getWidth() / 2, screenSize.height / 2 - getHeight() / 2 );
 
-        // Allow us to be closed and keyed.
-        addWindowListener( new CloseAdapter() );
-        setTitle( "Disasteroids!" );
-        setAlwaysOnTop( true );
-        setResizable( false );
+		// Allow us to be closed and keyed.
+		addWindowListener( new CloseAdapter() );
+		setTitle( "Disasteroids!" );
+		setAlwaysOnTop( true );
+		setResizable( false );
 
-        // Show the form.
-        setVisible( true );
-    }
+		// Show the form.
+		setVisible( true );
+	}
 
-    @Override
-    public void paint( Graphics g )
-    {
-        // Menus are always anti-aliased.
-        ( (Graphics2D) g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+	@Override
+	public void paint( Graphics g )
+	{
+		// Menus are always anti-aliased.
+		( (Graphics2D) g ).setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
 
-        // Draw the background.
-        Graphics2D g2d = (Graphics2D) g;
-        GradientPaint gradient = new GradientPaint( 0, 0, Settings.getPlayerColor().darker().darker(), WINDOW_WIDTH, WINDOW_HEIGHT, Color.black );
-        g2d.setPaint( gradient );
-        g2d.fillRect( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
-    }
+		// Draw the background.
+		Graphics2D g2d = (Graphics2D) g;
+		GradientPaint gradient = new GradientPaint( 0, 0, Settings.getPlayerColor().darker().darker(), WINDOW_WIDTH, WINDOW_HEIGHT, Color.black );
+		g2d.setPaint( gradient );
+		g2d.fillRect( 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT );
+	}
 
-    private static class CloseAdapter extends WindowAdapter
-    {
-        @Override
-        public void windowClosing( WindowEvent e )
-        {
-            Main.quit();
-        }
-    }
+	private static class CloseAdapter extends WindowAdapter
+	{
+		@Override
+		public void windowClosing( WindowEvent e )
+		{
+			Main.quit();
+		}
+	}
 }

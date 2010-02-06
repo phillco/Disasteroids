@@ -6,7 +6,7 @@ package disasteroids.gui;
 
 import disasteroids.game.Game;
 import disasteroids.game.GameLoop;
-import disasteroids.game.objects.*;
+import disasteroids.game.objects.Ship;
 import disasteroids.sound.Sound;
 
 /**
@@ -15,68 +15,67 @@ import disasteroids.sound.Sound;
 public class Local
 {
 
-    /**
-     * ID of the player that's at this computer.
-     */
-    private static long localPlayerID = -1;
+	/**
+	 * ID of the player that's at this computer.
+	 */
+	private static long localPlayerID = -1;
 
-    /**
-     * Whether the game is loading.
-     */
-    private static boolean loading = false;
+	/**
+	 * Whether the game is loading.
+	 */
+	private static boolean loading = false;
 
-    public static void init( long localID )
-    {
-        if ( localPlayerID == -1 )
-            localPlayerID = localID;
-        Sound.updateMusic();
-    }
+	public static void init( long localID )
+	{
+		if ( localPlayerID == -1 )
+			localPlayerID = localID;
+		Sound.updateMusic();
+	}
 
-    public static void dispose()
-    {
-        GameLoop.stopLoop();
-        MainWindow.frame().close();
-        localPlayerID = -1;
-    }
+	public static void dispose()
+	{
+		GameLoop.stopLoop();
+		MainWindow.frame().close();
+		localPlayerID = -1;
+	}
 
+	/**
+	 * Returns if commonly used things (like the AsteroidsFrame and Background) are null, and thus are loading.
+	 * 
+	 * @return if common graphics classes are null!
+	 * @since April 10, 2008
+	 */
+	public static boolean isStuffNull()
+	{
+		return ( loading || MainWindow.frame() == null || localPlayerID == -1 || MainWindow.frame().getPanel().getStarBackground() == null );
+	}
 
-    /**
-     * Returns if commonly used things (like the AsteroidsFrame and Background) are null, and thus are loading.
-     * 
-     * @return  if common graphics classes are null!
-     * @since April 10, 2008
-     */
-    public static boolean isStuffNull()
-    {
-        return ( loading || MainWindow.frame() == null || localPlayerID == -1 || MainWindow.frame().getPanel().getStarBackground() == null );
-    }
+	/**
+	 * Returns the star background.
+	 * 
+	 * @return the star background, as seen in the frame's panel
+	 * @since April 10, 2008
+	 */
+	public static Background getStarBackground()
+	{
+		if ( isStuffNull() )
+			return null;
+		else
+			return MainWindow.frame().getPanel().getStarBackground();
+	}
 
-    /**
-     * Returns the star background.
-     * 
-     * @return  the star background, as seen in the frame's panel
-     * @since April 10, 2008
-     */
-    public static Background getStarBackground()
-    {
-        if ( isStuffNull() )
-            return null;
-        else
-            return MainWindow.frame().getPanel().getStarBackground();
-    }
+	public static Ship getLocalPlayer()
+	{
+		if ( isStuffNull() )
+			return null;
+		else
+			return (Ship) Game.getInstance().getObjectManager().getObject( localPlayerID );
+	}
 
-    public static Ship getLocalPlayer()
-    {
-        if ( isStuffNull() )
-            return null;
-        else
-            return ( Ship ) Game.getInstance().getObjectManager().getObject( localPlayerID );
-    }
-
-    public static void loadGame()
-    {
-        loading = true;
-        localPlayerID = Game.loadFromFile();
-        loading = false;
-    }
+	public static void loadGame()
+	{
+		loading = true;
+		localPlayerID = Game.loadFromFile();
+		loading = false;
+	}
 }

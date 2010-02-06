@@ -15,32 +15,32 @@ import java.io.IOException;
 public class EmptyLevel implements Level
 {
 
-    public EmptyLevel()
-    {
-    }
+	public EmptyLevel()
+	{
+	}
 
-    public void act()
-    {
-    }
+	public void act()
+	{
+	}
 
-    public void drawHUD( Graphics g )
-    {
-    }
+	public void drawHUD( Graphics g )
+	{
+	}
 
-    public String getName()
-    {
-        return "Empty level";
-    }
+	public String getName()
+	{
+		return "Empty level";
+	}
 
-    public void flatten( DataOutputStream stream ) throws IOException
-    {
-    }
+	public void flatten( DataOutputStream stream ) throws IOException
+	{
+	}
 
-    public EmptyLevel( DataInputStream stream ) throws IOException
-    {
-    }
+	public EmptyLevel( DataInputStream stream ) throws IOException
+	{
+	}
 
-    public void optionsKey()
-    {
-    }
+	public void optionsKey()
+	{
+	}
 }

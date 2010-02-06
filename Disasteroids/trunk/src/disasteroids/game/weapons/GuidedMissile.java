@@ -1,20 +1,20 @@
-
 package disasteroids.game.weapons;
 
-import disasteroids.game.objects.Alien;
-import disasteroids.game.objects.Asteroid;
-import disasteroids.game.Game;
-import disasteroids.game.objects.GameObject;
-import disasteroids.game.ObjectManager;
-import disasteroids.game.objects.Ship;
-import disasteroids.game.objects.Station;
-import disasteroids.Util;
-import disasteroids.gui.MainWindow;
-import disasteroids.gui.Particle;
-import disasteroids.gui.ParticleManager;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
+
+import disasteroids.Util;
+import disasteroids.game.Game;
+import disasteroids.game.ObjectManager;
+import disasteroids.game.objects.Alien;
+import disasteroids.game.objects.Asteroid;
+import disasteroids.game.objects.GameObject;
+import disasteroids.game.objects.Ship;
+import disasteroids.game.objects.Station;
+import disasteroids.gui.MainWindow;
+import disasteroids.gui.Particle;
+import disasteroids.gui.ParticleManager;
 
 /**
  * A projectile that looks just like a normal Missile, but it tracks down a target
@@ -23,390 +23,382 @@ import java.util.Random;
  */
 public class GuidedMissile extends Unit
 {
-    private GameObject objectToFollow;
-    private GuidedMissileManager parent;
+	private GameObject objectToFollow;
+	private GuidedMissileManager parent;
 
-    private boolean foundObject = false;
+	private boolean foundObject = false;
 
-    private double angle;
-    private int explosionStage = 0;
+	private double angle;
+	private int explosionStage = 0;
 
-    private int radius = 3;
+	private int radius = 3;
 
-    private final int searchRadius = 1000;
+	private final int searchRadius = 1000;
 
-    public GuidedMissile(GuidedMissileManager parent, Color color, double x, double y, double dx, double dy, double angle)
-    {
-        super(color, x, y, dx, dy);
+	public GuidedMissile( GuidedMissileManager parent, Color color, double x, double y, double dx, double dy, double angle )
+	{
+		super( color, x, y, dx, dy );
 
-        this.parent = parent;
-        this.angle = angle;
-    }
+		this.parent = parent;
+		this.angle = angle;
+	}
 
-    @Override
-    public void move()
-    {   
-        super.move();
+	@Override
+	public void move()
+	{
+		super.move();
 
-        if (age > 20)
-        {
-            if (objectToFollow == null && !foundObject)
-            {
-                findObjectToFollow();
-                
-            }
-            
-            //if (objectToFollow != null)
-            //    angle = Util.getAngle(this, objectToFollow);
-        }
+		if ( age > 20 )
+		{
+			if ( objectToFollow == null && !foundObject )
+			{
+				findObjectToFollow();
 
-        //setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
-       // setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
-        track();
-    }
+			}
 
-    public void findObjectToFollow()
-    {
-        ObjectManager objManager = Game.getInstance().getObjectManager();
-        objectToFollow = objManager.getObject(0);
+			// if (objectToFollow != null)
+			// angle = Util.getAngle(this, objectToFollow);
+		}
 
-        GameObject target = null;
+		// setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
+		// setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
+		track();
+	}
 
-        for (long l : objManager.getAllIds())
-        {
-            GameObject obj = objManager.getObject(l);
-            if(!isValidTarget(obj))
-                continue;
-            if( target == null )//we haven't found anything, yet.
-            {
-                target = obj;
-                continue;
-            }
-            //We have two possible targets here, choose the best one.
-            target = getBetterTarget(target, obj);
-        }
+	public void findObjectToFollow()
+	{
+		ObjectManager objManager = Game.getInstance().getObjectManager();
+		objectToFollow = objManager.getObject( 0 );
 
-        if(target!=null)
-        {
-            objectToFollow = target;
-            foundObject = true;
-        }
-        //0 asteroid, 1 station, 2 alien, 3 ship
-        /*int highestPriority = -1;
+		GameObject target = null;
 
-        for (long l : objManager.getAllIds())
-        {
-            if (Util.getDistance(parent.getParent(), objManager.getObject(l)) > searchRadius)
-                continue;
+		for ( long l : objManager.getAllIds() )
+		{
+			GameObject obj = objManager.getObject( l );
+			if ( !isValidTarget( obj ) )
+				continue;
+			if ( target == null )// we haven't found anything, yet.
+			{
+				target = obj;
+				continue;
+			}
+			// We have two possible targets here, choose the best one.
+			target = getBetterTarget( target, obj );
+		}
 
-            if (objManager.getObject(l) instanceof Asteroid && highestPriority < 0)
-                highestPriority = 0;
-            if (objManager.getObject(l) instanceof Station && highestPriority < 1)
-                highestPriority = 1;
-            if (objManager.getObject(l) instanceof Alien && highestPriority < 2)
-                highestPriority = 2;
-            if (objManager.getObject(l) instanceof Ship && highestPriority < 3 && objManager.getObject(l) != parent.getParent())
-                highestPriority = 3;
-        }
+		if ( target != null )
+		{
+			objectToFollow = target;
+			foundObject = true;
+		}
+		// 0 asteroid, 1 station, 2 alien, 3 ship
+		/*int highestPriority = -1;
 
-        double smallestDistance = 100000;
-        GameObject closestObject = null;
+		for (long l : objManager.getAllIds())
+		{
+		    if (Util.getDistance(parent.getParent(), objManager.getObject(l)) > searchRadius)
+		        continue;
 
-        int time = 30;
-        switch (highestPriority)
-        {
-            case 0:
-                for (Asteroid a : objManager.getAsteroids())
-                {
-                    double distance = Util.getDistance(a, projectX(time), projectY(time));
+		    if (objManager.getObject(l) instanceof Asteroid && highestPriority < 0)
+		        highestPriority = 0;
+		    if (objManager.getObject(l) instanceof Station && highestPriority < 1)
+		        highestPriority = 1;
+		    if (objManager.getObject(l) instanceof Alien && highestPriority < 2)
+		        highestPriority = 2;
+		    if (objManager.getObject(l) instanceof Ship && highestPriority < 3 && objManager.getObject(l) != parent.getParent())
+		        highestPriority = 3;
+		}
 
-                    if (distance < smallestDistance)
-                    {
-                        smallestDistance = distance;
-                        closestObject = a;
-                    }
-                }
-                break;
-            case 1:
-                for (Asteroid a : objManager.getAsteroids())
-                {
-                    double distance = Util.getDistance( a, projectX(time), projectY(time));
+		double smallestDistance = 100000;
+		GameObject closestObject = null;
 
-                    if (distance < smallestDistance)
-                    {
-                        smallestDistance = distance;
-                        closestObject = a;
-                    }
-                }
-                break;
-            case 2:
-                for (GameObject a : objManager.getBaddies())
-                {
-                    double distance = Util.getDistance(a, projectX(time), projectY(time));
+		int time = 30;
+		switch (highestPriority)
+		{
+		    case 0:
+		        for (Asteroid a : objManager.getAsteroids())
+		        {
+		            double distance = Util.getDistance(a, projectX(time), projectY(time));
 
-                    if (distance < smallestDistance)
-                    {
-                        smallestDistance = distance;
-                        closestObject = a;
-                    }
-                }
-                break;
-            case 3:
-                for (Ship a : objManager.getPlayers())
-                {
-                    double distance = Util.getDistance(a, projectX(time), projectY(time));
+		            if (distance < smallestDistance)
+		            {
+		                smallestDistance = distance;
+		                closestObject = a;
+		            }
+		        }
+		        break;
+		    case 1:
+		        for (Asteroid a : objManager.getAsteroids())
+		        {
+		            double distance = Util.getDistance( a, projectX(time), projectY(time));
 
-                    if (distance < smallestDistance)
-                    {
-                        smallestDistance = distance;
-                        closestObject = a;
-                    }
-                }
-                break;
-        }
+		            if (distance < smallestDistance)
+		            {
+		                smallestDistance = distance;
+		                closestObject = a;
+		            }
+		        }
+		        break;
+		    case 2:
+		        for (GameObject a : objManager.getBaddies())
+		        {
+		            double distance = Util.getDistance(a, projectX(time), projectY(time));
 
-        objectToFollow = closestObject;*/
-    }
+		            if (distance < smallestDistance)
+		            {
+		                smallestDistance = distance;
+		                closestObject = a;
+		            }
+		        }
+		        break;
+		    case 3:
+		        for (Ship a : objManager.getPlayers())
+		        {
+		            double distance = Util.getDistance(a, projectX(time), projectY(time));
 
-    @Override
-    public void remove()
-    {
-        parent.remove(this);
-    }
+		            if (distance < smallestDistance)
+		            {
+		                smallestDistance = distance;
+		                closestObject = a;
+		            }
+		        }
+		        break;
+		}
 
-    @Override
-    public double getRadius()
-    {
-        return 3;
-    }
+		objectToFollow = closestObject;*/
+	}
 
-    @Override
-    public void explode()
-    {
-        // Already exploding.
-        if ( isExploding() )
-            return;
+	@Override
+	public void remove()
+	{
+		parent.remove( this );
+	}
 
-        explosionStage = 1;
-    }
+	@Override
+	public double getRadius()
+	{
+		return 3;
+	}
 
-    public boolean isExploding()
-    {
-        return explosionStage > 0;
-    }
+	@Override
+	public void explode()
+	{
+		// Already exploding.
+		if ( isExploding() )
+			return;
 
-    @Override
-    public int getDamage()
-    {
-        //for now just the same as a normal missile
-        if (isExploding())
-            return 20;
-        else
-            return 40;
-    }
+		explosionStage = 1;
+	}
 
-    public void draw(Graphics g)
-    {
-        // Draw the body.
-        MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, angle + Math.PI );
-        MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), (int) radius );
+	public boolean isExploding()
+	{
+		return explosionStage > 0;
+	}
 
-  //      if( objectToFollow!=null)
-   //         MainWindow.frame().drawLine(g, Color.WHITE, (int)getX(),(int)getY() ,(int)objectToFollow.getX(), (int)objectToFollow.getY());
-      //  MainWindow.frame().drawLine(g, Color.GREEN, (int)getX(), (int)getY(), (int)projectX(40), (int)projectY(40));
-      //  MainWindow.frame().drawCircle(g, Color.green,(int) projectX(40), (int)projectY(40), 200);
-        // Draw the explosion.
-        Color col = color;
-        switch ( explosionStage )
-        {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                if ( explosionStage % 2 != 0 )
-                    col = Color.yellow;
-                MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
-                break;
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                if ( explosionStage % 2 != 0 )
-                    col = Color.yellow;
-                radius = 5;
-                MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
-                break;
-            case 9:
-            case 10:
-            case 11:
-                radius = 14;
-                col = Color.yellow;
-                MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), (int) radius );
-                this.explosionStage++;
-                break;
-        }
-    }
+	@Override
+	public int getDamage()
+	{
+		// for now just the same as a normal missile
+		if ( isExploding() )
+			return 20;
+		else
+			return 40;
+	}
 
-    /**
-     * Steps <code>this</code> through one iteration.
-     *
-     * @author Andy Kooiman
-     * @since Classic
-     */
-    @Override
-    public void act()
-    {
-        super.act();
+	public void draw( Graphics g )
+	{
+		// Draw the body.
+		MainWindow.frame().drawLine( g, color, (int) getX(), (int) getY(), 10, angle + Math.PI );
+		MainWindow.frame().fillCircle( g, color, (int) getX(), (int) getY(), radius );
 
-        // Create particles when launched.
-        if ( age < 30 )
-        {
-            Random rand = Util.getGameplayRandomGenerator();
-            for ( int i = 0; i < (int) ( 7 - Math.sqrt( getDx() * getDx() + getDy() * getDy() ) ); i++ )
-                ParticleManager.addParticle( new Particle(
-                                             getX() + rand.nextInt( 8 ) - 4,
-                                             getY() + rand.nextInt( 8 ) - 4,
-                                             rand.nextInt( 4 ),
-                                             color,
-                                             rand.nextDouble() * 3,
-                                             angle + rand.nextDouble() * .4 - .2 + Math.PI,
-                                             30, 10 ) );
-        }
-        // Explode when old.
-        if ( age > parent.life() && explosionStage == 0 )
-            explode();
+		// if( objectToFollow!=null)
+		// MainWindow.frame().drawLine(g, Color.WHITE, (int)getX(),(int)getY() ,(int)objectToFollow.getX(),
+		// (int)objectToFollow.getY());
+		// MainWindow.frame().drawLine(g, Color.GREEN, (int)getX(), (int)getY(), (int)projectX(40), (int)projectY(40));
+		// MainWindow.frame().drawCircle(g, Color.green,(int) projectX(40), (int)projectY(40), 200);
+		// Draw the explosion.
+		Color col = color;
+		switch ( explosionStage )
+		{
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+				if ( explosionStage % 2 != 0 )
+					col = Color.yellow;
+				MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), radius );
+				break;
+			case 5:
+			case 6:
+			case 7:
+			case 8:
+				if ( explosionStage % 2 != 0 )
+					col = Color.yellow;
+				radius = 5;
+				MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), radius );
+				break;
+			case 9:
+			case 10:
+			case 11:
+				radius = 14;
+				col = Color.yellow;
+				MainWindow.frame().fillCircle( g, col, (int) getX(), (int) getY(), radius );
+				this.explosionStage++;
+				break;
+		}
+	}
 
-        // Move through the explosion sequence.
-        if ( explosionStage > 0 )
-        {
-            this.explosionStage++;
-            switch ( explosionStage )
-            {
-                case 0:
-                    return;
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    setDx( getDx() * .8 );
-                    setDy( getDy() * .8 );
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                case 8:
-                    setDx( getDx() * .8 );
-                    setDy( getDy() * .8 );
-                    radius = 3;
-                    break;
-                case 9:
-                case 10:
-                case 11:
-                    setDx( getDx() * .8 );
-                    setDy( getDy() * .8 );
-                    break;
-                default:
-                    parent.remove( this );
-            }
-        }
-    }
+	/**
+	 * Steps <code>this</code> through one iteration.
+	 * 
+	 * @author Andy Kooiman
+	 * @since Classic
+	 */
+	@Override
+	public void act()
+	{
+		super.act();
 
-    /**
-     * Determines and returns whichever parameter is the better target to chase,
-     * based on object types and locations
-     * @param one The first object to consider
-     * @param two The second object to consider
-     * @return The better of the two targets
-     * @pre both one and two are valid targets and are both non-null
-     */
-    private GameObject getBetterTarget(GameObject one, GameObject two)
-    {
-        int time = 40;//how long in the future to look;
-        double distanceOne = Util.getDistance(one, projectX(time), projectY(time));
-        double distanceTwo = Util.getDistance(two, projectX(time), projectY(time));
+		// Create particles when launched.
+		if ( age < 30 )
+		{
+			Random rand = Util.getGameplayRandomGenerator();
+			for ( int i = 0; i < (int) ( 7 - Math.sqrt( getDx() * getDx() + getDy() * getDy() ) ); i++ )
+				ParticleManager.addParticle( new Particle( getX() + rand.nextInt( 8 ) - 4, getY() + rand.nextInt( 8 ) - 4, rand.nextInt( 4 ), color, rand.nextDouble() * 3, angle + rand.nextDouble() * .4 - .2 + Math.PI, 30, 10 ) );
+		}
+		// Explode when old.
+		if ( age > parent.life() && explosionStage == 0 )
+			explode();
 
-        if((distanceOne > 400)^(distanceTwo > 400))//one or the other is far away.  Finally got to use an XOR :)
-        {
-            if(distanceOne < 400)//one is far away
-                return two;
-            return one;//two is far away
-        }
+		// Move through the explosion sequence.
+		if ( explosionStage > 0 )
+		{
+			this.explosionStage++;
+			switch ( explosionStage )
+			{
+				case 0:
+					return;
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+					setDx( getDx() * .8 );
+					setDy( getDy() * .8 );
+					break;
+				case 5:
+				case 6:
+				case 7:
+				case 8:
+					setDx( getDx() * .8 );
+					setDy( getDy() * .8 );
+					radius = 3;
+					break;
+				case 9:
+				case 10:
+				case 11:
+					setDx( getDx() * .8 );
+					setDy( getDy() * .8 );
+					break;
+				default:
+					parent.remove( this );
+			}
+		}
+	}
 
-        //either both are far away or both are close, see if one is a better target in general
-        int priorityOne = priority(one), priorityTwo = priority(two);
-        if(priorityOne != priorityTwo)
-        {
-            if(priorityOne > priorityTwo)
-                return one;
-            return two;
-        }
+	/**
+	 * Determines and returns whichever parameter is the better target to chase,
+	 * based on object types and locations
+	 * @param one The first object to consider
+	 * @param two The second object to consider
+	 * @return The better of the two targets
+	 * @pre both one and two are valid targets and are both non-null
+	 */
+	private GameObject getBetterTarget( GameObject one, GameObject two )
+	{
+		int time = 40;// how long in the future to look;
+		double distanceOne = Util.getDistance( one, projectX( time ), projectY( time ) );
+		double distanceTwo = Util.getDistance( two, projectX( time ), projectY( time ) );
 
-        //either both are close or both are far away; both are the same type of object
-        if(distanceOne < distanceTwo)
-            return one;//get the closer one
-        return two;
-    }
+		if ( ( distanceOne > 400 ) ^ ( distanceTwo > 400 ) )// one or the other is far away. Finally got to use an XOR :)
+		{
+			if ( distanceOne < 400 )// one is far away
+				return two;
+			return one;// two is far away
+		}
 
-    /**
-     * Makes sure the given object is a vaild target.  Only shoots at Asteroids,
-     * Aliens, Stations, and other Ships
-     * @param obj The target in question
-     * @return Whether the target is vaild or not
-     */
-    private boolean isValidTarget(GameObject obj)
-    {
-        if(obj == null)
-            return false;//don't chase nothing
-        if(obj == parent.getParent())//don't shoot yourself
-            return false;
-        if(Util.getDistance(this,obj)>searchRadius)
-            return false;//too far away
+		// either both are far away or both are close, see if one is a better target in general
+		int priorityOne = priority( one ), priorityTwo = priority( two );
+		if ( priorityOne != priorityTwo )
+		{
+			if ( priorityOne > priorityTwo )
+				return one;
+			return two;
+		}
 
-        return (obj instanceof Asteroid) ||
-               (obj instanceof Alien) ||
-               (obj instanceof Station) ||
-               (obj instanceof Ship);
+		// either both are close or both are far away; both are the same type of object
+		if ( distanceOne < distanceTwo )
+			return one;// get the closer one
+		return two;
+	}
 
-        //return true;//no objections
-    }
+	/**
+	 * Makes sure the given object is a vaild target. Only shoots at Asteroids,
+	 * Aliens, Stations, and other Ships
+	 * @param obj The target in question
+	 * @return Whether the target is vaild or not
+	 */
+	private boolean isValidTarget( GameObject obj )
+	{
+		if ( obj == null )
+			return false;// don't chase nothing
+		if ( obj == parent.getParent() )// don't shoot yourself
+			return false;
+		if ( Util.getDistance( this, obj ) > searchRadius )
+			return false;// too far away
 
-    private int priority(GameObject obj) 
-    {
-        if(obj instanceof Asteroid)
-            return 1;
-        if(obj instanceof Alien)
-            return 2;
-        if(obj instanceof Station)
-            return 3;
-        if(obj instanceof Ship)
-            return 4;
-        return 0;
-    }
+		return ( obj instanceof Asteroid ) || ( obj instanceof Alien ) || ( obj instanceof Station ) || ( obj instanceof Ship );
 
-    private void track() 
-    {
-        //basic acceleration of a missile
-        setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
-        setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
-        if(objectToFollow==null)
-            return;//nothing to chase
+		// return true;//no objections
+	}
 
-        double angleToTarget = Util.getAngle(this,objectToFollow);
-        double turnRate = Math.PI/64;
-        if(Math.abs((angle - angleToTarget + 4 * Math.PI) % ( 2 * Math.PI))<turnRate)//we're close enough, just point the right direction
-        {
-            turn(angleToTarget - angle);
-            angle = angleToTarget;
-        }
-        if((angleToTarget - angle + 4 * Math.PI ) % (2 * Math.PI) < Math.PI)
-        {
-            turn(turnRate);
-            angle += turnRate;
-        }
-        else
-        {
-            turn(-turnRate);
-            angle -= turnRate;
-        }
-    }
+	private int priority( GameObject obj )
+	{
+		if ( obj instanceof Asteroid )
+			return 1;
+		if ( obj instanceof Alien )
+			return 2;
+		if ( obj instanceof Station )
+			return 3;
+		if ( obj instanceof Ship )
+			return 4;
+		return 0;
+	}
+
+	private void track()
+	{
+		// basic acceleration of a missile
+		setDx( ( getDx() + parent.getSpeed() * Math.cos( angle ) / 50 ) * .98 );
+		setDy( ( getDy() - parent.getSpeed() * Math.sin( angle ) / 50 ) * .98 );
+		if ( objectToFollow == null )
+			return;// nothing to chase
+
+		double angleToTarget = Util.getAngle( this, objectToFollow );
+		double turnRate = Math.PI / 64;
+		if ( Math.abs( ( angle - angleToTarget + 4 * Math.PI ) % ( 2 * Math.PI ) ) < turnRate )// we're close enough, just
+																								// point the right direction
+		{
+			turn( angleToTarget - angle );
+			angle = angleToTarget;
+		}
+		if ( ( angleToTarget - angle + 4 * Math.PI ) % ( 2 * Math.PI ) < Math.PI )
+		{
+			turn( turnRate );
+			angle += turnRate;
+		}
+		else
+		{
+			turn( -turnRate );
+			angle -= turnRate;
+		}
+	}
 }

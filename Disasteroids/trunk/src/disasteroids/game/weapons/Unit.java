@@ -4,11 +4,12 @@
  */
 package disasteroids.game.weapons;
 
-import disasteroids.game.objects.GameObject;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import disasteroids.game.objects.GameObject;
 
 /**
  * An individual unit - a bullet, a mine, a missile, a grenade, etc - launched by a <code>Weapon</code>.
@@ -16,60 +17,60 @@ import java.io.IOException;
  */
 public abstract class Unit extends GameObject
 {
-    protected Color color;
+	protected Color color;
 
-    /**
-     * How many timesteps that we've lived.
-     */
-    protected int age = 0;
+	/**
+	 * How many timesteps that we've lived.
+	 */
+	protected int age = 0;
 
-    public Unit( Color color, double x, double y, double dx, double dy )
-    {
-        super( x, y, dx, dy );
-        this.color = color;
-    }
+	public Unit( Color color, double x, double y, double dx, double dy )
+	{
+		super( x, y, dx, dy );
+		this.color = color;
+	}
 
-    /**
-     * Ages and moves.
-     */
-    public void act()
-    {
-        ++age;
-        move();
-    }
+	/**
+	 * Ages and moves.
+	 */
+	public void act()
+	{
+		++age;
+		move();
+	}
 
-    /**
-     * Writes <code>this</code> to a stream for client/server transmission.
-     */
-    @Override
-    public void flatten( DataOutputStream stream ) throws IOException
-    {
-        super.flatten( stream );
-        stream.writeInt( color.getRGB() );
-        stream.writeInt( age );
-    }
+	/**
+	 * Writes <code>this</code> to a stream for client/server transmission.
+	 */
+	@Override
+	public void flatten( DataOutputStream stream ) throws IOException
+	{
+		super.flatten( stream );
+		stream.writeInt( color.getRGB() );
+		stream.writeInt( age );
+	}
 
-    /**
-     * Reads <code>this</code> from a stream for client/server transmission.
-     */
-    public Unit( DataInputStream stream ) throws IOException
-    {
-        super( stream );
-        color = new Color( stream.readInt() );
-        age = stream.readInt();
-    }
+	/**
+	 * Reads <code>this</code> from a stream for client/server transmission.
+	 */
+	public Unit( DataInputStream stream ) throws IOException
+	{
+		super( stream );
+		color = new Color( stream.readInt() );
+		age = stream.readInt();
+	}
 
-    @Override
-    public void inBlackHole()
-    {
-        remove();
-    }
+	@Override
+	public void inBlackHole()
+	{
+		remove();
+	}
 
-    public abstract void remove();
+	public abstract void remove();
 
-    public abstract double getRadius();
+	public abstract double getRadius();
 
-    public abstract void explode();
+	public abstract void explode();
 
-    public abstract int getDamage();
+	public abstract int getDamage();
 }

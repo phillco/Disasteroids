@@ -9,13 +9,14 @@ package disasteroids.game.modes;
  */
 public class Cooperative extends GameMode
 {
-    public Cooperative()
-    {
-        super( FLAG_PLAYERSEARNPOINTS );
-    }
+	public Cooperative()
+	{
+		super( FLAG_PLAYERSEARNPOINTS );
+	}
 
-    public String getName()
-    {
-        return "Cooperative";
-    }
+	@Override
+	public String getName()
+	{
+		return "Cooperative";
+	}
 }

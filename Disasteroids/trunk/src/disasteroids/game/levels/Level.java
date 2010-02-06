@@ -13,13 +13,13 @@ import java.io.IOException;
  */
 public interface Level
 {
-    public void act();
+	public void act();
 
-    public void drawHUD( Graphics g );
+	public void drawHUD( Graphics g );
 
-    public String getName();
+	public String getName();
 
-    public void flatten( DataOutputStream stream ) throws IOException;
+	public void flatten( DataOutputStream stream ) throws IOException;
 
-    public void optionsKey();
+	public void optionsKey();
 }

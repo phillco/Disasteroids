@@ -4,11 +4,6 @@
  */
 package disasteroids.game.weapons;
 
-import disasteroids.game.objects.ShootingObject;
-import disasteroids.game.objects.GameObject;
-import disasteroids.*;
-import disasteroids.sound.Sound;
-import disasteroids.sound.SoundLibrary;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.DataInputStream;
@@ -17,171 +12,177 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import disasteroids.game.objects.GameObject;
+import disasteroids.game.objects.ShootingObject;
+import disasteroids.sound.Sound;
+import disasteroids.sound.SoundLibrary;
+
 /**
  * A weapon manager that fires long, straight Lasers
  * @author Andy Kooiman
  */
 public class LaserManager extends Weapon
 {
-    private int speed = 20;
+	private int speed = 20;
 
-    private int intervalShoot = 4;
+	private int intervalShoot = 4;
 
-    private int damage = 5;
+	private int damage = 5;
 
-    private int length = 10;
+	private int length = 10;
 
-    public LaserManager( ShootingObject parent )
-    {
-        super( parent );
-    }
+	public LaserManager( ShootingObject parent )
+	{
+		super( parent );
+	}
 
-    @Override
-    public String getName()
-    {
-        return "Lasergun";
-    }
+	@Override
+	public String getName()
+	{
+		return "Lasergun";
+	}
 
-    @Override
-    public int getEntryAmmo()
-    {
-        return 260;
-    }
+	@Override
+	public int getEntryAmmo()
+	{
+		return 260;
+	}
 
-    @Override
-    public void shoot( Color color, double angle )
-    {
-        if ( !canShoot() )
-            return;
+	@Override
+	public void shoot( Color color, double angle )
+	{
+		if ( !canShoot() )
+			return;
 
-        // Create the laser beam.
-        createLinkedLaser( parent, color, angle );
+		// Create the laser beam.
+		createLinkedLaser( parent, color, angle );
 
-        timeTillNextShot = intervalShoot;
-        if ( !isInfiniteAmmo() )
-            ammo--;
-        Sound.playInternal( SoundLibrary.SNIPER_SHOOT );
-    }
+		timeTillNextShot = intervalShoot;
+		if ( !isInfiniteAmmo() )
+			ammo--;
+		Sound.playInternal( SoundLibrary.SNIPER_SHOOT );
+	}
 
-    /**
-     * Creates a laser beam by linking many individual <code>Laser</code>s.
-     */
-    private void createLinkedLaser( GameObject parent, Color color, double angle )
-    {
-        double X = parent.getX();
-        double Y = parent.getY();
-        Laser l = null;
-        for ( int i = 0; i < 150; i++ )
-        {
-            Laser last = new Laser( this, color, X, Y, parent.getDx(), parent.getDy(), angle, ( i == 0 ) );
-            if ( l != null )
-                l.setNext( last );
-            addUnit( last );
-            X += length * Math.cos( angle );
-            Y -= length * Math.sin( angle );
-            l = last;
-        }
-    }
+	/**
+	 * Creates a laser beam by linking many individual <code>Laser</code>s.
+	 */
+	private void createLinkedLaser( GameObject parent, Color color, double angle )
+	{
+		double X = parent.getX();
+		double Y = parent.getY();
+		Laser l = null;
+		for ( int i = 0; i < 150; i++ )
+		{
+			Laser last = new Laser( this, color, X, Y, parent.getDx(), parent.getDy(), angle, ( i == 0 ) );
+			if ( l != null )
+				l.setNext( last );
+			addUnit( last );
+			X += length * Math.cos( angle );
+			Y -= length * Math.sin( angle );
+			l = last;
+		}
+	}
 
-    @Override
-    public void berserk( Color color )
-    {
-        int firedShots = 0;
-        for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 4 )
-        {
-            if ( !canBerserk() )
-                break;
+	@Override
+	public void berserk( Color color )
+	{
+		int firedShots = 0;
+		for ( double angle = 0; angle < 2 * Math.PI; angle += Math.PI / 4 )
+		{
+			if ( !canBerserk() )
+				break;
 
-            createLinkedLaser( parent, color, angle );
+			createLinkedLaser( parent, color, angle );
 
-            if ( !isInfiniteAmmo() )
-                --ammo;
+			if ( !isInfiniteAmmo() )
+				--ammo;
 
-            firedShots++;
-        }
+			firedShots++;
+		}
 
-        if ( firedShots > 0 )
-        {
-            timeTillNextBerserk = firedShots * 10;
-            Sound.playInternal( SoundLibrary.BERSERK );
-        }
-    }
+		if ( firedShots > 0 )
+		{
+			timeTillNextBerserk = firedShots * 10;
+			Sound.playInternal( SoundLibrary.BERSERK );
+		}
+	}
 
-    public int getMaxUnits()
-    {
-        return 8000;
-    }
+	@Override
+	public int getMaxUnits()
+	{
+		return 8000;
+	}
 
-    @Override
-    public void drawOrphanUnit( Graphics g, double x, double y, Color col )
-    {
-        new Laser( this, col, x, y, 0, 0, 0, false ).draw( g );
-    }
+	@Override
+	public void drawOrphanUnit( Graphics g, double x, double y, Color col )
+	{
+		new Laser( this, col, x, y, 0, 0, 0, false ).draw( g );
+	}
 
-    public int getDamage()
-    {
-        return damage;
-    }
+	public int getDamage()
+	{
+		return damage;
+	}
 
-    public int getSpeed()
-    {
-        return speed;
-    }
+	public int getSpeed()
+	{
+		return speed;
+	}
 
-    public int getRadius()
-    {
-        return length / 2;
-    }
+	public int getRadius()
+	{
+		return length / 2;
+	}
 
-    public int length()
-    {
-        return length;
-    }
+	public int length()
+	{
+		return length;
+	}
 
-    //                                                                            \\
-    // ------------------------------ NETWORKING -------------------------------- \\
-    //                                                                            \\
-    /**
-     * Writes <code>this</code> to a stream for client/server transmission.
-     */
-    @Override
-    public void flatten( DataOutputStream stream ) throws IOException
-    {
-        super.flatten( stream );
-        stream.writeInt( damage );
-        stream.writeInt( intervalShoot );
-        stream.writeInt( length );
-        stream.writeInt( speed );
+	// \\
+	// ------------------------------ NETWORKING -------------------------------- \\
+	// \\
+	/**
+	 * Writes <code>this</code> to a stream for client/server transmission.
+	 */
+	@Override
+	public void flatten( DataOutputStream stream ) throws IOException
+	{
+		super.flatten( stream );
+		stream.writeInt( damage );
+		stream.writeInt( intervalShoot );
+		stream.writeInt( length );
+		stream.writeInt( speed );
 
-        // Flatten all of the units.
-        // To save space, we flatten only the head of each beam.
-        Set<Laser> heads = new HashSet<Laser>();
-        for ( Unit u : units )
-        {
-            Laser l = (Laser) u;
-            if ( l.isHead() )
-                heads.add( l );
-        }
+		// Flatten all of the units.
+		// To save space, we flatten only the head of each beam.
+		Set<Laser> heads = new HashSet<Laser>();
+		for ( Unit u : units )
+		{
+			Laser l = (Laser) u;
+			if ( l.isHead() )
+				heads.add( l );
+		}
 
-        stream.writeInt( heads.size() );
-        for ( Laser l : heads )
-            l.flatten( stream );
-    }
+		stream.writeInt( heads.size() );
+		for ( Laser l : heads )
+			l.flatten( stream );
+	}
 
-    /**
-     * Reads <code>this</code> from a stream for client/server transmission.
-     */
-    public LaserManager( DataInputStream stream, ShootingObject parent ) throws IOException
-    {
-        super( stream, parent );
-        damage = stream.readInt();
-        intervalShoot = stream.readInt();
-        length = stream.readInt();
-        speed = stream.readInt();
+	/**
+	 * Reads <code>this</code> from a stream for client/server transmission.
+	 */
+	public LaserManager( DataInputStream stream, ShootingObject parent ) throws IOException
+	{
+		super( stream, parent );
+		damage = stream.readInt();
+		intervalShoot = stream.readInt();
+		length = stream.readInt();
+		speed = stream.readInt();
 
-        // Restore all of the units.
-        int size = stream.readInt();
-        for ( int i = 0; i < size; i++ )
-            addUnit( new Laser( stream, this ) );
-    }
+		// Restore all of the units.
+		int size = stream.readInt();
+		for ( int i = 0; i < size; i++ )
+			addUnit( new Laser( stream, this ) );
+	}
 }

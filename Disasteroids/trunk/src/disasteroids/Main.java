@@ -4,25 +4,27 @@
  */
 package disasteroids;
 
-import disasteroids.game.Game;
-import disasteroids.game.GameLoop;
-import disasteroids.game.modes.Cooperative;
-import disasteroids.game.levels.TutorialMode;
-import disasteroids.game.levels.EmptyLevel;
-import disasteroids.gui.MainWindow;
-import disasteroids.gui.ImageLibrary;
-import disasteroids.gui.Local;
-import disasteroids.gui.MainMenu;
-import disasteroids.gui.MenuOption;
-import disasteroids.networking.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import javax.swing.JOptionPane;
+
+import disasteroids.game.Game;
+import disasteroids.game.GameLoop;
+import disasteroids.game.levels.EmptyLevel;
+import disasteroids.game.levels.TutorialMode;
+import disasteroids.game.modes.Cooperative;
+import disasteroids.gui.ImageLibrary;
+import disasteroids.gui.Local;
+import disasteroids.gui.MainMenu;
+import disasteroids.gui.MainWindow;
+import disasteroids.gui.MenuOption;
+import disasteroids.networking.Client;
+import disasteroids.networking.Server;
 
 /**
  * Main utility code for startup, exit, logs, and errors.
@@ -30,290 +32,290 @@ import javax.swing.JOptionPane;
  */
 public class Main
 {
-    /**
-     * Small counters that are incremented each time <code>warning</code> or <code>fatalError</code> is called.
-     * Shown when Disasteroids shuts down.
-     * 
-     * @since January 18, 2008
-     */
-    private static int errorCount = 0, warningCount = 0;
+	/**
+	 * Small counters that are incremented each time <code>warning</code> or <code>fatalError</code> is called.
+	 * Shown when Disasteroids shuts down.
+	 * 
+	 * @since January 18, 2008
+	 */
+	private static int errorCount = 0, warningCount = 0;
 
-    private static BufferedWriter logFileStream = null;
+	private static BufferedWriter logFileStream = null;
 
-    /**
-     * The application entry point. Loads user settings and runs the menu.
-     * Users can skip the menu and select a <code>MenuOption</code> via the command line.
-     * 
-     * @param args      the command line arguments. By passing a <code>MenuOption</code> parameter, clients may skip the menu.
-     * @since Classic
-     */
-    public static void main( String[] args )
-    {
-        System.out.println( "DISASTEROIDS started!" );
+	/**
+	 * The application entry point. Loads user settings and runs the menu.
+	 * Users can skip the menu and select a <code>MenuOption</code> via the command line.
+	 * 
+	 * @param args the command line arguments. By passing a <code>MenuOption</code> parameter, clients may skip the menu.
+	 * @since Classic
+	 */
+	public static void main( String[] args )
+	{
+		System.out.println( "DISASTEROIDS started!" );
 
-        // Create the log file.
-        try
-        {
-            String fileName = "";
+		// Create the log file.
+		try
+		{
+			String fileName = "";
 
-            // Use/create the "logs" folder.
-            File logsFolder = new File( "logs" );
-            if ( logsFolder.isDirectory() || logsFolder.mkdir() )
-                fileName = "logs\\";
-            
-            fileName += "disasteroids_" + new SimpleDateFormat( "yyyy-MM-dd__HH-mm-ss" ).format( new Date() ) + ".log";
-            logFileStream = new BufferedWriter( new FileWriter( fileName ) );
-            logFileStream.write( "DISASTEROIDS started!\n" );
-        }
-        catch ( IOException ex )
-        {
-        }
+			// Use/create the "logs" folder.
+			File logsFolder = new File( "logs" );
+			if ( logsFolder.isDirectory() || logsFolder.mkdir() )
+				fileName = "logs\\";
 
-        // Load external images.
-        ImageLibrary.init();
+			fileName += "disasteroids_" + new SimpleDateFormat( "yyyy-MM-dd__HH-mm-ss" ).format( new Date() ) + ".log";
+			logFileStream = new BufferedWriter( new FileWriter( fileName ) );
+			logFileStream.write( "DISASTEROIDS started!\n" );
+		}
+		catch ( IOException ex )
+		{
+		}
 
-        // Load stored settings.
-        Settings.loadFromStorage();
+		// Load external images.
+		ImageLibrary.init();
 
-        // The user can skip the menu with a command-line argument.
-        for ( String arg : args )
-        {
-            for ( MenuOption option : MenuOption.values() )
-            {
-                // Matches a menu option. Use that.
-                if ( arg.equals( option.getParameter() ) )
-                {
-                    startGame( option );
-                    return;
-                }
-            }
-        }
+		// Load stored settings.
+		Settings.loadFromStorage();
 
-        // Otherwise, just start the menu.
-        new MainMenu();
-    }
+		// The user can skip the menu with a command-line argument.
+		for ( String arg : args )
+		{
+			for ( MenuOption option : MenuOption.values() )
+			{
+				// Matches a menu option. Use that.
+				if ( arg.equals( option.getParameter() ) )
+				{
+					startGame( option );
+					return;
+				}
+			}
+		}
 
-    /**
-     * The main quit method that should replace <code>System.exit</code>.
-     * It saves user settings, notifies clients/server, updates high score, and shows warning and error count.
-     * And then it calls <code>System.exit()</code>.
-     * 
-     * @since December 7, 2007
-     */
-    public static void quit()
-    {
-        try
-        {
-            GameLoop.stopLoop();
-            log( "\nShutting down nicely..." );
+		// Otherwise, just start the menu.
+		new MainMenu();
+	}
 
-            // Tell server or clients that we're quitting.
-            if ( Client.is() )
-                Client.getInstance().quit();
-            else if ( Server.is() )
-                Server.getInstance().quit();
+	/**
+	 * The main quit method that should replace <code>System.exit</code>.
+	 * It saves user settings, notifies clients/server, updates high score, and shows warning and error count.
+	 * And then it calls <code>System.exit()</code>.
+	 * 
+	 * @since December 7, 2007
+	 */
+	public static void quit()
+	{
+		try
+		{
+			GameLoop.stopLoop();
+			log( "\nShutting down nicely..." );
 
-            // Save local settings.
-            Settings.saveToStorage();
+			// Tell server or clients that we're quitting.
+			if ( Client.is() )
+				Client.getInstance().quit();
+			else if ( Server.is() )
+				Server.getInstance().quit();
 
-            // Show warning / error count.
-            String finalMessage = "Disasteroids concluded.";
+			// Save local settings.
+			Settings.saveToStorage();
 
-            if ( errorCount > 0 )
-                finalMessage += " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." );
+			// Show warning / error count.
+			String finalMessage = "Disasteroids concluded.";
 
-            if ( warningCount > 0 )
-                finalMessage += " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." );
+			if ( errorCount > 0 )
+				finalMessage += " " + errorCount + " error" + ( errorCount == 1 ? "" : "s" ) + ( warningCount > 0 ? "," : "." );
 
-            // Daisy.....daisy....
-            log( finalMessage );
-            if ( logFileStream != null )
-                logFileStream.close();
-            System.exit( 0 );
+			if ( warningCount > 0 )
+				finalMessage += " " + warningCount + " warning" + ( warningCount == 1 ? "." : "s." );
 
-        }
-        catch ( Throwable throwable )
-        {
-            System.out.println( "\nError shutting down!\nShutting down not-so-nicely..." );
+			// Daisy.....daisy....
+			log( finalMessage );
+			if ( logFileStream != null )
+				logFileStream.close();
+			System.exit( 0 );
 
-            // [AK] This should help if we ran out of memory.
-            if ( throwable instanceof java.lang.OutOfMemoryError )
-            {
-                System.gc();
-                disasteroids.gui.ParticleManager.clear();
-                System.gc();
-            }
+		}
+		catch ( Throwable throwable )
+		{
+			System.out.println( "\nError shutting down!\nShutting down not-so-nicely..." );
 
-            // Again, try to write our settings.
-            Settings.saveToStorage();
+			// [AK] This should help if we ran out of memory.
+			if ( throwable instanceof java.lang.OutOfMemoryError )
+			{
+				System.gc();
+				disasteroids.gui.ParticleManager.clear();
+				System.gc();
+			}
 
-            throwable.printStackTrace();
-            System.exit( 66 );
-        }
-        finally
-        {
-            //shouldn't get here... but if we do, just in case
-            System.exit( 66 ); //It failed <i>real</i> bad
-        }
-    }
+			// Again, try to write our settings.
+			Settings.saveToStorage();
 
-    /**
-     * Starts the game based on the selected <code>MenuOption</code>.
-     * 
-     * @param option    the selected game choice
-     * @since Classic
-     */
-    public static void startGame( MenuOption option )
-    {
-        if ( option == MenuOption.EXIT)
-        {
-            Main.quit();
-            return;
-        }
-        else if ( option == MenuOption.CONNECT )
-        {
-            new Client();
-            return;
-        }
-        // Decide which level to use (yuck!).
-        {
-            Class level = Settings.getLastLevel();
-            Class gameMode = Cooperative.class;
-            if ( option == MenuOption.START_SERVER )           
-                level = EmptyLevel.class;
-            else if ( option == MenuOption.TUTORIAL )
-                level = TutorialMode.class;
+			throwable.printStackTrace();
+			System.exit( 66 );
+		}
+		finally
+		{
+			// shouldn't get here... but if we do, just in case
+			System.exit( 66 ); // It failed <i>real</i> bad
+		}
+	}
 
-            new Game( level, gameMode );
-        }
+	/**
+	 * Starts the game based on the selected <code>MenuOption</code>.
+	 * 
+	 * @param option the selected game choice
+	 * @since Classic
+	 */
+	public static void startGame( MenuOption option )
+	{
+		if ( option == MenuOption.EXIT )
+		{
+			Main.quit();
+			return;
+		}
+		else if ( option == MenuOption.CONNECT )
+		{
+			new Client();
+			return;
+		}
+		// Decide which level to use (yuck!).
+		{
+			Class level = Settings.getLastLevel();
+			Class gameMode = Cooperative.class;
+			if ( option == MenuOption.START_SERVER )
+				level = EmptyLevel.class;
+			else if ( option == MenuOption.TUTORIAL )
+				level = TutorialMode.class;
 
-        // Create the local player and window. Start the game.
-        long localPlayerID = ( option == MenuOption.LOAD ) ? Game.loadFromFile() : Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() );
-        Local.init( localPlayerID );
-        new MainWindow();
-        GameLoop.startLoop();
+			new Game( level, gameMode );
+		}
 
-        // Show start message.
-        switch ( option )
-        {
-            case START_SERVER:
-                MainWindow.frame().showStartMessage( "Server started!\nAddress is: " + Server.getLocalIP() + "\nPress F1 for help." );
-                Main.log( "Server started! The address is: " + Server.getLocalIP() + "\n." );
-                Game.getInstance().setPaused( false, false );
-                break;
-            case SINGLEPLAYER:
-                MainWindow.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
-                break;
-            case LOAD:
-                Game.getInstance().setPaused( false, false );
-                break;
-            case TUTORIAL:
-                MainWindow.frame().showStartMessage( "Press any key to start the tutorial." );
-                break;
-        }
+		// Create the local player and window. Start the game.
+		long localPlayerID = ( option == MenuOption.LOAD ) ? Game.loadFromFile() : Game.getInstance().addPlayer( Settings.getPlayerName(), Settings.getPlayerColor() );
+		Local.init( localPlayerID );
+		new MainWindow();
+		GameLoop.startLoop();
 
-        if ( option == MenuOption.START_SERVER )
-            new Server();
-    }
+		// Show start message.
+		switch ( option )
+		{
+			case START_SERVER:
+				MainWindow.frame().showStartMessage( "Server started!\nAddress is: " + Server.getLocalIP() + "\nPress F1 for help." );
+				Main.log( "Server started! The address is: " + Server.getLocalIP() + "\n." );
+				Game.getInstance().setPaused( false, false );
+				break;
+			case SINGLEPLAYER:
+				MainWindow.frame().showStartMessage( "Press any key to begin.\nPress F1 for help." );
+				break;
+			case LOAD:
+				Game.getInstance().setPaused( false, false );
+				break;
+			case TUTORIAL:
+				MainWindow.frame().showStartMessage( "Press any key to start the tutorial." );
+				break;
+		}
 
-    /**
-     * Logs a message to <code>println</code> and the <code>AsteroidsFrame</code> (if it exists).
-     * 
-     * @param message   the message to log
-     * @since December 26, 2007
-     */
-    public static void log( String message )
-    {
-        log( message, 250 );
-    }
+		if ( option == MenuOption.START_SERVER )
+			new Server();
+	}
 
-    /**
-     * Logs a message to <code>println</code> and the <code>AsteroidsFrame</code> (if it exists).
-     * 
-     * @param message   the message to log
-     * @param life      life of the message in <code>AsteroidsFrame</code>
-     * @since December 29, 2007
-     */
-    public static void log( String message, int life )
-    {
-        System.out.println( message );
+	/**
+	 * Logs a message to <code>println</code> and the <code>AsteroidsFrame</code> (if it exists).
+	 * 
+	 * @param message the message to log
+	 * @since December 26, 2007
+	 */
+	public static void log( String message )
+	{
+		log( message, 250 );
+	}
 
-        // Log to file.
-        if ( logFileStream != null )
-        {
-            try
-            {
-                logFileStream.write( message + "\n" );
-                logFileStream.flush();
-            }
-            catch ( IOException ex )
-            {
-            }
-        }
+	/**
+	 * Logs a message to <code>println</code> and the <code>AsteroidsFrame</code> (if it exists).
+	 * 
+	 * @param message the message to log
+	 * @param life life of the message in <code>AsteroidsFrame</code>
+	 * @since December 29, 2007
+	 */
+	public static void log( String message, int life )
+	{
+		System.out.println( message );
 
-        // Log to screen.
-        MainWindow.addNotificationMessage( message, life );
-    }
+		// Log to file.
+		if ( logFileStream != null )
+		{
+			try
+			{
+				logFileStream.write( message + "\n" );
+				logFileStream.flush();
+			}
+			catch ( IOException ex )
+			{
+			}
+		}
 
-    /**
-     * Logs a warning to the console and bumps the warningCount.
-     * 
-     * @param message   the message
-     * @since January 18, 2008
-     */
-    public static void warning( String message )
-    {
-        log( "WARNING: " + message, 1200 );
-        warningCount++;
-    }
+		// Log to screen.
+		MainWindow.addNotificationMessage( message, life );
+	}
 
-    /**
-     * Logs a warning and exception to the console and bumps the warningCount.
-     * 
-     * @param message   the message
-     * @param t         the Throwable
-     * @since January 18, 2008
-     */
-    public static void warning( String message, Throwable t )
-    {
-        log( "WARNING: " + message, 1200 );
-        t.printStackTrace();
-        warningCount++;
-    }
+	/**
+	 * Logs a warning to the console and bumps the warningCount.
+	 * 
+	 * @param message the message
+	 * @since January 18, 2008
+	 */
+	public static void warning( String message )
+	{
+		log( "WARNING: " + message, 1200 );
+		warningCount++;
+	}
 
-    /**
-     * Shows a JOptionPane error dialog with the message text, logs it, and quits.
-     * 
-     * @param message   the error text to show
-     * @since December 29, 2007
-     */
-    public static void fatalError( String message )
-    {
-        GameLoop.stopLoop();
-        MainWindow.frame().dispose();
-        JOptionPane.showMessageDialog( null, message +"\n\nShutting down...", "Disasteroids: Very Fatal Error", JOptionPane.ERROR_MESSAGE );
-        System.out.println( "FATAL ERROR: " + message );
-        errorCount++;
-        Main.quit();
-    }
+	/**
+	 * Logs a warning and exception to the console and bumps the warningCount.
+	 * 
+	 * @param message the message
+	 * @param t the Throwable
+	 * @since January 18, 2008
+	 */
+	public static void warning( String message, Throwable t )
+	{
+		log( "WARNING: " + message, 1200 );
+		t.printStackTrace();
+		warningCount++;
+	}
 
-    /**
-     * Shows a JOptionPane error dialog with the message text, logs it and the exception's stack trace, and quits.
-     * 
-     * @param message   the error text to show
-     * @param e         the exception to print the trace of
-     * @since December 29, 2007
-     */
-    public static void fatalError( String message, Exception e )
-    {
-        e.printStackTrace();
-        fatalError( message + "\n\nWith exception: " + e.getLocalizedMessage() );
-    }
+	/**
+	 * Shows a JOptionPane error dialog with the message text, logs it, and quits.
+	 * 
+	 * @param message the error text to show
+	 * @since December 29, 2007
+	 */
+	public static void fatalError( String message )
+	{
+		GameLoop.stopLoop();
+		MainWindow.frame().dispose();
+		JOptionPane.showMessageDialog( null, message + "\n\nShutting down...", "Disasteroids: Very Fatal Error", JOptionPane.ERROR_MESSAGE );
+		System.out.println( "FATAL ERROR: " + message );
+		errorCount++;
+		Main.quit();
+	}
 
-    /**
-     * Utility class - no constructor. (Happy, NetBeans?)
-     */
-    private Main()
-    {
-    }
+	/**
+	 * Shows a JOptionPane error dialog with the message text, logs it and the exception's stack trace, and quits.
+	 * 
+	 * @param message the error text to show
+	 * @param e the exception to print the trace of
+	 * @since December 29, 2007
+	 */
+	public static void fatalError( String message, Exception e )
+	{
+		e.printStackTrace();
+		fatalError( message + "\n\nWith exception: " + e.getLocalizedMessage() );
+	}
+
+	/**
+	 * Utility class - no constructor. (Happy, NetBeans?)
+	 */
+	private Main()
+	{
+	}
 }

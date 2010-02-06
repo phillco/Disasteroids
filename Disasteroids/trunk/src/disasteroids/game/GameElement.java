@@ -13,7 +13,7 @@ import java.awt.Graphics;
  */
 public interface GameElement
 {
-    public void act();
+	public void act();
 
-    public void draw( Graphics g );
+	public void draw( Graphics g );
 }

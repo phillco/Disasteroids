@@ -94,6 +94,12 @@ public class MainWindow extends Frame
         GameLoop.startLoop();
     }
 
+    public void close()
+    {
+        dispose();
+        frame = null;
+    }
+
     public void nextLevel()
     {
         gameCanvas.background.init();

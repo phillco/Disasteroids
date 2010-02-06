@@ -85,6 +85,8 @@ public class GameLoop extends Thread
                 Main.fatalError( "Game loop interrupted while sleeping.", ex );
             }
         }
+
+        Game.dispose();
     }
 
     /**

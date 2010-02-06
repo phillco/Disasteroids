@@ -22,6 +22,8 @@ import disasteroids.networking.Constants;
 import disasteroids.networking.Server;
 import disasteroids.networking.ServerCommands;
 import disasteroids.game.weapons.Weapon;
+import disasteroids.gui.MainMenu;
+import disasteroids.gui.MenuOption;
 import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -85,8 +87,8 @@ public class Game
         try
         {
             // Set the level and game mode.
-            this.level = (Level) level.newInstance();
-            this.gameMode = (GameMode) gameMode.newInstance();
+            this.level = ( Level ) level.newInstance();
+            this.gameMode = ( GameMode ) gameMode.newInstance();
         }
         catch ( InstantiationException ex )
         {
@@ -273,11 +275,17 @@ public class Game
         // Check if we've lost in singleplayer.
         if ( !Client.is() && !Local.isStuffNull() && Local.getLocalPlayer().livesLeft() < 0 && Local.getLocalPlayer().getExplosionTime() < 0 )
         {
-            Main.quit();
+            Local.dispose();
+            new MainMenu();
             return;
         }
 
         objectManager.act();
+    }
+
+    public static void dispose()
+    {
+        instance = null;
     }
 
     /**
@@ -517,6 +525,4 @@ public class Game
     {
         return gameMode;
     }
-
-    
 }

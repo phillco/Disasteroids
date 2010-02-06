@@ -5,6 +5,7 @@
 package disasteroids.gui;
 
 import disasteroids.game.Game;
+import disasteroids.game.GameLoop;
 import disasteroids.game.objects.*;
 import disasteroids.sound.Sound;
 
@@ -29,6 +30,13 @@ public class Local
         if ( localPlayerID == -1 )
             localPlayerID = localID;
         Sound.updateMusic();
+    }
+
+    public static void dispose()
+    {
+        GameLoop.stopLoop();
+        MainWindow.frame().close();
+        localPlayerID = -1;
     }
 
 

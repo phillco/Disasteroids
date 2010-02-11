@@ -67,8 +67,16 @@ public class Alien extends ShootingObject
 	 */
 	public Alien( double x, double y, double dx, double dy )
 	{
+		this( x, y, dx, dy, Util.getGameplayRandomGenerator().nextInt( 50 ) + 30 );
+	}
+
+	/**
+	 * Creates a new <code>Alien</code>
+	 */
+	public Alien( double x, double y, double dx, double dy, int size )
+	{
 		super( x, y, dx, dy, 1 );
-		size = Util.getGameplayRandomGenerator().nextInt( 50 ) + 30;
+		this.size = size;
 		weapons[0] = new AlienMissileManager( size, this );
 		color = new Color( Util.getGameplayRandomGenerator().nextInt( 60 ), Util.getGameplayRandomGenerator().nextInt( 128 ) + 96, Util.getGameplayRandomGenerator().nextInt( 60 ) );
 		life = 500;
@@ -127,7 +135,7 @@ public class Alien extends ShootingObject
 			getActiveWeapon().shoot( color, mAngle );
 		}
 
-		angle += size / 560.0 + 0.015;
+		angle += Math.min( 150, size ) / 560.0 + 0.015;
 	}
 
 	/**

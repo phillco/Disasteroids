@@ -29,6 +29,7 @@ import disasteroids.networking.ServerCommands;
 
 /**
  * The game's manager that tracks the adding and removal of all objects.
+ * The casting code sucks. Rewrite -- PC
  * @author Phillip Cohen
  */
 public class ObjectManager implements GameElement
@@ -39,6 +40,8 @@ public class ObjectManager implements GameElement
 	private ConcurrentHashMap<Long, GameObject> gameObjects = new ConcurrentHashMap<Long, GameObject>( 500 );
 
 	private ConcurrentLinkedQueue<Asteroid> asteroids = new ConcurrentLinkedQueue<Asteroid>();
+
+	private ConcurrentLinkedQueue<Bonus> bonuses = new ConcurrentLinkedQueue<Bonus>();
 
 	private ConcurrentLinkedQueue<BlackHole> blackHoles = new ConcurrentLinkedQueue<BlackHole>();
 
@@ -115,8 +118,12 @@ public class ObjectManager implements GameElement
 			}
 		}
 		gameObjects.put( go.getId(), go );
+		if ( go instanceof Alien || go instanceof Station )
+			baddies.add( go );
 		if ( go instanceof Asteroid )
 			asteroids.add( (Asteroid) go );
+		if ( go instanceof Bonus )
+			bonuses.add( (Bonus) go );
 		if ( go instanceof BlackHole )
 			blackHoles.add( (BlackHole) go );
 		if ( go instanceof ShootingObject )
@@ -128,8 +135,12 @@ public class ObjectManager implements GameElement
 	public void removeObject( GameObject go )
 	{
 		gameObjects.remove( go.getId() );
+		if ( go instanceof Alien || go instanceof Station )
+			baddies.remove( go );
 		if ( go instanceof Asteroid )
 			asteroids.remove( go );
+		if ( go instanceof Bonus )
+			bonuses.remove( go );
 		if ( go instanceof BlackHole )
 			blackHoles.remove( go );
 		if ( go instanceof ShootingObject )
@@ -142,6 +153,8 @@ public class ObjectManager implements GameElement
 	{
 		gameObjects.clear();
 		asteroids.clear();
+		bonuses.clear();
+		baddies.clear();
 		blackHoles.clear();
 		shootingObjects.clear();
 		players.clear();
@@ -211,6 +224,11 @@ public class ObjectManager implements GameElement
 	public ConcurrentLinkedQueue<Asteroid> getAsteroids()
 	{
 		return asteroids;
+	}
+
+	public ConcurrentLinkedQueue<Bonus> getBonuses()
+	{
+		return bonuses;
 	}
 
 	public ConcurrentLinkedQueue<GameObject> getBaddies()

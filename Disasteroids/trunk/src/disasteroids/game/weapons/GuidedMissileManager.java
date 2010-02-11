@@ -71,7 +71,7 @@ public class GuidedMissileManager extends Weapon
 	@Override
 	public int getEntryAmmo()
 	{
-		throw new UnsupportedOperationException( "Not supported yet." );
+		return 0;
 	}
 
 	public int getSpeed()

@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Random;
 
 import disasteroids.Main;
 import disasteroids.Util;
@@ -19,6 +20,7 @@ import disasteroids.game.objects.Alien;
 import disasteroids.game.objects.Asteroid;
 import disasteroids.game.objects.BlackHole;
 import disasteroids.game.objects.BonusAsteroid;
+import disasteroids.game.objects.Ship;
 import disasteroids.game.objects.Station;
 import disasteroids.gui.MainWindow;
 import disasteroids.gui.RelativeGraphics;
@@ -29,14 +31,48 @@ import disasteroids.gui.RelativeGraphics;
  */
 public class WaveGameplay implements Level
 {
-	private int currentWave;
+	private int currentWave = 1;
 
 	private int wavePoints;
 
 	public WaveGameplay()
 	{
-		currentWave = 1;
+		setUpAsteroidField();
+	}
+
+	private void nextWave()
+	{
+		currentWave++;
+		setUpAsteroidField();
+	}
+
+	void setUpAsteroidField()
+	{
 		wavePoints = getWavePoints( currentWave );
+		Random rand = Util.getGameplayRandomGenerator();
+
+		// Create asteroids.
+		for ( int numAsteroids = 0; numAsteroids < ( currentWave + 1 ) * 2; numAsteroids++ )
+		{
+			Game.getInstance().getObjectManager().addObject(
+					new Asteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ), rand.nextInt( Game.getInstance().GAME_HEIGHT ), rand.nextDouble() * 6 - 3, rand.nextDouble() * 6 - 3, rand.nextInt( 150 ) + 25,
+							rand.nextInt( currentWave * 10 + 10 ) - 9 ), false );
+
+			// Create bonus asteroids.
+			if ( rand.nextInt( 10 ) == 1 )
+			{
+				Game.getInstance().getObjectManager().addObject(
+						new BonusAsteroid( rand.nextInt( Game.getInstance().GAME_WIDTH ), rand.nextInt( Game.getInstance().GAME_HEIGHT ), rand.nextDouble() * 6 - 3, rand.nextDouble() * 6 - 3, rand.nextInt( 150 ) + 25, rand
+								.nextInt( currentWave * 10 + 10 ) - 9 ), false );
+			}
+		}
+
+		// All players get invincibility.
+		for ( Ship s : Game.getInstance().getObjectManager().getPlayers() )
+		{
+			s.setInvincibilityCount( 100 );
+			s.increaseScore( 2500 );
+		}
 	}
 
 	public void act()
@@ -45,8 +81,7 @@ public class WaveGameplay implements Level
 		if ( wavePoints <= 0 && Game.getInstance().getObjectManager().getAsteroids().isEmpty() && Game.getInstance().getObjectManager().getBaddies().isEmpty() )
 		{
 			Main.log( "Wave " + currentWave + " completed!", 300 );
-			currentWave += 1;
-			wavePoints = getWavePoints( currentWave );
+			nextWave();
 		}
 
 		// Spawn asteroids directly opposite from player 1.
@@ -148,8 +183,7 @@ public class WaveGameplay implements Level
 	public void optionsKey()
 	{
 		Game.getInstance().getObjectManager().clearObstacles();
-		currentWave++;
-		wavePoints = getWavePoints( currentWave );
+		nextWave();
 		Main.log( "Welcome to wave " + currentWave + "." );
 	}
 }

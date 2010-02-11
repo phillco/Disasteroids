@@ -7,7 +7,6 @@ package disasteroids.networking;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import disasteroids.game.levels.Classic;
 import disasteroids.game.levels.EmptyLevel;
 import disasteroids.game.levels.Level;
 import disasteroids.game.levels.WaveGameplay;
@@ -79,7 +78,7 @@ public class Constants
 
 	public static enum LevelTID
 	{
-		CLASSIC( Classic.class ), WAVE( WaveGameplay.class ), EMPTY( EmptyLevel.class );
+		WAVE( WaveGameplay.class ), EMPTY( EmptyLevel.class );
 
 		final Class myClass;
 
@@ -133,9 +132,7 @@ public class Constants
 
 	public static int parseLevel( Level m )
 	{
-		if ( m instanceof Classic )
-			return LevelTID.CLASSIC.ordinal();
-		else if ( m instanceof WaveGameplay )
+		if ( m instanceof WaveGameplay )
 			return LevelTID.WAVE.ordinal();
 		else if ( m instanceof EmptyLevel )
 			return LevelTID.EMPTY.ordinal();
@@ -147,8 +144,6 @@ public class Constants
 	{
 		switch ( LevelTID.values()[type] )
 		{
-			case CLASSIC:
-				return new Classic( stream );
 			case WAVE:
 				return new WaveGameplay( stream );
 			case EMPTY:

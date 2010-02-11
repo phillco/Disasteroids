@@ -21,7 +21,6 @@ import javax.swing.JOptionPane;
 
 import disasteroids.Main;
 import disasteroids.Settings;
-import disasteroids.game.levels.Classic;
 import disasteroids.game.levels.EmptyLevel;
 import disasteroids.game.levels.WaveGameplay;
 
@@ -162,8 +161,6 @@ public class MainMenu extends AsteroidsMenu implements KeyListener, MouseMotionL
 			String mode = "Wave";
 			if ( Settings.getLastLevel() == EmptyLevel.class )
 				mode = "Deathmatch";
-			else if ( Settings.getLastLevel() == Classic.class )
-				mode = "Linear";
 			drawSetting( ( (Graphics2D) g ), "Game mode: " + mode, 'G', getWidth() / 2 + 8, ( WINDOW_HEIGHT - height ), normal, true );
 
 		}
@@ -286,8 +283,6 @@ public class MainMenu extends AsteroidsMenu implements KeyListener, MouseMotionL
 			case KeyEvent.VK_G:
 				if ( Settings.getLastLevel() == WaveGameplay.class )
 					Settings.setLastLevel( EmptyLevel.class );
-				else if ( Settings.getLastLevel() == EmptyLevel.class )
-					Settings.setLastLevel( Classic.class );
 				else
 					Settings.setLastLevel( WaveGameplay.class );
 				break;

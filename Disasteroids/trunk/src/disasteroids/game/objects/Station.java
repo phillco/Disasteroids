@@ -255,7 +255,7 @@ public class Station extends ShootingObject
 		double projectedY = target.getY() + time * target.getDy();
 
 		desiredAngle = -Util.getAngle( this, projectedX, projectedY );// Math.atan( ( projectedY - centerY() ) / ( projectedX
-																		// - centerX() ) );
+		// - centerX() ) );
 		if ( ( ( desiredAngle - angle ) + 2 * Math.PI ) % ( 2 * Math.PI ) < Math.PI )
 		{
 			if ( Math.abs( desiredAngle - angle ) < SWEEP_SPEED )

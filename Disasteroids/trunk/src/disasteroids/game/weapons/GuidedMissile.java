@@ -385,7 +385,7 @@ public class GuidedMissile extends Unit
 		double angleToTarget = Util.getAngle( this, objectToFollow );
 		double turnRate = Math.PI / 64;
 		if ( Math.abs( ( angle - angleToTarget + 4 * Math.PI ) % ( 2 * Math.PI ) ) < turnRate )// we're close enough, just
-																								// point the right direction
+		// point the right direction
 		{
 			turn( angleToTarget - angle );
 			angle = angleToTarget;

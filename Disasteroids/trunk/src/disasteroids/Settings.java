@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import disasteroids.game.Game;
-import disasteroids.game.levels.Classic;
 import disasteroids.game.levels.EmptyLevel;
 import disasteroids.game.levels.WaveGameplay;
 import disasteroids.game.objects.Ship;
@@ -240,7 +239,7 @@ public class Settings
 		else if ( userSettings.getProperty( "lastLevel" ).equalsIgnoreCase( "deathmatch" ) )
 			return EmptyLevel.class;
 		else
-			return Classic.class;
+			return EmptyLevel.class;
 	}
 
 	/**

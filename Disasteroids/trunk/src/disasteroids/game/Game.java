@@ -453,16 +453,16 @@ public class Game
 			return ( !Client.is() );
 		else
 			return ( !Client.is() && ( !Server.is() || Game.getInstance().getObjectManager().getPlayers().size() < 2 ) ); // Action
-																															// not
-																															// synched,
-																															// so
-																															// it
-																															// can
-																															// only
-																															// be
-																															// done
-																															// when
-																															// alone.
+		// not
+		// synched,
+		// so
+		// it
+		// can
+		// only
+		// be
+		// done
+		// when
+		// alone.
 	}
 
 	/**
